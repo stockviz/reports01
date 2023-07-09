@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2023-04-06" />
+
+<title>Index Analysis</title>
+
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.27/datatables.js"></script>
+<link href="rmdlib/dt-core-1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.12.1/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.12.1/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="/reports/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="/reports/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="/reports/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="/reports/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="/reports/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="/reports/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="/reports/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="/reports/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="/reports/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="/reports/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="/reports/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="/reports/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="/reports/index/rp-IN.html">Changes</a>
+    </li>
+    <li>
+      <a href="/reports/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="/reports/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="/reports/index/rp-valuations.html">Valuations</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="/reports/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="/reports/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="/reports/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="/reports/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="/reports/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="/reports/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="/reports/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Index Analysis</h1>
+<h3 class="subtitle">NIFTY NEXT 50</h3>
+<h4 class="date">April 6, 2023</h4>
+
+</div>
+
+
+<div id="constituent-changes" class="section level3">
+<h3>Constituent Changes</h3>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-bdd1d8a13c9bb3f0529d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bdd1d8a13c9bb3f0529d">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2023-04-01<\/caption>","data":[["ABB","AWL","CANBK","PAGEIND","VBL"],["BANDHANBNK","BIOCON","GLAND","MPHASIS","PAYTM"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":10,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-3fd61a60df6a4357302d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3fd61a60df6a4357302d">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2022-09-30<\/caption>","data":[["ATGL","BEL","HAL","IRCTC","MOTHERSON","MPHASIS","SHREECEM"],["ADANIENT","JUBLFOOD","LUPIN","MINDTREE","PNB","SAIL","ZYDUSLIFE"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":12,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-0102f54d7ccc1f7865e5" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0102f54d7ccc1f7865e5">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2022-08-08<\/caption>","data":[["LICI","TATAPOWER"],["NMDC","PEL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-cfdb9f39f4fc6bf74efc" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-cfdb9f39f4fc6bf74efc">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2022-03-31<\/caption>","data":[["IOC","MINDTREE","NYKAA","PAYTM","SRF","ZOMATO"],["APOLLOHOSP","AUROPHARMA","HINDPETRO","IGL","JINDALSTEL","YESBANK"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":11,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-193de19c916ceb4e6143" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-193de19c916ceb4e6143">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2022-03-08<\/caption>","data":[["ZYDUSLIFE"],["CADILAHC"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-2bb47e1a79a19c98b6c6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2bb47e1a79a19c98b6c6">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2021-09-30<\/caption>","data":[["BANKBARODA","CHOLAFIN","JINDALSTEL","PIIND","SAIL"],["ABBOTINDIA","ALKEM","MRF","PETRONET","UBL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":10,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-29c7cd43268b50918793" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-29c7cd43268b50918793">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2021-06-30<\/caption>","data":[["GLAND"],["MOTHERSON"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-c46bb867f101316a9af3" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c46bb867f101316a9af3">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2021-03-31<\/caption>","data":[["ADANIENT","APOLLOHOSP","GAIL","JUBLFOOD","MRF","VEDL","YESBANK"],["BANKBARODA","CONCOR","GICRE","HINDZINC","OFSS","PFC","TATACONSUM"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":12,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-85a2a0857f1600363a53" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-85a2a0857f1600363a53">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2020-12-02<\/caption>","data":[["ACC"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-dc17d1a088e88b69f2da" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-dc17d1a088e88b69f2da">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2020-11-30<\/caption>","data":[[null],["ACC"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-54525cca5e7b78bf8731" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-54525cca5e7b78bf8731">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2020-10-06<\/caption>","data":[["ACC"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-14d2ca4d7f42311f6263" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-14d2ca4d7f42311f6263">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2020-09-30<\/caption>","data":[[null],["ACC"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-0581ad734ef47aa72775" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0581ad734ef47aa72775">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2020-09-26<\/caption>","data":[["ADANIGREEN","ALKEM","INDUSTOWER","LTIM","TATACONSUM"],["DIVISLAB","NHPC","PAGEIND","SBILIFE","SHRIRAMFIN"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":10,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-1664cf7be5c184555202" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1664cf7be5c184555202">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2020-07-31<\/caption>","data":[["SBICARD"],["HDFCLIFE"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-1028b729044ca84f752b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1028b729044ca84f752b">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2020-06-30<\/caption>","data":[["ABBOTINDIA","IGL","MUTHOOTFIN","NAUKRI","TORNTPHARM"],["ASHOKLEY","IBULHSGFIN","IDEA","L&amp;TFH","NIACL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":10,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-a84c4963193cc622db7e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a84c4963193cc622db7e">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2020-03-31<\/caption>","data":[["ADANITRANS"],["SHREECEM"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-29c44fdd67b2a6011538" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-29c44fdd67b2a6011538">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2019-09-30<\/caption>","data":[["BERGEPAINT","IBULHSGFIN","PFC","PNB"],["ABB","BHEL","MRF","SAIL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":9,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-194de839791e3d976dd8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-194de839791e3d976dd8">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2019-03-31<\/caption>","data":[["BAJAJHLDNG","DIVISLAB","HDFCAMC","HINDPETRO","PAGEIND","UBL"],["ABCAPITAL","BEL","BRITANNIA","LICHSGFIN","OIL","SUNTV"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":11,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-73f2bbbb727da403c033" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-73f2bbbb727da403c033">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2018-09-30<\/caption>","data":[["BANDHANBNK","BIOCON","HDFCLIFE","ICICIGI","LUPIN","NIACL"],["CUMMINSIND","EMAMILTD","JSWSTEEL","PFC","PNB","RECLTD"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":11,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-41b1d1f4338c32a75d2e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-41b1d1f4338c32a75d2e">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2018-04-30<\/caption>","data":[["ABCAPITAL","AMBUJACEM","AUROPHARMA","BOSCHLTD","GICRE","L&amp;TFH","SBILIFE"],["BAJAJFINSV","GLAXO","GLENMARK","GSKCONS","TATAPOWER","TITAN","TORNTPHARM"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":12,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-82ee405649b5db08d3b5" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-82ee405649b5db08d3b5">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2017-09-30<\/caption>","data":[["ACC","BANKBARODA","DMART","MRF","TATAPOWER"],["BAJFINANCE","DIVISLAB","HINDPETRO","UBL","UPL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":10,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-577563946d3ab990b599" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-577563946d3ab990b599">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2017-05-31<\/caption>","data":[["SUNTV"],["VEDL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-b494fb91cc3ee25c7e12" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b494fb91cc3ee25c7e12">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2017-03-31<\/caption>","data":[["BHEL","ICICIPRULI","IDEA","PETRONET","RECLTD"],["APOLLOHOSP","BHARATFORG","CASTROLIND","IBULHSGFIN","IOC"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":10,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-308380a3da058c125d0f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-308380a3da058c125d0f">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2016-11-30<\/caption>","data":[["HAVELLS"],["CAIRN"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-94e6164fb5923a3aaa12" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-94e6164fb5923a3aaa12">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2016-09-30<\/caption>","data":[["INDIGO","PEL"],["RCOM","RECLTD"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-67b5ef1d5e59e50f0bb4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-67b5ef1d5e59e50f0bb4">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2016-04-30<\/caption>","data":[["ABB","BAJFINANCE","BEL","CADILAHC","CAIRN","CASTROLIND","DLF","EMAMILTD","HINDZINC","NHPC","PGHH","PIDILITIND","PNB","SHREECEM","TORNTPHARM","VEDL"],["AUROPHARMA","BAJAJHLDNG","BANKINDIA","CANBK","EICHERMOT","EXIDEIND","FEDERALBNK","INDUSTOWER","M&amp;MFIN","MRF","PETRONET","RELCAPITAL","RELINFRA","SUNDARMFIN","TATACHEM","TATAGLOBAL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":21,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[10,21,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-dac514aa59bb99200560" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-dac514aa59bb99200560">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2015-10-31<\/caption>","data":[["IOC"],["ABIRLANUVO"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-d83a35900befe1ff9791" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d83a35900befe1ff9791">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2015-09-30<\/caption>","data":[["ASHOKLEY","MARICO","NMDC","SUNDARMFIN"],["ADANIPORTS","CGPOWER","RPOWER","UNIONBANK"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":9,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-e4216037724be4bee0f2" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e4216037724be4bee0f2">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2015-05-31<\/caption>","data":[["BRITANNIA","MRF"],["ADANIENT","BOSCHLTD"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-9bf76e7d63fe24354313" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9bf76e7d63fe24354313">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2015-03-31<\/caption>","data":[["IBULHSGFIN","MCDOWELL-N"],["IDEA","YESBANK"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-3b9dc45bb4c6f7cb2583" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3b9dc45bb4c6f7cb2583">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2015-02-28<\/caption>","data":[["EICHERMOT"],["INGVYSYABK"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-5ff4c8fd298145a26564" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5ff4c8fd298145a26564">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2014-11-30<\/caption>","data":[["RELINFRA"],["RANBAXY"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-2546cbee7a4810d04179" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2546cbee7a4810d04179">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2014-10-31<\/caption>","data":[["AUROPHARMA","MOTHERSON"],["MPHASIS","ZEEL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-d7bd412e6c2accf91c52" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d7bd412e6c2accf91c52">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2014-03-31<\/caption>","data":[["INDUSTOWER","INGVYSYABK","RANBAXY"],["IDBI","MCDOWELL-N","TECHM"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":8,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-9e907aed4a089cf18806" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9e907aed4a089cf18806">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2013-10-31<\/caption>","data":[["UPL"],["UNIPHOS"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-78c1949d8bf4a54c724c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-78c1949d8bf4a54c724c">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2013-09-30<\/caption>","data":[["M&amp;MFIN","OIL"],["ASHOKLEY","INDHOTEL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-156de5fc922c649dfc61" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-156de5fc922c649dfc61">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2013-04-30<\/caption>","data":[["ASHOKLEY","INDHOTEL","UNIPHOS"],["M&amp;MFIN","OIL","UPL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":8,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-4b2cf358777f719f5341" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4b2cf358777f719f5341">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2013-03-31<\/caption>","data":[["BAJAJFINSV","M&amp;MFIN","OIL","SIEMENS","TATAGLOBAL","UBL","UPL"],["ASHOKLEY","BIOCON","GMRINFRA","INDHOTEL","INDUSINDBK","TORNTPOWER","UNIPHOS"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":12,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-a7ff65a4244ae8f0014c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a7ff65a4244ae8f0014c">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2012-09-30<\/caption>","data":[["APOLLOHOSP","BAJAJHLDNG","GODREJCP","SAIL"],["ANDHRABANK","BEL","LUPIN","ULTRACEMCO"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":9,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-1b4af83e9af1d73d76f9" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1b4af83e9af1d73d76f9">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2012-04-30<\/caption>","data":[["DIVISLAB","GSKCONS","PETRONET","RCOM","RPOWER"],["ASIANPAINT","BANKBARODA","HDIL","IFCI","IOB"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":10,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-ada29da91eee98674ca0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ada29da91eee98674ca0">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2012-01-31<\/caption>","data":[["ADANIPORTS"],["MUNDRAPORT"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-11be22ca2adf42548657" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-11be22ca2adf42548657">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2011-10-31<\/caption>","data":[["BOSCHLTD","DABUR","IDEA","RELCAPITAL"],["COALINDIA","PATNI","PUNJLLOYD","SYNDIBANK"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":9,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-b068015dbbb1eb0cfd75" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b068015dbbb1eb0cfd75">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2011-04-30<\/caption>","data":[["COALINDIA"],["IBREALEST"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-408fd8799dfba656c130" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-408fd8799dfba656c130">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2011-03-31<\/caption>","data":[["INDUSINDBK","TITAN","ZEEL"],["CORPBANK","GRASIM","MRPL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":8,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-87d2be9265884c965660" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-87d2be9265884c965660">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2010-10-31<\/caption>","data":[["EXIDEIND","GRASIM","RECLTD","SHRIRAMFIN","TATACHEM","YESBANK"],["BAJAJ-AUTO","DRREDDY","RNRL","SESAGOA","TTML","ZEEL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":11,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-df3a8cdb30548d0ac772" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-df3a8cdb30548d0ac772">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2010-04-30<\/caption>","data":[["PUNJLLOYD","TORNTPOWER"],["KOTAKBANK","MOSERBAER"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-65baebe3bc22f061374c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-65baebe3bc22f061374c">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2009-10-31<\/caption>","data":[["BAJAJ-AUTO","CGPOWER","COLPAL","FEDERALBNK","IBREALEST","UNIPHOS","ZEEL"],["APOLLOTYRE","CHENNPETRO","IDFC","JPASSOCIAT","RAYMOND","VIJAYABANK","WOCKPHARMA"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":12,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-0aceae96e0301109d5b9" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0aceae96e0301109d5b9">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2009-06-30<\/caption>","data":[["HINDPETRO"],["JINDALSTEL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-1e3354969b57b07bd97a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1e3354969b57b07bd97a">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2009-03-31<\/caption>","data":[["ADANIENT","GLAXO","MRPL","SESAGOA"],["AVENTIS","AXISBANK","INGVYSYABK","NIRMA"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":9,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-a245135c444c39d36e5e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a245135c444c39d36e5e">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2009-01-31<\/caption>","data":[["GLENMARK"],["RELCAPITAL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-004d67066743679dbd80" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-004d67066743679dbd80">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2008-12-31<\/caption>","data":[["DRREDDY"],["CADILAHC"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-62d014e04f7db107f568" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-62d014e04f7db107f568">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2008-09-30<\/caption>","data":[["MUNDRAPORT","OFSS"],["AUROPHARMA","I-FLEX"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-d9b357d5982249c3742d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d9b357d5982249c3742d">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2008-06-30<\/caption>","data":[["HDIL","JSWSTEEL"],["PFIZER","TVSMOTOR"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-ebd28342da9f81ae29dd" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ebd28342da9f81ae29dd">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2008-03-31<\/caption>","data":[["RNRL"],["PUNJABTRAC"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-05277f224703fe441304" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-05277f224703fe441304">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2008-02-29<\/caption>","data":[["JINDALSTEL"],["NICOLASPIR"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
