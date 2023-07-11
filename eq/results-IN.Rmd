@@ -27,8 +27,6 @@ date: `r createdDate`
 ```{r, calc_chunk, echo = FALSE, message = FALSE, warning = FALSE}
 
 library('RODBC')
-library('quantmod')
-library('PerformanceAnalytics')
 library('lubridate')
 library('DT')
 
@@ -62,7 +60,7 @@ resultsDf <- sqlQuery(con, "select crd.BM_DATE, crd.SYMBOL, FF_MKT_CAP_CR, INDUS
 							WHERE BM_DATE >= GETDATE()
 							and TITLE like '%result%'
 							and crd.SYMBOL=emi.SYMBOL
-							and emi.TIME_STAMP = (select max(time_stamp) from EQUITY_MISC_INFO)
+							and emi.TIME_STAMP = (select max(time_stamp) from EQUITY_MISC_INFO where time_stamp < convert(date, GETDATE()))
 							ORDER BY BM_DATE, FF_MKT_CAP_CR desc")
 
 resultsDf2p <- data.frame(DATE = "", SYMBOL = "", FnO = "", INDUSTRY = "", INDICES = "")
