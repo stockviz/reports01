@@ -48,7 +48,7 @@ startDate <- as.Date("2010-01-01")
 lcon <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, ldbname, ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
 
 maxDt <- sqlQuery(lcon, "select max(time_stamp) from index_capm")[[1]]
-indices <- sqlQuery(lcon, sprintf("select distinct index_name from index_capm where time_stamp = '%s'", maxDt))[,1]
+indices <- sqlQuery(lcon, sprintf("select distinct index_name from index_capm where time_stamp = '%s' order by index_name", maxDt))[,1]
 
 plottedIndices <- c()
 createPlots <- function(){
@@ -66,6 +66,10 @@ createPlots <- function(){
 	smaStats <- data.frame(matrix(c("", smaLbs), nrow=1))
 	colnames(smaStats) <- c("INDEX_NAME", sapply(smaLbs, function(X) paste0("SMA_", X)))
 	
+	smaDist <- data.frame(matrix(c("", smaLbs), nrow=1))
+	colnames(smaDist) <- c("INDEX_NAME", sapply(smaLbs, function(X) paste0("SMA_", X)))
+	
+	#for(i in 1:1){
 	for(i in 1:length(indices)){
 		
 		iName <- indices[i]
@@ -93,10 +97,15 @@ createPlots <- function(){
 			names(allXts) <- c(iName, 'INDEX')
 
 			smaLoRets <- NULL
+			smaGaps <- c()
 			for(smaLb in smaLbs){
-				smaLoRets <- merge.xts(smaLoRets, ifelse(allXts[,1] > SMA(allXts[,1], smaLb), allXts$INDEX, 0))
+				sma <- SMA(allXts[,1], smaLb)
+				smaGaps <- c(smaGaps, paste0(round(100 * (coredata(last(allXts[,1])) / coredata(last(sma)) - 1), 2), '%'))
+				smaLoRets <- merge.xts(smaLoRets, ifelse(allXts[,1] > sma, allXts$INDEX, 0))
 			}
 			names(smaLoRets) <- sapply(smaLbs, function(X) paste0('SMA_', X))
+			
+			smaDist <- rbind(smaDist, c(iName, smaGaps))
 			
 			tryCatch({
 				smaIR <- unlist(lapply(1:ncol(smaLoRets), function(X) as.numeric(UpsidePotentialRatio(smaLoRets[,X]))))
@@ -213,6 +222,9 @@ createPlots <- function(){
 	
 	smaStats <- smaStats[-1,]
 	save(smaStats, file="smaStats.Rdata")
+	
+	smaDist <- smaDist[-1,]
+	save(smaDist, file="smaDist.Rdata")
 }
 
 renderIndices <- function(){
@@ -242,6 +254,8 @@ createPlots()
 
 print("rendering indices...")
 renderIndices()
+
+q()
 
 print("rendering master page...")
 
