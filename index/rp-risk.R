@@ -255,8 +255,6 @@ createPlots()
 print("rendering indices...")
 renderIndices()
 
-q()
-
 print("rendering master page...")
 
 render("rp-risk.Rmd", output_file="rp-risk.html")
