@@ -1,0 +1,130 @@
+---
+title: All Time Highs Report
+subtitle: StockViz
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: rmdlib		
+    includes:
+        in_header: header-US.html
+        after_body: ../footer.html
+---
+
+```{r dt_chunk, include=FALSE}
+
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+
+```
+
+---
+date: `r createdDate`
+---
+
+```{r, calc_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+
+library(mongolite)
+library('RODBC')
+library('quantmod')
+library('PerformanceAnalytics')
+library('xtable')
+library('knitr')
+library('kableExtra')
+
+options(stringsAsFactors = FALSE)
+options("scipen"=100)
+
+#source("C:/stockviz/r/config.r")
+source("/mnt/hollandr/config.r")
+
+collPtr <- mongo("dump", url="mongodb://holland:27017/EtfPortfolioDb")
+con <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, "StockVizUS2", ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+
+asofDt<-as.Date(sqlQuery(con, "select max(time_stamp) from BHAV_EQ_TD")[[1]])
+startDate <- asofDt - 365*10
+nearBuff <- 0.05
+indices <- c('XLG', 'XMHQ', 'JKJ')
+indexNames <- c('S&P 500 Top 50', 'S&P MidCap 400 Quality', 'Morningstar Small Core')
+
+genTables <- function(symbols){
+	at52High <- data.frame(SYMBOL = "")
+	near52High <- data.frame(SYMBOL = "")
+	
+	for(sym in symbols){
+		sym <- gsub('/', '.', sym)
+		pxDf <- sqlQuery(con, sprintf("select time_stamp, c from BHAV_EQ_TD where symbol = '%s' and time_stamp >= '%s' and time_stamp <= '%s'", sym, startDate, asofDt))
+		if (nrow(pxDf) < 365*5) next
+		pXts <- xts(pxDf$c, pxDf$time_stamp)
+		
+		if(max(pXts) == as.numeric(last(pXts))){
+			at52High <- rbind(at52High, c(toString(sym)))
+		} else if (last(coredata(pXts)) >= (1-nearBuff) * max(coredata(pXts))) {
+			near52High <- rbind(near52High, c(toString(sym)))
+		} 
+	}
+	
+	maxLen <- max(nrow(at52High), nrow(near52High))
+	
+	all52 <- data.frame(AT_HIGH = c(at52High$SYMBOL, rep('', maxLen - nrow(at52High))), 
+						NEAR_HIGH = c(near52High$SYMBOL, rep('', maxLen - nrow(near52High))))
+	all52 <- all52[-1,]
+	
+	return(all52)
+}
+
+kableTable <- list()
+
+for(i in 1:length(indices)){
+	iName <- indices[i]
+	message(iName)
+	
+	asof <- collPtr$aggregate(sprintf('[{ "$match" : { "etfTicker" : "%s" } }, { "$group": { "_id": "etfTicker", "updated": { "$max": "$portfolioDate" }} }]', iName))$updated
+	message(asof)
+	prot <- collPtr$find(query=sprintf('{ "etfTicker": "%s", "portfolioDate": { "$gte" : { "$date": "%sT00:00:00Z" }}}', iName, as.Date(asof)), fields='{"portfolio": true}')
+	
+	details<-prot$portfolio[[1]]
+	detailsName <- names(details)
+	if ("AssetType" %in% detailsName && "Holding Ticker" %in% detailsName) {
+		syms <- details[details$AssetType == "equity", 'Holding Ticker']
+	} else if ("AssetType" %in% detailsName && "Ticker" %in% detailsName) {
+		syms <- details[details$AssetType == "equity", ]$Ticker
+	} else if ("AssetType" %in% detailsName && "Identifier" %in% detailsName){
+		syms <- details[details$AssetType == "equity", ]$Identifier
+	} else {
+		syms <- details[details$AssetClass == "Equity", ]$Ticker
+	}
+	
+	all52 <- genTables(syms)
+	
+	if(nrow(all52) > 0){
+		kableTable[[i]] <- kable(all52, align='ll', row.names = F, col.names = c("At Highs", "Near Highs"), format.args = list(nsmall=2)) %>%
+			kable_styling(bootstrap_options = c("condensed", "striped")) %>%
+			scroll_box(height = "500px")
+	} else {
+		kableTable[[i]] <- NA
+	}
+}
+
+```
+
+```{r, date_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE}
+cat(toString(startDate), "through", toString(asofDt), "\n")
+
+```
+
+```{r, index_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE}
+
+for(i in 1:length(indices)){
+	cat("\n")
+	cat("###", indexNames[i], "\n")
+	if(!is.na(kableTable[[i]])) {
+		cat(kableTable[[i]])
+	} else {
+		cat("None.", "\n")
+	}
+}
+
+```
