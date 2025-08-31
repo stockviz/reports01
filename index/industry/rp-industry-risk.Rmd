@@ -1,0 +1,98 @@
+---
+params:
+  index_name: ""
+  fName: ""
+subtitle: Industry Metrics
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: rmdlib
+    includes:
+        in_header: ../header.html
+        after_body: ../../footer.html
+---
+
+```{r, init_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+idPath <- "../../"
+
+#source("C:/stockviz/r/config.r")
+source("/mnt/hollandr/config.r")
+
+library('RODBC')
+library('DT')
+library('tidyverse')
+
+options(stringsAsFactors = FALSE)
+options("scipen"=100)
+
+iName <- params$index_name
+fName <- params$fName
+
+lcon <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, ldbname, ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+
+fanPlotName <- paste0("plots/", fName, ".fan.png")
+cumPlotName <- paste0("plots/", fName, ".cumret.png")
+smaCumPlotName <- paste0("plots/", fName, ".sma.cumret.png")
+annPlotName <- paste0("plots/", fName, ".annret.png")
+rollPlotName  <- paste0("plots/", fName, ".roll.png")
+
+```
+
+---
+title: `r iName`
+date: `r createdDate`
+---
+
+### Annual Returns
+
+![](`r paste0("plots/", fName, ".fan.EQUAL_WT.png")`)
+
+![](`r paste0("plots/", fName, ".fan.CAP_WT.png")`)
+
+![](`r paste0("plots/", fName, ".annret.EQUAL_WT.png")`)
+
+![](`r paste0("plots/", fName, ".annret.CAP_WT.png")`)
+
+### Cumulative Returns and Drawdowns
+
+![](`r cumPlotName`)
+
+\
+
+#### SMA Scenarios
+
+![](`r paste0("plots/", fName, ".sma.cumret.EQUAL_WT.png")`)
+
+![](`r paste0("plots/", fName, ".sma.cumret.CAP_WT.png")`)
+
+\
+
+#### Current Distance from SMA
+
+```{r, dist_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE, fig.height=12, fig.width=12}
+
+load("../smaDist-industry.Rdata")
+
+indexDist <- smaDist[smaDist$INDEX_NAME == iName, -1]
+indexDistDT <- datatable(indexDist, rownames = F, class = 'cell-border stripe', filter='none', options = list(dom = 't', pageLength = 30, ordering=F))
+htmltools::tagList(print(indexDistDT))
+
+```
+
+\
+
+### Rolling Returns
+
+![](`r paste0("plots/", fName, ".roll.EQUAL_WT.png")`)
+
+![](`r paste0("plots/", fName, ".roll.CAP_WT.png")`)
+
+\
+\
+
+
