@@ -104,39 +104,9 @@ createPlots <- function(){
   			smaLoRets <- na.omit(merge(smaLoRets, allXts$INDEX))
   			Common.PlotCumReturns(smaLoRets, sprintf("%s (%s) SMA Profile", iName, wtName), "long-only", sprintf("%s/%s.sma.cumret.%s.png", plotPath, fName, wtName))
   			
-  			toPlotAnn <- data.frame(na.trim(merge(retAnn[,j], bRetAnn), sides='left'))
-  			toPlotAnn$Y <- year(index(retAnn))
-  			
-  			maxYear <- length(unique(toPlotAnn$Y))
-  			toPlotAnn <- melt(toPlotAnn, id='Y')
-  			minRet <- min(toPlotAnn$value)
-  			toPlotAnn$Y <- factor(toPlotAnn$Y, levels = unique(toPlotAnn$Y))
-  
-  			ggplot(toPlotAnn, aes(x=Y, y=value, fill=variable)) +
-  				theme_economist() +
-  				geom_bar(stat = "identity", position = position_dodge()) +
-  				geom_text_repel(aes(label = sprintf('%.2f', value)), position = position_dodge(0.9)) +
-  				scale_fill_viridis(discrete = TRUE) +
-  				labs(x = "Year", y="Returns (%)", fill="", color="", size="", title=sprintf("%s (%s)", iName, wtName), subtitle=sprintf("Annual Returns [%s:%s]", first(index(retDaily)), last(index(retDaily)))) +
-  				annotate("text", x=maxYear, y=minRet, label = "@StockViz", hjust=1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
-  				
-  			ggsave(sprintf("%s/%s.annret.%s.png", plotPath, fName, wtName), width=12, height=6)
-  			
-  			rollStDt <- first(index(iXts))
-  			if(month(rollStDt) != 1){
-  				rollStDt <- as.Date(sprintf("%d-01-01", year(rollStDt)+1))
-  			}
-  			iXts2 <- iXts[paste0(rollStDt, "/"), j]
-  			rAnnRets <- annualReturn(iXts2)
-  			
-  			if(nrow(rAnnRets) > 10){
-    			rAnns <- merge(rollapply(rAnnRets, 3, function(X) Return.annualized(X)), rollapply(rAnnRets, 5, function(X) Return.annualized(X)), rollapply(rAnnRets, 10, function(X) Return.annualized(X)))
-    			rAnns <- rAnns*100
-    			rAnns <- rAnns[rowSums(is.na(rAnns)) != ncol(rAnns),]
-    			names(rAnns) <- c("y3", "y5", "y10")
-    			
-    			toPlotAnn <- data.frame(rAnns)
-    			toPlotAnn$Y <- year(index(rAnns))
+  			tryCatch({
+    			toPlotAnn <- data.frame(na.trim(merge(retAnn[,j], bRetAnn), sides='left'))
+    			toPlotAnn$Y <- year(index(retAnn))
     			
     			maxYear <- length(unique(toPlotAnn$Y))
     			toPlotAnn <- melt(toPlotAnn, id='Y')
@@ -148,17 +118,52 @@ createPlots <- function(){
     				geom_bar(stat = "identity", position = position_dodge()) +
     				geom_text_repel(aes(label = sprintf('%.2f', value)), position = position_dodge(0.9)) +
     				scale_fill_viridis(discrete = TRUE) +
-    				labs(x = "Year", y="Returns (%)", fill="", color="", size="", title=sprintf("%s (%s) Rolling Annualized Returns", iName, wtName), subtitle=sprintf("[%s:%s]", rollStDt, last(index(iXts2)))) +
+    				labs(x = "Year", y="Returns (%)", fill="", color="", size="", title=sprintf("%s (%s)", iName, wtName), subtitle=sprintf("Annual Returns [%s:%s]", first(index(retDaily)), last(index(retDaily)))) +
     				annotate("text", x=maxYear, y=minRet, label = "@StockViz", hjust=1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
     				
-    			ggsave(sprintf("%s/%s.roll.%s.png", plotPath, fName, wtName), width=12, height=6)
-  			}
+    			ggsave(sprintf("%s/%s.annret.%s.png", plotPath, fName, wtName), width=12, height=6)
+  			}, error = function(e){})
   			
-  			if(nrow(rAnnRets) > 5){
-    			iDf <- data.frame(iXts[,j])
-    			iDf$time_stamp <- index(iXts)
-    			fanPlot <- common.CreateFanChart(iDf, paste0(iName, '(', wtName, ')'), sprintf("%d:%s", min(year(index(iXts))), max(index(iXts))))
-    			ggsave(sprintf("%s/%s.fan.%s.png", plotPath, fName, wtName), fanPlot, width=12, height=6)
+  			rollStDt <- first(index(iXts))
+  			if(month(rollStDt) != 1){
+  				rollStDt <- as.Date(sprintf("%d-01-01", year(rollStDt)+1))
+  			}
+  			iXts2 <- iXts[paste0(rollStDt, "/"), j]
+  			
+  			if(nrow(iXts2) > 1){
+    			rAnnRets <- annualReturn(iXts2)
+    			
+    			if(nrow(rAnnRets) > 10){
+      			rAnns <- merge(rollapply(rAnnRets, 3, function(X) Return.annualized(X)), rollapply(rAnnRets, 5, function(X) Return.annualized(X)), rollapply(rAnnRets, 10, function(X) Return.annualized(X)))
+      			rAnns <- rAnns*100
+      			rAnns <- rAnns[rowSums(is.na(rAnns)) != ncol(rAnns),]
+      			names(rAnns) <- c("y3", "y5", "y10")
+      			
+      			toPlotAnn <- data.frame(rAnns)
+      			toPlotAnn$Y <- year(index(rAnns))
+      			
+      			maxYear <- length(unique(toPlotAnn$Y))
+      			toPlotAnn <- melt(toPlotAnn, id='Y')
+      			minRet <- min(toPlotAnn$value)
+      			toPlotAnn$Y <- factor(toPlotAnn$Y, levels = unique(toPlotAnn$Y))
+      
+      			ggplot(toPlotAnn, aes(x=Y, y=value, fill=variable)) +
+      				theme_economist() +
+      				geom_bar(stat = "identity", position = position_dodge()) +
+      				geom_text_repel(aes(label = sprintf('%.2f', value)), position = position_dodge(0.9)) +
+      				scale_fill_viridis(discrete = TRUE) +
+      				labs(x = "Year", y="Returns (%)", fill="", color="", size="", title=sprintf("%s (%s) Rolling Annualized Returns", iName, wtName), subtitle=sprintf("[%s:%s]", rollStDt, last(index(iXts2)))) +
+      				annotate("text", x=maxYear, y=minRet, label = "@StockViz", hjust=1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
+      				
+      			ggsave(sprintf("%s/%s.roll.%s.png", plotPath, fName, wtName), width=12, height=6)
+    			}
+    			
+    			if(nrow(rAnnRets) > 5){
+      			iDf <- data.frame(iXts[,j])
+      			iDf$time_stamp <- index(iXts)
+      			fanPlot <- common.CreateFanChart(iDf, paste0(iName, '(', wtName, ')'), sprintf("%d:%s", min(year(index(iXts))), max(index(iXts))))
+      			ggsave(sprintf("%s/%s.fan.%s.png", plotPath, fName, wtName), fanPlot, width=12, height=6)
+    			}
   			}
 			}
 		}, error=function(e){print(e)})

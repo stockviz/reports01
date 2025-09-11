@@ -56,7 +56,10 @@ mktCapDf <- sqlQuery(lcon, sprintf("select SYMBOL, FF_MKT_CAP_CR, MKT_CAP_CR fro
 
 mktCapPct <- mktCapDf %>% mutate(FF_PCT = FF_MKT_CAP_CR/sum(FF_MKT_CAP_CR), CAP_PCT = MKT_CAP_CR/sum(MKT_CAP_CR)) %>%
   select(SYMBOL, FF_PCT, CAP_PCT) %>%
-  arrange(desc(CAP_PCT))
+  arrange(desc(CAP_PCT)) %>%
+  mutate(SYMBOL = if_else(file.exists(sprintf("../../reports02/eq-in/risk/in.%s.html", gsub("[^[:alnum:] ]| ", "", SYMBOL))), 
+							sprintf('<a href="/reports02/eq-in/risk/in.%s.html" target="_blank">%s</a>', gsub("[^[:alnum:] ]| ", "", SYMBOL), SYMBOL), 
+							SYMBOL))
 
 indusStats <- sqlQuery(lcon, sprintf("select * from INDUSTRY_STATS where industry = '%s'", iName))
 maxIndusDt <- indusStats %>% group_by(PERIOD_END, SYMBOL) %>% summarise(MDT = max(UPDATE_DT))
@@ -67,7 +70,10 @@ indusEbit <- indusStats %>% filter(FIN == 'EBIT' & ITEM_KEY == 'SHARE_PCT') %>%
   pivot_wider(id_cols = SYMBOL, names_from = PERIOD_END, values_from = VAL) %>%
   inner_join(mktCapPct, join_by(SYMBOL)) %>%
   arrange(desc(CAP_PCT)) %>%
-  select(-c(FF_PCT, CAP_PCT))
+  select(-c(FF_PCT, CAP_PCT)) %>%
+  mutate(SYMBOL = if_else(file.exists(sprintf("../../reports02/eq-in/risk/in.%s.html", gsub("[^[:alnum:] ]| ", "", SYMBOL))), 
+							sprintf('<a href="/reports02/eq-in/risk/in.%s.html" target="_blank">%s</a>', gsub("[^[:alnum:] ]| ", "", SYMBOL), SYMBOL), 
+							SYMBOL))
 
 indusRev <- indusStats %>% filter(FIN == 'RevenueFromOperations' & ITEM_KEY == 'SHARE_PCT') %>% 
   left_join(maxIndusDt, join_by(PERIOD_END, UPDATE_DT == MDT, SYMBOL)) %>%
@@ -75,7 +81,10 @@ indusRev <- indusStats %>% filter(FIN == 'RevenueFromOperations' & ITEM_KEY == '
   pivot_wider(id_cols = SYMBOL, names_from = PERIOD_END, values_from = VAL) %>%
   inner_join(mktCapPct, join_by(SYMBOL)) %>%
   arrange(desc(CAP_PCT)) %>%
-  select(-c(FF_PCT, CAP_PCT))
+  select(-c(FF_PCT, CAP_PCT)) %>%
+  mutate(SYMBOL = if_else(file.exists(sprintf("../../reports02/eq-in/risk/in.%s.html", gsub("[^[:alnum:] ]| ", "", SYMBOL))), 
+							sprintf('<a href="/reports02/eq-in/risk/in.%s.html" target="_blank">%s</a>', gsub("[^[:alnum:] ]| ", "", SYMBOL), SYMBOL), 
+							SYMBOL))
 
 
 ```
@@ -143,6 +152,7 @@ htmltools::tagList(print(indexDistDT))
 mktCapDT <- datatable(mktCapPct, 
                       rownames = F, colnames = c('', 'free-float', 'full-float'),
                       class = 'cell-border stripe', filter='none', 
+                      escape = c(T, rep(F, ncol(mktCapPct) - 1)),
                       options = list(dom = 't', pageLength = 30, ordering=F)) %>%
             formatPercentage(c('FF_PCT', 'CAP_PCT'), 2)
 
@@ -159,6 +169,7 @@ colNames[1] <- ''
 ebitDT <- datatable(indusEbit, 
                       rownames = F, colnames = colNames,
                       class = 'cell-border stripe', filter='none', 
+                      escape = c(T, rep(F, ncol(indusEbit) - 1)),
                       options = list(dom = 't', pageLength = 30, ordering=F)) %>%
             formatRound(names(indusEbit)[sapply(indusEbit, is.numeric)], 2)
 
@@ -175,6 +186,7 @@ colNames[1] <- ''
 revDT <- datatable(indusRev, 
                       rownames = F, colnames = colNames,
                       class = 'cell-border stripe', filter='none', 
+                      escape = c(T, rep(F, ncol(indusRev) - 1)),
                       options = list(dom = 't', pageLength = 30, ordering=F)) %>%
             formatRound(names(indusRev)[sapply(indusRev, is.numeric)], 2)
 
