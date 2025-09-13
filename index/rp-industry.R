@@ -31,7 +31,7 @@ idPath <- "../"
 smaLbs <- c(20, 50, 100, 200) #days
 
 benchName <- "NIFTY TOTAL MARKET TR"
-startDate <- as.Date("2010-01-01")
+startDate <- as.Date("2015-01-01")
 
 lcon <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, ldbname, ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
 
