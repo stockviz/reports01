@@ -69,7 +69,7 @@ createPlots <- function(){
 		print(iName)
 
 		tryCatch({
-			retDailyDf <- sqlQuery(lcon, sprintf("select TIME_STAMP, RET_EQ_WT, RET_CAP_WT from bhav_industry where industry = '%s'", iName))
+			retDailyDf <- sqlQuery(lcon, sprintf("select TIME_STAMP, RET_EQ_WT, RET_CAP_WT from bhav_industry where industry = '%s' and time_stamp >= '2015-01-01'", iName))
 			retDaily <- xts(retDailyDf[,-1], retDailyDf[,1])
 			iXts <- merge(cumprod(1 + retDaily[,1]), cumprod(1 + retDaily[,2]))
 			retAnn <- merge(annualReturn(iXts[,1]), annualReturn(iXts[,2]))
