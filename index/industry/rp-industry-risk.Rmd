@@ -57,7 +57,7 @@ mktCapDf <- sqlQuery(lcon, sprintf("select SYMBOL, FF_MKT_CAP_CR, MKT_CAP_CR fro
 mktCapPct <- mktCapDf %>% mutate(FF_PCT = FF_MKT_CAP_CR/sum(FF_MKT_CAP_CR), CAP_PCT = MKT_CAP_CR/sum(MKT_CAP_CR)) %>%
   select(SYMBOL, FF_PCT, CAP_PCT) %>%
   arrange(desc(CAP_PCT)) %>%
-  mutate(SYMBOL = if_else(file.exists(sprintf("../../../reports02/eq-in/risk/in.%s.html", gsub("[^[:alnum:] ]| ", "", SYMBOL))), 
+  mutate(SYMBOL_LINK = if_else(file.exists(sprintf("../../../reports02/eq-in/risk/in.%s.html", gsub("[^[:alnum:] ]| ", "", SYMBOL))), 
 							sprintf('<a href="/reports02/eq-in/risk/in.%s.html" target="_blank">%s</a>', gsub("[^[:alnum:] ]| ", "", SYMBOL), SYMBOL), 
 							SYMBOL))
 
@@ -65,10 +65,10 @@ indusStats <- sqlQuery(lcon, sprintf("select * from INDUSTRY_STATS where industr
 maxIndusDt <- indusStats %>% group_by(PERIOD_END, SYMBOL) %>% summarise(MDT = max(UPDATE_DT))
 
 indusEbit <- indusStats %>% filter(FIN == 'EBIT' & ITEM_KEY == 'SHARE_PCT') %>% 
-  left_join(maxIndusDt, join_by(PERIOD_END, UPDATE_DT == MDT, SYMBOL)) %>%
+  inner_join(maxIndusDt, join_by(PERIOD_END, UPDATE_DT == MDT, SYMBOL)) %>%
   select(PERIOD_END, SYMBOL, VAL) %>%
   pivot_wider(id_cols = SYMBOL, names_from = PERIOD_END, values_from = VAL) %>%
-  inner_join(mktCapPct, join_by(SYMBOL)) %>%
+  inner_join(mktCapPct |> select(-SYMBOL_LINK), join_by(SYMBOL)) %>%
   arrange(desc(CAP_PCT)) %>%
   select(-c(FF_PCT, CAP_PCT)) %>%
   mutate(SYMBOL = if_else(file.exists(sprintf("../../../reports02/eq-in/risk/in.%s.html", gsub("[^[:alnum:] ]| ", "", SYMBOL))), 
@@ -76,10 +76,10 @@ indusEbit <- indusStats %>% filter(FIN == 'EBIT' & ITEM_KEY == 'SHARE_PCT') %>%
 							SYMBOL))
 
 indusRev <- indusStats %>% filter(FIN == 'RevenueFromOperations' & ITEM_KEY == 'SHARE_PCT') %>% 
-  left_join(maxIndusDt, join_by(PERIOD_END, UPDATE_DT == MDT, SYMBOL)) %>%
+  inner_join(maxIndusDt, join_by(PERIOD_END, UPDATE_DT == MDT, SYMBOL)) %>%
   select(PERIOD_END, SYMBOL, VAL) %>%
   pivot_wider(id_cols = SYMBOL, names_from = PERIOD_END, values_from = VAL) %>%
-  inner_join(mktCapPct, join_by(SYMBOL)) %>%
+  inner_join(mktCapPct |> select(-SYMBOL_LINK), join_by(SYMBOL)) %>%
   arrange(desc(CAP_PCT)) %>%
   select(-c(FF_PCT, CAP_PCT)) %>%
   mutate(SYMBOL = if_else(file.exists(sprintf("../../../reports02/eq-in/risk/in.%s.html", gsub("[^[:alnum:] ]| ", "", SYMBOL))), 
@@ -149,10 +149,11 @@ htmltools::tagList(print(indexDistDT))
 
 ```{r, mkt_cap_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE, fig.height=12, fig.width=12}
 
-mktCapDT <- datatable(mktCapPct, 
+mkt2Print <- mktCapPct |> select(-SYMBOL) |> relocate(SYMBOL_LINK, .before = FF_PCT)
+mktCapDT <- datatable(mkt2Print, 
                       rownames = F, colnames = c('', 'free-float', 'full-float'),
                       class = 'cell-border stripe', filter='none', 
-                      escape = c(F, rep(T, ncol(mktCapPct) - 1)),
+                      escape = c(F, rep(T, ncol(mkt2Print) - 1)),
                       options = list(dom = 't', pageLength = 30, ordering=F)) %>%
             formatPercentage(c('FF_PCT', 'CAP_PCT'), 2)
 
