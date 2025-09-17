@@ -118,8 +118,10 @@ createPlots <- function(){
     				geom_bar(stat = "identity", position = position_dodge()) +
     				geom_text_repel(aes(label = sprintf('%.2f', value)), position = position_dodge(0.9)) +
     				scale_fill_viridis(discrete = TRUE) +
-    				labs(x = "Year", y="Returns (%)", fill="", color="", size="", title=sprintf("%s (%s)", iName, wtName), subtitle=sprintf("Annual Returns [%s:%s]", first(index(retDaily)), last(index(retDaily)))) +
-    				annotate("text", x=maxYear, y=minRet, label = "@StockViz", hjust=1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
+    				labs(x = "Year", y="Returns (%)", fill="", color="", size="", 
+    				     title=sprintf("%s (%s)", iName, wtName), 
+    				     subtitle=sprintf("Annual Returns [%s:%s]", first(index(retDaily)), last(index(retDaily))),
+    				     caption = '@StockViz')
     				
     			ggsave(sprintf("%s/%s.annret.%s.png", plotPath, fName, wtName), width=12, height=6)
   			}, error = function(e){})
@@ -152,8 +154,10 @@ createPlots <- function(){
       				geom_bar(stat = "identity", position = position_dodge()) +
       				geom_text_repel(aes(label = sprintf('%.2f', value)), position = position_dodge(0.9)) +
       				scale_fill_viridis(discrete = TRUE) +
-      				labs(x = "Year", y="Returns (%)", fill="", color="", size="", title=sprintf("%s (%s) Rolling Annualized Returns", iName, wtName), subtitle=sprintf("[%s:%s]", rollStDt, last(index(iXts2)))) +
-      				annotate("text", x=maxYear, y=minRet, label = "@StockViz", hjust=1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
+      				labs(x = "Year", y="Returns (%)", fill="", color="", size="", 
+      				     title=sprintf("%s (%s) Rolling Annualized Returns", iName, wtName), 
+      				     subtitle=sprintf("[%s:%s]", rollStDt, last(index(iXts2))),
+      				     caption='@StockViz')
       				
       			ggsave(sprintf("%s/%s.roll.%s.png", plotPath, fName, wtName), width=12, height=6)
     			}
