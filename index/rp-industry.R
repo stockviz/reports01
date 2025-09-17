@@ -105,7 +105,7 @@ createPlots <- function(){
   			Common.PlotCumReturns(smaLoRets, sprintf("%s (%s) SMA Profile", iName, wtName), "long-only", sprintf("%s/%s.sma.cumret.%s.png", plotPath, fName, wtName))
   			
   			tryCatch({
-    			toPlotAnn <- data.frame(na.trim(merge(retAnn[,j], bRetAnn), sides='left'))
+    			toPlotAnn <- data.frame(na.trim(100*merge(retAnn[,j], bRetAnn), sides='left'))
     			toPlotAnn$Y <- year(index(retAnn))
     			
     			maxYear <- length(unique(toPlotAnn$Y))

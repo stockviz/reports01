@@ -115,7 +115,7 @@ createPlots <- function(){
 			smaLoRets <- na.omit(merge(smaLoRets, allXts$INDEX))
 			Common.PlotCumReturns(smaLoRets, sprintf("%s SMA Profile", iName), "long-only", sprintf("%s/%s.sma.cumret.png", plotPath, fName))
 			
-			toPlotAnn <- data.frame(merge(retAnn, bRetAnn))
+			toPlotAnn <- data.frame(100*merge(retAnn, bRetAnn))
 			toPlotAnn$Y <- year(index(retAnn))
 			
 			maxYear <- length(unique(toPlotAnn$Y))
