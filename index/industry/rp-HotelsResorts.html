@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-10-17" />
+
+<title>Hotels &amp; Resorts</title>
+
+<script src="rmdlib/header-attrs-2.26/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Hotels &amp; Resorts</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">October 17, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level3">
+<h3>Annual Returns</h3>
+<p><img src="plots/HotelsResorts.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/HotelsResorts.fan.CAP_WT.png" /></p>
+<p><img src="plots/HotelsResorts.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/HotelsResorts.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level3">
+<h3>Cumulative Returns and Drawdowns</h3>
+<p><img src="plots/HotelsResorts.cumret.png" /></p>
+<p><br />
+</p>
+<div id="sma-scenarios" class="section level4">
+<h4>SMA Scenarios</h4>
+<p><img src="plots/HotelsResorts.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/HotelsResorts.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="current-distance-from-sma" class="section level4">
+<h4>Current Distance from SMA</h4>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-97355264a708ea9ad889" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-97355264a708ea9ad889">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-1.9%","-0.72%"],["-2.81%","-2.87%"],["-0.85%","-1.74%"],["3.58%","1.56%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level3">
+<h3>Rolling Returns</h3>
+<p><img src="plots/HotelsResorts.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/HotelsResorts.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level3">
+<h3>Constituent Shares</h3>
+<p><br />
+</p>
+<div id="market-cap" class="section level4">
+<h4>Market Cap</h4>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-7a09306ca88081791f05" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-7a09306ca88081791f05">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.INDHOTEL.html\" target=\"_blank\">INDHOTEL<\/a>","ITCHOTELS","<a href=\"/reports02/eq-in/risk/in.EIHOTEL.html\" target=\"_blank\">EIHOTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.CHALET.html\" target=\"_blank\">CHALET<\/a>","<a href=\"/reports02/eq-in/risk/in.VENTIVE.html\" target=\"_blank\">VENTIVE<\/a>","THELEELA","<a href=\"/reports02/eq-in/risk/in.LEMONTREE.html\" target=\"_blank\">LEMONTREE<\/a>","<a href=\"/reports02/eq-in/risk/in.DBREALTY.html\" target=\"_blank\">DBREALTY<\/a>","<a href=\"/reports02/eq-in/risk/in.MHRIL.html\" target=\"_blank\">MHRIL<\/a>","<a href=\"/reports02/eq-in/risk/in.JUNIPER.html\" target=\"_blank\">JUNIPER<\/a>","ITDC","<a href=\"/reports02/eq-in/risk/in.SAMHI.html\" target=\"_blank\">SAMHI<\/a>","<a href=\"/reports02/eq-in/risk/in.PARKHOTELS.html\" target=\"_blank\">PARKHOTELS<\/a>","BRIGHOTEL","<a href=\"/reports02/eq-in/risk/in.TAJGVK.html\" target=\"_blank\">TAJGVK<\/a>","<a href=\"/reports02/eq-in/risk/in.EIHAHOTELS.html\" target=\"_blank\">EIHAHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.ORIENTHOT.html\" target=\"_blank\">ORIENTHOT<\/a>","<a href=\"/reports02/eq-in/risk/in.ROHLTD.html\" target=\"_blank\">ROHLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.KAMATHOTEL.html\" target=\"_blank\">KAMATHOTEL<\/a>","VHLTD","<a href=\"/reports02/eq-in/risk/in.HLVLTD.html\" target=\"_blank\">HLVLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.ASIANHOTNR.html\" target=\"_blank\">ASIANHOTNR<\/a>","<a href=\"/reports02/eq-in/risk/in.ADVANIHOTR.html\" target=\"_blank\">ADVANIHOTR<\/a>","<a href=\"/reports02/eq-in/risk/in.SINCLAIR.html\" target=\"_blank\">SINCLAIR<\/a>","<a href=\"/reports02/eq-in/risk/in.RHL.html\" target=\"_blank\">RHL<\/a>","<a href=\"/reports02/eq-in/risk/in.APOLSINHOT.html\" target=\"_blank\">APOLSINHOT<\/a>","<a href=\"/reports02/eq-in/risk/in.BYKE.html\" target=\"_blank\">BYKE<\/a>","<a href=\"/reports02/eq-in/risk/in.CCHHL.html\" target=\"_blank\">CCHHL<\/a>","<a href=\"/reports02/eq-in/risk/in.AHLEAST.html\" target=\"_blank\">AHLEAST<\/a>","<a href=\"/reports02/eq-in/risk/in.BLUECOAST.html\" target=\"_blank\">BLUECOAST<\/a>","<a href=\"/reports02/eq-in/risk/in.KAUSHALYA.html\" target=\"_blank\">KAUSHALYA<\/a>","<a href=\"/reports02/eq-in/risk/in.TGBHOTELS.html\" target=\"_blank\">TGBHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.HAVISHA.html\" target=\"_blank\">HAVISHA<\/a>"],[0.5001392613130835,0.1558486637317548,0.05895186381397502,0.05346753569084575,0.01417391702328825,0.02118021384402231,0.06261051918676054,0.02920486840059147,0.01716136920775476,0.01054692105329457,0.002102543496013438,0.02712373398431288,0.00785686167158176,0.003006208062340448,0.004766761382527779,0.004491685909845397,0.005575588419818146,0.003835257998351084,0.002968779256553121,0.001012945407288972,0.001569863365537091,0.004800386985888218,0.0009591280936938915,0.001382966034650457,0.001121531742397989,0.0008131843672160905,0.001438310408690889,0.000547324862573641,0.0006530431761177991,0.0001966169938529853,0.000135184323228389,0.0001863637450995335,0.0001705970470490871],[0.3605480670191476,0.1549717617357012,0.08271602564385995,0.07281898297964767,0.05707367381030162,0.05031892702513272,0.04440036176950352,0.02862773514323654,0.02302642256171046,0.02081994666549308,0.01828542135874837,0.01485147649483643,0.01094096711269527,0.01048047773536431,0.008939252179646863,0.008062043051695151,0.007829450501299328,0.004730135915830425,0.003119228565984666,0.002828196537483201,0.002524002773150319,0.002259671245202693,0.001853508303530057,0.001669449654012583,0.001505407811072057,0.001177495501959642,0.001128893050373836,0.0009502499067453314,0.0008796426780663751,0.0003046736192850689,0.0001234598241269905,0.0001202722162303191,0.0001147196089264401]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":33,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,33,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level4">
+<h4>EBIT (% of Industry Total)</h4>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2605fb5b5aa44eb2f3d9" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2605fb5b5aa44eb2f3d9">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.INDHOTEL.html\" target=\"_blank\">INDHOTEL<\/a>","ITCHOTELS","<a href=\"/reports02/eq-in/risk/in.EIHOTEL.html\" target=\"_blank\">EIHOTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.CHALET.html\" target=\"_blank\">CHALET<\/a>","<a href=\"/reports02/eq-in/risk/in.VENTIVE.html\" target=\"_blank\">VENTIVE<\/a>","THELEELA","<a href=\"/reports02/eq-in/risk/in.LEMONTREE.html\" target=\"_blank\">LEMONTREE<\/a>","<a href=\"/reports02/eq-in/risk/in.DBREALTY.html\" target=\"_blank\">DBREALTY<\/a>","<a href=\"/reports02/eq-in/risk/in.MHRIL.html\" target=\"_blank\">MHRIL<\/a>","<a href=\"/reports02/eq-in/risk/in.JUNIPER.html\" target=\"_blank\">JUNIPER<\/a>","ITDC","<a href=\"/reports02/eq-in/risk/in.SAMHI.html\" target=\"_blank\">SAMHI<\/a>","<a href=\"/reports02/eq-in/risk/in.PARKHOTELS.html\" target=\"_blank\">PARKHOTELS<\/a>","BRIGHOTEL","<a href=\"/reports02/eq-in/risk/in.TAJGVK.html\" target=\"_blank\">TAJGVK<\/a>","<a href=\"/reports02/eq-in/risk/in.EIHAHOTELS.html\" target=\"_blank\">EIHAHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.ORIENTHOT.html\" target=\"_blank\">ORIENTHOT<\/a>","<a href=\"/reports02/eq-in/risk/in.ROHLTD.html\" target=\"_blank\">ROHLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.KAMATHOTEL.html\" target=\"_blank\">KAMATHOTEL<\/a>","VHLTD","<a href=\"/reports02/eq-in/risk/in.HLVLTD.html\" target=\"_blank\">HLVLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.ASIANHOTNR.html\" target=\"_blank\">ASIANHOTNR<\/a>","<a href=\"/reports02/eq-in/risk/in.ADVANIHOTR.html\" target=\"_blank\">ADVANIHOTR<\/a>","<a href=\"/reports02/eq-in/risk/in.SINCLAIR.html\" target=\"_blank\">SINCLAIR<\/a>","<a href=\"/reports02/eq-in/risk/in.RHL.html\" target=\"_blank\">RHL<\/a>","<a href=\"/reports02/eq-in/risk/in.APOLSINHOT.html\" target=\"_blank\">APOLSINHOT<\/a>","<a href=\"/reports02/eq-in/risk/in.BYKE.html\" target=\"_blank\">BYKE<\/a>","<a href=\"/reports02/eq-in/risk/in.CCHHL.html\" target=\"_blank\">CCHHL<\/a>","<a href=\"/reports02/eq-in/risk/in.AHLEAST.html\" target=\"_blank\">AHLEAST<\/a>","<a href=\"/reports02/eq-in/risk/in.BLUECOAST.html\" target=\"_blank\">BLUECOAST<\/a>","<a href=\"/reports02/eq-in/risk/in.KAUSHALYA.html\" target=\"_blank\">KAUSHALYA<\/a>","<a href=\"/reports02/eq-in/risk/in.TGBHOTELS.html\" target=\"_blank\">TGBHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.HAVISHA.html\" target=\"_blank\">HAVISHA<\/a>"],[1.101422005009352,8.694683265940347,23.63230985576427,13.23194118789126,12.66659739926966,1.440645830135356,8.664442867472287,0.9780599044222069,6.00693676094228,5.038816943233207,2.210177446947358,3.152293353381063,2.91791981491314,0.008886830962425218,0.07166277670583536,3.341968857279644,0.03453115814713665,1.447681946217311,2.249253221441813,0.3498706088959209,0.008868355222378594,-0.7856545175530371,0.8641605236147408,0.5587417138626906,0.924191805795525,0.4450693999003975,0.1687651232073155,0.4317067285329778,0.4528934139166407,-0.16817643994008,-0.00180623453630789,0.05030694592204561,-0.1891688529171527]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":33,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":1},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,33,50,100]}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level4">
+<h4>Revenue (% of Industry Total)</h4>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-9b5672fafb6b97b3754d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9b5672fafb6b97b3754d">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.INDHOTEL.html\" target=\"_blank\">INDHOTEL<\/a>","ITCHOTELS","<a href=\"/reports02/eq-in/risk/in.EIHOTEL.html\" target=\"_blank\">EIHOTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.CHALET.html\" target=\"_blank\">CHALET<\/a>","<a href=\"/reports02/eq-in/risk/in.VENTIVE.html\" target=\"_blank\">VENTIVE<\/a>","THELEELA","<a href=\"/reports02/eq-in/risk/in.LEMONTREE.html\" target=\"_blank\">LEMONTREE<\/a>","<a href=\"/reports02/eq-in/risk/in.DBREALTY.html\" target=\"_blank\">DBREALTY<\/a>","<a href=\"/reports02/eq-in/risk/in.MHRIL.html\" target=\"_blank\">MHRIL<\/a>","<a href=\"/reports02/eq-in/risk/in.JUNIPER.html\" target=\"_blank\">JUNIPER<\/a>","ITDC","<a href=\"/reports02/eq-in/risk/in.SAMHI.html\" target=\"_blank\">SAMHI<\/a>","<a href=\"/reports02/eq-in/risk/in.PARKHOTELS.html\" target=\"_blank\">PARKHOTELS<\/a>","BRIGHOTEL","<a href=\"/reports02/eq-in/risk/in.TAJGVK.html\" target=\"_blank\">TAJGVK<\/a>","<a href=\"/reports02/eq-in/risk/in.EIHAHOTELS.html\" target=\"_blank\">EIHAHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.ORIENTHOT.html\" target=\"_blank\">ORIENTHOT<\/a>","<a href=\"/reports02/eq-in/risk/in.ROHLTD.html\" target=\"_blank\">ROHLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.KAMATHOTEL.html\" target=\"_blank\">KAMATHOTEL<\/a>","VHLTD","<a href=\"/reports02/eq-in/risk/in.HLVLTD.html\" target=\"_blank\">HLVLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.ASIANHOTNR.html\" target=\"_blank\">ASIANHOTNR<\/a>","<a href=\"/reports02/eq-in/risk/in.ADVANIHOTR.html\" target=\"_blank\">ADVANIHOTR<\/a>","<a href=\"/reports02/eq-in/risk/in.SINCLAIR.html\" target=\"_blank\">SINCLAIR<\/a>","<a href=\"/reports02/eq-in/risk/in.RHL.html\" target=\"_blank\">RHL<\/a>","<a href=\"/reports02/eq-in/risk/in.APOLSINHOT.html\" target=\"_blank\">APOLSINHOT<\/a>","<a href=\"/reports02/eq-in/risk/in.BYKE.html\" target=\"_blank\">BYKE<\/a>","<a href=\"/reports02/eq-in/risk/in.CCHHL.html\" target=\"_blank\">CCHHL<\/a>","<a href=\"/reports02/eq-in/risk/in.AHLEAST.html\" target=\"_blank\">AHLEAST<\/a>","<a href=\"/reports02/eq-in/risk/in.BLUECOAST.html\" target=\"_blank\">BLUECOAST<\/a>","<a href=\"/reports02/eq-in/risk/in.KAUSHALYA.html\" target=\"_blank\">KAUSHALYA<\/a>","<a href=\"/reports02/eq-in/risk/in.TGBHOTELS.html\" target=\"_blank\">TGBHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.HAVISHA.html\" target=\"_blank\">HAVISHA<\/a>"],[0.7111895228108024,15.11893905104154,11.40207308140146,11.48226955376795,9.756612807176715,0.4428762218398969,5.646403014728051,12.00300428249638,6.950068072915094,4.05319958821063,2.342736845119767,4.807936806448819,2.697651110827485,0.02001073972984519,0.03733156929465239,1.697856122113136,0.03750240840639237,1.34662056239724,2.853849407392733,0.2385575356772218,0.02978241458342536,1.317110603963246,0.4347751762132629,0.2440398997665851,0.5925256266931549,2.293739357852529,0.4355859286751992,0.298683120053013,0.4873621302117862,0.002167722691417669,0.0004645373318567395,0.1663861983509259,0.05068897981778406]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":33,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":1},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,33,50,100]}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
