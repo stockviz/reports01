@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-10-24" />
+
+<title>Pharmaceuticals</title>
+
+<script src="rmdlib/header-attrs-2.26/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Pharmaceuticals</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">October 24, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level3">
+<h3>Annual Returns</h3>
+<p><img src="plots/Pharmaceuticals.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Pharmaceuticals.fan.CAP_WT.png" /></p>
+<p><img src="plots/Pharmaceuticals.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Pharmaceuticals.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level3">
+<h3>Cumulative Returns and Drawdowns</h3>
+<p><img src="plots/Pharmaceuticals.cumret.png" /></p>
+<p><br />
+</p>
+<div id="sma-scenarios" class="section level4">
+<h4>SMA Scenarios</h4>
+<p><img src="plots/Pharmaceuticals.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Pharmaceuticals.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="current-distance-from-sma" class="section level4">
+<h4>Current Distance from SMA</h4>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-43bff4a94c6aafbdad74" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-43bff4a94c6aafbdad74">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["0.2%","2.31%"],["0.05%","2.19%"],["-1.05%","2.22%"],["1.86%","6.04%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level3">
+<h3>Rolling Returns</h3>
+<p><img src="plots/Pharmaceuticals.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Pharmaceuticals.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level3">
+<h3>Constituent Shares</h3>
+<p><br />
+</p>
+<div id="market-cap" class="section level4">
+<h4>Market Cap</h4>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e463369d74256f4819a7" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e463369d74256f4819a7">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.SUNPHARMA.html\" target=\"_blank\">SUNPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.DIVISLAB.html\" target=\"_blank\">DIVISLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.CIPLA.html\" target=\"_blank\">CIPLA<\/a>","<a href=\"/reports02/eq-in/risk/in.TORNTPHARM.html\" target=\"_blank\">TORNTPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.DRREDDY.html\" target=\"_blank\">DRREDDY<\/a>","<a href=\"/reports02/eq-in/risk/in.MANKIND.html\" target=\"_blank\">MANKIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ZYDUSLIFE.html\" target=\"_blank\">ZYDUSLIFE<\/a>","LUPIN","<a href=\"/reports02/eq-in/risk/in.ALKEM.html\" target=\"_blank\">ALKEM<\/a>","<a href=\"/reports02/eq-in/risk/in.ABBOTINDIA.html\" target=\"_blank\">ABBOTINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.AUROPHARMA.html\" target=\"_blank\">AUROPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.GLENMARK.html\" target=\"_blank\">GLENMARK<\/a>","<a href=\"/reports02/eq-in/risk/in.LAURUSLABS.html\" target=\"_blank\">LAURUSLABS<\/a>","<a href=\"/reports02/eq-in/risk/in.BIOCON.html\" target=\"_blank\">BIOCON<\/a>","<a href=\"/reports02/eq-in/risk/in.GLAXO.html\" target=\"_blank\">GLAXO<\/a>","<a href=\"/reports02/eq-in/risk/in.COHANCE.html\" target=\"_blank\">COHANCE<\/a>","<a href=\"/reports02/eq-in/risk/in.IPCALAB.html\" target=\"_blank\">IPCALAB<\/a>","<a href=\"/reports02/eq-in/risk/in.GLAND.html\" target=\"_blank\">GLAND<\/a>","<a href=\"/reports02/eq-in/risk/in.AJANTPHARM.html\" target=\"_blank\">AJANTPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.PPLPHARMA.html\" target=\"_blank\">PPLPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.JBCHEPHARM.html\" target=\"_blank\">JBCHEPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.EMCURE.html\" target=\"_blank\">EMCURE<\/a>","<a href=\"/reports02/eq-in/risk/in.PFIZER.html\" target=\"_blank\">PFIZER<\/a>","<a href=\"/reports02/eq-in/risk/in.ASTRAZEN.html\" target=\"_blank\">ASTRAZEN<\/a>","<a href=\"/reports02/eq-in/risk/in.WOCKPHARMA.html\" target=\"_blank\">WOCKPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.ERIS.html\" target=\"_blank\">ERIS<\/a>","ONESOURCE","<a href=\"/reports02/eq-in/risk/in.NEULANDLAB.html\" target=\"_blank\">NEULANDLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.SAILIFE.html\" target=\"_blank\">SAILIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.APLLTD.html\" target=\"_blank\">APLLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.JUBLPHARMA.html\" target=\"_blank\">JUBLPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.CONCORDBIO.html\" target=\"_blank\">CONCORDBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.CAPLIPOINT.html\" target=\"_blank\">CAPLIPOINT<\/a>","<a href=\"/reports02/eq-in/risk/in.NATCOPHARM.html\" target=\"_blank\">NATCOPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.ACUTAAS.html\" target=\"_blank\">ACUTAAS<\/a>","<a href=\"/reports02/eq-in/risk/in.GRANULES.html\" target=\"_blank\">GRANULES<\/a>","<a href=\"/reports02/eq-in/risk/in.ALIVUS.html\" target=\"_blank\">ALIVUS<\/a>","<a href=\"/reports02/eq-in/risk/in.BLUEJET.html\" target=\"_blank\">BLUEJET<\/a>","<a href=\"/reports02/eq-in/risk/in.SANOFI.html\" target=\"_blank\">SANOFI<\/a>","<a href=\"/reports02/eq-in/risk/in.SANOFICONR.html\" target=\"_blank\">SANOFICONR<\/a>","<a href=\"/reports02/eq-in/risk/in.PGHL.html\" target=\"_blank\">PGHL<\/a>","RUBICON","<a href=\"/reports02/eq-in/risk/in.JSLL.html\" target=\"_blank\">JSLL<\/a>","<a href=\"/reports02/eq-in/risk/in.MARKSANS.html\" target=\"_blank\">MARKSANS<\/a>","<a href=\"/reports02/eq-in/risk/in.AARTIPHARM.html\" target=\"_blank\">AARTIPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.STAR.html\" target=\"_blank\">STAR<\/a>","<a href=\"/reports02/eq-in/risk/in.AKUMS.html\" target=\"_blank\">AKUMS<\/a>","<a href=\"/reports02/eq-in/risk/in.SHILPAMED.html\" target=\"_blank\">SHILPAMED<\/a>","<a href=\"/reports02/eq-in/risk/in.FDC.html\" target=\"_blank\">FDC<\/a>","<a href=\"/reports02/eq-in/risk/in.SUPRIYA.html\" target=\"_blank\">SUPRIYA<\/a>","<a href=\"/reports02/eq-in/risk/in.SEQUENT.html\" target=\"_blank\">SEQUENT<\/a>","GUJTHEM","<a href=\"/reports02/eq-in/risk/in.ZOTA.html\" target=\"_blank\">ZOTA<\/a>","<a href=\"/reports02/eq-in/risk/in.AARTIDRUGS.html\" target=\"_blank\">AARTIDRUGS<\/a>","<a href=\"/reports02/eq-in/risk/in.INNOVACAP.html\" target=\"_blank\">INNOVACAP<\/a>","<a href=\"/reports02/eq-in/risk/in.DCAL.html\" target=\"_blank\">DCAL<\/a>","<a href=\"/reports02/eq-in/risk/in.SPARC.html\" target=\"_blank\">SPARC<\/a>","<a href=\"/reports02/eq-in/risk/in.RPGLIFE.html\" target=\"_blank\">RPGLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.ORCHPHARMA.html\" target=\"_blank\">ORCHPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.SENORES.html\" target=\"_blank\">SENORES<\/a>","<a href=\"/reports02/eq-in/risk/in.GUFICBIO.html\" target=\"_blank\">GUFICBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.UNICHEMLAB.html\" target=\"_blank\">UNICHEMLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.HIKAL.html\" target=\"_blank\">HIKAL<\/a>","IOLCP","<a href=\"/reports02/eq-in/risk/in.PANACEABIO.html\" target=\"_blank\">PANACEABIO<\/a>","<a href=\"/reports02/eq-in/risk/in.MOREPENLAB.html\" target=\"_blank\">MOREPENLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.SMSPHARMA.html\" target=\"_blank\">SMSPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.INDOCO.html\" target=\"_blank\">INDOCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SOLARA.html\" target=\"_blank\">SOLARA<\/a>","<a href=\"/reports02/eq-in/risk/in.AMRUTANJAN.html\" target=\"_blank\">AMRUTANJAN<\/a>","<a href=\"/reports02/eq-in/risk/in.WINDLAS.html\" target=\"_blank\">WINDLAS<\/a>","<a href=\"/reports02/eq-in/risk/in.BLISSGVS.html\" target=\"_blank\">BLISSGVS<\/a>","<a href=\"/reports02/eq-in/risk/in.SYNCOMF.html\" target=\"_blank\">SYNCOMF<\/a>","<a href=\"/reports02/eq-in/risk/in.SIGACHI.html\" target=\"_blank\">SIGACHI<\/a>","<a href=\"/reports02/eq-in/risk/in.HESTERBIO.html\" target=\"_blank\">HESTERBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.JAGSNPHARM.html\" target=\"_blank\">JAGSNPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHCARE.html\" target=\"_blank\">BAJAJHCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.THEMISMED.html\" target=\"_blank\">THEMISMED<\/a>","LINCOLN","NGLFINE","<a href=\"/reports02/eq-in/risk/in.ANUHPHR.html\" target=\"_blank\">ANUHPHR<\/a>","<a href=\"/reports02/eq-in/risk/in.INDSWFTLAB.html\" target=\"_blank\">INDSWFTLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.KOPRAN.html\" target=\"_blank\">KOPRAN<\/a>","<a href=\"/reports02/eq-in/risk/in.SAKAR.html\" target=\"_blank\">SAKAR<\/a>","<a href=\"/reports02/eq-in/risk/in.WANBURY.html\" target=\"_blank\">WANBURY<\/a>","AHCL","<a href=\"/reports02/eq-in/risk/in.KILITCH.html\" target=\"_blank\">KILITCH<\/a>","<a href=\"/reports02/eq-in/risk/in.VENUSREM.html\" target=\"_blank\">VENUSREM<\/a>","<a href=\"/reports02/eq-in/risk/in.MEDICAMEQ.html\" target=\"_blank\">MEDICAMEQ<\/a>","AMANTA","<a href=\"/reports02/eq-in/risk/in.VALIANTLAB.html\" target=\"_blank\">VALIANTLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.ALBERTDAVD.html\" target=\"_blank\">ALBERTDAVD<\/a>","<a href=\"/reports02/eq-in/risk/in.MEDICO.html\" target=\"_blank\">MEDICO<\/a>","<a href=\"/reports02/eq-in/risk/in.BROOKS.html\" target=\"_blank\">BROOKS<\/a>","<a href=\"/reports02/eq-in/risk/in.LYKALABS.html\" target=\"_blank\">LYKALABS<\/a>","<a href=\"/reports02/eq-in/risk/in.SMSLIFE.html\" target=\"_blank\">SMSLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.ZIMLAB.html\" target=\"_blank\">ZIMLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.BAFNAPH.html\" target=\"_blank\">BAFNAPH<\/a>","<a href=\"/reports02/eq-in/risk/in.NECLIFE.html\" target=\"_blank\">NECLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.AAREYDRUGS.html\" target=\"_blank\">AAREYDRUGS<\/a>","<a href=\"/reports02/eq-in/risk/in.BALAXI.html\" target=\"_blank\">BALAXI<\/a>","NATCAPSUQ","<a href=\"/reports02/eq-in/risk/in.ALPA.html\" target=\"_blank\">ALPA<\/a>","<a href=\"/reports02/eq-in/risk/in.KREBSBIO.html\" target=\"_blank\">KREBSBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.BALPHARMA.html\" target=\"_blank\">BALPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.PAR.html\" target=\"_blank\">PAR<\/a>","<a href=\"/reports02/eq-in/risk/in.MANGALAM.html\" target=\"_blank\">MANGALAM<\/a>","<a href=\"/reports02/eq-in/risk/in.VAISHALI.html\" target=\"_blank\">VAISHALI<\/a>","<a href=\"/reports02/eq-in/risk/in.BIOFILCHEM.html\" target=\"_blank\">BIOFILCHEM<\/a>","<a href=\"/reports02/eq-in/risk/in.LASA.html\" target=\"_blank\">LASA<\/a>","<a href=\"/reports02/eq-in/risk/in.VINEETLAB.html\" target=\"_blank\">VINEETLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.ORTINGLOBE.html\" target=\"_blank\">ORTINGLOBE<\/a>"],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[0.1754638736649934,0.0751811272454669,0.05732953795448242,0.0528596598245768,0.04609168962304525,0.04379067665744715,0.04371752487414107,0.03832946782282582,0.02850122048713306,0.02759550174562245,0.02756434266694144,0.02252338446357513,0.02196300426759004,0.02090426433477794,0.02013985732187978,0.01454567662282356,0.01398896803802063,0.01368359439775988,0.01304453990106194,0.01165351268456453,0.01155461216384938,0.01131770048156567,0.01042348410834135,0.01003275305841221,0.009471415050814386,0.009348953227319262,0.009067015770303487,0.008945227003617313,0.0080123530085456,0.007836119986268777,0.007733897326176122,0.006824610520684729,0.006640658917438601,0.006462622448071131,0.006167400748012039,0.005831713664548183,0.004906653168713705,0.004875148932694772,0.004684656597895002,0.004620465961974749,0.004367232652074004,0.004243532576629082,0.003891062217608714,0.003490744422618756,0.00327519797955249,0.003245035542684734,0.003150889564299479,0.003072387842255589,0.003070360042895291,0.002589542927768212,0.002221005494667524,0.002123330282502005,0.002014079356115889,0.00200395330271457,0.001987506555562533,0.001914988998864885,0.001845677090943199,0.001674466107933159,0.001581019073157198,0.001492210090109579,0.00148728728357745,0.001427687240251576,0.001298024571794031,0.001207144644718874,0.001164086266812964,0.00115984083155651,0.001136214811775672,0.001123556166407342,0.0009268725718585758,0.0008918477309928272,0.0008529916436761318,0.0007024210694738946,0.0006780961060837626,0.0006408234280547896,0.0006312841421279394,0.0006275823296787139,0.0006129864887512899,0.0005108760047934588,0.0004562850573341932,0.0004024879717521508,0.0003632263245633959,0.0003626740728227189,0.0003518792770791733,0.0003476036405556506,0.0003361746182036713,0.0002889441509756164,0.0002783003615674121,0.0002586565945728625,0.0002100756992601833,0.0002077329438290301,0.0001992507022495694,0.0001979736200992539,0.0001790158533138265,0.0001531721976368328,0.0001495653034555362,0.0001454406732673549,0.0001433826726399883,0.0001410312882753871,0.0001292657375189327,0.0001088755677811243,0.0001030424087702236,0.0001003890117349396,8.079270387435444e-05,6.483780592885818e-05,5.687330035628219e-05,5.310245643947209e-05,4.814513417355128e-05,4.763602710011467e-05,2.724154289558229e-05,2.312985610757312e-05,1.692133849168098e-05,4.141888055077446e-06]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":112,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,50,100,112]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level4">
+<h4>EBIT (% of Industry Total)</h4>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-3d15503a418b35721ac7" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3d15503a418b35721ac7">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.SUNPHARMA.html\" target=\"_blank\">SUNPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.DIVISLAB.html\" target=\"_blank\">DIVISLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.CIPLA.html\" target=\"_blank\">CIPLA<\/a>","<a href=\"/reports02/eq-in/risk/in.TORNTPHARM.html\" target=\"_blank\">TORNTPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.DRREDDY.html\" target=\"_blank\">DRREDDY<\/a>","<a href=\"/reports02/eq-in/risk/in.MANKIND.html\" target=\"_blank\">MANKIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ZYDUSLIFE.html\" target=\"_blank\">ZYDUSLIFE<\/a>","LUPIN","<a href=\"/reports02/eq-in/risk/in.ALKEM.html\" target=\"_blank\">ALKEM<\/a>","<a href=\"/reports02/eq-in/risk/in.AUROPHARMA.html\" target=\"_blank\">AUROPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.GLENMARK.html\" target=\"_blank\">GLENMARK<\/a>","<a href=\"/reports02/eq-in/risk/in.LAURUSLABS.html\" target=\"_blank\">LAURUSLABS<\/a>","<a href=\"/reports02/eq-in/risk/in.BIOCON.html\" target=\"_blank\">BIOCON<\/a>","<a href=\"/reports02/eq-in/risk/in.GLAXO.html\" target=\"_blank\">GLAXO<\/a>","<a href=\"/reports02/eq-in/risk/in.COHANCE.html\" target=\"_blank\">COHANCE<\/a>","<a href=\"/reports02/eq-in/risk/in.IPCALAB.html\" target=\"_blank\">IPCALAB<\/a>","<a href=\"/reports02/eq-in/risk/in.GLAND.html\" target=\"_blank\">GLAND<\/a>","<a href=\"/reports02/eq-in/risk/in.AJANTPHARM.html\" target=\"_blank\">AJANTPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.PPLPHARMA.html\" target=\"_blank\">PPLPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.JBCHEPHARM.html\" target=\"_blank\">JBCHEPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.EMCURE.html\" target=\"_blank\">EMCURE<\/a>","<a href=\"/reports02/eq-in/risk/in.PFIZER.html\" target=\"_blank\">PFIZER<\/a>","<a href=\"/reports02/eq-in/risk/in.ASTRAZEN.html\" target=\"_blank\">ASTRAZEN<\/a>","<a href=\"/reports02/eq-in/risk/in.WOCKPHARMA.html\" target=\"_blank\">WOCKPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.ERIS.html\" target=\"_blank\">ERIS<\/a>","ONESOURCE","<a href=\"/reports02/eq-in/risk/in.NEULANDLAB.html\" target=\"_blank\">NEULANDLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.SAILIFE.html\" target=\"_blank\">SAILIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.APLLTD.html\" target=\"_blank\">APLLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.JUBLPHARMA.html\" target=\"_blank\">JUBLPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.CONCORDBIO.html\" target=\"_blank\">CONCORDBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.CAPLIPOINT.html\" target=\"_blank\">CAPLIPOINT<\/a>","<a href=\"/reports02/eq-in/risk/in.NATCOPHARM.html\" target=\"_blank\">NATCOPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.ACUTAAS.html\" target=\"_blank\">ACUTAAS<\/a>","<a href=\"/reports02/eq-in/risk/in.GRANULES.html\" target=\"_blank\">GRANULES<\/a>","<a href=\"/reports02/eq-in/risk/in.ALIVUS.html\" target=\"_blank\">ALIVUS<\/a>","<a href=\"/reports02/eq-in/risk/in.BLUEJET.html\" target=\"_blank\">BLUEJET<\/a>","<a href=\"/reports02/eq-in/risk/in.SANOFI.html\" target=\"_blank\">SANOFI<\/a>","<a href=\"/reports02/eq-in/risk/in.SANOFICONR.html\" target=\"_blank\">SANOFICONR<\/a>","<a href=\"/reports02/eq-in/risk/in.PGHL.html\" target=\"_blank\">PGHL<\/a>","<a href=\"/reports02/eq-in/risk/in.JSLL.html\" target=\"_blank\">JSLL<\/a>","<a href=\"/reports02/eq-in/risk/in.MARKSANS.html\" target=\"_blank\">MARKSANS<\/a>","<a href=\"/reports02/eq-in/risk/in.AARTIPHARM.html\" target=\"_blank\">AARTIPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.STAR.html\" target=\"_blank\">STAR<\/a>","<a href=\"/reports02/eq-in/risk/in.AKUMS.html\" target=\"_blank\">AKUMS<\/a>","<a href=\"/reports02/eq-in/risk/in.SHILPAMED.html\" target=\"_blank\">SHILPAMED<\/a>","<a href=\"/reports02/eq-in/risk/in.FDC.html\" target=\"_blank\">FDC<\/a>","<a href=\"/reports02/eq-in/risk/in.SUPRIYA.html\" target=\"_blank\">SUPRIYA<\/a>","<a href=\"/reports02/eq-in/risk/in.SEQUENT.html\" target=\"_blank\">SEQUENT<\/a>","GUJTHEM","<a href=\"/reports02/eq-in/risk/in.ZOTA.html\" target=\"_blank\">ZOTA<\/a>","<a href=\"/reports02/eq-in/risk/in.AARTIDRUGS.html\" target=\"_blank\">AARTIDRUGS<\/a>","<a href=\"/reports02/eq-in/risk/in.INNOVACAP.html\" target=\"_blank\">INNOVACAP<\/a>","<a href=\"/reports02/eq-in/risk/in.DCAL.html\" target=\"_blank\">DCAL<\/a>","<a href=\"/reports02/eq-in/risk/in.SPARC.html\" target=\"_blank\">SPARC<\/a>","<a href=\"/reports02/eq-in/risk/in.RPGLIFE.html\" target=\"_blank\">RPGLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.ORCHPHARMA.html\" target=\"_blank\">ORCHPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.SENORES.html\" target=\"_blank\">SENORES<\/a>","<a href=\"/reports02/eq-in/risk/in.GUFICBIO.html\" target=\"_blank\">GUFICBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.UNICHEMLAB.html\" target=\"_blank\">UNICHEMLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.HIKAL.html\" target=\"_blank\">HIKAL<\/a>","IOLCP","<a href=\"/reports02/eq-in/risk/in.PANACEABIO.html\" target=\"_blank\">PANACEABIO<\/a>","<a href=\"/reports02/eq-in/risk/in.MOREPENLAB.html\" target=\"_blank\">MOREPENLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.SMSPHARMA.html\" target=\"_blank\">SMSPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.INDOCO.html\" target=\"_blank\">INDOCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SOLARA.html\" target=\"_blank\">SOLARA<\/a>","<a href=\"/reports02/eq-in/risk/in.AMRUTANJAN.html\" target=\"_blank\">AMRUTANJAN<\/a>","<a href=\"/reports02/eq-in/risk/in.WINDLAS.html\" target=\"_blank\">WINDLAS<\/a>","<a href=\"/reports02/eq-in/risk/in.BLISSGVS.html\" target=\"_blank\">BLISSGVS<\/a>","<a href=\"/reports02/eq-in/risk/in.SYNCOMF.html\" target=\"_blank\">SYNCOMF<\/a>","<a href=\"/reports02/eq-in/risk/in.SIGACHI.html\" target=\"_blank\">SIGACHI<\/a>","<a href=\"/reports02/eq-in/risk/in.HESTERBIO.html\" target=\"_blank\">HESTERBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.JAGSNPHARM.html\" target=\"_blank\">JAGSNPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHCARE.html\" target=\"_blank\">BAJAJHCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.THEMISMED.html\" target=\"_blank\">THEMISMED<\/a>","LINCOLN","NGLFINE","<a href=\"/reports02/eq-in/risk/in.ANUHPHR.html\" target=\"_blank\">ANUHPHR<\/a>","<a href=\"/reports02/eq-in/risk/in.INDSWFTLAB.html\" target=\"_blank\">INDSWFTLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.KOPRAN.html\" target=\"_blank\">KOPRAN<\/a>","<a href=\"/reports02/eq-in/risk/in.SAKAR.html\" target=\"_blank\">SAKAR<\/a>","<a href=\"/reports02/eq-in/risk/in.WANBURY.html\" target=\"_blank\">WANBURY<\/a>","<a href=\"/reports02/eq-in/risk/in.KILITCH.html\" target=\"_blank\">KILITCH<\/a>","<a href=\"/reports02/eq-in/risk/in.VENUSREM.html\" target=\"_blank\">VENUSREM<\/a>","<a href=\"/reports02/eq-in/risk/in.MEDICAMEQ.html\" target=\"_blank\">MEDICAMEQ<\/a>","<a href=\"/reports02/eq-in/risk/in.VALIANTLAB.html\" target=\"_blank\">VALIANTLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.ALBERTDAVD.html\" target=\"_blank\">ALBERTDAVD<\/a>","<a href=\"/reports02/eq-in/risk/in.MEDICO.html\" target=\"_blank\">MEDICO<\/a>","<a href=\"/reports02/eq-in/risk/in.BROOKS.html\" target=\"_blank\">BROOKS<\/a>","<a href=\"/reports02/eq-in/risk/in.LYKALABS.html\" target=\"_blank\">LYKALABS<\/a>","<a href=\"/reports02/eq-in/risk/in.SMSLIFE.html\" target=\"_blank\">SMSLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.ZIMLAB.html\" target=\"_blank\">ZIMLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.BAFNAPH.html\" target=\"_blank\">BAFNAPH<\/a>","<a href=\"/reports02/eq-in/risk/in.NECLIFE.html\" target=\"_blank\">NECLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.AAREYDRUGS.html\" target=\"_blank\">AAREYDRUGS<\/a>","<a href=\"/reports02/eq-in/risk/in.BALAXI.html\" target=\"_blank\">BALAXI<\/a>","NATCAPSUQ","<a href=\"/reports02/eq-in/risk/in.ALPA.html\" target=\"_blank\">ALPA<\/a>","<a href=\"/reports02/eq-in/risk/in.KREBSBIO.html\" target=\"_blank\">KREBSBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.BALPHARMA.html\" target=\"_blank\">BALPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.PAR.html\" target=\"_blank\">PAR<\/a>","<a href=\"/reports02/eq-in/risk/in.MANGALAM.html\" target=\"_blank\">MANGALAM<\/a>","<a href=\"/reports02/eq-in/risk/in.VAISHALI.html\" target=\"_blank\">VAISHALI<\/a>","<a href=\"/reports02/eq-in/risk/in.BIOFILCHEM.html\" target=\"_blank\">BIOFILCHEM<\/a>","<a href=\"/reports02/eq-in/risk/in.LASA.html\" target=\"_blank\">LASA<\/a>","<a href=\"/reports02/eq-in/risk/in.VINEETLAB.html\" target=\"_blank\">VINEETLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.ORTINGLOBE.html\" target=\"_blank\">ORTINGLOBE<\/a>"],[5.054102649316693,0.1844000525671077,11.8537531525603,0.1682915422279121,0.4654451113384345,6.750598272511471,0.7590620751714794,1.52848749385554,1.030637631079122,3.406649567524525,2.615894785518702,6.517223503848445,0.04684185243371356,0.1556069987104387,0.9460697685476315,4.061570123353104,7.34735559993674,3.672960184000251,1.692920866182286,0.1113255516043236,6.907066289267031,3.214833544370433,0.1040816271747588,-0.00133228281000866,1.765109580751343,0.4961081452355697,0.3517474604700452,2.425499339189936,2.341191392923017,0.04071335150767372,1.481621036580658,2.207218971414451,0.1247319501715835,1.740721867680992,2.059283741590519,1.121758084378402,0.9785749438303345,0.05888568903619185,0.01618118031065063,0.02209893831947092,0.4555680510515067,0.5503900099051575,1.111816238811922,1.595376387406382,1.990025867528552,0.2838554185215758,1.298948167560107,0.6826159418780825,0.02754373593073813,0.0981547248611971,-0.1697382779058891,0.02651242791917233,0.5021008744316078,0.4933739981178842,-0.01811238480206773,0.01204648902614114,0.2015913697043069,0.2868939619821935,0.1717078665909696,-0.02775508443105316,0.005238293775715867,0.305924834665143,-0.001750740728970471,0.254607638374358,0.1900418100243418,-0.007204622086669557,0.1268212118509152,0.1426206689131746,0.2694011492450893,0.5285084274703086,0.2656337501941016,0.139770389125273,0.1320536920289147,0.09466214547475939,0.09766059241922265,-0.1390846086604829,0.3165403550903348,0.07900224503684847,0.1717764004298827,0.1509901724747752,0.1443457692538833,0.07102090812777481,0.1983556726111317,0.08705058365960365,0.2657931457206572,0.01672398260660293,0.04075455538148872,-0.01950376041053123,0.03632529034215062,0.02532440711416379,0.02683971530311287,0.06700965287590788,0.0963103125390211,0.0395104878609955,-0.6982897586155271,0.01164148113802472,0.01202639580932908,-0.03132741911116272,0.08495450311461702,-0.08350861291590035,0.01708512814141055,0.04165862432886774,-0.06866181678859962,0.007392201450487822,0.01828160894226265,-0.001226227042501016,-0.0738615470327967,-0.001998678559913082],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,2.879223498720729,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,-0.2540641517695078,null,null,null,null,0.01165384108900302,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.1924296544488894,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":108,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,50,100,108]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level4">
+<h4>Revenue (% of Industry Total)</h4>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-79390db12b781fa4b249" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-79390db12b781fa4b249">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.SUNPHARMA.html\" target=\"_blank\">SUNPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.DIVISLAB.html\" target=\"_blank\">DIVISLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.CIPLA.html\" target=\"_blank\">CIPLA<\/a>","<a href=\"/reports02/eq-in/risk/in.TORNTPHARM.html\" target=\"_blank\">TORNTPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.DRREDDY.html\" target=\"_blank\">DRREDDY<\/a>","<a href=\"/reports02/eq-in/risk/in.MANKIND.html\" target=\"_blank\">MANKIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ZYDUSLIFE.html\" target=\"_blank\">ZYDUSLIFE<\/a>","LUPIN","<a href=\"/reports02/eq-in/risk/in.ALKEM.html\" target=\"_blank\">ALKEM<\/a>","<a href=\"/reports02/eq-in/risk/in.AUROPHARMA.html\" target=\"_blank\">AUROPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.GLENMARK.html\" target=\"_blank\">GLENMARK<\/a>","<a href=\"/reports02/eq-in/risk/in.LAURUSLABS.html\" target=\"_blank\">LAURUSLABS<\/a>","<a href=\"/reports02/eq-in/risk/in.BIOCON.html\" target=\"_blank\">BIOCON<\/a>","<a href=\"/reports02/eq-in/risk/in.GLAXO.html\" target=\"_blank\">GLAXO<\/a>","<a href=\"/reports02/eq-in/risk/in.COHANCE.html\" target=\"_blank\">COHANCE<\/a>","<a href=\"/reports02/eq-in/risk/in.IPCALAB.html\" target=\"_blank\">IPCALAB<\/a>","<a href=\"/reports02/eq-in/risk/in.GLAND.html\" target=\"_blank\">GLAND<\/a>","<a href=\"/reports02/eq-in/risk/in.AJANTPHARM.html\" target=\"_blank\">AJANTPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.PPLPHARMA.html\" target=\"_blank\">PPLPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.JBCHEPHARM.html\" target=\"_blank\">JBCHEPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.EMCURE.html\" target=\"_blank\">EMCURE<\/a>","<a href=\"/reports02/eq-in/risk/in.PFIZER.html\" target=\"_blank\">PFIZER<\/a>","<a href=\"/reports02/eq-in/risk/in.ASTRAZEN.html\" target=\"_blank\">ASTRAZEN<\/a>","<a href=\"/reports02/eq-in/risk/in.WOCKPHARMA.html\" target=\"_blank\">WOCKPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.ERIS.html\" target=\"_blank\">ERIS<\/a>","ONESOURCE","<a href=\"/reports02/eq-in/risk/in.NEULANDLAB.html\" target=\"_blank\">NEULANDLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.SAILIFE.html\" target=\"_blank\">SAILIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.APLLTD.html\" target=\"_blank\">APLLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.JUBLPHARMA.html\" target=\"_blank\">JUBLPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.CONCORDBIO.html\" target=\"_blank\">CONCORDBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.CAPLIPOINT.html\" target=\"_blank\">CAPLIPOINT<\/a>","<a href=\"/reports02/eq-in/risk/in.NATCOPHARM.html\" target=\"_blank\">NATCOPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.ACUTAAS.html\" target=\"_blank\">ACUTAAS<\/a>","<a href=\"/reports02/eq-in/risk/in.GRANULES.html\" target=\"_blank\">GRANULES<\/a>","<a href=\"/reports02/eq-in/risk/in.ALIVUS.html\" target=\"_blank\">ALIVUS<\/a>","<a href=\"/reports02/eq-in/risk/in.BLUEJET.html\" target=\"_blank\">BLUEJET<\/a>","<a href=\"/reports02/eq-in/risk/in.SANOFI.html\" target=\"_blank\">SANOFI<\/a>","<a href=\"/reports02/eq-in/risk/in.SANOFICONR.html\" target=\"_blank\">SANOFICONR<\/a>","<a href=\"/reports02/eq-in/risk/in.PGHL.html\" target=\"_blank\">PGHL<\/a>","<a href=\"/reports02/eq-in/risk/in.JSLL.html\" target=\"_blank\">JSLL<\/a>","<a href=\"/reports02/eq-in/risk/in.MARKSANS.html\" target=\"_blank\">MARKSANS<\/a>","<a href=\"/reports02/eq-in/risk/in.AARTIPHARM.html\" target=\"_blank\">AARTIPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.STAR.html\" target=\"_blank\">STAR<\/a>","<a href=\"/reports02/eq-in/risk/in.AKUMS.html\" target=\"_blank\">AKUMS<\/a>","<a href=\"/reports02/eq-in/risk/in.SHILPAMED.html\" target=\"_blank\">SHILPAMED<\/a>","<a href=\"/reports02/eq-in/risk/in.FDC.html\" target=\"_blank\">FDC<\/a>","<a href=\"/reports02/eq-in/risk/in.SUPRIYA.html\" target=\"_blank\">SUPRIYA<\/a>","<a href=\"/reports02/eq-in/risk/in.SEQUENT.html\" target=\"_blank\">SEQUENT<\/a>","GUJTHEM","<a href=\"/reports02/eq-in/risk/in.ZOTA.html\" target=\"_blank\">ZOTA<\/a>","<a href=\"/reports02/eq-in/risk/in.AARTIDRUGS.html\" target=\"_blank\">AARTIDRUGS<\/a>","<a href=\"/reports02/eq-in/risk/in.INNOVACAP.html\" target=\"_blank\">INNOVACAP<\/a>","<a href=\"/reports02/eq-in/risk/in.DCAL.html\" target=\"_blank\">DCAL<\/a>","<a href=\"/reports02/eq-in/risk/in.SPARC.html\" target=\"_blank\">SPARC<\/a>","<a href=\"/reports02/eq-in/risk/in.RPGLIFE.html\" target=\"_blank\">RPGLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.ORCHPHARMA.html\" target=\"_blank\">ORCHPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.SENORES.html\" target=\"_blank\">SENORES<\/a>","<a href=\"/reports02/eq-in/risk/in.GUFICBIO.html\" target=\"_blank\">GUFICBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.UNICHEMLAB.html\" target=\"_blank\">UNICHEMLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.HIKAL.html\" target=\"_blank\">HIKAL<\/a>","IOLCP","<a href=\"/reports02/eq-in/risk/in.PANACEABIO.html\" target=\"_blank\">PANACEABIO<\/a>","<a href=\"/reports02/eq-in/risk/in.MOREPENLAB.html\" target=\"_blank\">MOREPENLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.SMSPHARMA.html\" target=\"_blank\">SMSPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.INDOCO.html\" target=\"_blank\">INDOCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SOLARA.html\" target=\"_blank\">SOLARA<\/a>","<a href=\"/reports02/eq-in/risk/in.AMRUTANJAN.html\" target=\"_blank\">AMRUTANJAN<\/a>","<a href=\"/reports02/eq-in/risk/in.WINDLAS.html\" target=\"_blank\">WINDLAS<\/a>","<a href=\"/reports02/eq-in/risk/in.BLISSGVS.html\" target=\"_blank\">BLISSGVS<\/a>","<a href=\"/reports02/eq-in/risk/in.SYNCOMF.html\" target=\"_blank\">SYNCOMF<\/a>","<a href=\"/reports02/eq-in/risk/in.SIGACHI.html\" target=\"_blank\">SIGACHI<\/a>","<a href=\"/reports02/eq-in/risk/in.HESTERBIO.html\" target=\"_blank\">HESTERBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.JAGSNPHARM.html\" target=\"_blank\">JAGSNPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHCARE.html\" target=\"_blank\">BAJAJHCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.THEMISMED.html\" target=\"_blank\">THEMISMED<\/a>","LINCOLN","NGLFINE","<a href=\"/reports02/eq-in/risk/in.ANUHPHR.html\" target=\"_blank\">ANUHPHR<\/a>","<a href=\"/reports02/eq-in/risk/in.INDSWFTLAB.html\" target=\"_blank\">INDSWFTLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.KOPRAN.html\" target=\"_blank\">KOPRAN<\/a>","<a href=\"/reports02/eq-in/risk/in.SAKAR.html\" target=\"_blank\">SAKAR<\/a>","<a href=\"/reports02/eq-in/risk/in.WANBURY.html\" target=\"_blank\">WANBURY<\/a>","<a href=\"/reports02/eq-in/risk/in.KILITCH.html\" target=\"_blank\">KILITCH<\/a>","<a href=\"/reports02/eq-in/risk/in.VENUSREM.html\" target=\"_blank\">VENUSREM<\/a>","<a href=\"/reports02/eq-in/risk/in.MEDICAMEQ.html\" target=\"_blank\">MEDICAMEQ<\/a>","<a href=\"/reports02/eq-in/risk/in.VALIANTLAB.html\" target=\"_blank\">VALIANTLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.ALBERTDAVD.html\" target=\"_blank\">ALBERTDAVD<\/a>","<a href=\"/reports02/eq-in/risk/in.MEDICO.html\" target=\"_blank\">MEDICO<\/a>","<a href=\"/reports02/eq-in/risk/in.BROOKS.html\" target=\"_blank\">BROOKS<\/a>","<a href=\"/reports02/eq-in/risk/in.LYKALABS.html\" target=\"_blank\">LYKALABS<\/a>","<a href=\"/reports02/eq-in/risk/in.SMSLIFE.html\" target=\"_blank\">SMSLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.ZIMLAB.html\" target=\"_blank\">ZIMLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.BAFNAPH.html\" target=\"_blank\">BAFNAPH<\/a>","<a href=\"/reports02/eq-in/risk/in.NECLIFE.html\" target=\"_blank\">NECLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.AAREYDRUGS.html\" target=\"_blank\">AAREYDRUGS<\/a>","<a href=\"/reports02/eq-in/risk/in.BALAXI.html\" target=\"_blank\">BALAXI<\/a>","NATCAPSUQ","<a href=\"/reports02/eq-in/risk/in.ALPA.html\" target=\"_blank\">ALPA<\/a>","<a href=\"/reports02/eq-in/risk/in.KREBSBIO.html\" target=\"_blank\">KREBSBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.BALPHARMA.html\" target=\"_blank\">BALPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.PAR.html\" target=\"_blank\">PAR<\/a>","<a href=\"/reports02/eq-in/risk/in.MANGALAM.html\" target=\"_blank\">MANGALAM<\/a>","<a href=\"/reports02/eq-in/risk/in.VAISHALI.html\" target=\"_blank\">VAISHALI<\/a>","<a href=\"/reports02/eq-in/risk/in.BIOFILCHEM.html\" target=\"_blank\">BIOFILCHEM<\/a>","<a href=\"/reports02/eq-in/risk/in.LASA.html\" target=\"_blank\">LASA<\/a>","<a href=\"/reports02/eq-in/risk/in.VINEETLAB.html\" target=\"_blank\">VINEETLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.ORTINGLOBE.html\" target=\"_blank\">ORTINGLOBE<\/a>"],[1.533517938723808,0.08685996200595569,12.44440830830047,0.10650514404688,0.3016511852925233,6.591618753637349,0.4248992799519271,1.177047336403197,0.9302920610601297,3.208692488588592,3.285473095334969,3.182083031019573,0.1419231664740288,0.067308911254151,1.712235550251261,4.141005222656267,5.324680985666912,2.24654103578673,8.517243276938981,0.07212886521710064,7.660861718223802,1.115796664521447,0.09823657421777701,0.02709649249895696,0.08362386147369899,0.416918305508836,0.2727873067469249,1.944402869559271,3.162097860441083,0.06662533451213147,0.5754206233533199,0.9201023940087703,0.039558539265,0.3759949028595385,2.18551807883231,1.131923748126113,0.6303641433969526,0.03565650035847469,0.006516296983890646,0.01121116252248442,0.1636139492156963,0.6336065172486782,0.407236290479515,2.10011474903006,3.779675394006958,0.5929492201623875,1.034971470259948,0.2994027388630611,0.05017359695084181,0.06624196998856603,0.183474344358169,0.04359556567982303,0.6053106697376635,1.295073574291613,0.0005813462024020656,0.007526168352216385,0.3732925755204087,0.2278860734931758,0.3895400562835594,1.169518273140385,0.01649907318086606,0.9808736802527197,0.005490121945811582,0.8099225012220029,0.4031120369366635,0.01504039816620118,1.077438974130263,0.17496131773372,0.2047618314033933,0.3687282573010064,0.2412465917149479,0.2344178472448511,0.1507352410073744,0.07465274465807704,0.2774711069772152,0.1542344429923039,0.2927676141754494,0.1808676268656979,0.3475604665618205,0.262034343122856,0.2796557339447944,0.09344730921488047,0.1721219571872676,0.09485303132979032,0.1904251681137841,0.06619477475599826,0.1892982383995117,0.1325351299400287,0.07230218287833781,0.04431340405128194,0.06047766771531722,0.1559084383812879,0.152111368460965,0.004128914211554697,0.6481171434398143,0.1914095168224588,0.1336511643625481,0.0811486405298803,0.05358184165293023,0.01074437211912411,0.134281599222301,0.0440389366504104,0.1188554697515555,0.05082720646601924,0.006689781129721398,0.0538818369914543,0.01969815923843081,7.737753950640373e-05],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.9240938846374607,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.2974464485975578,null,null,null,null,0.00755129120584516,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.4071687967253662,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":108,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,50,100,108]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
