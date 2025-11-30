@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>Fertilizers</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Fertilizers</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Fertilizers.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Fertilizers.fan.CAP_WT.png" /></p>
+<p><img src="plots/Fertilizers.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Fertilizers.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Fertilizers.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Fertilizers.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Fertilizers.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-22482d6f503ad45bea14" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-22482d6f503ad45bea14">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-2.9%","1.03%"],["-5.37%","-0.92%"],["-6.93%","-3.47%"],["2.87%","3.01%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Fertilizers.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Fertilizers.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-68ed07ed3c29d2db6e5c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-68ed07ed3c29d2db6e5c">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.COROMANDEL.html\" target=\"_blank\">COROMANDEL<\/a>","<a href=\"/reports02/eq-in/risk/in.FACT.html\" target=\"_blank\">FACT<\/a>","<a href=\"/reports02/eq-in/risk/in.CHAMBLFERT.html\" target=\"_blank\">CHAMBLFERT<\/a>","<a href=\"/reports02/eq-in/risk/in.PARADEEP.html\" target=\"_blank\">PARADEEP<\/a>","<a href=\"/reports02/eq-in/risk/in.RCF.html\" target=\"_blank\">RCF<\/a>","<a href=\"/reports02/eq-in/risk/in.GSFC.html\" target=\"_blank\">GSFC<\/a>","<a href=\"/reports02/eq-in/risk/in.NFL.html\" target=\"_blank\">NFL<\/a>","<a href=\"/reports02/eq-in/risk/in.MBAPL.html\" target=\"_blank\">MBAPL<\/a>","<a href=\"/reports02/eq-in/risk/in.KRISHANA.html\" target=\"_blank\">KRISHANA<\/a>","<a href=\"/reports02/eq-in/risk/in.SPIC.html\" target=\"_blank\">SPIC<\/a>","<a href=\"/reports02/eq-in/risk/in.MADRASFERT.html\" target=\"_blank\">MADRASFERT<\/a>","<a href=\"/reports02/eq-in/risk/in.ZUARI.html\" target=\"_blank\">ZUARI<\/a>","<a href=\"/reports02/eq-in/risk/in.KHAICHEM.html\" target=\"_blank\">KHAICHEM<\/a>","<a href=\"/reports02/eq-in/risk/in.RAMAPHO.html\" target=\"_blank\">RAMAPHO<\/a>","<a href=\"/reports02/eq-in/risk/in.ARIES.html\" target=\"_blank\">ARIES<\/a>","<a href=\"/reports02/eq-in/risk/in.NOVAAGRI.html\" target=\"_blank\">NOVAAGRI<\/a>","<a href=\"/reports02/eq-in/risk/in.NAGAFERT.html\" target=\"_blank\">NAGAFERT<\/a>","<a href=\"/reports02/eq-in/risk/in.AGROPHOS.html\" target=\"_blank\">AGROPHOS<\/a>","<a href=\"/reports02/eq-in/risk/in.BOHRAIND.html\" target=\"_blank\">BOHRAIND<\/a>"],[0.4910021254309115,0.09662747324060283,0.1179422841138143,0.09797960707770374,0.03440591959700367,0.0723855730987424,0.01852983326178875,0.01528846616330183,0.01498989971944645,0.01463813193071297,0.003271365548202911,0.006944976023900734,0.003961927648438265,0.002587859628903072,0.003640073171695321,0.00266840600221655,0.002115612821818161,0.0006370047454905622,0.0003834607753059122],[0.3675730699183555,0.3007957946305183,0.09315452049948957,0.06661449397843143,0.04119470551952117,0.03875550799039223,0.02191042729883543,0.017958960929806,0.01592429965023036,0.009250213420588601,0.006636464726241299,0.006036307167805409,0.004313914875253453,0.003311690635224898,0.002369681818236751,0.002103493918478721,0.001439232681064388,0.0004231368252568916,0.0002340835162696451]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":19,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,19,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-84a30051fe3c92eea816" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-84a30051fe3c92eea816">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.COROMANDEL.html\" target=\"_blank\">COROMANDEL<\/a>","<a href=\"/reports02/eq-in/risk/in.FACT.html\" target=\"_blank\">FACT<\/a>","<a href=\"/reports02/eq-in/risk/in.CHAMBLFERT.html\" target=\"_blank\">CHAMBLFERT<\/a>","<a href=\"/reports02/eq-in/risk/in.PARADEEP.html\" target=\"_blank\">PARADEEP<\/a>","<a href=\"/reports02/eq-in/risk/in.RCF.html\" target=\"_blank\">RCF<\/a>","<a href=\"/reports02/eq-in/risk/in.GSFC.html\" target=\"_blank\">GSFC<\/a>","<a href=\"/reports02/eq-in/risk/in.NFL.html\" target=\"_blank\">NFL<\/a>","<a href=\"/reports02/eq-in/risk/in.MBAPL.html\" target=\"_blank\">MBAPL<\/a>","<a href=\"/reports02/eq-in/risk/in.KRISHANA.html\" target=\"_blank\">KRISHANA<\/a>","<a href=\"/reports02/eq-in/risk/in.SPIC.html\" target=\"_blank\">SPIC<\/a>","<a href=\"/reports02/eq-in/risk/in.MADRASFERT.html\" target=\"_blank\">MADRASFERT<\/a>","<a href=\"/reports02/eq-in/risk/in.ZUARI.html\" target=\"_blank\">ZUARI<\/a>","<a href=\"/reports02/eq-in/risk/in.KHAICHEM.html\" target=\"_blank\">KHAICHEM<\/a>","<a href=\"/reports02/eq-in/risk/in.RAMAPHO.html\" target=\"_blank\">RAMAPHO<\/a>","<a href=\"/reports02/eq-in/risk/in.ARIES.html\" target=\"_blank\">ARIES<\/a>","<a href=\"/reports02/eq-in/risk/in.NOVAAGRI.html\" target=\"_blank\">NOVAAGRI<\/a>","<a href=\"/reports02/eq-in/risk/in.NAGAFERT.html\" target=\"_blank\">NAGAFERT<\/a>","<a href=\"/reports02/eq-in/risk/in.AGROPHOS.html\" target=\"_blank\">AGROPHOS<\/a>","<a href=\"/reports02/eq-in/risk/in.BOHRAIND.html\" target=\"_blank\">BOHRAIND<\/a>"],[37.49227074532575,0.03728755248611568,5.638974601438517,14.37559169291393,3.305141598359805,3.548464214956848,0.02162978043950766,2.569567502984299,3.484562844207186,2.116949351724648,0.03681607869617063,2.067696427243948,0.3760987849281595,1.237321515495593,0.1907957852645258,0.2509712438396045,-0.3937980542867411,0.1740296689281543,-0.04904681609185375],[36.09598315567649,0.0192887754284182,17.01946842127593,17.43938433853958,5.267963365589506,10.25490211665991,0.01965068194007802,2.018397491934278,2.678478812216352,3.224938825684078,0.03718042339321939,3.414934694447183,null,0.9749009836871648,0.6363553858592343,0.3783334482240623,null,0.1927871106082185,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":19,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,19,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-56ae9df99b242e2c17fa" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-56ae9df99b242e2c17fa">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.COROMANDEL.html\" target=\"_blank\">COROMANDEL<\/a>","<a href=\"/reports02/eq-in/risk/in.FACT.html\" target=\"_blank\">FACT<\/a>","<a href=\"/reports02/eq-in/risk/in.CHAMBLFERT.html\" target=\"_blank\">CHAMBLFERT<\/a>","<a href=\"/reports02/eq-in/risk/in.PARADEEP.html\" target=\"_blank\">PARADEEP<\/a>","<a href=\"/reports02/eq-in/risk/in.RCF.html\" target=\"_blank\">RCF<\/a>","<a href=\"/reports02/eq-in/risk/in.GSFC.html\" target=\"_blank\">GSFC<\/a>","<a href=\"/reports02/eq-in/risk/in.NFL.html\" target=\"_blank\">NFL<\/a>","<a href=\"/reports02/eq-in/risk/in.MBAPL.html\" target=\"_blank\">MBAPL<\/a>","<a href=\"/reports02/eq-in/risk/in.KRISHANA.html\" target=\"_blank\">KRISHANA<\/a>","<a href=\"/reports02/eq-in/risk/in.SPIC.html\" target=\"_blank\">SPIC<\/a>","<a href=\"/reports02/eq-in/risk/in.MADRASFERT.html\" target=\"_blank\">MADRASFERT<\/a>","<a href=\"/reports02/eq-in/risk/in.ZUARI.html\" target=\"_blank\">ZUARI<\/a>","<a href=\"/reports02/eq-in/risk/in.KHAICHEM.html\" target=\"_blank\">KHAICHEM<\/a>","<a href=\"/reports02/eq-in/risk/in.RAMAPHO.html\" target=\"_blank\">RAMAPHO<\/a>","<a href=\"/reports02/eq-in/risk/in.ARIES.html\" target=\"_blank\">ARIES<\/a>","<a href=\"/reports02/eq-in/risk/in.NOVAAGRI.html\" target=\"_blank\">NOVAAGRI<\/a>","<a href=\"/reports02/eq-in/risk/in.NAGAFERT.html\" target=\"_blank\">NAGAFERT<\/a>","<a href=\"/reports02/eq-in/risk/in.AGROPHOS.html\" target=\"_blank\">AGROPHOS<\/a>"],[14.33347474031936,0.1103714110361719,16.37982339087626,14.56785041471955,12.5943867178935,3.956370151621547,0.3195213268570089,1.806335480523213,2.193313852945033,2.717053560570197,0.08967290386902216,4.417361918339229,0.5990721888130459,0.9910463981710865,0.5087764395256592,0.2274131764278422,-0.005882062709589456,0.1234356823445724],[23.1292536378626,0.07013701760019561,21.9172544007683,11.96716296685626,18.66113566573266,8.130506953586375,0.3092121918154244,1.73963845550543,2.21947372501835,3.541486618369262,0.0761273886809611,5.451169118375654,null,0.9582440514367605,0.7326605020841364,0.3321078275825929,null,0.1653572899120145]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":18,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,18,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-of-indian-fertilizer-sector-based-on-q2h1-fy26-earnings-calls-and-announcements" class="section level7">
+<p class="heading">Summary Analysis of Indian Fertilizer Sector (Based on Q2/H1 FY26 Earnings Calls and Announcements)</p>
+<p>The analysis draws from recent earnings transcripts and disclosures of key players like Chambal Fertilisers, GSFC, Krishana Phoschem, Madhya Bharat Agro Products (MBAPL), and others. The sector shows robust H1 FY26 performance with revenue growth of 20-100% YoY across companies, driven by P&amp;K fertilizer demand, but faces input cost pressures and policy dependencies.</p>
+<div id="tailwinds-positive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Strong Demand Momentum</strong>: Good monsoon (above normal rainfall), high water reservoirs, MSP hikes for Rabi crops, and push for balanced nutrition boosted volumes. P&amp;K (DAP/NPK/SSP) sales surged (e.g., Chambal: ~2x YoY; Krishana: 102% revenue growth; MBAPL: 80% YoY). Kharif shortages carried into Rabi stocking.</li>
+<li><strong>Timely Subsidies &amp; Favorable Policies</strong>: NBS policy extensions, advantage-disadvantage mechanism, and special DAP packages (e.g., Rs. 3,500/ton + 4% MRP margin) supported trading/import. Subsidy receipts up to Sep/Oct 2025 were prompt (e.g., Chambal: Rs. 6,347 Cr in H1).</li>
+<li><strong>Operational Efficiencies</strong>: Record production/sales (e.g., Krishana: 111% SSP utilization; GSFC: 21% revenue growth). Backward integration (BRP crushing 78-96%, sulphuric acid 71-90%) cushioned costs.</li>
+<li><strong>Diversification Gains</strong>: Crop protection/speciality nutrients up 29-80% YoY (Chambal); trading (20-22% of revenue in Krishana/MBAPL); industrial products turnaround (GSFC: EBIT Rs. 54 Cr).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Input Cost Inflation</strong>: Rocketing RM prices—phosphoric acid (+20%), sulphuric acid (+123%), sulphur (+150%)—compressed margins (e.g., GSFC EBIT down to Rs. 224 Cr; Krishana EBITDA margin dip to 13-15%). Sulfur at historic highs (~Rs. 33,000/ton).</li>
+<li><strong>Operational Disruptions</strong>: Plant stoppages (Chambal Gadepan-III: 17-18k tons loss); unseasonal rains delayed distribution.</li>
+<li><strong>Margin Pressures</strong>: Trading (low 2-4% margins) diluted overall EBITDA (e.g., Krishana: 22% trading mix); urea realizations down 15%; caprolactam spreads fell to $512/MT (GSFC).</li>
+<li><strong>Working Capital Strain</strong>: Receivables up due to higher P&amp;K volumes/subsidies (e.g., Chambal: Rs. 2,100 Cr sales jump); cycles ~6 months.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Expansions</strong>: Multi-company push—Chambal TAN (240k MT, Jan’26 ops, 4-5 digit margins); Krishana/MBAPL NPK/DAP/SSP (+1.65-3.3L MT, FY27 ramp-up); GSFC Sulphuric Acid V (Q3 FY26). Total sector capacity to double in 1-2 years (MBAPL: 12L MT).</li>
+<li><strong>Product Diversification</strong>: Fortified SSP (Urea-SSP as DAP substitute), biologicals/seeds (Chambal: 22 launches), green ammonia (SECI SIGHT: 70-130k MTPA, 10-yr supply).</li>
+<li><strong>Rabi/Kharif Upside</strong>: Urea demand to 43-44M MT by FY30 (90L MT shortfall); P&amp;K imports up 106% Kharif YoY. Trading volumes sustainable (Chambal: 11L MT FY26).</li>
+<li><strong>Long-Term</strong>: Atmanirbhar Bharat (domestic urea/P&amp;K push); agri-input “seed-to-harvest” programs; 2-3% annual urea demand growth.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Policy &amp; Subsidy Uncertainty</strong>: NBS revisions, urea energy norms/fixed costs pending (low double-digit Q impact); GST on subsidies (Chambal notice).</li>
+<li><strong>RM Volatility &amp; Imports</strong>: 50%+ import reliance (DAP/NPK); China disruptions, freight hikes; global geopolitics.</li>
+<li><strong>Operational/Execution</strong>: New plant ramp-up (50-55% FY27 utilization); turnarounds/stoppages.</li>
+<li><strong>Competition &amp; Pricing</strong>: Cheap Chinese imports; oversupply in industrial products (melamine/HX Crystal).</li>
+<li><strong>Financial</strong>: High capex (Rs. 142-700 Cr/company); debt spikes (D/E &gt;0.5 temporarily); receivable delays (45-100 days + subsidy).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Sector poised for 15-25% volume/revenue growth in FY26-27, led by P&amp;K and expansions, but margins (13-15% EBITDA) vulnerable to RM spikes. Urea self-sufficiency and green initiatives offer structural tailwinds; monitor policy for near-term triggers. Strong balance sheets (e.g., Chambal Rs. 700 Cr cash) support capex.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3>General</h3>
+<p><em>asof: 2025-11-27 </em></p>
+</div>
+</div>
+<div id="summary-analysis-indian-fertilizer-sector-based-on-provided-documents" class="section level1">
+<h1>Summary Analysis: Indian Fertilizer Sector (Based on Provided Documents)</h1>
+<p>The documents cover announcements from 15+ listed fertilizer companies (e.g., GSFC, FACT, Rama Phosphates, Chambal, Coromandel, Zuari Agro, etc.) spanning Q1/Q2 FY26 results, corporate actions, expansions, litigations, and regulatory updates. They reflect a <strong>mixed but resilient sector</strong> amid govt support, raw material volatility, and sustainability pushes. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-supportive-factors" class="section level2">
+<h2><strong>Tailwinds (Supportive Factors)</strong></h2>
+<ul>
+<li><strong>Robust Financial Momentum</strong>: GSFC reported record Q2 FY26 sales (₹3,140 Cr, +45% QoQ/+20% YoY) and PAT (₹320 Cr, +129% QoQ), driven by fertilizer volumes and industrial products turnaround. Rama Phosphates hit all-time high Q1 revenue (₹19,031 Lacs, +24% YoY) and PAT (₹1,603 Lacs, +853% YoY). Margins expanded sharply (e.g., Rama EBITDA 14.15%).</li>
+<li><strong>Govt Policy Support</strong>: NBS subsidy hikes (10% for P&amp;S nutrients), MSP increases for Rabi crops, and Atmanirbhar Bharat initiatives boost demand. Green ammonia auctions (SECI) secured long-term supplies for Krishana Phoschem (70K MT @ ₹51.80/kg) and Madhya Bharat Agro (130K MT @ ₹52-53/kg), ensuring RM stability.</li>
+<li><strong>Sustainability &amp; Green Shift</strong>: Tie-ups with NTPC/Oriana Power for green ammonia align with MNRE/DoF goals, reducing import dependence.</li>
+<li><strong>Litigation Wins</strong>: Aries Agro’s ₹5 Cr tax demand quashed; positive for cash flows.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level2">
+<h2><strong>Headwinds (Challenges)</strong></h2>
+<ul>
+<li><strong>Regulatory &amp; Litigation Pressures</strong>: Chambal’s ₹155 Cr CGST penalty upheld (transitional credit disallowance); ongoing appeals. Paradeep Phosphates’ plant shutdown due to compressor breakdown disrupts production.</li>
+<li><strong>Input Cost Volatility</strong>: GSFC highlights surges in Phosphoric Acid (+20%), Sulphuric Acid (+123%), Sulphur (+150%); softer Urea realizations (-15%). Rama notes rock phosphate price risks.</li>
+<li><strong>Operational Disruptions</strong>: Plant breakdowns (Paradeep) and compliance delays (e.g., Bohra’s listing approvals pending).</li>
+<li><strong>Import Competition</strong>: GSFC flags Chinese imports pressuring Nylon/Caprolactam spreads (down to USD 512/MT).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level2">
+<h2><strong>Growth Prospects</strong></h2>
+<ul>
+<li><strong>Capex &amp; Expansions</strong>: FACT’s ₹6,350 Cr in-principle approval for Phosphoric/Sulphuric/Urea plants. GSFC’s Sulphuric Acid (198K TPA), APS/C-Train mods, PA/SA projects. Rama’s Dhule greenfield (250K TPA SSP, LABSA; ₹28 Cr invested, trial by Q4 FY26). Mangalore acquires Zuari’s SSP plant (₹72.75 Cr).</li>
+<li><strong>Capacity &amp; Diversification</strong>: Rama’s total SSP capacity to hit ~1 Mn TPA post-Dhule; new products like Urea-SSP, Mg-fortified SSP. GSFC eyes Rabi demand with inventories. Coromandel reclassifies promoters for agility.</li>
+<li><strong>Market Expansion</strong>: Strong monsoon, Rabi MSP hikes to sustain demand. Green ammonia ensures 5-10 Yr RM security. Rama’s HURL contract (1L+ MT SSP) locks revenues.</li>
+<li><strong>Sustainability Edge</strong>: Green RM ties reduce costs/emissions; potential for premium pricing/export growth.</li>
+</ul>
+<p><strong>Projected Outlook</strong>: Sector sales/PAT growth of 15-25% in H2 FY26 (GSFC stable Q3 demand; Rama ₹1,000 Cr+ vision). Total capex ~₹7,000 Cr signals 20-30% capacity addition by FY27-28.</p>
+</div>
+<div id="key-risks-1" class="section level2">
+<h2><strong>Key Risks</strong></h2>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Details</strong></th>
+<th><strong>Mitigation (from Docs)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Raw Material Volatility</strong></td>
+<td>Acid/Sulphur/P2O5 price spikes; gas/ammonia fluctuations.</td>
+<td>Long-term green ammonia contracts; yearly rock phosphate deals (Rama).</td>
+</tr>
+<tr class="even">
+<td><strong>Regulatory/Litigation</strong></td>
+<td>GST/tax penalties (Chambal ₹155 Cr); SEBI compliance (Bohra open offer delays).</td>
+<td>Appeals filed; strong merits (Aries win).</td>
+</tr>
+<tr class="odd">
+<td><strong>Operational</strong></td>
+<td>Breakdowns (Paradeep); monsoon/execution delays.</td>
+<td>In-house power/solar (Rama); automation (Rama).</td>
+</tr>
+<tr class="even">
+<td><strong>Market/Competition</strong></td>
+<td>Chinese imports; subsidy changes; Urea realization dips.</td>
+<td>Diversification (industrial chems, traded P&amp;K); premium fortified products.</td>
+</tr>
+<tr class="odd">
+<td><strong>Financial/Leverage</strong></td>
+<td>High capex debt; subsidy delays.</td>
+<td>ICRA A- rating (Rama); internal accruals for expansions.</td>
+</tr>
+<tr class="even">
+<td><strong>Execution</strong></td>
+<td>Dhule/GSFC/FACT project delays (land/EC pending).</td>
+<td>EC received (Rama); phased rollout.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Sector Rating</strong>: <strong>Positive (Buy/Hold)</strong> – Tailwinds from policy/capex outweigh headwinds; monitor RM prices/subsidies. Growth hinges on monsoon/Rabi sales and project execution (high 70-80% success probability from docs).</p>
+<p><em>Data as of Nov 2025; based solely on provided filings.</em></p>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-27 </em></p>
+</div>
+</div>
+</div>
+<div id="indian-fertilizers-sector-analysis-based-on-q2h1-fy26-earnings-transcripts" class="section level1">
+<h1>Indian Fertilizers Sector Analysis (Based on Q2/H1 FY26 Earnings Transcripts)</h1>
+<p>The provided documents from key players (Chambal Fertilisers, GSFC, Khaitan Chemicals, Krishana Phoschem, Madhya Bharat Agro Products, etc.) highlight robust sector performance amid favorable demand but persistent cost pressures. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>, derived directly from company disclosures.</p>
+<div id="tailwinds-positive-drivers" class="section level2">
+<h2><strong>Tailwinds (Positive Drivers)</strong></h2>
+<ul>
+<li><strong>Strong Demand Momentum</strong>: Excellent monsoon (above-normal rainfall) boosted Kharif sowing and Rabi preparations. Elevated reservoir levels, MSP hikes (all Rabi crops), and farmer income growth support healthy offtake. P&amp;K/NPK/SSP volumes surged (e.g., Chambal: P&amp;K up due to volumes/prices; Krishana/MBAPL: record SSP/NPK sales at 100%+ utilization).</li>
+<li><strong>Policy Support</strong>: Timely NBS subsidy disbursals (e.g., Chambal: ₹6,347 Cr received); 10% hike in P/S subsidies for Rabi 2025-26 (₹37,952 Cr allocation). Push for balanced nutrition (NPK ratio correction from skewed 7.7:3.1:1) favors SSP/NPK as DAP alternatives. Freight subsidy for SSP continues.</li>
+<li><strong>Supply Shortages Boosting Domestic</strong>: DAP imports up 106% in Kharif but shortages persist (China curbs); domestic/traded volumes filled gaps (e.g., GSFC/Chambal traded 1L MT DAP).</li>
+<li><strong>Operational Efficiencies</strong>: Backward integration (sulfuric/phosphoric acid), high utilizations (e.g., Krishana: SSP 111%), and trading opportunistic gains drove EBITDA growth (70-100% YoY across firms).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level2">
+<h2><strong>Headwinds (Challenges)</strong></h2>
+<ul>
+<li><strong>Rising Input Costs</strong>: Phosphoric acid (+20%), sulfuric acid (+123%), sulfur (+150%), rock phosphate/ammonia up (e.g., GSFC/Chambal noted margin pressure; sulfur at ₹33k/MT). Swings in global prices (DAP sympathy rise) compressed realizations despite pass-throughs.</li>
+<li><strong>Volume/Operational Hiccups</strong>: Urea dips (e.g., Chambal: 8.81L MT vs. 9.09L MT due to plant stoppages); unseasonal rains disrupted distribution.</li>
+<li><strong>Margin Dilution from Trading</strong>: Surge in low-margin traded P&amp;K/DAP/NPK (e.g., Chambal: purchases ₹3,000 Cr vs. ₹700 Cr YoY; Krishana/MBAPL: 20-22% revenue from trading at 2-2.5% margins).</li>
+<li><strong>Subsidy/GST Friction</strong>: Delays in energy norms/fixed cost reimbursements; GST notices on subsidies (e.g., Chambal contesting Bihar notice).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level2">
+<h2><strong>Growth Prospects</strong></h2>
+<ul>
+<li><strong>Volume Expansion</strong>: Rabi demand strong (55% urea in Rabi; P&amp;K Q3 peak). SSP production/consumption rising (49-56L MT); NPK/DAP domestic push amid 50% import reliance. Sector to USD 16.6B by 2032 (specialty/precision farming).</li>
+<li><strong>Capex Ramp-Up</strong>: Multi-company expansions (e.g., Chambal TAN: 240k MT by Jan’26; Krishana/MBAPL: NPK/DAP +1.65L/3.3L MT; GSFC sulfuric acid V; Khaitan debottlenecking). Total new capacities (NPK/SSP/sulfuric) to double output for some.</li>
+<li><strong>Diversification</strong>: Crop protection/specialty nutrients (Chambal: 29% YoY growth); seeds/biologicals; green ammonia (SECI SIGHT scheme: 70k-130k MT for Krishana/MBAPL).</li>
+<li><strong>Trading/Imports</strong>: Opportunistic (e.g., Chambal: 11L MT P&amp;K targeted); long-term deals (Saudi DAP).</li>
+<li><strong>EBITDA Guidance</strong>: 11-15% margins sustainable; per-ton ₹1,800-6,000 (SSP/NPK); FY26 revenue doubling for many (e.g., Krishana/MBAPL: ₹1,500-2,000 Cr).</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level2">
+<h2><strong>Key Risks</strong></h2>
+<table>
+<colgroup>
+<col width="27%" />
+<col width="16%" />
+<col width="56%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Mitigation (from Transcripts)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Raw Material Volatility</strong></td>
+<td>50%+ import dependence (rock phosphate, sulfur, ammonia); geopolitical (China curbs, Middle East tensions).</td>
+<td>Long-term contracts (e.g., Jordan JPMC); backward integration (sulfuric acid expansions).</td>
+</tr>
+<tr class="even">
+<td><strong>Subsidy/Policy Uncertainty</strong></td>
+<td>NBS revisions, energy norms, fixed costs, GST on subsidies; potential fiscal tightening.</td>
+<td>Timely receipts so far; advocacy via FAI.</td>
+</tr>
+<tr class="odd">
+<td><strong>Execution Delays</strong></td>
+<td>Capex overruns (e.g., TAN/Dhule/Sagar plants); new capacities ramp-up (50-80% FY27 utilization).</td>
+<td>Proven track record; funding tied-up (debt/internal accruals).</td>
+</tr>
+<tr class="even">
+<td><strong>Competition/Imports</strong></td>
+<td>Cheap Chinese imports; DAP/NPK oversupply post-contracts.</td>
+<td>Domestic shortages; product differentiation (fortified SSP/NPK).</td>
+</tr>
+<tr class="odd">
+<td><strong>Demand/Weather</strong></td>
+<td>Unseasonal rains; Rabi drawdowns (2.5L MT/day urea).</td>
+<td>Diversified portfolio; channel stocking.</td>
+</tr>
+<tr class="even">
+<td><strong>Financial</strong></td>
+<td>High working capital (trading spikes receivables); debt rise (D/E 1.3-1.4).</td>
+<td>Short-term borrowings; cash accruals strong.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="summary" class="section level2">
+<h2><strong>Summary</strong></h2>
+<p><strong>Bullish Outlook with Resilience</strong>: Sector delivered 20-100% YoY growth in revenue/EBITDA/PAT (driven by P&amp;K/SSP volumes, trading), fueled by monsoon tailwinds, policy subsidies, and DAP shortages. Tailwinds dominate (demand + expansions), projecting FY26 doubling for leaders. Headwinds (RM inflation, trading dilution) cap margins at 11-15%, but offset by NBS hikes. Growth hinges on Rabi (Q3 peak) and capex fruition (FY27+). Risks center on inputs/subsidies, but backward integration and green shifts mitigate. Overall: <strong>High conviction buy</strong> for phosphatic players; monitor RM/subsidy Oct’25 announcements. Sector poised for 2-3x capacity/utilization-led expansion by FY28.</p>
+<div id="press-release" class="section level3">
+<h3>Press Release</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="analysis-of-indian-fertilizers-sector-based-on-q2h1-fy26-results-from-coromandel-gsfc-khaitan-chemicals-paradeep-phosphates-and-spic" class="section level7">
+<p class="heading">Analysis of Indian Fertilizers Sector (Based on Q2/H1 FY26 Results from Coromandel, GSFC, Khaitan Chemicals, Paradeep Phosphates, and SPIC)</p>
+<p>The provided documents highlight robust Q2/H1 FY26 performance across these key players, driven by strong demand amid favorable monsoons. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong> for the Indian fertilizers sector.</p>
+<div id="tailwinds-positive-drivers-1" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Favorable Agri-Conditions &amp; Demand Surge</strong>: Above-normal monsoons boosted Kharif sowing and farmer sentiment, leading to 17-35% YoY sales volume growth (e.g., Coromandel +17%, Paradeep production +19%, GSFC fertilizer sales +21%). Rabi season outlook remains strong with higher MSPs and comfortable inventories.</li>
+<li><strong>Government Support</strong>: NBS subsidy hikes (10% for P&amp;S nutrients), SSP subsidy revision to ₹7,263/MT, freight subsidies, and GST reductions enhanced affordability and consumption (e.g., Urea +2% in Kharif per SPIC).</li>
+<li><strong>Strong Financials &amp; Operational Efficiency</strong>: Revenue growth of 27-80% YoY, EBITDA/PAT up 17-559% (e.g., Coromandel H1 PAT +29%, Paradeep H1 PAT +135%, Khaitan Q1 +228%). Improved cash cycles (Paradeep -30 days) and healthy debt metrics (Paradeep net D/E 0.66x).</li>
+<li><strong>Volume &amp; Segment Growth</strong>: Phosphatics/NPK leadership (Coromandel market leader), crop protection resilience (Coromandel +13% revenue), industrial products turnaround (GSFC EBIT from loss to ₹54 Cr), and retail expansion (Coromandel &gt;1,000 stores).</li>
+<li><strong>M&amp;A/Synergies</strong>: Coromandel’s NACL acquisition and Paradeep’s MCFL merger expanded capacities (Paradeep +23% to 3.7 MMT) and market reach.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-3" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Raw Material Volatility</strong>: Sharp rises in key inputs—Phosphoric Acid +20%, Sulphuric Acid +123%, Sulphur +150% (GSFC)—offset realization gains, moderating EBIT (GSFC fertilizers EBIT -13%). Softer Urea/NG/Ammonia provided partial relief.</li>
+<li><strong>Realization Pressure</strong>: Urea realizations down 15% (GSFC), Caprolactam-Benzene spread compressed to $512/MT from $620/MT due to oversupply and Chinese imports.</li>
+<li><strong>Segment-Specific Weakness</strong>: Industrial products faced headwinds (e.g., GSFC Caprolactam subdued demand/pricing; softer HX Crystal domestically).</li>
+<li><strong>External Factors</strong>: Global slowdown (China), US tariffs, and cheap Chinese imports pressured pricing across chains.</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capex &amp; Capacity Expansion</strong>: Aggressive investments—Paradeep ₹3,600 Cr (1 MMT granulation + backward integration), GSFC (SA/PA/APS projects), Coromandel (sulphuric/phosphoric/NPK brownfield, MAP facility), SPIC (CAPEX on track). Targets: Paradeep 5 MMT sales in 2.5 years.</li>
+<li><strong>Product Diversification</strong>: Shift to value-added (NPK +52% at Paradeep, SSP volumes +20% at Khaitan), crop protection/bio-products, specialty nutrients, and organics. Digital/agri-drone initiatives (Coromandel) and solar investments (Khaitan).</li>
+<li><strong>Rabi &amp; Long-Term Demand</strong>: Healthy agri-input demand expected; pan-India presence post-mergers; ESG focus (Paradeep’s DJSI top 2%, SPIC natural gas adoption).</li>
+<li><strong>Retail &amp; Farmer Outreach</strong>: Coromandel/Paradeep expansions reaching millions of farmers via demos/digital.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Input Cost Escalation</strong>: Prolonged RM volatility (P2O5, Benzene, Ammonia, NG) could erode margins if subsidies lag.</li>
+<li><strong>Geopolitical/Import Pressures</strong>: Chinese dumping, global oversupply, and tariffs may suppress realizations (esp. industrial products).</li>
+<li><strong>Policy/Subsidy Dependency</strong>: Changes in NBS/freight subsidies or delays could impact profitability.</li>
+<li><strong>Weather &amp; Demand Risks</strong>: Monsoon variability or weak Rabi demand could hit volumes.</li>
+<li><strong>Execution Risks</strong>: Capex delays (e.g., Coromandel/GSFC Q4 FY26 commissioning); integration challenges post-M&amp;A; high debt from expansions.</li>
+<li><strong>Macro Factors</strong>: Economic slowdown, forex fluctuations, and competitive pricing.</li>
+</ul>
+</div>
+</div>
+<div id="summary-1" class="section level7">
+<p class="heading"><strong>Summary</strong></p>
+<p>The Indian fertilizers sector is witnessing strong tailwinds from favorable monsoons, policy support, and robust demand, delivering 20-50% YoY revenue growth and healthy PAT across sampled companies (aggregate H1 revenue ~₹45,000+ Cr). Tailwinds outweigh headwinds like RM inflation, positioning the sector for 15-30% growth in FY26, fueled by ₹5,000+ Cr capex pipelines targeting 10-20% capacity additions. However, <strong>key risks</strong> center on RM volatility (mitigated partially by subsidies) and global imports, warranting vigilant hedging and diversification. Overall outlook: <strong>Positive</strong> with resilient growth prospects, but monitor Q3 RM trends and Rabi execution. Sector PE multiples could expand on sustained volumes and margins (avg. EBITDA 10-13%).</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

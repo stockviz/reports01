@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>E-Learning</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">E-Learning</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/ELearning.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/ELearning.fan.CAP_WT.png" /></p>
+<p><img src="plots/ELearning.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/ELearning.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/ELearning.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/ELearning.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/ELearning.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a066df5395981766c918" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a066df5395981766c918">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-3.21%","-10.58%"],["-6.46%","-13.18%"],["-8.92%","-15.41%"],["-9.94%","-16.09%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/ELearning.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/ELearning.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-59e82a0f8756eda581c2" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-59e82a0f8756eda581c2">{"x":{"filter":"none","vertical":false,"data":[["PWL","<a href=\"/reports02/eq-in/risk/in.MPSLTD.html\" target=\"_blank\">MPSLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.VERANDA.html\" target=\"_blank\">VERANDA<\/a>","JARO","<a href=\"/reports02/eq-in/risk/in.GTECJAINX.html\" target=\"_blank\">GTECJAINX<\/a>","<a href=\"/reports02/eq-in/risk/in.UMESLTD.html\" target=\"_blank\">UMESLTD<\/a>"],[0.6686589349603733,0.1520107041598265,0.1430676575768755,0.03391037349526881,0.001268001552642952,0.001084328255013014],[0.8352135495459994,0.08397808566239195,0.04593237355678603,0.03401815444733307,0.0005564786311043904,0.0003013581563851334]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1f4a6849a3cf8eecf0ee" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1f4a6849a3cf8eecf0ee">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.MPSLTD.html\" target=\"_blank\">MPSLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.VERANDA.html\" target=\"_blank\">VERANDA<\/a>","JARO","<a href=\"/reports02/eq-in/risk/in.GTECJAINX.html\" target=\"_blank\">GTECJAINX<\/a>","<a href=\"/reports02/eq-in/risk/in.UMESLTD.html\" target=\"_blank\">UMESLTD<\/a>"],[2.502565287870825,14.94471938493756,null,-1.028308345987669,0.06578389860767413],[2.589485240279284,18.41063187391277,79.58218797875186,-0.6480889915515916,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d853f1d2dd619775bf24" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d853f1d2dd619775bf24">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.MPSLTD.html\" target=\"_blank\">MPSLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.VERANDA.html\" target=\"_blank\">VERANDA<\/a>","JARO","<a href=\"/reports02/eq-in/risk/in.GTECJAINX.html\" target=\"_blank\">GTECJAINX<\/a>","<a href=\"/reports02/eq-in/risk/in.UMESLTD.html\" target=\"_blank\">UMESLTD<\/a>"],[0.8566491128743187,50.65492771669715,null,1.001262289923603,0.01711718665210744],[0.8717303424575064,64.78964429732147,32.83160409178557,1.489904081783342,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-indian-e-learning-sector-insights-from-jaro-education-mps-limited-and-veranda-learning-solutions" class="section level7">
+<p class="heading">Summary Analysis: Indian E-Learning Sector (Insights from Jaro Education, MPS Limited, and Veranda Learning Solutions)</p>
+<p>Using the provided documents (analyst meeting intimation from Jaro Education, Q2/H1 FY26 earnings transcripts from MPS Limited and Veranda Learning Solutions), this analysis focuses on key players in India’s e-learning ecosystem, spanning test prep (commerce/govt exams), K-12/academics, higher ed, research/education services, and corporate learning. These firms highlight sector dynamics amid digital transformation, AI adoption, and test prep demand. Overall, the sector shows resilient growth (9-20% YoY revenue), margin expansion (via AI/operational leverage), and strategic restructuring, but faces segment-specific softness.</p>
+<div id="tailwinds" class="section level8">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Robust Demand &amp; Enrollment Growth</strong>: Veranda scaled enrollments from 61k to ~1L students QoQ, with record collections (₹173cr in Q2). Test prep (commerce/govt) remains strong; MPS Education grew 52% YoY.</li>
+<li><strong>AI &amp; Digital Enablement</strong>: MPS attributes &gt;60% Education growth and margin jumps (28.8%→35.6%) to AI workflows (accessibility, translation, Rubriq/AJE). Veranda expands online (BB Virtual) with recorded/USB programs accelerating revenue recognition.</li>
+<li><strong>Margin Expansion &amp; Efficiency</strong>: MPS EBITDA margins at 31% (+99bps YoY); employee cost optimization via AI reduces headcount needs. Veranda gross margins at 61% (+60bps).</li>
+<li><strong>Strategic Restructuring</strong>: Veranda’s commerce demerger (₹350cr revenue, ₹140cr EBITDA, debt-free) and vocational JV (SNVA, 50% stake, global reach) unlock value. MPS debt-free with ₹117cr cash.</li>
+<li><strong>Geographic &amp; Product Expansion</strong>: MPS diversifying beyond NA (UK/Europe/APAC traction); Veranda adding colleges/centers (asset-light), foreign courses (ACCA/CFA).</li>
+</ul>
+</div>
+<div id="headwinds" class="section level8">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Segment Softness</strong>: MPS Corporate Learning declined (11.3% of revenue vs. 17.2% YoY; H1 share 12.6% vs. 16.8%), due to restructuring delays.</li>
+<li><strong>Seasonality</strong>: Veranda academics degrew QoQ (admissions cycle); deferred revenue (₹94cr) skews recognition.</li>
+<li><strong>High Costs/Debt Legacy</strong>: Veranda’s high-cost debt (14% avg.) being refinanced; past acquisitions (e.g., MPS AJE) had restructuring costs (₹44L).</li>
+<li><strong>Macro Pressures</strong>: MPS notes potential geopolitical/tariff impacts (not yet material); competition in govt test prep (Veranda flat YoY).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Near-Term (FY26)</strong>: Veranda guides consolidated ₹650cr revenue, ₹170cr EBITDA, ₹70cr PAT (on track at H1 ₹290cr top-line). MPS Q2 revenue ₹194cr (+9% YoY), H1 cash flow ₹114cr; Education pipeline “unprecedented.”</li>
+<li><strong>Medium-Term (FY27+)</strong>: MPS Vision 2027 (₹1,500cr revenue) intact, accelerated via 5 acquisitions (₹300-400cr deployable via ₹150cr cash + ₹200cr debt). Veranda non-commerce FY27 EBITDA ₹50-60cr (govt test prep + academics); commerce to ₹200cr EBITDA (debt-free).</li>
+<li><strong>Key Drivers</strong>: AI/nonlinear growth (MPS DigiCore/Rubriq); enrollments/fees up 7-8% (Veranda K12); cross-sell/vendor consolidation; global JVs (Veranda SNVA: 25% CAGR to ₹250cr). Jaro signals investor engagement amid sector momentum.</li>
+<li><strong>Projections</strong>: Blended 15-25% revenue CAGR feasible; EBITDA margins 30-47% (Veranda target); ROE to 24-30% in 3-5 years.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Execution/Integration</strong>: Veranda demerger timeline (NCLT/exchanges, target Jul 2026) risks delays; MPS acquisitions (past AJE “bumpy,” 2-5yr staged buyouts) hinge on culture/integration.</li>
+<li><strong>Cash Flow Volatility</strong>: Veranda H1 negative CF from one-offs (₹100cr JK Shah payout); deferred revenue cycles expose to collections (K12 receivables concern).</li>
+<li><strong>Margin Pressure</strong>: Headcount rise (MPS +11.5% to 3,071); outsourcing/manpower costs if AI adoption lags.</li>
+<li><strong>Regulatory/Market</strong>: Demerger tax neutrality/cost allocation (pre-open/net worth basis); competition in test prep; no UPSI shared, but macro slowdowns (tariffs, geopolitics).</li>
+<li><strong>Dependency</strong>: Over-reliance on test prep (Veranda commerce ~50%+ pre-demerger); soft corporate segments (MPS).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Bullish with tailwinds from AI/digital demand outweighing headwinds. Sector poised for 20%+ growth via restructuring/acquisitions, but monitor execution (demergers, integrations) and debt deleveraging. Debt-free profiles (post-Veranda QIP) enhance resilience.</p>
+</div>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3>Financial</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-indian-e-learning-sector-based-on-provided-filings" class="section level7">
+<p class="heading">Summary Analysis: Indian E-Learning Sector (Based on Provided Filings)</p>
+<p>The provided documents from listed players—MPS Limited (strong performer), Veranda Learning Solutions Limited (struggling), G-TEC JAINX Education Limited, and Usha Martin Education &amp; Solutions Limited—offer a mixed but insightful view of the Indian E-Learning sector as of Q3 FY25 (ended Dec 31, 2024). MPS exemplifies growth through diversification and acquisitions, while Veranda highlights execution challenges. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-supportive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Supportive Factors)</strong></p>
+<ul>
+<li><strong>Robust Revenue Growth in Core Segments</strong>: MPS reported consolidated revenue of ₹186 Cr (Q3 FY25, +39% YoY), driven by eLearning (+0.1% QoQ stability) and Platform Solutions (+89% YoY to ₹53 Cr). Content Solutions (₹98 Cr) remains a stable base. Standalone revenue at ₹90 Cr (+7% YoY) underscores organic strength.</li>
+<li><strong>Acquisition-Led Expansion</strong>: MPS’s buys (e.g., Liberate Group AUD 9.1M, American Journal Experts USD 8.4M) boosted Platforms/eLearning, adding international subsidiaries (USA, Australia, China). Dividend income from subs (₹10 Cr) signals integration success.</li>
+<li><strong>Profitability and Shareholder Returns</strong>: MPS’s consolidated PAT ₹41 Cr (+37% YoY), EPS ₹24 (basic), with interim dividend ₹33/share. Healthy margins (PBT 29%) amid low finance costs (₹0.2 Cr).</li>
+<li><strong>Digital Shift</strong>: Implicit sector tailwind from Ind AS-compliant reporting, emphasizing scalable platforms amid India’s edtech boom (post-COVID hybrid learning).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Persistent Losses and High Costs</strong>: Veranda posted massive consolidated loss before tax of ₹206 Cr (Q3), driven by ₹139 Cr depreciation (renegotiated tutor contracts/software lives), ₹34 Cr impairments (BAssure sub), and ₹33 Cr finance costs. 9M FY25 loss ₹258 Cr vs. ₹42 Cr prior year.</li>
+<li><strong>Compliance and Filing Errors</strong>: G-TEC JAINX, Usha Martin, and initial MPS/Veranda XBRL issues highlight regulatory hiccups (e.g., wrong categories: Quarterly vs. Half-Yearly), risking exchange penalties/delays.</li>
+<li><strong>Subsidiary Underperformance</strong>: Veranda’s step-down subs (e.g., SCLSPL winding down BTAs post-settlement; BAssure impairments) reflect integration failures. Multiple subs (e.g., VMLSPL, VALSPL) navigated RBI CIC/NBFC waivers due to losses/operational pivots.</li>
+<li><strong>Margin Pressure</strong>: Veranda’s employee costs (₹79 Cr 9M) and ad spends (₹46 Cr) ballooned without revenue proportionality (₹357 Cr 9M, +38% YoY but loss-making).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High Potential in Diversified Segments</strong>: MPS’s tri-segment model (Content 53%, Platforms 29%, eLearning 19% of revenue) projects sustained 20-30% YoY growth, fueled by global subs (11 entities) and forex gains (₹6 Cr OCI). 9M revenue ₹545 Cr (+38% YoY).</li>
+<li><strong>M&amp;A and Internationalization</strong>: Veranda/MPS acquisitions signal consolidation opportunities in fragmented edtech (K-12, test-prep, corporate). Veranda’s 16-sub ecosystem (e.g., Race, IAS) eyes synergies despite setbacks.</li>
+<li><strong>Sector-Wide Upside</strong>: India’s e-learning market (projected $10B+ by 2025) benefits from govt. initiatives (NEP 2020 digital push), rising internet penetration, and hybrid models. MPS’s 25% ROE trajectory replicable for scaled players.</li>
+<li><strong>Recovery Path for Laggards</strong>: Veranda cites promoter funding and business rationalization (e.g., tutor pivots) for turnaround; 9M revenue +38% shows topline resilience.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="29%" />
+<col width="25%" />
+<col width="45%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Examples from Filings</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Financial</strong></td>
+<td>High leverage (Veranda: ₹477 Cr debt, current liabilities &gt; assets); forex/interest rate volatility.</td>
+<td>Veranda finance costs ₹96 Cr (9M); MPS low but acquisition-funded (₹30 Cr loan).</td>
+</tr>
+<tr class="even">
+<td><strong>Operational/Execution</strong></td>
+<td>Acquisition impairments, contract renegotiations shortening asset lives.</td>
+<td>Veranda: ₹101 Cr extra amort./₹22 Cr goodwill write-offs; SCLSPL BTA unwind.</td>
+</tr>
+<tr class="odd">
+<td><strong>Regulatory/Compliance</strong></td>
+<td>XBRL errors, RBI CIC/NBFC scrutiny for education-NBFC hybrids.</td>
+<td>G-TEC/Usha re-filings; Veranda subs awaiting RBI nods.</td>
+</tr>
+<tr class="even">
+<td><strong>Going Concern</strong></td>
+<td>Losses erode net worth; promoter dependency.</td>
+<td>Veranda flags but asserts recoverability via plans/funding.</td>
+</tr>
+<tr class="odd">
+<td><strong>Market/Competition</strong></td>
+<td>Slow sub-ramp-up, ad dependency amid edtech funding winter.</td>
+<td>Veranda ad spends ₹46 Cr; MPS unallocable expenses ₹26 Cr (9M).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: Bullish for efficient players like MPS (strong buy-and-build model), cautious for Veranda-like firms needing deleveraging. Sector growth hinges on cost discipline and regulatory navigation; expect 20-25% CAGR but with bifurcation—winners scale globally, laggards face consolidation. Investors should monitor Q4 debt metrics and acquisition ROIs.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3>General</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-of-indian-e-learning-sector-based-on-provided-documents" class="section level7">
+<p class="heading">Summary Analysis of Indian E-Learning Sector (Based on Provided Documents)</p>
+<p>The documents primarily cover financial results, AGMs, and announcements from education-focused listed companies (e.g., G-TEC JAINX Education, Usha Martin Education &amp; Solutions, Veranda Learning Solutions). These provide insights into IT/ERP training, skill development, higher education, and ed-tech transitions. Usha Martin Education’s MD&amp;A offers the most direct sector overview, highlighting NEP 2020, ed-tech potential ($700M to $30B in 10 years), and challenges like employability (only 10% of graduates job-ready). Financials show revenue growth amid losses (e.g., G-TEC Q1 FY26 revenue ₹231L consolidated, PAT ₹15L) and strategic shifts (Veranda divesting vocational for ed-tech stake). Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-factors-driving-growth" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Factors Driving Growth)</strong></p>
+<ul>
+<li><strong>Government Policies &amp; NEP 2020</strong>: Transformative framework emphasizes skill integration, multidisciplinary learning, and digital education. MCA/SEBI circulars enable VC/OAVM AGMs, accelerating hybrid models. Skill India initiatives create PPP opportunities for private players.</li>
+<li><strong>Demographic Dividend &amp; Demand</strong>: 60%+ young population; vast higher ed network (1,043 unis, 42K+ colleges). Low GER (27.1%) signals untapped potential; focus on employability via ERP, e-commerce, CRM training (G-TEC/Usha Martin).</li>
+<li><strong>Digital Shift &amp; Tech Adoption</strong>: Post-pandemic hybrid/online surge (75% educators favor digital). Ed-tech innovations (ERP, AI, LMS, AR/VR, gamification) enable scalable, affordable access. Micro-courses and anytime-anywhere learning boost inclusivity.</li>
+<li><strong>Financial Momentum</strong>: Revenue growth (G-TEC Q1 FY26: standalone ₹169L, consolidated ₹231L; Usha Martin FY25: ₹98L consolidated). Profitability in some (Usha Martin PAT ₹31L consolidated).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-impeding-progress" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges Impeding Progress)</strong></p>
+<ul>
+<li><strong>Employability &amp; Unemployment Crisis</strong>: Only 10% graduates employable; unemployment spiked to 12.74% (2021), lingering effects reduce enrollments/affordability (Usha Martin notes job loss fears).</li>
+<li><strong>Low Penetration &amp; GER Gap</strong>: GER at 27.1% (vs. 32% target, 51% China); behind West. Rural-urban divide limits reach.</li>
+<li><strong>Economic/Operational Pressures</strong>: Pandemic recovery slow; high other expenses (G-TEC Q1: ₹157L consolidated). Losses persist (G-TEC FY25 consolidated loss ₹338L); debt burdens (Usha Martin debt-equity 0.08x improving but present).</li>
+<li><strong>Hybrid Model Needs</strong>: Pure online insufficient for hands-on skills (e.g., board work); face-to-face “human touch” critical, raising costs.</li>
+</ul>
+</div>
+<div id="growth-prospects-opportunities-ahead" class="section level8">
+<p class="heading"><strong>Growth Prospects (Opportunities Ahead)</strong></p>
+<ul>
+<li><strong>Massive Market Expansion</strong>: Ed-tech from $700M to $30B in 10 years (4,500+ startups). Skill demand in IT/ERP/e-commerce; vocational divestment (Veranda) signals consolidation into high-growth ed-tech (50% stake in SNVA Edutech).</li>
+<li><strong>Tech &amp; Policy Leverage</strong>: NEP integration of skills; scalable platforms (ERP training online). Corporate training linkages (Usha Martin with group firms); global hub potential at low cost.</li>
+<li><strong>Strategic Shifts</strong>: Firms like Veranda pivoting to associates (SNVA); G-TEC’s IT focus aligns with GDP growth (6-8%). Profits rising (Usha Martin FY25 consolidated PAT up 200%+ YoY).</li>
+<li><strong>Projections</strong>: Normalcy returning; 2023+ better enrollment/job creation expected.</li>
+</ul>
+</div>
+<div id="key-risks-potential-threats" class="section level8">
+<p class="heading"><strong>Key Risks (Potential Threats)</strong></p>
+<ul>
+<li><strong>Regulatory &amp; Compliance</strong>: SEBI LODR/Companies Act changes (e.g., secretarial auditor ratification, AGM e-voting). Penalty risks (Usha Martin IT appeal ₹82L); CSR/non-compliance non-issues but evolving (Code on Social Security pending).</li>
+<li><strong>Financial/Operational</strong>: Persistent losses (G-TEC ₹338L FY25); high finance costs/debt (Usha Martin ₹12L FY25). ECL provisions on receivables (₹14L+ impaired).</li>
+<li><strong>Market/Competition</strong>: Ed-tech saturation (4,500 startups); low employability erodes trust. Unemployment (5.33-12.74% range) hits demand.</li>
+<li><strong>Execution</strong>: Dependence on tech (audit trails mandatory); contingent liabilities (tax disputes). Strategic divestments (Veranda) risk integration failures.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Strong tailwinds from policy/digital push outweigh headwinds, with $30B ed-tech opportunity. Growth hinges on employability focus/hybrids; monitor risks via profitability (e.g., G-TEC breakeven trajectory). Sector resilient, poised for 40%+ CAGR if execution aligns with NEP.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-of-indian-e-learning-sector-based-on-mps-ltd.-veranda-learning-solutions-ltd.-and-jaro-education-inputs" class="section level7">
+<p class="heading">Summary Analysis of Indian E-Learning Sector (Based on MPS Ltd., Veranda Learning Solutions Ltd., and Jaro Education Inputs)</p>
+<p>The provided documents highlight key players in India’s e-learning/edtech ecosystem—MPS (research/education solutions, AI-driven content), Veranda (test prep, K12 academics, vocational), and Jaro (institutional meetings, implying investor engagement). Analysis focuses on sector-level insights from Q2/H1 FY26 earnings and updates, emphasizing AI, test prep, higher ed, and corporate learning. Overall, the sector shows resilient growth amid AI tailwinds but faces execution and cyclical challenges.</p>
+<div id="tailwinds-positive-drivers" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>AI &amp; Digital Transformation</strong>: MPS reports &gt;60% of education growth from AI workflows (e.g., accessibility, translation); 52% YoY revenue growth in Education (EBITDA margin 35.6%). Veranda leverages digital admissions/content for 20% YoY revenue growth. Sector-wide AI augments productivity, reduces headcount needs, and enables nonlinear scaling.</li>
+<li><strong>Strong Demand &amp; Enrollments</strong>: Veranda’s enrollments doubled (61k to ~1Lakh), collections hit record ₹173cr (Q2). MPS Education order book/pipeline at “unprecedented levels”; vendor consolidation favors incumbents.</li>
+<li><strong>Financial Resilience</strong>: MPS debt-free (₹117cr cash), DSO down to 37 days, net cash flow ₹114cr (H1). Veranda deleveraging via QIP/demerger (residual debt/EBITDA ~3x post-refi). High margins (MPS EBITDA 31%; Veranda 38% gross).</li>
+<li><strong>Strategic Restructuring</strong>: Veranda’s commerce demerger (₹350cr rev, ₹140cr EBITDA standalone) and vocational JV (SNVA, global exposure, 25% CAGR) unlock value. MPS cross-selling, geographic diversification (UK/Europe/APAC).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Segmental Softness &amp; Seasonality</strong>: MPS Corporate Learning down to 11% revenue share (H1: 12.6% vs. prior 17%); “stutter” expected turnaround FY27. Veranda govt test prep -28% YoY (QoQ up); academics degrew QoQ due to admission cycles.</li>
+<li><strong>High Costs &amp; Cash Flow Volatility</strong>: Veranda H1 negative cash flows from ₹310cr debt repayments/acquisitions (e.g., JK Shah stake). High interest (14-17%) until Q4 refi. MPS exceptional items (e.g., AJE restructuring) mask core ops.</li>
+<li><strong>Macro/Geopolitical</strong>: MPS notes potential tariff/geopolitical tensions but no current orders slowdown. Sector seasonality (Q1/Q2 admissions) leads to deferred revenue (Veranda ₹94cr).</li>
+<li><strong>Competition</strong>: Crowded test prep (Veranda govt/academics) and corporate segments; MPS acquiring to counter.</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Robust Guidance &amp; Vision</strong>: Veranda FY26: ₹650cr rev (+~30% implied), ₹170cr EBITDA, ₹70cr PAT. MPS Vision 2027: ₹1,500cr rev (potentially ahead via 5 acquisitions worth ₹300-400cr). H2 momentum from busy seasons, AI.</li>
+<li><strong>Expansion Avenues</strong>:
+<ul>
+<li><strong>Courses/Geos</strong>: Veranda adding colleges (Tapasya/JK Shah), foreign courses (ACCA/CFA/CMA), online (BB Virtual). MPS: K12/Higher Ed/Pro Dev; Rubriq AI tool B2B pivot.</li>
+<li><strong>Acquisitions/Inorg</strong>: MPS 5 deals (Education focus, staged buyouts); loose integration for quick wins.</li>
+<li><strong>Asset-Light Models</strong>: Leased centers, SaaS/AI platforms (MPS DigiCore, MPS Labs ~250-300 team monetizing data/AI services).</li>
+</ul></li>
+<li><strong>Global/Margin Upside</strong>: Veranda SNVA JV (₹250cr rev FY26, US/UK/Europe unis). MPS: 61% Research rev, margins up to 42%; target 35-47% EBITDA via AI/operating leverage. ROE targets: 24-30% in 3-5yrs (Veranda).</li>
+<li><strong>Sector Potential</strong>: Test prep dominance (Veranda 2L+ students), AI-led edtech CAGR &gt;20%; Jaro’s investor meets signal M&amp;A/PE interest.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Execution/Integration</strong>: MPS: Acquisition bandwidth (5 deals), cultural alignment, 3-5yr staged buyouts. Veranda: Demerger timeline (NCLT/exchanges, target Jul’26 listing); REIT/school adds delayed.</li>
+<li><strong>Financial/Leverage</strong>: Veranda residual debt (₹150-160cr), refi delays could spike costs. Exceptional items (e.g., MPS ₹12.8cr write-back, Veranda ₹90cr non-cash gain) volatility.</li>
+<li><strong>Regulatory/Market</strong>: Demerger approvals (exchanges/NCLT), tax-neutral splits (cost allocation on pre-open/net worth). Competition erodes pricing; govt notifications impact test prep.</li>
+<li><strong>Macro/Operational</strong>: Geopolitical/tariffs (MPS); headcount optimization (MPS +11.5% to 3,071) risks talent retention. Seasonality/deferred rev leads to lumpy quarters.</li>
+<li><strong>Sector-Specific</strong>: Over-reliance on North America (MPS diversifying); corporate learning turnaround failure could drag blends.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Bullish with AI/scale tailwinds driving 20-50% segmental growth; FY26-27 prospects strong (₹1,500cr+ combined visions). Prioritize debt reduction, inorg execution for 30%+ ROE. Risks mitigated by cash flows, but monitor H2 for demerger/integration delivery. Sector poised for consolidation amid e-learning boom.</p>
+</div>
+</div>
+</div>
+<div id="meeting" class="section level3">
+<h3>Meeting</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-of-indian-e-learningedtech-sector" class="section level7">
+<p class="heading">Summary Analysis of Indian E-Learning/EdTech Sector</p>
+<p>Based on Q2/H1 FY26 financial results from key listed players (G-TEC Jainx, Jaro Education, MPS Ltd, Usha Martin Education, Veranda Learning), the sector shows resilience amid digital adoption but faces profitability pressures. Aggregate revenue ~₹1,00,000+ Cr (H1), with mixed profitability (Jaro/MPS profitable; Veranda loss-making). Analysis below categorizes <strong>tailwinds</strong>, <strong>headwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-drivers-1" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Revenue Momentum</strong>: Strong YoY growth (e.g., Jaro +20% H1 revenue ₹14,100 Cr; MPS +6% consolidated ₹38,072 Cr; Veranda commerce segment +72% to ₹17,167 Cr). Test prep (IAS/UPSC), commerce coaching, K-12 managed services driving 15-30% growth.</li>
+<li><strong>Digital/IPO Boost</strong>: Post-IPO scaling (Jaro listed Sep’25, cash reserves ₹43,240 Cr); Veranda QIP ₹35,800 Cr for debt reduction. Online shift aids scalability (MPS education solutions +42% H1).</li>
+<li><strong>Profitability Turnaround</strong>: Jaro PAT ₹2,455 Cr (H1); MPS consolidated PAT ₹9,068 Cr (+48% YoY). Cost optimizations (e.g., G-TEC other expenses -9%).</li>
+<li><strong>M&amp;A/Synergies</strong>: Veranda divestitures (Vocational segment to associate, gain ₹13,338 Cr exceptional); MPS Liberate acquisition for corporate learning.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>High Operating Costs</strong>: Employee expenses 30-40% of revenue (Jaro ₹4,058 Cr; MPS ₹16,161 Cr); marketing/advertising spikes (Veranda ₹957 Cr H1). EBITDA margins compressed (Veranda negative in some segments).</li>
+<li><strong>Debt Burden</strong>: Elevated finance costs (Veranda ₹4,976 Cr H1; Jaro ₹253 Cr). Leverage high (Veranda borrowings ₹22,757 Cr).</li>
+<li><strong>Losses in Segments</strong>: Veranda govt test prep EBITDA down; discontinued ops losses (₹226 Cr Q2). Usha Martin negligible revenue (₹35 Cr H1).</li>
+<li><strong>Seasonality/Competition</strong>: Q2 softness in test prep (Veranda -29% govt exams); intense rivalry in coaching (commerce/govt exams).</li>
+</ul>
+</div>
+<div id="growth-prospects-opportunities" class="section level8">
+<p class="heading"><strong>Growth Prospects (Opportunities)</strong></p>
+<ul>
+<li><strong>Segment Expansion</strong>: Commerce (Veranda #1 driver, 70% revenue); vocational/K-12 (MPS/Jaro scaling); govt exams recovery. Total addressable market ₹5-6 Tn (online edtech CAGR 25% to FY30).</li>
+<li><strong>Strategic Moves</strong>: Mergers (Veranda VXLS/JKSC scheme; MPS ADI BPO); international (MPS US/EU subs 50% revenue). Jaro single-segment focus yields 20%+ growth.</li>
+<li><strong>Monetization</strong>: Upskilling demand (Jaro EPS ₹12; MPS research/education 60% revenue). Digital platforms enable 2x scalability.</li>
+<li><strong>Capex Efficiency</strong>: Post-fundraise deleveraging (Veranda NCD redemption); tech investments for margins &gt;20% by FY27.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Regulatory/Execution</strong>: Pending NCLT/RBI approvals (Veranda CIC waiver, schemes); forex volatility (MPS 10% OCI from translation).</li>
+<li><strong>Debt Sustainability</strong>: High interest (10-15% of revenue); refinancing risks amid rate hikes.</li>
+<li><strong>Customer Acquisition</strong>: Marketing dependency (30% costs); churn in competitive test prep/commerce.</li>
+<li><strong>Macro/Operational</strong>: Seasonality (admissions cycle); talent retention (high ESOPs); discontinued ops drag (Veranda ₹101 Cr pre-tax profit H1 but volatile).</li>
+<li><strong>Valuation Pressure</strong>: Post-IPO corrections; muted PAT growth despite revenue (sector P/E 50x+).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Sector poised for 20-25% CAGR driven by digital tailwinds, but profitability hinges on debt reduction (target D/E &lt;1x) and segment diversification. Bullish on Jaro/MPS (stable); cautious on Veranda (turnaround phase). Monitor Q3 for festive/admissions traction.</p>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3>Press Release</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-e-learning-sector-analysis" class="section level7">
+<p class="heading">Indian E-Learning Sector Analysis</p>
+<p>Using the provided documents from G-TEC JAINX Education Limited (financial results publication), MPS Limited (acquisition announcement), and Veranda Learning Solutions Limited (innovation contest update) as inputs, here’s a concise analysis of the <strong>Indian E-Learning sector</strong>. These reflect listed players’ activities in K-12, corporate training, and tech-enabled learning (e.g., VR, gamification). The sector benefits from digital adoption but faces maturity challenges.</p>
+<div id="tailwinds-positive-drivers-2" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>International Expansion &amp; Strategic Acquisitions</strong>: MPS Interactive Systems (MPSi), a key Indian e-learning arm, completed 100% acquisition of Australia’s Liberate Group (Liberate Learning, App-eLearn, Liberate eLearning) in Oct 2025. This boosts global footprint in APAC, adds immersive tech (VR, 360° simulations, gamification), and targets blue-chip corporates/governments. Synergies with prior buys (EI Design 2022) signal scaling via M&amp;A.</li>
+<li><strong>Innovation &amp; Skill-Building Initiatives</strong>: Veranda K-12’s Avinya platform shortlisted 15 ideas from 400+ entries across 50+ schools (8 cities, incl. tier-2/3 like Erode, Trichy). Ties to UN SDGs, hosted at IIIT Bengaluru; emphasizes mentorship, bootcamps, and real-world problem-solving. Expands beyond metros, fostering demand for blended/e-learning tools.</li>
+<li><strong>Regulatory Compliance &amp; Visibility</strong>: G-TEC JAINX’s timely audited results publication (Q4/FY25, newspapers 16.05.2025) shows operational stability. Listed status (NSE: GTECJAINX) aids investor confidence amid sector digitization.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-3" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Document Quality &amp; Digital Friction</strong>: G-TEC’s newspaper ad scan is heavily garbled (repetitive numbers, OCR errors), hinting at persistent issues in low-cost print-to-digital transitions, common in Indian edtech for rural/outreach compliance.</li>
+<li><strong>Geographic &amp; Scale Concentration</strong>: Veranda’s entries span Jammu &amp; Kashmir to Tamil Nadu but highlight urban skew (Bengaluru/Chennai dominate shortlists). Tier-2/3 penetration lags despite efforts.</li>
+<li><strong>Compliance Burden</strong>: All filings under SEBI Reg 30/47 emphasize disclosures, increasing costs for smaller players amid slowing post-COVID edtech funding.</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High Potential in Niche Segments</strong>: Corporate (MPSi: Top 20 global rankings in content/gamification) and K-12 (Veranda: 600+ students engaged) show 20-30% YoY potential via tech (AI, VR, platforms). MPS’s “Vision 2027” targets organic + inorganic growth; Liberate adds AU$ revenue streams.</li>
+<li><strong>Pan-India &amp; Global Reach</strong>: Veranda’s national footprint (15 states) + MPSi’s APAC push could drive 15-25% sector CAGR, fueled by govt. pushes (NEP 2020, skill India). Blended models (e.g., Avinya bootcamps) position for hybrid demand.</li>
+<li><strong>M&amp;A Momentum</strong>: 7 acquisitions by MPS (2013-2020) + recent ones indicate consolidation, unlocking synergies in upskilling/study abroad.</li>
+</ul>
+</div>
+<div id="key-risks-4" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Acquisition Integration</strong>: MPSi’s Liberate buy risks cultural/operational mismatches (India-Australia); valuation disputes or delayed synergies could erode value.</li>
+<li><strong>Competition &amp; Market Saturation</strong>: Intense rivalry (BYJU’s-like giants, global players); innovation contests (Avinya) may not convert to sustained revenue if not scaled.</li>
+<li><strong>Economic/Regulatory</strong>: Recession could cut edtech spends; SEBI scrutiny (e.g., financial result mandates) + forex volatility (AU acquisitions) pose threats. No FY25 numbers visible, but prior edtech layoffs signal profitability pressures.</li>
+<li><strong>Tech &amp; Execution</strong>: Reliance on digital (QR codes, websites in filings) vulnerable to cyber/data privacy issues (GDPR for global ops).</li>
+</ul>
+<p><strong>Summary</strong>: Indian e-learning enjoys <strong>strong tailwinds</strong> from M&amp;A (MPS) and innovation (Veranda), with <strong>20%+ growth prospects</strong> in blended/corporate segments. However, <strong>headwinds</strong> like compliance and digital gaps persist, alongside <strong>risks</strong> of integration failures and competition. Overall positive, with listed players like MPS/Veranda leading consolidation. Monitor Q1 FY26 results for traction.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

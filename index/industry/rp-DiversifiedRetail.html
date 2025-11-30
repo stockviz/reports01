@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>Diversified Retail</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Diversified Retail</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/DiversifiedRetail.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/DiversifiedRetail.fan.CAP_WT.png" /></p>
+<p><img src="plots/DiversifiedRetail.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/DiversifiedRetail.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/DiversifiedRetail.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/DiversifiedRetail.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/DiversifiedRetail.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d6f105d659f5007c00bf" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d6f105d659f5007c00bf">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-2.91%","-2.04%"],["-8.33%","-6.96%"],["-7.37%","-7.35%"],["-7.05%","-2.72%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/DiversifiedRetail.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/DiversifiedRetail.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-45753d12842210c2bc73" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-45753d12842210c2bc73">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.DMART.html\" target=\"_blank\">DMART<\/a>","<a href=\"/reports02/eq-in/risk/in.VMM.html\" target=\"_blank\">VMM<\/a>","<a href=\"/reports02/eq-in/risk/in.VMART.html\" target=\"_blank\">VMART<\/a>","<a href=\"/reports02/eq-in/risk/in.SHOPERSTOP.html\" target=\"_blank\">SHOPERSTOP<\/a>","<a href=\"/reports02/eq-in/risk/in.EMIL.html\" target=\"_blank\">EMIL<\/a>","PATELRMART","<a href=\"/reports02/eq-in/risk/in.SPENCERS.html\" target=\"_blank\">SPENCERS<\/a>","<a href=\"/reports02/eq-in/risk/in.OSIAHYPER.html\" target=\"_blank\">OSIAHYPER<\/a>","<a href=\"/reports02/eq-in/risk/in.RETAIL.html\" target=\"_blank\">RETAIL<\/a>"],[0.6241670448760804,0.2988215898821627,0.03674860170987072,0.01707399696139621,0.01742797896970018,0.002148936949181547,0.001795700161387273,0.001693863084374735,0.0001222874058462114],[0.7647267659235741,0.1845774546780761,0.01824099229002987,0.0139218518329345,0.01382941590474592,0.002537977980169596,0.001212262951823407,0.0008921325697466106,6.114586889992025e-05]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":9,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-7e6e9d79290013a4c160" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-7e6e9d79290013a4c160">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.DMART.html\" target=\"_blank\">DMART<\/a>","<a href=\"/reports02/eq-in/risk/in.VMM.html\" target=\"_blank\">VMM<\/a>","<a href=\"/reports02/eq-in/risk/in.VMART.html\" target=\"_blank\">VMART<\/a>","<a href=\"/reports02/eq-in/risk/in.SHOPERSTOP.html\" target=\"_blank\">SHOPERSTOP<\/a>","<a href=\"/reports02/eq-in/risk/in.EMIL.html\" target=\"_blank\">EMIL<\/a>","PATELRMART","<a href=\"/reports02/eq-in/risk/in.SPENCERS.html\" target=\"_blank\">SPENCERS<\/a>","<a href=\"/reports02/eq-in/risk/in.OSIAHYPER.html\" target=\"_blank\">OSIAHYPER<\/a>","<a href=\"/reports02/eq-in/risk/in.RETAIL.html\" target=\"_blank\">RETAIL<\/a>"],[78.83303043367876,18.60336942929554,0.02282611001680289,-3.834082769517403,2.07220812668608,null,-5.620292726070033,0.4397833386818388,0.01370650009549155],[82.06569420401591,25.18319315964569,0.03850027662003822,-4.293509269312897,2.14935413175448,1.794834229282571,-7.656761018772475,0.7049877866711973,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":9,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-7785f1bdfbb78ce6c55b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-7785f1bdfbb78ce6c55b">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.DMART.html\" target=\"_blank\">DMART<\/a>","<a href=\"/reports02/eq-in/risk/in.VMM.html\" target=\"_blank\">VMM<\/a>","<a href=\"/reports02/eq-in/risk/in.VMART.html\" target=\"_blank\">VMART<\/a>","<a href=\"/reports02/eq-in/risk/in.SHOPERSTOP.html\" target=\"_blank\">SHOPERSTOP<\/a>","<a href=\"/reports02/eq-in/risk/in.EMIL.html\" target=\"_blank\">EMIL<\/a>","PATELRMART","<a href=\"/reports02/eq-in/risk/in.SPENCERS.html\" target=\"_blank\">SPENCERS<\/a>","<a href=\"/reports02/eq-in/risk/in.OSIAHYPER.html\" target=\"_blank\">OSIAHYPER<\/a>","<a href=\"/reports02/eq-in/risk/in.RETAIL.html\" target=\"_blank\">RETAIL<\/a>"],[59.19658637541352,17.64515086319238,0.1034416332437147,8.427121843161499,5.940577166725902,null,2.585462529736578,1.764325768554106,0.009910455967794036],[47.92511766563666,22.74311839398579,0.09145541189114018,12.76666580251771,9.155516517809462,2.116673285919714,3.340551587570825,1.850990878700912,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":9,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-27 </em></p>
+</div>
+</div>
+<div id="analysis-of-indian-diversified-retail-sector" class="section level1">
+<h1>Analysis of Indian Diversified Retail Sector</h1>
+<p><strong>Overview</strong>:<br />
+The Indian diversified retail sector (spanning grocery, apparel, FMCG, electronics, and multi-format chains) remains resilient amid competition from quick commerce (e.g., Blinkit, Zepto) and e-commerce giants. Insights from Q2/H1 FY26 transcripts/filings of key players like DMart, Vishal Mega Mart, Spencer’s Retail, Electronics Mart India (EMIL), Patel Retail, V-Mart, and others highlight a focus on value retailing, private labels, store expansion, and omnichannel strategies. Revenue growth is driven by SSSG (8-12% for leaders like DMart/Vishal), new stores (50-100+/year), and GST cuts, but profitability faces quick commerce headwinds. Sector TAM is vast (~1,800-2,200 stores potential per DMart), with Tier 2/3 cities as white spaces.</p>
+<div id="headwinds" class="section level2">
+<h2>Headwinds</h2>
+<ul>
+<li><strong>Quick Commerce Disruption</strong>: Offline SSSG impacted (DMart: 1-1.5%; Spencer’s: cannibalization). Consumers shifting to 10-30 min delivery (Spencer’s Jiffy: 30% QoQ growth but losses; Vishal: 1.5-9% store revenue).</li>
+<li><strong>Margin Pressures</strong>: Discounts/FMCG competition (DMart: food mix up, EBITDA dip to 7.9%); employee/wage inflation (Spencer’s: opex optimization); excess inventory (EMIL: ₹200cr AC stock).</li>
+<li><strong>External Disruptions</strong>: Poor summer/monsoons (EMIL AC sales down); festival shifts (Vishal: Durga Puja/Chhath boosted Q2); regional issues (Spencer’s Assam mourning).</li>
+<li><strong>Real Estate/Execution</strong>: High costs, availability (DMart: acceleration needed); new store ramp-up (EMIL: newer stores at 3% EBITDA vs. mature 6.8%).</li>
+<li><strong>Consumer Trends</strong>: Value sensitivity, deflation in staples (DMart); premium shift muted.</li>
+</ul>
+</div>
+<div id="tailwinds" class="section level2">
+<h2>Tailwinds</h2>
+<ul>
+<li><strong>GST Rationalization</strong>: Boosts consumption (EMIL: large appliances/TVs; Vishal: 50% FMCG/34% GM impacted; all passing 100% benefits).</li>
+<li><strong>Strong SSSG/Volume Growth</strong>: Double-digit (Vishal: 12.1%; DMart: 8.4%; Spencer’s offline flat but improving). Festivals/monsoons aiding (Vishal Q2 +22%).</li>
+<li><strong>Private Labels/Own Brands</strong>: Margin accretive (Vishal: 74.7% revenue, +185bps; Patel: 17% to 35%; DMart: steady growth).</li>
+<li><strong>Store Expansion</strong>: Aggressive (DMart: 50 stores; Vishal: 51 in H1 to 742 stores/493 cities; EMIL: 75 since H1 FY24).</li>
+<li><strong>Omnichannel</strong>: Quick commerce traction (Vishal: 695 stores/1.08cr users; Spencer’s Jiffy: 8k orders/day, positive unit economics).</li>
+<li><strong>Macros</strong>: Income tax cuts, good Kharif rains (Vishal/DMart optimistic); rural/Tier 2-3 demand.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level2">
+<h2>Growth Prospects</h2>
+<ul>
+<li><strong>Penetration in Underserved Areas</strong>: Tier 2/3/4/rural (V-Mart investor meets; Vishal pilots 50k pop stores; DMart North/UP; Patel Pune/MMR).</li>
+<li><strong>New Geographies/Formats</strong>: South (Vishal Kerala success, smaller stores); pilots (Spencer’s grey stores; Patel small-town).</li>
+<li><strong>Private Labels/Exports</strong>: Scale to 35%+ revenue (Patel); Vishal/DMart emphasize.</li>
+<li><strong>Quick Commerce</strong>: Measured scaling (Spencer’s: 10k orders/day target; Vishal: FMCG-dominant).</li>
+<li><strong>Membership/Loyalty</strong>: Stickiness (Spencer’s: 50k members, 20% sales).</li>
+<li><strong>Revenue CAGR</strong>: 15-20%+ (Patel guidance; Vishal/EMIL low-teens+ via stores/SSSG).</li>
+<li><strong>EBITDA Margins</strong>: Steady/improving (Vishal: 13.9%; DMart: 7.9%; Spencer’s: 21% gross).</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Company</th>
+<th>H1 FY26 Revenue Growth</th>
+<th>SSSG</th>
+<th>EBITDA Margin</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Vishal Mega Mart</td>
+<td>21.6%</td>
+<td>12.1%</td>
+<td>13.9%</td>
+</tr>
+<tr class="even">
+<td>DMart</td>
+<td>~17% (standalone)</td>
+<td>8.4%</td>
+<td>7.9%</td>
+</tr>
+<tr class="odd">
+<td>Spencer’s</td>
+<td>QoQ 7% (consol)</td>
+<td>Flat (offline)</td>
+<td>Flat (consol)</td>
+</tr>
+<tr class="even">
+<td>EMIL</td>
+<td>N/A</td>
+<td>11.4% (Q2)</td>
+<td>5.8%</td>
+</tr>
+<tr class="odd">
+<td>Patel Retail</td>
+<td>9%</td>
+<td>N/A</td>
+<td>8.7%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Long-term</strong>: ₹1L+ cr sector opportunity via 10-20% store adds, 8-12% SSSG.</p>
+</div>
+<div id="key-risks" class="section level2">
+<h2>Key Risks</h2>
+<ul>
+<li><strong>Quick Commerce Escalation</strong>: Deeper penetration/offline erosion (DMart: resilient but monitoring; Spencer’s: measured growth).</li>
+<li><strong>Macro/Execution</strong>: Inflation, weak monsoons, store ramp-up delays (EMIL newer stores drag).</li>
+<li><strong>Competition</strong>: Unorganized (mom-pop), regionals (DMart: value moat); e-com pricing (Vishal: INR99 defense).</li>
+<li><strong>Supply Chain/Capex</strong>: Inventory overhang, warehousing (Vishal/DMart investing).</li>
+<li><strong>Capital/Debt</strong>: Expansion funding (Spencer’s: promoter debt; Patel: balanced).</li>
+<li><strong>Regulatory</strong>: GST volatility, real estate hurdles.</li>
+</ul>
+<p><strong>Summary</strong>:<br />
+<strong>Bullish Outlook</strong> with 15-25% revenue CAGR potential via store adds (Tier 2/3), SSSG (8-12%), private labels (70%+ Vishal), and quick commerce (5-10% revenue). Tailwinds from GST cuts/macros outweigh quick commerce headwinds for value players. Leaders (Vishal/DMart) resilient via scale/moats; margins stable at 8-14% EBITDA. <strong>Risks moderate</strong> (competition &gt; macro), but execution key. Sector poised for ₹1L+ cr TAM capture by FY28-30, favoring omnichannel/value formats. Investors: Focus on SSSG trajectory, quick commerce unit economics.</p>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-27 </em></p>
+</div>
+</div>
+</div>
+<div id="indian-diversified-retail-sector-analysis" class="section level1">
+<h1>Indian Diversified Retail Sector Analysis</h1>
+<p>The Indian diversified retail sector (encompassing grocery/FMCG, apparel, electronics, and hypermarkets) remains resilient amid macroeconomic tailwinds like GST rationalization, festive buoyancy, and rural recovery. Key players (DMart, Vishal Mega Mart, Spencer’s, Electronics Mart, Patel Retail, V-Mart) emphasize value formats, private labels, store expansions, and omnichannel pivots. Below is a structured analysis based on Q2/H1 FY26 transcripts and filings.</p>
+<div id="tailwinds-1" class="section level2">
+<h2><strong>Tailwinds</strong></h2>
+<ul>
+<li><strong>Consumer Resilience &amp; Value Focus</strong>: Strong SSSG (DMart 8.4%; Vishal 12.1%; Electronics Mart 11.4%) driven by volume growth, uptrading to aspirational products (Vishal), and festivals (Durga Puja/Chhath boosted Vishal Q2). Private labels contribute 17-75% revenue (DMart 17%→35% aspiration; Vishal 74.7%), aiding margins (DMart EBITDA 7.9%; Vishal 13.9%).</li>
+<li><strong>GST Rationalization</strong>: Passed 100% to consumers (Vishal: 50% FMCG/34% GM revenue impacted positively); expected to boost consumption without hurting bill values (DMart/Vishal optimistic).</li>
+<li><strong>Geographic &amp; Format Expansion</strong>: Accelerated store adds (DMart 50+/year; Vishal 51 in H1→742 stores; Electronics Mart +75 since H1 FY24). Deeper Tier 2/3 penetration (V-Mart Gurugram meets; Vishal pilots 50k-population format).</li>
+<li><strong>Omnichannel Momentum</strong>: Quick commerce traction (Spencer’s Jiffy: 30% QoQ, INR52cr Q2; Vishal: 695 stores/1.08cr users, 1.5-9% store revenue; DMart Ready: 21-22% YoY).</li>
+<li><strong>Efficiency Gains</strong>: Optimized costs (Spencer’s offline expenses down; Patel EBITDA +31%); loyalty programs (Spencer’s My Spencer Rewards: 50k members, 20% sales).</li>
+</ul>
+</div>
+<div id="headwinds-1" class="section level2">
+<h2><strong>Headwinds</strong></h2>
+<ul>
+<li><strong>Quick Commerce Disruption</strong>: Cannibalizes offline (DMart: 1-1.5% SSSG impact; Spencer’s: consumer shift; Electronics Mart: competes on pricing/convenience). High fulfilment costs (Spencer’s unit economics positive but overheads drag).</li>
+<li><strong>Margin Pressures</strong>: Staples deflation, wage/real estate inflation (DMart EBITDA dip to 7.9%; Electronics Mart 5.1%; Spencer’s flat EBITDA). New store ramp-up dilutes (Electronics Mart: newer stores 3% EBITDA vs. mature 6.8%).</li>
+<li><strong>Seasonality/Macro Volatility</strong>: Weak summers (Electronics Mart: INR200cr AC inventory); extended monsoons/festive shifts (Vishal Assam disruptions).</li>
+<li><strong>Competition</strong>: D2C/FMCG pricing wars (DMart: incumbents challenged); unorganized sector (Vishal: mom-pop dominance).</li>
+<li><strong>Operational Challenges</strong>: High DOH/inventory (Electronics Mart 76 days); real estate scarcity (DMart: North India white spaces).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level2">
+<h2><strong>Growth Prospects</strong></h2>
+<ul>
+<li><strong>High TAM &amp; Penetration</strong>: Untapped Tier 2/3/4 (DMart: North/UP acceleration; Vishal: 493 cities; Patel: MMR/Pune). Store CAGR 10-20% (DMart 10-15%; Electronics Mart 30+ FY26).</li>
+<li><strong>Omnichannel Scale</strong>: Quick commerce to 10k orders/day (Spencer’s Jiffy); apps/loyalty (DMart Ready 24 cities; Patel app 3.5% retail).</li>
+<li><strong>Private Labels &amp; Efficiency</strong>: Margin tailwinds (DMart: long-term play; Patel: 52% non-retail). SPSF uplift (Spencer’s: INR1,600→INR2,200+ aspiration).</li>
+<li><strong>Macro Boost</strong>: Income tax cuts, good Kharif/rains (Vishal/DMart optimistic); GST aiding premiumization (Electronics Mart ASP up).</li>
+<li><strong>Revenue Projections</strong>: Low-teens growth (Electronics Mart); 15-20% (Patel); 21.6% H1 (Vishal). Console buoyancy (Spencer’s 7% QoQ).</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level2">
+<h2><strong>Key Risks</strong></h2>
+<ul>
+<li><strong>Quick Commerce Cannibalization</strong>: 10-30min delivery erodes offline (DMart: resilient but counters via stores; Spencer’s: loyalty focus). Unit economics fragile (high CAC/marketing).</li>
+<li><strong>Macro/Inflation</strong>: Rural slowdown, commodity volatility (DMart deflation hit staples); weak seasons (Electronics Mart AC overhang).</li>
+<li><strong>Execution Risks</strong>: New store ramp (Electronics Mart: 131 immature stores); capex (Vishal warehouses; Spencer’s debt). Refurbishments/cannibalization drag SSSG (Vishal adjusted 12.1%).</li>
+<li><strong>Competition/Fragmentation</strong>: Unorganized (80% market), D2C/e-com pricing (DMart: D2C premium reluctance); regional players (Electronics Mart South).</li>
+<li><strong>Balance Sheet/Liquidity</strong>: Debt reliance (Spencer’s charges); capex intensity (store/DC expansions). ESOP dilution (Vishal).</li>
+<li><strong>Regulatory</strong>: GST shifts, export curbs (Patel sugar ban).</li>
+</ul>
+</div>
+<div id="summary" class="section level2">
+<h2><strong>Summary</strong></h2>
+<p><strong>Bull Case</strong>: Sector poised for 15-20% revenue CAGR via Tier 2/3 expansion, private labels (70%+ mix), and quick commerce (5-10% revenue share). Tailwinds like GST/income tax cuts could sustain double-digit SSSG, pushing EBITDA margins to 8-14%. Leaders (DMart/Vishal) leverage value moats for resilience.</p>
+<p><strong>Base Case</strong>: Steady 10-15% growth with stable 7-9% EBITDA margins; omnichannel offsets offline pressure.</p>
+<p><strong>Bear Case</strong>: Quick commerce erodes 1-2% SSSG; macro weakness caps growth at 5-8%; margins slip to 6-7% on competition/inflation.</p>
+<p><strong>Overall Outlook</strong>: <strong>Positive</strong> – Resilient value players dominate untapped markets (Tier 2/3), but quick commerce demands omnichannel agility. Risks skewed to execution/competition; monitor Q3 festive for confirmation. Sector ROCE improving (Spencer’s 9.8%; Vishal PAT 5.9%).</p>
+<div id="press-release" class="section level3">
+<h3>Press Release</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-diversified-retail-sector-analysis-q2h1-fy26" class="section level7">
+<p class="heading">Indian Diversified Retail Sector Analysis (Q2/H1 FY26)</p>
+<p><strong>Based on Q2/H1 FY26 results from key players: Avenue Supermarts (DMart - grocery focus), Patel Retail (value retail/food processing), Shoppers Stop (departmental/fashion/beauty), V-Mart (value fashion), and Vishal Mega Mart (apparel/GM/FMCG).</strong> These represent a mix of grocery, value fashion, premium/departmental, and diversified formats, showing robust top-line growth amid margin pressures.</p>
+<div id="tailwinds-positive-drivers" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Strong Revenue Momentum</strong>: YoY growth of 15-22% across players (DMart: 15.4%; Patel: 15%; Shoppers Stop: 10%; V-Mart: 22%; Vishal: 22.4%). H1 growth sustained at 9-22%. SSSG healthy (DMart mature stores: 6.8%; others: 10-12%).</li>
+<li><strong>EBITDA/PAT Expansion</strong>: Exceptional in value formats (Patel PAT +73%, EBITDA +31%; V-Mart EBITDA +85%; Vishal Adj. EBITDA +34%). Overall leverage from scale/ops efficiency.</li>
+<li><strong>Aggressive Expansion</strong>: Net store adds: DMart (8), Patel (1), Shoppers Stop (7), V-Mart (23 net), Vishal (25 net). Total stores scaling (V-Mart: 533; Vishal: 742). Focus on Tier-2/3 cities.</li>
+<li><strong>Category Tailwinds</strong>: Beauty (+22% Shoppers Stop), own/private labels (Vishal: 75%; Patel growing), FMCG/GM stability. Premiumization driving mix (Shoppers Stop: 69% premium sales, +16% YoY).</li>
+<li><strong>Policy Support</strong>: GST reforms (DMart passed benefits); festive/wedding sops expected to boost demand.</li>
+<li><strong>Digital/Omni</strong>: Quick commerce (Vishal in 695 stores), apps (Patel, V-Mart via LimeRoad).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Margin Compression</strong>: EBITDA margins dipped in grocery/premium (DMart: 7.6% vs 7.9%; Shoppers Stop: stable but Non-GAAP thin at 1.6%). PAT growth lagged revenue (DMart: +5.1%).</li>
+<li><strong>Investment Drag</strong>: New ventures/loss-making units (Shoppers Stop INTUNE/SSBeauty.in: -₹24 Cr EBITDA loss); e-com exits (DMart ceased 5 cities).</li>
+<li><strong>Consumption Softness</strong>: Value fashion slowdown (Shoppers Stop INTUNE LFL flat early, improving to +10% festive); mature store growth muted (DMart: 6.8%).</li>
+<li><strong>Opex Inflation</strong>: Marketing/loyalty spends up (Shoppers Stop), higher finance/depreciation from leases/capex.</li>
+<li><strong>External</strong>: Early festive shifts (Vishal noted Durga Puja impact); regional ops cessation.</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High</strong>: 15-25% revenue CAGR feasible via 20-50 annual store adds, SSSG 8-12%. Tier-2/3 penetration (V-Mart/Vishal focus) + urban premium (Shoppers Stop beauty +22%).</li>
+<li><strong>Diversification</strong>: Own brands (74-75% mix), beauty/distribution (Shoppers Stop +103% sales), exports (Patel ₹50 Cr order book), quick commerce (Vishal 10.8 Mn users).</li>
+<li><strong>Festive Leverage</strong>: Strong Q3/Q4 outlook (Shoppers Stop: weddings/sops; others festive run-up).</li>
+<li><strong>Scale Benefits</strong>: Loyalty programs (Shoppers Stop First Citizen: 83% sales), omni-channel (V-Mart LimeRoad).</li>
+<li><strong>Long-Term</strong>: ₹1-2 Tn addressable value retail market; rising aspirations in middle/lower-middle income.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Demand/Execution</strong>: Weak consumption in value segments; cannibalization/refurb risks (SSSG adjustments noted).</li>
+<li><strong>Cost Pressures</strong>: Input inflation, wage hikes, lease costs (IND AS 116 drag across players).</li>
+<li><strong>Competition</strong>: Intense from unorganized/quick commerce (Blinkit, etc.); e-com headwinds.</li>
+<li><strong>Macro/Regulatory</strong>: Rural slowdown, GST volatility, economic instability.</li>
+<li><strong>Capex/Debt</strong>: High expansion capex (Shoppers Stop ₹34 Cr/Q2); working capital strain (negative NCA in Shoppers Stop).</li>
+<li><strong>Profitability</strong>: New stores/ventures diluting margins short-term; ESOP/exceptional items impacting PAT.</li>
+</ul>
+<p><strong>Summary</strong>: Sector resilient with 15-22% revenue growth driven by store expansion, SSSG, and value/premium plays. Tailwinds from scale, policy, and categories like beauty/own-brands outweigh headwinds (margins, investments). Prospects strong (20%+ CAGR) in Tier-2/3 + digital, but risks from demand softness and costs warrant monitoring festive execution. Overall <strong>Bullish</strong> with disciplined ops key to sustaining 8-10% EBITDA margins.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

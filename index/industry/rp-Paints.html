@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>Paints</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Paints</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Paints.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Paints.fan.CAP_WT.png" /></p>
+<p><img src="plots/Paints.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Paints.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Paints.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Paints.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Paints.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e92fcc61191043f51a88" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e92fcc61191043f51a88">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["0.03%","4.82%"],["0.87%","12.1%"],["0.34%","13.65%"],["2.34%","18.77%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Paints.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Paints.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-0c763f3275f5d12f6dd6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0c763f3275f5d12f6dd6">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.ASIANPAINT.html\" target=\"_blank\">ASIANPAINT<\/a>","<a href=\"/reports02/eq-in/risk/in.BERGEPAINT.html\" target=\"_blank\">BERGEPAINT<\/a>","<a href=\"/reports02/eq-in/risk/in.KANSAINER.html\" target=\"_blank\">KANSAINER<\/a>","<a href=\"/reports02/eq-in/risk/in.AKZOINDIA.html\" target=\"_blank\">AKZOINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIGOPNTS.html\" target=\"_blank\">INDIGOPNTS<\/a>","<a href=\"/reports02/eq-in/risk/in.SIRCA.html\" target=\"_blank\">SIRCA<\/a>","<a href=\"/reports02/eq-in/risk/in.SHALPAINTS.html\" target=\"_blank\">SHALPAINTS<\/a>","<a href=\"/reports02/eq-in/risk/in.KAMOPAINTS.html\" target=\"_blank\">KAMOPAINTS<\/a>"],[0.8235108172134815,0.102451170813437,0.03022131029463482,0.01940432883715375,0.01782733417512922,0.005003769715411044,0.0008805702190308689,0.0007006987317217848],[0.7139498332599074,0.1714352315146993,0.04949608361829094,0.03992335606014389,0.01578277718662262,0.00739171574249535,0.001444120540710991,0.0005768820771295582]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-0d33b44dc0cb0da9a130" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0d33b44dc0cb0da9a130">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.ASIANPAINT.html\" target=\"_blank\">ASIANPAINT<\/a>","<a href=\"/reports02/eq-in/risk/in.BERGEPAINT.html\" target=\"_blank\">BERGEPAINT<\/a>","<a href=\"/reports02/eq-in/risk/in.KANSAINER.html\" target=\"_blank\">KANSAINER<\/a>","<a href=\"/reports02/eq-in/risk/in.AKZOINDIA.html\" target=\"_blank\">AKZOINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIGOPNTS.html\" target=\"_blank\">INDIGOPNTS<\/a>","<a href=\"/reports02/eq-in/risk/in.SIRCA.html\" target=\"_blank\">SIRCA<\/a>","<a href=\"/reports02/eq-in/risk/in.SHALPAINTS.html\" target=\"_blank\">SHALPAINTS<\/a>","<a href=\"/reports02/eq-in/risk/in.KAMOPAINTS.html\" target=\"_blank\">KAMOPAINTS<\/a>"],[51.14007802780048,17.40874837126613,9.68298870037518,11.49183967720944,2.495894752574024,0.7168394729715437,-0.5080209697700403,0.07757691613494241],[60.99215026738864,16.02238301410768,9.443337902693255,10.89743666238591,2.238579377468125,0.9379352036507245,-0.6151567443684752,0.08333431667414679]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-925988864f0c06a5c5eb" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-925988864f0c06a5c5eb">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.ASIANPAINT.html\" target=\"_blank\">ASIANPAINT<\/a>","<a href=\"/reports02/eq-in/risk/in.BERGEPAINT.html\" target=\"_blank\">BERGEPAINT<\/a>","<a href=\"/reports02/eq-in/risk/in.KANSAINER.html\" target=\"_blank\">KANSAINER<\/a>","<a href=\"/reports02/eq-in/risk/in.AKZOINDIA.html\" target=\"_blank\">AKZOINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIGOPNTS.html\" target=\"_blank\">INDIGOPNTS<\/a>","<a href=\"/reports02/eq-in/risk/in.SIRCA.html\" target=\"_blank\">SIRCA<\/a>","<a href=\"/reports02/eq-in/risk/in.SHALPAINTS.html\" target=\"_blank\">SHALPAINTS<\/a>","<a href=\"/reports02/eq-in/risk/in.KAMOPAINTS.html\" target=\"_blank\">KAMOPAINTS<\/a>"],[44.20023967648913,18.16899926024929,12.24234429342625,12.4182612193737,2.141789557847161,0.3196415496714242,0.8459236964537062,0.3399000856825974],[53.67590049772853,18.14871536898679,12.32848762361684,11.85878162000664,2.095954455749631,0.531087613369928,0.966426281917624,0.3946465386240171]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-paints-industry-analysis-headwinds-tailwinds-growth-prospects-and-key-risks" class="section level7">
+<p class="heading">Indian Paints Industry Analysis: Headwinds, Tailwinds, Growth Prospects, and Key Risks</p>
+<p>The Indian paints industry (valued at ~₹1 lakh crore, dominated by decorative ~85% and industrial ~15%) faced a challenging Q2 FY26 due to extended monsoons and competitive pressures, as evidenced across transcripts from AkzoNobel India, Indigo Paints, Kansai Nerolac, Berger, Kamdhenu, Sirca Paints, and others. Overall revenue growth was muted (flat to low single-digit for leaders like Kansai Nerolac; stronger for niche players like Sirca at 24% YoY), with volumes showing early recovery but margins pressured. Premium segments outperformed mass/economy. Here’s a structured analysis:</p>
+<div id="headwinds-key-challenges-in-q2-fy26" class="section level8">
+<p class="heading"><strong>Headwinds (Key Challenges in Q2 FY26)</strong></p>
+<ul>
+<li><strong>Demand Disruption</strong>: Prolonged, heavy monsoons (longest in history, no mid-season breaks) delayed decorative sales (repainting, exteriors). Urban/rural demand weak; mass market declined (e.g., AkzoNobel: mass segment down; Indigo: putty/cement paints degrew).</li>
+<li><strong>Intense Competition</strong>: New entrants (e.g., Birla Opus/JSW Paints) drove aggressive discounting, warranties, and grammage hikes, eroding pricing power. Leaders like Asian Paints/Berger saw value lag volumes; multi-brand dealer shifts common (Kansai: dealers returning post-experimentation).</li>
+<li><strong>Margin Pressures</strong>: Negative mix shift (mid/low-margin B2B grew faster); raw material inflation in coatings (despite crude softening); higher A&amp;P/opex for activation. Gross margins dipped 1-2% for some (AkzoNobel: 41.3%).</li>
+<li><strong>Seasonal/Execution Issues</strong>: Shorter Diwali window; high dealer inventories early Q2 led to liquidation mode.</li>
+</ul>
+</div>
+<div id="tailwinds-supportive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Supportive Factors)</strong></p>
+<ul>
+<li><strong>Premiumization &amp; Mix Improvement</strong>: Premium decorative (e.g., emulsions, Velvet Touch) and industrial (auto/specialty coatings) grew mid-single to double-digits (AkzoNobel: premium +mid-single; Indigo: emulsions value +7% vs. volume +3.9%; Kansai: Paint+ up 240 bps).</li>
+<li><strong>Policy &amp; Macro Boost</strong>: GST cuts, income tax reductions, RBI rate cuts (100 bps), bumper monsoons (rural sentiment), infra capex (₹11 lakh crore budget). Repainting cycle due (post-2022 COVID peak).</li>
+<li><strong>Industrial Strength</strong>: Stable auto (GST reforms spurred bookings); infra (railways, power, marine) order books strong (Kansai: performance coatings double-digit; AkzoNobel: industrial led growth).</li>
+<li><strong>Operational Levers</strong>: Dealer expansions (Kansai: +2,500; Indigo: +4-4.5% revenue add); digitization (AkzoNobel: BCG-led lead mgmt.); benign RM (crude/TiO2 softening, anti-dumping stalled).</li>
+</ul>
+</div>
+<div id="growth-prospects-h2-fy26-beyond" class="section level8">
+<p class="heading"><strong>Growth Prospects (H2 FY26 &amp; Beyond)</strong></p>
+<ul>
+<li><strong>Demand Revival</strong>: Q3/Q4 optimism (post-Diwali/weddings; October scanning/collections up 30-40% per Indigo). Industry volumes mid-high single-digit, revenues double-digit (AkzoNobel: Q4 double-digit volumes). Furniture/wood coatings niche booming (Sirca: 35-40% CAGR to ₹1,000 Cr by FY30).</li>
+<li><strong>Segment Opportunities</strong>: Industrial (auto/infra) high single/double-digit; waterproofing/construction chemicals phenomenal (Indigo/Sirca). Premium decorative/digital activation to drive share gains.</li>
+<li><strong>Strategic Moves</strong>: Acquisitions/integration (AkzoNobel-JSW; Sirca-Wembley/Welcome for mass premium); capacity expansions (Indigo: new plants; Sirca: consolidated facility Q4 FY26); backward integration (Asian Paints implied).</li>
+<li><strong>Industry Outlook</strong>: 9-10% CAGR to 2030 (urbanization, PMAY, Smart Cities). Leaders target 13-16% EBITDA (AkzoNobel/Kansai); niche players 20%+ margins.</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Company Snapshot</th>
+<th>Q2 Revenue Growth (YoY)</th>
+<th>EBITDA Margin</th>
+<th>Key Outlook</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>AkzoNobel</td>
+<td>-1.5%</td>
+<td>11.1%</td>
+<td>Double-digit Q4 volumes</td>
+</tr>
+<tr class="even">
+<td>Indigo</td>
+<td>+3.5%</td>
+<td>15.3%</td>
+<td>H2 double-digit; peak Q4</td>
+</tr>
+<tr class="odd">
+<td>Kansai Nerolac</td>
+<td>+0.4%</td>
+<td>~13%</td>
+<td>Q4 uplift; 13-15% long-term</td>
+</tr>
+<tr class="even">
+<td>Sirca</td>
+<td>+24%</td>
+<td>20.9%</td>
+<td>35-40% CAGR to ₹1,000 Cr FY30</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Prolonged Competition</strong>: Price wars erode margins (e.g., mass discounting unsustainable); new plants (Birla Opus East) intensify regional pressure.</li>
+<li><strong>Commodity/Geopolitical Volatility</strong>: Crude/rupee swings, TiO2 duties revival; import reliance for premiums.</li>
+<li><strong>Demand Uncertainty</strong>: Persistent rains/economic slowdown delay repainting; rural lag if agri disappoints.</li>
+<li><strong>Execution</strong>: Dealer retention amid multi-branding; integration risks (acquisitions like Sirca-Wembley); working capital stretch (trade receivables up, e.g., Kansai/Sirca).</li>
+<li><strong>Macro</strong>: High inflation, election disruptions (e.g., Bihar), global tensions impacting autos/infra.</li>
+</ul>
+</div>
+<div id="summary" class="section level8">
+<p class="heading"><strong>Summary</strong></p>
+<p>The industry navigated a weak Q2 (monsoon-led demand dip, competition) with resilient volumes (+3-5% avg.) and premium outperformance, but revenues flat amid price/mix headwinds. Tailwinds from policy/infra, RM softening, and H2 seasonality signal recovery (double-digit growth expected Q4/H2). Growth hinges on premiumization, industrial infra, and niches (wood/waterproofing; 9-10% industry CAGR). Leaders eye 13-16% margins; risks center on pricing wars and macros. <strong>Overall Outlook: Cautiously Optimistic</strong> – structural positives outweigh cyclical pain, favoring premium-focused players (e.g., Sirca/Indigo outperforming). Investors should monitor Q3 demand indicators (dealers scanning, collections) and RM trends.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3>General</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-paints-sector-analysis-headwinds-tailwinds-growth-prospects-and-key-risks" class="section level7">
+<p class="heading">Indian Paints Sector Analysis: Headwinds, Tailwinds, Growth Prospects, and Key Risks</p>
+<p>Based on the provided regulatory filings from key players (Akzo Nobel India, Asian Paints, Berger Paints, Indigo Paints, Kamdhenu Ventures, Kansai Nerolac, Shalimar Paints, Sirca Paints), the analysis focuses on the Indian paints sector. Indigo Paints provides the most detailed financial insights (Q2/H1 FY26 results), while others highlight M&amp;A (JSW’s Akzo acquisition), ESG, governance, and administrative updates. Sector context includes oligopolistic structure (Asian Paints dominant), real estate-driven demand, and emerging consolidation.</p>
+<div id="tailwinds-positive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Premiumization and Margin Resilience</strong>: Indigo Paints reported gross margin expansion (standalone 44.1% → 45.1% in Q2FY26) despite weak monsoon, driven by premium products. EBITDA margins improved (standalone 14.8% → 15.3%; consolidated 12.1% YoY growth). Subsidiary growth (Apple Chemie +22.6% YoY) adds diversification.</li>
+<li><strong>M&amp;A and Capital Infusion</strong>: JSW Paints’ acquisition of Akzo Nobel India (via SPA dated Jun 2025, debenture financing of ₹3,300 Cr) signals aggressive entry by a deep-pocketed player (post-acquisition, JSW becomes promoter). This could accelerate innovation/capacity in a fragmented market.</li>
+<li><strong>Stable Governance</strong>: Smooth AGMs (Sirca: 99.99% approval on resolutions), ESG progress (Berger: 61/100 score), and routine compliances (RTA updates by Asian Paints/Kansai) indicate operational maturity.</li>
+<li><strong>Real Estate/Urbanization Tailwinds</strong>: Implicit in Indigo’s outlook; sector benefits from housing boom (H1 revenue +1.7-1.9% YoY despite monsoon).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Seasonal/Weather Impact</strong>: Indigo explicitly notes “extended monsoon activity” capping Q2 growth (standalone +3.5% YoY to ₹298 Cr; consolidated +4.2% to ₹312 Cr). H1 growth muted at 1.7-1.9% YoY.</li>
+<li><strong>Intensifying Competition</strong>: JSW’s entry (with covenants restricting Akzo’s dividends/assets post-closing) disrupts oligopoly. Smaller players (Indigo, Sirca) face pressure from giants.</li>
+<li><strong>High Capex and Debt Covenants</strong>: Indigo’s capex (₹7.3 Bn H1 outflow) strains cash (net cash -₹2.8 Bn); JSW’s DTD imposes restrictions on Akzo (e.g., no major disposals, loans, or business changes without consent).</li>
+<li><strong>Administrative Friction</strong>: Physical share transfer inactivity (Kamdhenu: 0 requests) and promoter reclassifications (Shalimar: zero-share holders exiting promoter group) reflect legacy issues in demat transition.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="45%" />
+<col width="29%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Key Insights</th>
+<th>Outlook</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Revenue</strong></td>
+<td>Indigo H1: +1.7% YoY consolidated (₹621 Cr); Q2 +4.2%.</td>
+<td>8-12% CAGR FY26-28; driven by volumes (underpenetrated rural/housing), exports, and JSW-led consolidation. Premium decorative/industrial paints key.</td>
+</tr>
+<tr class="even">
+<td><strong>Margins</strong></td>
+<td>EBITDA: Indigo H1 14.6% (consolidated, +2.2% YoY).</td>
+<td>15-17% sustained via premiumization/raw mix optimization.</td>
+</tr>
+<tr class="odd">
+<td><strong>Capacity</strong></td>
+<td>Indigo CWIP ₹22 Bn (+63% YoY); capex focus.</td>
+<td>Expansions (Indigo, post-JSW Akzo) to tap ₹1 Tn+ market by 2030.</td>
+</tr>
+<tr class="even">
+<td><strong>M&amp;A</strong></td>
+<td>JSW-Akzo deal closing imminent.</td>
+<td>More deals; smaller players (Indigo/Sirca) as tuck-ins.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Overall</strong>: Sector FY26 growth ~10% (vs. GDP 7%), fueled by realty (20% CAGR), government infra (₹11 Tn budget).</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="32%" />
+<col width="28%" />
+<col width="39%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Mitigation/Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Competitive</strong></td>
+<td>JSW disruption; price wars.</td>
+<td>High (market share erosion for #2-4 players like Berger/Kansai).</td>
+</tr>
+<tr class="even">
+<td><strong>Cost Volatility</strong></td>
+<td>Crude/chemicals (60% of costs); Indigo raw materials stable but monitored.</td>
+<td>Medium; hedging/premiumization buffers.</td>
+</tr>
+<tr class="odd">
+<td><strong>Regulatory/Debt</strong></td>
+<td>LODR 30A disclosures (Akzo covenants trigger defaults on disposals); SEBI reclassification scrutiny (Shalimar).</td>
+<td>Medium; compliance routine but covenants limit flexibility.</td>
+</tr>
+<tr class="even">
+<td><strong>Execution</strong></td>
+<td>Capex delays (Indigo cash burn); monsoon/recovery.</td>
+<td>High short-term; capex ROI critical.</td>
+</tr>
+<tr class="odd">
+<td><strong>Governance</strong></td>
+<td>Promoter exits (Shalimar); ESG gaps (Berger 61 score).</td>
+<td>Low; strong board approvals (Sirca).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Summary</strong>: The sector enjoys tailwinds from premiumization, M&amp;A (JSW catalyst), and realty demand, with modest H1 growth (Indigo proxy: +2% revenue, +5% PAT). Headwinds include monsoons/competition, but prospects remain robust (10%+ CAGR) via capacity and consolidation. Key risks center on JSW-induced disruption and covenants; monitor Q3FY26 for post-monsoon rebound. Bullish long-term, cautious near-term.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-paints-sector-analysis-headwinds-tailwinds-growth-prospects-and-key-risks-1" class="section level7">
+<p class="heading">Indian Paints Sector Analysis: Headwinds, Tailwinds, Growth Prospects, and Key Risks</p>
+<p>The Indian paints sector, dominated by decorative (~75-80% of market) and industrial segments, faced a challenging H1 FY26 (Apr-Sep 2025) per company transcripts (AkzoNobel, Berger, Indigo, Kansai Nerolac, Kamdhenu, Sirca). Industry growth was muted (flat to low single-digit YoY), impacted by monsoons, but premiumization and infrastructure tailwinds offer recovery potential. Market size: ~₹1 lakh crore (decorative dominant); wood coatings niche ~₹9,500-10,000 crore.</p>
+<div id="headwinds-challenges-observed-in-q2h1-fy26" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges Observed in Q2/H1 FY26)</strong></p>
+<ul>
+<li><strong>Demand Disruptions</strong>: Prolonged monsoons (May-Oct) delayed painting; short Diwali window hurt festive sales. Volumes flat/negative in decorative (e.g., AkzoNobel: -ve value; Indigo: low single-digit; Kansai: slightly negative).</li>
+<li><strong>Intense Competition</strong>: Aggressive pricing/discounting by incumbents (Asian Paints, Berger challengers) and new entrants (e.g., JSW Paints implied). Mass/economy segments saw down-trading, price corrections (AkzoNobel: 1.5-2% cuts).</li>
+<li><strong>Margin Pressures</strong>: Product mix shift to mid/low-end; raw material inflation (Coatings); opex up on marketing. EBITDA margins stable but compressed (e.g., AkzoNobel: 11.1%; Kansai: down 1.5% YoY).</li>
+<li><strong>Weak Secondary Sales</strong>: Dealer inventory liquidation; urban &gt; rural demand.</li>
+<li><strong>Macro Headwinds</strong>: Geopolitical tensions, rupee depreciation (import costs), volatile crude.</li>
+</ul>
+</div>
+<div id="tailwinds-positives-driving-resilience" class="section level8">
+<p class="heading"><strong>Tailwinds (Positives Driving Resilience)</strong></p>
+<ul>
+<li><strong>Premiumization Success</strong>: Premium grew mid-single/double-digit (AkzoNobel: mid-single; Indigo: value &gt; volume; Kansai/Sirca: 20%+ margins).</li>
+<li><strong>Benign Inputs</strong>: Crude softening; TiO2 anti-dumping stalled; gross margins stable/improved (Indigo: +100bps; Sirca: 20.9%).</li>
+<li><strong>Policy Boost</strong>: GST/income tax cuts, RBI rate cuts, bumper harvests aiding consumption/repainting.</li>
+<li><strong>Industrial Strength</strong>: Infra (railways, marine); auto OEM wins; order books strong (AkzoNobel: phenomenal).</li>
+<li><strong>Network Expansion</strong>: Dealer adds (Kansai: 2,500+; Kamdhenu: 4,400+); new formats/products (waterproofing, wood finishes).</li>
+<li><strong>Niche Plays</strong>: Wood coatings (Sirca: 35-40% CAGR target); construction chemicals growing double-digit.</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Short-Term (Q3-Q4 FY26)</strong>: Post-monsoon recovery; weddings/festives; double-digit volumes expected (Indigo/Kansai). Industry: mid-high single-digit revenue; decorative rebound via repainting cycle (3-5 yrs post-COVID).</li>
+<li><strong>Medium-Term (FY26-30)</strong>: 8-10% industry CAGR; furniture/wood coatings ~₹3,500-4,000 crore (PU shift). Infra (railways/roads); urbanization (Tier II/III); EV/auto OEM.</li>
+<li><strong>Company-Specific</strong>: Sirca: ₹1,000 Cr by FY30 (35-40% CAGR); Indigo/Kamdhenu: double-digit via premium/dealers; AkzoNobel: high growth post-JSW.</li>
+<li><strong>Enablers</strong>: Digitization (AkzoNobel-BCG), warranty programs, exports (Apple Chemie).</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Company</th>
+<th>Q2 Revenue YoY</th>
+<th>EBITDA Margin</th>
+<th>Volume Guidance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>AkzoNobel</td>
+<td>-1.5%</td>
+<td>11.1%</td>
+<td>Mid-single to double-digit</td>
+</tr>
+<tr class="even">
+<td>Indigo</td>
+<td>+3.5%</td>
+<td>15.3%</td>
+<td>Double-digit Q4</td>
+</tr>
+<tr class="odd">
+<td>Kansai</td>
+<td>+0.4%</td>
+<td>Stable</td>
+<td>High single-digit H2 auto</td>
+</tr>
+<tr class="even">
+<td>Sirca</td>
+<td>+24%</td>
+<td>20.9%</td>
+<td>35-40% FY26</td>
+</tr>
+<tr class="odd">
+<td>Kamdhenu</td>
+<td>+4%</td>
+<td>6.5%</td>
+<td>Premium focus</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks-2" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Competition/Price Wars</strong>: Sustained discounting erodes margins (mass segment 80% growth from economy).</li>
+<li><strong>Commodity Volatility</strong>: Crude/rupee spikes; TiO2 duties.</li>
+<li><strong>Demand Uncertainty</strong>: Weather, consumer slowdown, down-trading.</li>
+<li><strong>Execution</strong>: Dealer churn, integration (AkzoNobel slump sale; Sirca Wembley consolidation).</li>
+<li><strong>Macro</strong>: Geopolitics, inflation; subsidiaries weak (Kansai: Bangladesh/Sri Lanka).</li>
+<li><strong>Regulatory</strong>: Anti-dumping, ESG compliance.</li>
+</ul>
+</div>
+<div id="summary-1" class="section level8">
+<p class="heading"><strong>Summary</strong></p>
+<p><strong>Outlook</strong>: Cautiously optimistic. H1 headwinds (monsoons, competition) capped growth (industry ~0-5% YoY), but Q3-4 tailwinds (premiumization, policy boosts, infra) signal recovery. Prospects strong in premium/industrial (double-digit); niche (wood coatings) explosive (30-40% CAGR). Margins resilient (13-20%) via mix/raws, but risks from pricing/weather persist. Sector poised for 8-10% CAGR to FY30, led by urbanization/infra; watch competition intensity. Investors: Favor premium-focused players (e.g., Sirca, Indigo) for outperformance.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

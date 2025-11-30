@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>Water Supply &amp; Management</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Water Supply &amp; Management</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/WaterSupplyManagement.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/WaterSupplyManagement.fan.CAP_WT.png" /></p>
+<p><img src="plots/WaterSupplyManagement.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/WaterSupplyManagement.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/WaterSupplyManagement.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/WaterSupplyManagement.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/WaterSupplyManagement.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-63e6ec8244c18e6fd870" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-63e6ec8244c18e6fd870">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-2.67%","-2.21%"],["-7.97%","-5.62%"],["-8.69%","-9.66%"],["-6.95%","-10.04%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/WaterSupplyManagement.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/WaterSupplyManagement.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-43c649e313671d21d2c5" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-43c649e313671d21d2c5">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.WABAG.html\" target=\"_blank\">WABAG<\/a>","<a href=\"/reports02/eq-in/risk/in.IONEXCHANG.html\" target=\"_blank\">IONEXCHANG<\/a>","<a href=\"/reports02/eq-in/risk/in.EIEL.html\" target=\"_blank\">EIEL<\/a>","DENTA","<a href=\"/reports02/eq-in/risk/in.JITFINFRA.html\" target=\"_blank\">JITFINFRA<\/a>"],[0.5760163242133939,0.2678745527418983,0.1041986485558576,0.02614858002671434,0.02576189446213593],[0.4465173969121969,0.2649001367100844,0.1966862877157255,0.05255789051135137,0.03933828815064184]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d295ca7ca4af24d36242" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d295ca7ca4af24d36242">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.WABAG.html\" target=\"_blank\">WABAG<\/a>","<a href=\"/reports02/eq-in/risk/in.IONEXCHANG.html\" target=\"_blank\">IONEXCHANG<\/a>","<a href=\"/reports02/eq-in/risk/in.EIEL.html\" target=\"_blank\">EIEL<\/a>","DENTA","<a href=\"/reports02/eq-in/risk/in.JITFINFRA.html\" target=\"_blank\">JITFINFRA<\/a>"],[1.131721066252187,2.479228029866508,69.95545278351189,14.6860607707881,5.443101628463412],[null,1.639754561281653,65.24062071616866,27.15888295952699,4.829020696770506]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4f2e7dd866c18807dc74" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4f2e7dd866c18807dc74">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.WABAG.html\" target=\"_blank\">WABAG<\/a>","<a href=\"/reports02/eq-in/risk/in.IONEXCHANG.html\" target=\"_blank\">IONEXCHANG<\/a>","<a href=\"/reports02/eq-in/risk/in.EIEL.html\" target=\"_blank\">EIEL<\/a>","DENTA","<a href=\"/reports02/eq-in/risk/in.JITFINFRA.html\" target=\"_blank\">JITFINFRA<\/a>"],[1.239748608416903,2.373852391680301,27.52840112533347,9.578411511379008,52.93388730173534],[null,2.071799791175964,31.47787613153995,14.30276148642977,50.90781398243742]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-27 </em></p>
+</div>
+</div>
+<div id="analysis-of-indian-water-supply-management-sector" class="section level1">
+<h1>Analysis of Indian Water Supply &amp; Management Sector</h1>
+<p>The Indian Water Supply &amp; Management sector, encompassing EPC, O&amp;M, treatment plants (STP, WTP, desalination), groundwater recharge, zero liquid discharge (ZLD), and emerging areas like ultra-pure water for solar/semiconductors/data centers/CBG, is witnessing robust momentum. Insights from Q2/H1 FY26 earnings calls of key players—<strong>Denta Water &amp; Infra Solutions</strong>, <strong>Enviro Infra Engineers</strong>, <strong>Ion Exchange</strong>, and <strong>VA Tech Wabag</strong>—highlight a sector fueled by government initiatives but facing execution and competitive pressures. Below is a structured summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-drivers" class="section level2">
+<h2><strong>Tailwinds (Positive Drivers)</strong></h2>
+<ul>
+<li><strong>Government Schemes &amp; Policy Support</strong>: Strong backing from Jal Jeevan Mission, AMRUT, Swachh Bharat, Atal Jal, SATAT (CBG), and PLI schemes. Funds are timely for approved projects (40-60% central contribution). One City One Operator (OCOO) model gaining traction (e.g., Agra, Ghaziabad).</li>
+<li><strong>High Demand &amp; Order Pipelines</strong>: Order books robust (Denta: ₹7,347 Cr; Enviro: &gt;₹2,000 Cr; Ion: ₹2,711 Cr; Wabag: ₹16,000 Cr). Bids pipelines massive (Enviro: ₹8,000 Cr; Ion: ₹9,000 Cr; Wabag: Preferred L1 for ₹3,000 Cr). International exposure ~50% (desalination in Middle East, Zambia).</li>
+<li><strong>Margin Resilience &amp; Asset-Light Models</strong>: Healthy EBITDA (Denta: 35%; Enviro: 28%; Ion: 10%; Wabag: 14%) and PAT margins. Debt-free/net cash positions (Wabag: ₹561 Cr net cash; Denta: comfortable reserves).</li>
+<li><strong>O&amp;M Recurring Revenue</strong>: 19-38% of order books/revenues; stable cash flows (e.g., Bahrain O&amp;M for Wabag).</li>
+<li><strong>Tech &amp; Diversification</strong>: Partnerships (Ion-MANN+HUMMEL for membranes), new plants (Ion-Roha), ultra-pure water/CBG/solar (Wabag, Enviro renewables).</li>
+<li><strong>Geographic Expansion</strong>: South-dominant but pushing North/East (Maharashtra, UP, Haryana via Atal Jal).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level2">
+<h2><strong>Headwinds (Challenges)</strong></h2>
+<ul>
+<li><strong>Margin Pressures</strong>: Engineering margins dipped (Ion: 4.8% due to legacy/UP projects; competition/pricing wars). Inflation in materials/labor; monsoon delays execution/billing.</li>
+<li><strong>Working Capital &amp; Receivables</strong>: High unbilled/WIP (Denta: ₹102 Cr other assets); debtor days ~49-70 (Enviro). Cyclical conversions slowed by approvals.</li>
+<li><strong>Government Delays</strong>: Slow fund deployment/JJM payments (though improving); tender evaluation 120-180 days.</li>
+<li><strong>SAP/Implementation Disruptions</strong>: Muted Q1 execution (Ion, Enviro).</li>
+<li><strong>Seasonality</strong>: H2 stronger (60% revenue); monsoons hinder Q2.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level2">
+<h2><strong>Growth Prospects</strong></h2>
+<ul>
+<li><strong>Revenue Guidance</strong>: 30-40% YoY (Enviro: 35-40%; Denta: 30% FY27; Ion: 9-10% chemicals; Wabag: &gt;20% PAT CAGR).</li>
+<li><strong>Sector Expansion</strong>: | Sub-Sector | Opportunity Size/Timeline | Key Drivers | |————-|—————————|————-| | <strong>Traditional (STP/Water Supply)</strong> | ₹3,000-5,000 Cr inflows FY26 | JJM/AMRUT; OCO model. | | <strong>Desalination/STP (Intl)</strong> | Mega projects (Saudi: 200-400 MLD) | MENA privatization/LTOM. | | <strong>Emerging (Solar/H2/Semi/Data Centers/CBG)</strong> | ₹3,500 Cr (100-150 MLD UPW by 2030); SATAT incentives. | PLI/Make in India; ZLD/reuse mandates. |</li>
+<li><strong>Order Inflows</strong>: FY26 targets exceeded (Enviro: ₹2,500 Cr; Wabag: ₹3,500 Cr H1). Bid success 15-40%.</li>
+<li><strong>Long-Term</strong>: 25-50% CAGR in renewables/O&amp;M; full Roha utilization (Ion: 3-4 yrs); HAM platforms for 8-10x scaling.</li>
+<li><strong>Overall Sector</strong>: 15-30% CAGR; international/muni-industrial mix improves margins to 13-15% EBITDA.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level2">
+<h2><strong>Key Risks</strong></h2>
+<table>
+<colgroup>
+<col width="37%" />
+<col width="32%" />
+<col width="30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Execution/Payments</strong></td>
+<td>Govt capex delays; receivables (₹127-2,960 Cr); monsoon/funding halts (UP/Sri Lanka).</td>
+<td>Natural hedges; sovereign/multilateral funding; O&amp;M focus.</td>
+</tr>
+<tr class="even">
+<td><strong>Competition</strong></td>
+<td>New entrants/general contractors; L1 pricing wars eroding margins.</td>
+<td>Tech expertise (membranes/ZLD); selective bidding.</td>
+</tr>
+<tr class="odd">
+<td><strong>Forex/Volatility</strong></td>
+<td>50% intl revenue; rupee swings (gains/losses ₹9-30 Cr/qtr).</td>
+<td>Natural hedging (pack credit/suppliers); minimal residual hedging.</td>
+</tr>
+<tr class="even">
+<td><strong>Regulatory</strong></td>
+<td>Policy shifts (tariffs/resins); customs demands (Wabag: ₹87 Cr).</td>
+<td>Legal recourse; compliance.</td>
+</tr>
+<tr class="odd">
+<td><strong>Project-Specific</strong></td>
+<td>Legacy losses (Ion); HAM delays; capacity ramp (Roha: 25% in 12 months).</td>
+<td>Phased commissioning; intl JV platforms.</td>
+</tr>
+<tr class="even">
+<td><strong>Macro</strong></td>
+<td>Inflation; monsoons; geopolitical (Russia/Ukraine).</td>
+<td>Diversified geographies; asset-light.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="summary" class="section level2">
+<h2><strong>Summary</strong></h2>
+<p>The sector is <strong>bullish</strong> with <strong>strong tailwinds</strong> from govt schemes, sustainability mandates, and emerging green tech (solar/CBG), driving 20-40% growth and healthy margins (13-35% EBITDA). Companies report record order books/pipelines, net cash positions, and intl diversification. <strong>Headwinds</strong> like margin pressure and receivables are manageable via O&amp;M shift and execution focus. <strong>Growth prospects</strong> are high (₹10,000+ Cr inflows FY26), positioning the sector for 25%+ CAGR amid India’s water crisis (reuse policies accelerating). <strong>Key risks</strong> center on execution/payments/competition, but asset-light models and tech moats provide resilience. Overall, <strong>positive outlook</strong> for FY26-28, with outperformance in high-margin O&amp;M/industrial segments. Investors should monitor govt capex and forex.</p>
+<div id="financial" class="section level3">
+<h3>Financial</h3>
+<p><em>asof: 2025-11-27 </em></p>
+</div>
+</div>
+</div>
+<div id="analysis-of-indian-water-supply-management-sector-1" class="section level1">
+<h1>Analysis of Indian Water Supply &amp; Management Sector</h1>
+<p>Using the provided financial filings from key players—<strong>Denta Water and Infra Solutions Ltd</strong>, <strong>Enviro Infra Engineers Ltd (EIEL)</strong>, <strong>Ion Exchange (India) Ltd</strong>, <strong>JITF Infralogistics Ltd</strong> (minor reference), and <strong>VA Tech Wabag Ltd (WABAG)</strong>—as inputs, the sector demonstrates robust momentum driven by government initiatives (e.g., Jal Jeevan Mission, Namami Gange, STP/CETP projects). These listed entities focus on water treatment, infra development, EPC, O&amp;M, and chemicals, with recent IPOs (EIEL Nov 2024) signaling capital infusion. Below is a structured summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-drivers-1" class="section level2">
+<h2><strong>Tailwinds (Positive Drivers)</strong></h2>
+<ul>
+<li><strong>Strong Demand &amp; Policy Support</strong>: Aligned with India’s water security goals; EIEL/WABAG highlight single-segment focus on WTP/STP schemes. Consolidated revenues surging (EIEL: ₹66,133L 9MFY25 standalone, +55% YoY; WABAG: ₹21,378Mn cons., +11% YoY; Ion Exchange: ₹190,255L cons., +22% YoY).</li>
+<li><strong>IPO/Capital Access</strong>: EIEL raised ₹572Cr (utilized for WC/debt repayment/acquisitions); healthy IPO proceeds utilization with no deviations.</li>
+<li><strong>Financial Health</strong>: Net cash positive (WABAG 8th quarter); PAT growth (WABAG +13% YoY; EIEL PAT ₹10,270L 9MFY25 standalone). EBITDA margins stable (WABAG ~14%).</li>
+<li><strong>Order Visibility &amp; Execution</strong>: Robust pipelines (WABAG cites “healthy revenue visibility”); international ops (Ion Exchange 20+ subs/JVs; WABAG 12 subs).</li>
+<li><strong>ESG/Sustainability</strong>: Sector aligns with UNSDGs; tech innovation (WABAG 125+ IPs, R&amp;D centers).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level2">
+<h2><strong>Headwinds (Challenges)</strong></h2>
+<ul>
+<li><strong>Regulatory Scrutiny</strong>: NSE/BSE queries on formats (Denta: standalone/consolidated similarity due to insignificant JV transactions; JITF: XBRL EPS rounding). SEBI matters (Ion Exchange sub: ongoing farm scheme refunds, SAT appeal Feb 2025).</li>
+<li><strong>Margin Pressures</strong>: High finance costs (EIEL ₹2,313L 9MFY25; WABAG ₹573L); employee/depreciation expenses rising with scale.</li>
+<li><strong>Project Execution Risks</strong>: Infra delays implied in JV reliance (EIEL 5 JVs; WABAG associates); forex volatility (WABAG OCI translation losses ₹175L).</li>
+<li><strong>Comparable Period Limitations</strong>: Prior quarters not reviewed (EIEL/Ion Exchange: post-listing applicability from Sep 2024).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level2">
+<h2><strong>Growth Prospects</strong></h2>
+<ul>
+<li><strong>Market Size</strong>: ₹1L+ Cr opportunity (urban/rural water supply, industrial reuse); EIEL/WABAG India revenue dominant (EIEL 100%; WABAG ~53%).</li>
+<li><strong>Revenue Trajectory</strong>: Explosive (EIEL Q3 ₹24,732L standalone, +66% QoQ); steady (Ion Exchange Engineering ₹114,850L 9MFY25; WABAG intl. +20% YoY).</li>
+<li><strong>Expansion Avenues</strong>: Inorganic (EIEL ₹186Cr allocation); O&amp;M/PPP models; exports (WABAG Rest of World 49%; Ion Exchange subs in Asia/Europe).</li>
+<li><strong>Medium-Term Outlook</strong>: WABAG targets sustained growth; EIEL post-IPO scaling (subs/JVs like EIEPL Mathura STP). EPS growth (WABAG 31.48 basic 9MFY25).</li>
+<li><strong>Projections</strong>: 15-25% CAGR feasible with govt capex (₹11L Cr infra budget FY25); segment reporting shows balanced India/intl. mix.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level2">
+<h2><strong>Key Risks</strong></h2>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="20%" />
+<col width="46%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Mitigation/Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Execution/Operational</strong></td>
+<td>Delays/cost overruns in EPC/JVs (EIEL 5 JVs unreviewed; WABAG 12 subs).</td>
+<td>Strong PAT margins; mgmt.-certified JV financials “immaterial”.</td>
+</tr>
+<tr class="even">
+<td><strong>Regulatory/Legal</strong></td>
+<td>SEBI/NSE queries; Ion Exchange sub (₹22Cr potential liability, SAT hearing Feb 2025).</td>
+<td>Unmodified audit reviews; clarifications provided.</td>
+</tr>
+<tr class="odd">
+<td><strong>Financial</strong></td>
+<td>Debt reliance (EIEL repayment ₹120Cr from IPO); forex (WABAG OCI swings).</td>
+<td>Net cash (WABAG ₹2,625Mn); IPO funds for deleveraging.</td>
+</tr>
+<tr class="even">
+<td><strong>Market/Competition</strong></td>
+<td>Govt. contract dependence; cyclical budgets.</td>
+<td>Diversified segments (Ion Exchange: Engineering/Chemicals); order backlog.</td>
+</tr>
+<tr class="odd">
+<td><strong>Accounting/Audit</strong></td>
+<td>Unreviewed subs/JVs (EIEL/Ion Exchange); predecessor auditor reliance.</td>
+<td>“No material misstatement” in limited reviews.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="overall-summary" class="section level2">
+<h2><strong>Overall Summary</strong></h2>
+<p>The sector is <strong>bullish</strong> with <strong>tailwinds</strong> from policy demand and capital access outweighing <strong>headwinds</strong> like regulations. <strong>Growth prospects</strong> are strong (15-25% CAGR), fueled by execution momentum (EIEL/WABAG leading). <strong>Key risks</strong> center on execution/regulatory but are mitigated by clean audits, cash flows, and diversification. Investors should monitor Q4FY25 order wins and SEBI resolutions for sustained upside. Sector PE likely attractive post-IPOs amid water scarcity theme.</p>
+<div id="general" class="section level3">
+<h3>General</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-indian-water-supply-management-sector" class="section level7">
+<p class="heading">Summary Analysis: Indian Water Supply &amp; Management Sector</p>
+<p>Using the provided disclosures from key players (Denta Water, Enviro Infra Engineers, Ion Exchange India, VA TECH WABAG), the sector shows robust alignment with India’s water infrastructure push (e.g., SBM(U) 2.0, NGT funds, Jal Jeevan Mission). Ion Exchange’s BRSR provides the deepest insights into operations, ESG performance, and market dynamics, supplemented by order wins (Denta) and governance updates.</p>
+<div id="tailwinds-supportive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Supportive Factors)</strong></p>
+<ul>
+<li><strong>Government Initiatives &amp; Policy Support</strong>: Strong backing from schemes like Swachh Bharat Mission (SBM) 2.0, National Green Tribunal Environment Compensation Fund, Jal Jeevan Mission, and PPP models (DBO, BOT, HAM). Denta’s Rs. 331.89 Mn sewerage subcontract exemplifies execution under these.</li>
+<li><strong>Sustainability Demand</strong>: Rising focus on ZLD, wastewater reuse, desalination, and circular economy (Ion: 63% engineering segment turnover from water/wastewater solutions; 99.9% R&amp;D on eco-tech).</li>
+<li><strong>Order Book Strength</strong>: Denta’s 22 projects and Rs. 7,481 Mn order book; Ion’s diversified revenue (2540 Cr FY25, 31% exports to 67 countries).</li>
+<li><strong>ESG Momentum</strong>: Ion’s BRSR highlights net-zero/water-positive goals, ISO certifications, and low complaints (zero on most principles), boosting investor appeal.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Energy Intensity &amp; Transition Costs</strong>: Ion identifies energy management as a key risk (Scope 1+2 emissions: 14,121 tCO2e FY25), requiring shift from fossil fuels (e.g., diesel gensets) to renewables amid rising costs.</li>
+<li><strong>Operational Scale-Up</strong>: Execution timelines (Denta: 12 months + O&amp;M); supply chain dependencies (Ion’s 128 days payables, 9.88% from trading houses).</li>
+<li><strong>Compliance Burden</strong>: Stringent regs (EPR, ZLD upgrades at Ion facilities); minimal but monitored grievances (e.g., 11 shareholder complaints resolved).</li>
+<li><strong>Geographic/Scale Limits</strong>: No CSR in aspirational districts; focus on urban/semi-urban (Ion: 73.91% wages in metros).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Market Expansion</strong>: Water scarcity/circular economy as opportunities (Ion: 100% products carry sustainability info); domestic/international demand (28 states + 67 countries).</li>
+<li><strong>Order Pipeline</strong>: EPC/O&amp;M in sewerage, ZLD, waste-to-energy (Denta’s Kunigal project; Ion’s 63% engineering revenue).</li>
+<li><strong>Innovation &amp; Exports</strong>: R&amp;D/capex on green tech (71.6% capex eco-focused); 31% export contribution; subsidiary expansions (Enviro’s Soltrix as step-down sub).</li>
+<li><strong>SDG Alignment</strong>: Supports UN SDGs 6/7/9/12/13; potential from PPPs, resource recovery, and consumer products (11% turnover).</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Execution &amp; Financial</strong>: Order delays (mutual extensions); waste intensity (16,237 MT FY25 at Ion); related-party reliance (98% investments).</li>
+<li><strong>Environmental/Regulatory</strong>: Water discharge (213,535 KL treated to CETP); non-ZLD sites; biodiversity impacts (none reported, but sensitive areas unmentioned).</li>
+<li><strong>Human Capital</strong>: Low female representation (7.4%); turnover rising (17.41% FY25); no unions but diversity gaps.</li>
+<li><strong>Governance/Leak Risks</strong>: UPSI handling (WABAG’s code amendments); analyst interactions (structured database mandatory).</li>
+<li><strong>External</strong>: Climate risks (energy/water intensity); supply chain audits pending (value chain ESG assessments nascent).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Sector poised for 10-15% CAGR driven by infra spend (tailwinds &gt; headwinds), but execution discipline and ESG integration critical to mitigate risks. Ion Exchange exemplifies leadership with FY25 turnover up, strong order book, and sustainability edge.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-27 </em></p>
+</div>
+</div>
+</div>
+<div id="analysis-of-indian-water-supply-management-sector-2" class="section level1">
+<h1>Analysis of Indian Water Supply &amp; Management Sector</h1>
+<p>The Indian Water Supply &amp; Management sector, encompassing water infrastructure, wastewater treatment, groundwater recharge, desalination, zero liquid discharge (ZLD), operation &amp; maintenance (O&amp;M), and emerging areas like ultra-pure water for solar/semiconductors and compressed biogas (CBG), is experiencing robust momentum. Insights from recent Q2/H1 FY26 earnings of key players—<strong>Denta Water (debt-free, 54% YoY revenue growth)</strong>, <strong>Enviro Infra (35-40% FY26 guidance)</strong>, <strong>Ion Exchange (9-14% growth, new plant commissioning)</strong>, and <strong>VA Tech Wabag (18% H1 growth, ₹16,000 Cr order book)</strong>—highlight a sector fueled by government schemes (Jal Jeevan Mission, AMRUT 2.0, SATAT) and industrial demand. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="headwinds-challenges-3" class="section level2">
+<h2><strong>Headwinds (Challenges)</strong></h2>
+<ul>
+<li><strong>Execution Delays</strong>: Monsoon disruptions (Enviro: slowed Q2 billing), funding delays (Ion: UP Jal Nigam; Wabag: multilateral approvals), and slow project ramps (Denta: govt-funded timelines).</li>
+<li><strong>Margin Pressures</strong>: Legacy projects dragging engineering margins (Ion: 4.8%; industry-wide pricing competition). Elevated infra/SAP costs (Ion, Enviro).</li>
+<li><strong>Working Capital Strain</strong>: High receivables (Wabag: ₹2,960 Cr consolidated; Enviro: debtor days 49 but unbilled buildup), govt payment cycles (all players), and MSME vendor payments.</li>
+<li><strong>Geographic/Regulatory Hurdles</strong>: State-specific delays (Denta: Karnataka-focused expansion risks); customs demands (Wabag: ₹87 Cr dispute).</li>
+<li><strong>Seasonality &amp; Forex Volatility</strong>: Q2 muted due to monsoons; forex gains/losses swing other income (Wabag: ₹30 Cr Q2 gain vs. prior loss).</li>
+</ul>
+</div>
+<div id="tailwinds-positive-drivers-2" class="section level2">
+<h2><strong>Tailwinds (Positive Drivers)</strong></h2>
+<ul>
+<li><strong>Government Push</strong>: Jal Jeevan Mission (Denta/Enviro wins), AMRUT 2.0, Namami Gange, SATAT (Wabag CBG), PLI schemes boosting solar/semicon (Wabag/RenewSys order).</li>
+<li><strong>High-Margin O&amp;M Shift</strong>: 38% of Wabag order book; Enviro/Denta emphasizing recurring revenue (7-8% of contracts as DBOT).</li>
+<li><strong>Industrial Demand</strong>: Oil/gas (Wabag/Reliance/IOCL), ZLD/tertiary treatment (Enviro), ultra-pure water (Ion/Wabag for solar/H2).</li>
+<li><strong>Strong Order Visibility</strong>: Robust books (Wabag: ₹16,000 Cr; Denta: ₹7,347 Mn; Enviro: ₹2,000 Cr+; Ion: ₹27,110 Mn) with 15-75% bid win rates and ₹8,000-9,000 Cr pipelines.</li>
+<li><strong>Financial Health</strong>: Debt-free/light models (Denta/Enviro), net cash positive (Wabag: ₹561 Cr), high ROE/ROCE (Wabag: 15-18.5%).</li>
+<li><strong>Tech/Partnerships</strong>: Local membrane production (Ion-MANN+HUMMEL), renewables integration (Enviro solar), ceramic RO (Wabag).</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level2">
+<h2><strong>Growth Prospects</strong></h2>
+<ul>
+<li><strong>Market Expansion</strong>: Water/wastewater market to USD 23.85 Bn by 2033 (Denta); 100-150 MLD ultra-pure water demand by 2030 (Wabag: ₹3,500 Cr opportunity in solar alone).</li>
+<li><strong>Revenue CAGR Potential</strong>: 15-40% guided (Enviro: 35-40%; Wabag: profitable 18% H1; Ion: 9-10% chemicals). H2 acceleration expected (60% annual revenue typical).</li>
+<li><strong>New Verticals</strong>: Solar/green H2/semicon/data centers/CBG (Wabag/Enviro breakthroughs); railways/roads diversification (Denta).</li>
+<li><strong>Geographic Scale</strong>: Pan-India (beyond Karnataka for Denta); MENA/CIS/Africa (Wabag 47-50% intl.); exports via new plants (Ion Roha).</li>
+<li><strong>O&amp;M Recurring</strong>: Targeting 30-40% mix for stability; LTOM in Saudi (Wabag).</li>
+<li><strong>HAM Platforms</strong>: Wabag/Norfund $100 Mn for 8-10x scaling; asset monetization.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level2">
+<h2><strong>Key Risks</strong></h2>
+<table>
+<colgroup>
+<col width="28%" />
+<col width="24%" />
+<col width="47%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Mitigation (from Cos.)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Execution/Funding</strong></td>
+<td>Govt delays, monsoons, legacy drags.</td>
+<td>Strong pipelines, O&amp;M focus, intl. diversification.</td>
+</tr>
+<tr class="even">
+<td><strong>Competition/Pricing</strong></td>
+<td>New entrants, L1 squeeze.</td>
+<td>Tech edge (ZLD/ultra-pure), 40-75% win rates, selective bidding.</td>
+</tr>
+<tr class="odd">
+<td><strong>Financial</strong></td>
+<td>Receivables (govt/multilaterals), forex swings, WC cycles.</td>
+<td>Net cash positions, natural hedging, debtor days improving (Enviro: 49).</td>
+</tr>
+<tr class="even">
+<td><strong>Regulatory</strong></td>
+<td>Policy shifts, customs/tariffs (Ion Roha).</td>
+<td>Legal recourse, sovereign guarantees.</td>
+</tr>
+<tr class="odd">
+<td><strong>Operational</strong></td>
+<td>Subcontractor dependency, scaling new plants (Ion).</td>
+<td>In-house execution, partnerships.</td>
+</tr>
+<tr class="even">
+<td><strong>Macro</strong></td>
+<td>Water scarcity vs. slow implementation.</td>
+<td>Policy tailwinds (reuse mandates).</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="summary-1" class="section level2">
+<h2><strong>Summary</strong></h2>
+<p>The sector is <strong>bullish</strong> with <strong>strong tailwinds</strong> from govt schemes (₹10,000 Bn+ pipelines), industrial boom (solar/ZLD), and O&amp;M shift, enabling 15-40% growth and 13-30% margins. <strong>Headwinds</strong> like delays and WC are cyclical, offset by robust order books (avg. 2-3.5 yrs visibility) and net cash strength. <strong>Growth</strong> hinges on new sectors (ultra-pure/CBG: ₹3,500 Cr+ opps) and intl. (50% mix). <strong>Risks</strong> center on execution/receivables (mitigated by quality backlog), with forex as volatile but operational. <strong>Outlook</strong>: High-teens to 30%+ CAGR feasible for leaders; prioritize O&amp;M/tech for resilience. Sector poised for 2-3x scaling by 2030 amid water crisis.</p>
+<p><em>Sources: Q2/H1 FY26 investor docs/transcripts of Denta, Enviro, Ion Exchange, Wabag (Nov 2025).</em></p>
+<div id="press-release" class="section level3">
+<h3>Press Release</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="analysis-of-indian-water-supply-management-sector-3" class="section level7">
+<p class="heading">Analysis of Indian Water Supply &amp; Management Sector</p>
+<p>Using the provided documents from Denta Water and Infra Solutions Ltd (Denta Water), Enviro Infra Engineers Ltd (Enviro Infra), and VA TECH WABAG Ltd (WABAG) as inputs, the analysis focuses on the water infrastructure sub-sector (e.g., water treatment plants, supply schemes, wastewater management, and related tech). These announcements highlight Q2/H1 FY26 performance (ended Sep 2025) and strategic initiatives, reflecting robust operational momentum amid government-backed demand.</p>
+<div id="tailwinds" class="section level8">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Strong Government Support &amp; Policy Push</strong>: All companies reference key initiatives like Jal Jeevan Mission (JJM), Atal Mission for Rejuvenation and Urban Transformation (AMRUT), and National Mission for Clean Ganga (NMCG), driving project pipelines. Enviro Infra emphasizes execution under these for WWTPs, WSSPs, STPs, and ZLD solutions.</li>
+<li><strong>Robust Order Books &amp; Execution</strong>: Enviro Infra reports ₹18,005 Mn execution order book + ₹9,328 Mn O&amp;M portfolio. Denta Water notes accelerated milestone completions and geographic expansion (e.g., Maharashtra, UP). This supports revenue visibility.</li>
+<li><strong>Financial Resilience</strong>: High margins (Denta: EBITDA 35.42%, PAT 24.61%; Enviro: EBITDA 27.6%, PAT 18.7%) despite challenges, with debt-light balance sheets (Enviro D/E 0.26x; Denta “debt-light”). YoY growth: Denta revenue +53.8%, PAT +71%; Enviro H1 revenue +12%, PAT +39%.</li>
+<li><strong>Innovation &amp; Tech Integration</strong>: WABAG’s BLUE SEED investment in Nimble Vision advances IoT, AI for leakage detection, automation, and Atmanirbhar Bharat-aligned indigenous tech, signaling digital transformation tailwinds.</li>
+</ul>
+</div>
+<div id="headwinds" class="section level8">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Cost Pressures</strong>: Denta highlights “inflationary pressures in material costs,” yet maintained margins via efficiency—indicative of broader input cost volatility (e.g., commodities, labor).</li>
+<li><strong>Competitive Environment</strong>: Denta’s Chairman notes a “competitive operating environment,” suggesting pricing/margin pressures from peers.</li>
+<li><strong>Execution Dependencies</strong>: Growth tied to “disciplined execution” (Denta) and “timely execution of robust order book” (Enviro), implying potential delays from supply chain or site issues.</li>
+<li><strong>Moderate Revenue Growth in Larger Players</strong>: Enviro’s Q2 revenue +6.7% YoY (vs. H1 12%) shows some quarterly softening, possibly from project phasing.</li>
+</ul>
+</div>
+<div id="growth-prospects-4" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High Double-Digit Expansion</strong>: Denta’s 44-54% H1 YoY growth and Enviro’s 12-39% signal scalability. Expansion into allied infra (Denta: railways/highways) and O&amp;M (Enviro) diversifies revenue.</li>
+<li><strong>Order Book Leverage</strong>: Enviro’s ₹27+ Bn book (execution + O&amp;M) positions for H2 acceleration. Denta’s “growing order book” and WABAG’s tech investments enhance pipeline conversion.</li>
+<li><strong>Sustainability &amp; Tech-Driven Demand</strong>: Focus on ZLD, waste-to-energy (solar/CBG via Enviro), and AI/IoT (WABAG/Nimble) aligns with ESG/UNSDGs, tapping municipal/industrial demand for water security.</li>
+<li><strong>Geographic &amp; Segment Diversification</strong>: Denta’s push into new states; Enviro/WABAG’s nationwide govt projects forecast sustained 15-20%+ CAGR, backed by India’s water infrastructure capex (e.g., JJM’s ₹3.5L Cr outlay).</li>
+</ul>
+</div>
+<div id="key-risks-4" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Regulatory &amp; Policy Shifts</strong>: Forward-looking cautions (Enviro/WABAG) on “regulatory changes, local political/economic developments”—e.g., tender delays or funding cuts.</li>
+<li><strong>Execution &amp; Project Risks</strong>: Dependence on govt contracts exposes to delays, variations, or non-renewals (O&amp;M). Inflation/material costs could erode margins if unhedged.</li>
+<li><strong>Macroeconomic Factors</strong>: Debt levels (Enviro ₹2,946 Mn), though low, sensitive to interest rates. Competitive bidding may pressure profitability.</li>
+<li><strong>Tech/Integration Risks</strong>: WABAG’s startup investment carries innovation/scalability risks; unverified external data (per disclaimers) adds uncertainty.</li>
+<li><strong>Market/Financial Volatility</strong>: High growth but EPS variability (Denta H1 +11% vs. Q2 +23%); equity investments involve “high degree of risk” (WABAG disclaimer).</li>
+</ul>
+</div>
+</div>
+<div id="summary-2" class="section level7">
+<p class="heading"><strong>Summary</strong></p>
+<p>The Indian Water Supply &amp; Management sector exhibits strong tailwinds from govt initiatives (JJM/AMRUT), healthy order books (₹27 Bn+ for Enviro), and margin resilience (25-35% EBITDA), driving 12-54% YoY growth across small/mid/large players. Tech innovations (AI/IoT via WABAG) bolster prospects for 15-25% CAGR, fueled by sustainability mandates. Headwinds like inflation and competition are mitigated by execution excellence, but risks center on policy/execution delays and macro pressures. Overall, <strong>positive outlook</strong> with low-debt balance sheets supporting growth; investors should monitor H2 execution and tender wins for confirmation. Sector poised for expansion amid India’s water crisis resolution push.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

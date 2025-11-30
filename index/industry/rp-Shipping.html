@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>Shipping</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Shipping</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Shipping.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Shipping.fan.CAP_WT.png" /></p>
+<p><img src="plots/Shipping.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Shipping.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Shipping.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Shipping.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Shipping.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-15f9221d35c154ea68d9" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-15f9221d35c154ea68d9">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-2.4%","-1.41%"],["-0.17%","3.12%"],["2.58%","8.68%"],["4.98%","16.56%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Shipping.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Shipping.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4e24c857ae70ee191869" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4e24c857ae70ee191869">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.GESHIP.html\" target=\"_blank\">GESHIP<\/a>","<a href=\"/reports02/eq-in/risk/in.SCI.html\" target=\"_blank\">SCI<\/a>","SHREEJISPG","<a href=\"/reports02/eq-in/risk/in.SEAMECLTD.html\" target=\"_blank\">SEAMECLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.ESSARSHPNG.html\" target=\"_blank\">ESSARSHPNG<\/a>","<a href=\"/reports02/eq-in/risk/in.TRANSWORLD.html\" target=\"_blank\">TRANSWORLD<\/a>"],[0.678476193469765,0.2416611090602048,0.02278589783687646,0.03873213408458687,0.0100456451557562,0.008299020392810693],[0.4480951607110972,0.3053182680741409,0.1488360708689695,0.0668874120937655,0.01750572570990635,0.01335736254212062]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-09a1a7c878fa01543847" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-09a1a7c878fa01543847">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.GESHIP.html\" target=\"_blank\">GESHIP<\/a>","<a href=\"/reports02/eq-in/risk/in.SCI.html\" target=\"_blank\">SCI<\/a>","SHREEJISPG","<a href=\"/reports02/eq-in/risk/in.SEAMECLTD.html\" target=\"_blank\">SEAMECLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.ESSARSHPNG.html\" target=\"_blank\">ESSARSHPNG<\/a>","<a href=\"/reports02/eq-in/risk/in.TRANSWORLD.html\" target=\"_blank\">TRANSWORLD<\/a>"],[88.674774135466,0.4145367462247621,4.890767747714924,0.03989922224541936,1.081689136781131,0.01182280574136024],[93.38091673398509,0.2388613581505882,5.90865653557078,0.03185748726833106,0.4278850792838587,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-7fe8c612f65ea533046e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-7fe8c612f65ea533046e">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.GESHIP.html\" target=\"_blank\">GESHIP<\/a>","<a href=\"/reports02/eq-in/risk/in.SCI.html\" target=\"_blank\">SCI<\/a>","SHREEJISPG","<a href=\"/reports02/eq-in/risk/in.SEAMECLTD.html\" target=\"_blank\">SEAMECLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.ESSARSHPNG.html\" target=\"_blank\">ESSARSHPNG<\/a>","<a href=\"/reports02/eq-in/risk/in.TRANSWORLD.html\" target=\"_blank\">TRANSWORLD<\/a>"],[89.55119966761406,0.9881074228756389,6.262030431725962,0.08170380543467604,-1.765397553562915,0.05642481184401787],[92.81743280680563,0.6680876360111914,8.159356304495009,0.08292274923997887,-1.784224308395823,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-26 </em></p>
+<div id="indian-shipping-sector-analysis-based-on-geship-sci-and-seamec-earnings-transcripts" class="section level7">
+<p class="heading">Indian Shipping Sector Analysis (Based on GESHIP, SCI, and Seamec Earnings Transcripts)</p>
+<p>The analysis draws from Q2/H1 FY26 earnings calls of <strong>Great Eastern Shipping (GESHIP)</strong> (diversified tanker, bulk, LPG, offshore), <strong>Seamec</strong> (offshore support vessels/MSVs focused on India), and SCI’s disclosure (limited insights). The sector benefits from global trade resilience and India’s energy growth but faces cyclical and operational pressures. Overall, sentiment is cautiously optimistic amid firm asset values and low supply growth.</p>
+<div id="tailwinds" class="section level8">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Strong Freight Rates &amp; Demand</strong>: Crude tankers (Suezmax/VLCC) tightened due to OPEC production unwind, Russian sanctions (10-15% tanker fleet sanctioned), China oil stockpiling, and Brazilian supply. Product tankers recovering; dry bulk stable (iron ore +14% YoY, grain front-loading); LPG spikes from US-China tariffs. GESHIP notes most tankers/LPG/dry bulk in spot/short-term for upside capture (~90% fleet flexible).</li>
+<li><strong>Tight Supply Dynamics</strong>: Low scrapping (strong markets discourage it); orderbooks moderate (10-18% for tankers/bulk, 29% LPG). Yards full with LNG/containers, delaying newbuilds (2.5-3yr lead times). Asset prices up (tankers/bulkers firm).</li>
+<li><strong>India-Specific Boost</strong>: Refining capacity to 310MT by 2030 (India ~33% global demand growth). Govt initiatives (Sagar Mala coastal shipping, shipbuilding incentives) aid domestic ops. GESHIP/Seamec active in coastal/ONGC work.</li>
+<li><strong>Financial Strength</strong>: GESHIP net cash $550M (NAV Rs1,484/share, up Rs60 QoQ); disciplined capex (switch strategy: scrap old, buy new). Rupee depreciation aids net dollar-long balance sheet.</li>
+<li><strong>Offshore Resilience</strong>: GESHIP vessels fixed at high rates; Seamec full utilization post-monsoon, younger fleet shifting to high-margin IMR contracts (margins 30-35% vs pre-COVID &lt;20%).</li>
+</ul>
+</div>
+<div id="headwinds" class="section level8">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Seasonal/Operational Disruptions</strong>: Monsoon idles offshore vessels (Seamec Q2 EBITDA down to Rs18cr from Rs38cr YoY due to Swordfish breakdown, lost ~68 days).</li>
+<li><strong>Rate Volatility</strong>: Product tankers/MRs lower YoY; dry bulk slightly softer (coal weak, China steel down). GESHIP H1 profits lower YoY due to vessel sales and softer rates.</li>
+<li><strong>Geopolitical/Trade Uncertainty</strong>: Russian refinery outages/drone attacks; US-China tariffs disrupt LPG/grains. Sanctions reduce effective fleet supply but add trading risks.</li>
+<li><strong>Aging Fleet Pressures</strong>: GESHIP switching 20yr-old tankers; Seamec faces DG Shipping age norms (e.g., Seamec-2 ends 2026, potential scrap).</li>
+<li><strong>Cost Inflation</strong>: Seamec employee/crew costs +25% YoY (new vessels like Swordfish add fixed costs pre-revenue). Drydocks loom (Seamec: 3 in FY26).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Fleet Modernization &amp; Expansion</strong>: GESHIP to 40 vessels (Ultramax delivery Q4FY26, scrap 2 old tankers); switch strategy absorbs capex. Seamec: Anant (Feb’26, $45k/day, 4yr ONGC), Agastya (Dec’25, $25k/day, 4yr), MoU for Rs1,000cr capex (new MSVs/other vessels leveraging govt yard incentives). IRR targets &gt;20% (Seamec).</li>
+<li><strong>Market Upside</strong>: Offshore repricings (GESHIP: 4 high-capability vessels short-term); spot exposure captures tightening (e.g., rigs 75% covered FY26). Potential containers entry (GESHIP watching post-orderbook correction).</li>
+<li><strong>Capital Deployment</strong>: GESHIP Rs7,000cr cash + debt capacity; historical 2016-18 scaling proves execution bandwidth. Seamec net debt Rs300-400cr by Mar’26, funded by cash flows.</li>
+<li><strong>Domestic Focus</strong>: ONGC/Aramco/L&amp;T contracts; North Sea expansion via UK office (Sep’26 ops). SCI implied domestic emphasis.</li>
+<li><strong>Long-Term</strong>: Low fleet supply + India energy demand = sustained rates 4-5yrs (Seamec). NAV accretion via cash profits + depreciation.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Cyclical Downturn</strong>: High orderbooks (LPG 29%) could flood supply if rates soften; historical weak markets delay scrapping, extending cycles.</li>
+<li><strong>Operational/Execution</strong>: Breakdowns (Seamec Swordfish visa/delays), drydocks/off-hire (10-20% fleet risk), weather. Aging fleet caps utilization.</li>
+<li><strong>Geopolitical/Macro</strong>: Sanctions/trade wars (Russia, US-China) volatile; oil price sensitivity (less for maintenance vs exploration).</li>
+<li><strong>FX &amp; Financing</strong>: Rupee depreciation MTM losses on swaps (GESHIP normalized view strips this); high cash drag if markets stay strong.</li>
+<li><strong>Regulatory/Competition</strong>: DG Shipping age limits; limited MSV supply but global scarcity. Capex timing risk (buy high, rates fall).</li>
+<li><strong>Balance Sheet</strong>: SCI/Seamec subsidiaries losses (Seamec overseas to breakeven FY27); doubtful debts (Seamec Rs140cr Swiber provisioned).</li>
+</ul>
+<p><strong>Summary</strong>: Indian shipping enjoys <strong>tailwinds from tight supply, firm rates, and policy support</strong>, driving <strong>growth via fleet upgrades and spot upside</strong> (GESHIP/Seamec capex Rs1,000cr+). However, <strong>headwinds like monsoon/breakdowns temper Q2 results</strong>, with <strong>risks centered on cycles, ops, and geopolitics</strong>. Sector ROCE/ROE stable (GESHIP NAV discount 0.73x; Seamec 8%). Outlook positive for H2FY26 if rates hold, but discipline key amid cash hoards. Bullish on domestic offshore/energy linkage.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3>General</h3>
+<p><em>asof: 2025-11-26 </em></p>
+<div id="analysis-of-indian-shipping-sector-based-on-provided-announcements" class="section level7">
+<p class="heading">Analysis of Indian Shipping Sector (Based on Provided Announcements)</p>
+<p>The provided documents are regulatory disclosures from key listed Indian shipping companies (Essar Shipping, Great Eastern Shipping Company, Shipping Corporation of India (SCI), Seamec Limited, and Transworld Shipping Lines). These filings primarily cover debt redemption, dividend TDS communications, unclaimed dividend campaigns, and JV registrations. They signal financial stability and compliance but offer limited operational insights. Below is an analysis framed around <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>, inferred from the disclosures. Broader sector context (e.g., freight rates, geopolitics) is not directly addressed but supplemented where relevant.</p>
+<div id="tailwinds-positive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Strong Cash Flows and Profitability</strong>: Multiple companies (Great Eastern, Transworld) are declaring interim/final dividends (e.g., Rs. 7.20/share for Great Eastern, Rs. 1.50/share for Transworld), with detailed TDS processes indicating robust earnings for FY25-26. This reflects healthy free cash flows amid volatile shipping cycles.</li>
+<li><strong>Debt Management</strong>: Essar Shipping’s partial redemption of Rs. 889.6 Mn NCDs (with Rs. 975 Mn payout including interest/premium) demonstrates deleveraging (balance outstanding: 51 Mn NCDs). Reduces interest burden and improves balance sheets.</li>
+<li><strong>Investor Engagement</strong>: SCI’s “Saksham Niveshak” campaign (100-day IEPF initiative) shows proactive outreach to recover unclaimed dividends, enhancing shareholder value and liquidity.</li>
+<li><strong>Regulatory Compliance</strong>: All filings adhere to SEBI Reg 30/LODR and Income Tax rules, building investor confidence.</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Compliance Burden</strong>: Extensive TDS documentation (Forms 15G/H, TRC, Form 10F, self-declarations) for dividends highlights administrative complexity, especially for non-residents (20% TDS + surcharge/cess). Delays in KYC/PAN-Aadhaar linking could lead to higher TDS (20%) or refunds via ITR.</li>
+<li><strong>Unclaimed Dividends</strong>: SCI’s campaign flags legacy issues with unpaid dividends (7-year transfer risk to IEPF), indicating dormant shareholders and potential cash lock-up.</li>
+<li><strong>No Operational Positives</strong>: Filings focus on financial housekeeping; absence of freight rate/volume updates suggests muted visibility into core shipping recovery post-COVID/supply chain disruptions.</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Diversification</strong>: Seamec’s JV (“SEARETE INDIA IFSC PRIVATE LIMITED”) in GIFT City (IFSC registration on June 5, 2025) via its UAE subsidiary signals expansion into financial services/shipping finance. IFSC’s tax incentives could unlock new revenue (e.g., leasing, funding).</li>
+<li><strong>Dividend Sustainability</strong>: Payouts from Great Eastern/Transworld (with record dates in 2025) point to sustained earnings growth, potentially from container/tanker demand recovery.</li>
+<li><strong>Sector Tailwinds (Inferred)</strong>: Dividend capacity implies benefiting from global trade rebound, Red Sea rerouting (boosting rates), and India’s maritime push (e.g., Sagarmala). SCI’s Navratna status adds government-backed stability.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Tax and Regulatory Risks</strong>:
+<ul>
+<li>Higher TDS for incomplete docs (e.g., no PAN: 20%; non-residents without TRC: 20%+). Companies disclaim liability for excess withholding.</li>
+<li>IEPF transfers (SCI): Unclaimed dividends/shares post-7 years erode shareholder value.</li>
+</ul></li>
+<li><strong>Financial Risks</strong>: Essar’s ongoing NCDs (Rs. 5.1 Bn outstanding) expose to refinancing risks if rates rise. Partial redemption is positive but not full deleveraging.</li>
+<li><strong>Shareholder-Related Risks</strong>: Dormant folios (SCI), multiple accounts under one PAN leading to higher TDS aggregation.</li>
+<li><strong>Broader Sector Risks (Contextual)</strong>: Not explicit, but dividend focus amid 2025 dates suggests exposure to fuel volatility, geopolitical tensions (e.g., Suez/Red Sea), and forex fluctuations (INR vs. USD freight earnings).</li>
+</ul>
+</div>
+</div>
+<div id="summary" class="section level7">
+<p class="heading"><strong>Summary</strong></p>
+<table>
+<colgroup>
+<col width="43%" />
+<col width="36%" />
+<col width="20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Aspect</th>
+<th>Key Highlights</th>
+<th>Outlook</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Tailwinds</strong></td>
+<td>Dividend payouts, debt redemption, investor campaigns</td>
+<td><strong>Positive</strong>: Signals profitability and deleveraging; supports stock stability.</td>
+</tr>
+<tr class="even">
+<td><strong>Headwinds</strong></td>
+<td>TDS/KYC compliance burden, unclaimed dividends</td>
+<td><strong>Moderate</strong>: Administrative drag; resolvable via outreach.</td>
+</tr>
+<tr class="odd">
+<td><strong>Growth Prospects</strong></td>
+<td>IFSC JV (Seamec), sustained dividends</td>
+<td><strong>Optimistic</strong>: Diversification + trade recovery; 10-15% earnings CAGR possible.</td>
+</tr>
+<tr class="even">
+<td><strong>Key Risks</strong></td>
+<td>Tax withholding, IEPF transfers, residual debt</td>
+<td><strong>Manageable</strong>: Compliance-focused; monitor refinancing/ geopolitics.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Sector View</strong>: Bullish short-term on financial health (dividends/debt paydown), with niche growth via IFSC. Headwinds are compliance-heavy, not operational. Risks are low-impact if addressed; sector poised for gains from global shipping upcycle. Recommend monitoring Q3 FY26 earnings for freight insights.</p>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-26 </em></p>
+<div id="summary-analysis-of-indian-shipping-sector-based-on-geship-sci-and-seamec-earnings-transcripts" class="section level7">
+<p class="heading">Summary Analysis of Indian Shipping Sector (Based on GESHIP, SCI, and Seamec Earnings Transcripts)</p>
+<p>The analysis draws from Q2/H1 FY26 earnings calls of <strong>The Great Eastern Shipping Company (GESHIP)</strong> (diversified tanker, bulker, LPG, offshore), <strong>Shipping Corporation of India (SCI)</strong> (limited disclosure; govt-owned liner/general cargo focus), and <strong>Seamec</strong> (offshore MSVs). Indian shipping shows resilience amid global trade dynamics, govt support, and cyclical uptrends, but faces segment-specific softness and operational hurdles. GESHIP (market leader) highlights strong crude/offshore, cash-rich balance sheet (~$550mn net cash); Seamec notes monsoon/breakdown drags but fleet utilization improving; SCI’s disclosure signals standard compliance amid govt maritime push.</p>
+<div id="tailwinds-positive-factors-1" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Robust Crude Tanker Demand</strong>: OPEC production cuts unwinding, Russian sanctions (Rosneft/Lukoil, 10-15% fleet sanctioned), China oil stockpiling, Brazilian supply growth driving VLCC/Suezmax/Aframax rates higher (GESHIP spot-exposed fleet benefits fully).</li>
+<li><strong>Stable Dry Bulk &amp; LPG</strong>: Grain trade frontend-loading (China tariff fears), iron ore +14% YoY, minor bulks (bauxite) strong; LPG spikes from US-China tariffs (rates ~$60k/day). Low orderbooks (dry bulk ~10-11%).</li>
+<li><strong>Offshore Strength</strong>: High fixed rates, 75%+ FY26 visibility for rigs/jack-ups; short-term contracts maximizing earnings (GESHIP). Seamec: IMR contracts &gt; EPC margins (30-35% vs pre-COVID &lt;20%), younger fleet reducing opex.</li>
+<li><strong>Govt/Macro Support</strong>: Sagar Mala (coastal shipping boost), shipbuilding incentives, maritime conference MoUs (Seamec INR1,000cr capex commitment). Rupee depreciation aids net dollar-long cos (GESHIP NAV +Rs60/sh, +Rs30 from FX).</li>
+<li><strong>Asset Values &amp; Supply Dynamics</strong>: Tanker/bulker prices uptick; low scrapping, yard capacity constrained (LNG/containers prioritized), limiting supply growth (crude orderbook 13%, products 18%, LPG 29%).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Product Tanker Weakness</strong>: MR rates stable but lower YoY (~$20k/day narrow range); Russian refinery disruptions causing uncertainty/substitution.</li>
+<li><strong>Seasonal/Operational Drag</strong>: Monsoon idles offshore vessels (Seamec Q2 EBITDA down to INR18cr from INR38cr YoY; Swordfish breakdown lost ~68 days).</li>
+<li><strong>Mixed Fleet Metrics</strong>: Aging assets (GESHIP scrapping 20yo tankers; Seamec old vessels face DG Shipping age norms ~25yrs); drydocks loom (Seamec: 3 in FY26).</li>
+<li><strong>Financing/Currency Mismatch</strong>: INR debentures swapped to USD (~3.5% fixed, +3% rupee dep’n = ~6.5% effective, but MTM losses hit P&amp;L; GESHIP net debt $186mn, non-prepayable NCDs).</li>
+<li><strong>Profit Normalization</strong>: GESHIP standalone profits lower YoY (ship sales, capacity drop); Seamec Q2 consol loss INR26cr (vs profit prior).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Fleet Modernization/Switch Strategy</strong>: GESHIP: 41 vessels → 40 post-scrapping/buys (Ultramax bulker Q4 FY26); Seamec: Anant (Feb’26, $45k/day 4yr), Agastya (Dec’25, $25k/day 4yr), Nusantara ($25k/day); SCI implied coastal focus.</li>
+<li><strong>Capital Deployment</strong>: GESHIP Rs7,000cr cash + debt capacity for weak-market buys (second-hand/newbuilds absorb $80mn+/ship); historical scaling (30→50 ships in 2016-18). Seamec: IRR &gt;20% on new MSVs, North Sea/LatAm expansion.</li>
+<li><strong>Market Upside</strong>: Spot/short-term exposure (GESHIP ~90% fleet, 4 vessels repricing H2 FY26); containers as future play (post-orderbook correction). Offshore upcycle (India refining to 310MTpa by 2030, 33% global energy demand share).</li>
+<li><strong>M&amp;A/Incentives</strong>: Govt ecosystem (ship repair/building targets); GESHIP NAV Rs1,484/sh (0.73x mkt); Seamec ROCE/ROE 8%, targeting 11%+.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Cyclical Volatility</strong>: Spot reliance (GESHIP tankers/bulkers); rate reversals (LPG tariffs easing, product cracks uncertain); orderbook deliveries (LPG 29%).</li>
+<li><strong>Geopolitical/Supply Shocks</strong>: Russian sanctions/drone attacks disrupting flows; VLCC floating storage uneconomic currently.</li>
+<li><strong>Operational/Regulatory</strong>: Breakdowns/drydocks (Seamec Swordfish/Paladin impacted Q2); DG Shipping age limits force scrapping; visa/mobilization delays (Saudi for Seamec).</li>
+<li><strong>FX/Leverage</strong>: Rupee dep’n MTM losses (unless cash &gt; debt); negative carry on debt (GESHIP prepaid where possible).</li>
+<li><strong>Execution/Capital</strong>: Deployment bandwidth in weak markets (GESHIP confident); Seamec overseas losses (INR28cr → breakeven FY27); capex funding (Seamec net debt ~INR300-400cr by Mar’26).</li>
+<li><strong>Sector-Wide</strong>: Low scrapping delays supply tightening; China demand slowdown (infrastructure/re estate weak).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Bullish medium-term on crude/offshore tailwinds and govt push, with GESHIP best-positioned (cash fortress, diversified). Seamec growth via fleet youthening but volatile. Sector poised for 10-15%+ earnings growth if rates hold; monitor geopolitics/FX. NAV discounts (GESHIP 0.73x) suggest upside potential.</p>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3>Press Release</h3>
+<p><em>asof: 2025-11-26 </em></p>
+<div id="indian-shipping-sector-analysis-based-on-provided-documents" class="section level7">
+<p class="heading">Indian Shipping Sector Analysis (Based on Provided Documents)</p>
+<div id="tailwinds-positive-factors-2" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Robust Dry Bulk Performance</strong>: Shreeji Shipping reported strong H1 FY26 results with revenue up 17% YoY to ₹323 Cr, EBITDA up 34% to ₹119 Cr (margin +461 bps to 37%), driven by efficient cargo handling, cost optimization, and diversified services across non-major ports in India/Sri Lanka. Resilient coastal trade supports domestic demand.</li>
+<li><strong>Fleet Optimization</strong>: G E Shipping delivered/sold an aging MR tanker (“Jag Pooja”), streamlining its fleet to 40 vessels (3.32 mn dwt). Ongoing sale of a Suezmax tanker and purchase of an Ultramax dry bulk carrier signals proactive modernization.</li>
+<li><strong>Industry Resilience</strong>: Transworld notes bullish Baltic Handysize Index (BHSI up to 856 pts) due to tight supply and coastal demand; Indian coastal container trade remains strong amid global volatility.</li>
+<li><strong>Expansion Initiatives</strong>: Shreeji’s new LOI for floating crane facilities at Diamond Harbour and IPO proceeds for service diversification; wide fleet (&gt;80 vessels + equipment) aids scalability.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Aging Fleet Pressures</strong>: Transworld faces sharp opex rises and off-hire days from 4 container vessels nearing 30-year life, leading to Q2 FY26 losses (PAT -₹9 Cr vs. +₹21 Cr YoY; revenue down to ₹98 Cr).</li>
+<li><strong>Freight Rate Volatility</strong>: Global container rates softened (SCFI down 8%), with Transworld’s charter income hit by oversupply, weak demand, and U.S./European pressures.</li>
+<li><strong>Seasonal &amp; Operational Factors</strong>: Shreeji highlights H1 revenue softness due to monsoons restricting ports, though mitigated by contracts/geography.</li>
+<li><strong>Margin Compression in Segments</strong>: Transworld’s EBITDA fell to ₹18 Cr (Q2 FY26 vs. ₹50 Cr YoY), reflecting maintenance costs and deployment challenges.</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Core Profitability Momentum</strong>: Ex-exceptional items, Shreeji’s net profit up 30% YoY; management expects strong H2 FY26 from seasonal recovery, new port projects, and logistics expansion (FY25 revenue ₹584 Cr, PAT ₹144 Cr).</li>
+<li><strong>Fleet &amp; Capacity Expansion</strong>: G E Shipping’s transactions to bolster dry bulk/tanker mix; Shreeji’s equipment/fleet scale positions it for cargo handling/STS growth at underserved ports.</li>
+<li><strong>Strategic Diversification</strong>: Shift to charters (Transworld), port-led services (Shreeji), and domestic focus reduce global exposure; potential vessel replacements could unlock earnings.</li>
+<li><strong>Market Tailwinds</strong>: Rising coastal dry bulk/container demand, policy support, and equity raises (e.g., Shreeji IPO) enable capex for modernization amid tight supply.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Fleet Renewal Costs</strong>: High prices for replacements (Transworld) strain balance sheets; equity needs could dilute shareholders.</li>
+<li><strong>Market/Geopolitical Volatility</strong>: Freight indices, U.S. demand, and tensions could prolong softness; exceptional items (e.g., Shreeji’s ₹32 Cr) distort trends.</li>
+<li><strong>Operational Dependencies</strong>: Charter reliance (Transworld on Avana), monsoon disruptions, and aging assets risk off-hire/downtime.</li>
+<li><strong>Macro Uncertainties</strong>: Consumer demand fluctuations, oversupply, and forward-looking statements (disclaimers note govt/tech risks).</li>
+</ul>
+<p><strong>Summary</strong>: Indian shipping shows segment divergence—dry bulk/logistics thriving (Shreeji), while container/tanker faces aging/volatile headwinds (Transworld, G E partial). Tailwinds from coastal resilience and expansions outweigh challenges, with strong growth prospects in H2 FY26 via modernization and diversification. Risks center on capex and rates, but disciplined ops signal sector maturity. Overall outlook: <strong>Cautiously Positive</strong> for diversified players.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

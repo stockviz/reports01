@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>Power Generation</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Power Generation</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/PowerGeneration.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/PowerGeneration.fan.CAP_WT.png" /></p>
+<p><img src="plots/PowerGeneration.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/PowerGeneration.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/PowerGeneration.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/PowerGeneration.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/PowerGeneration.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d8fda1b787d4f05ffbed" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d8fda1b787d4f05ffbed">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-3.08%","-2.5%"],["-4.62%","-4.27%"],["-4.99%","-3.73%"],["-0.3%","-0.89%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/PowerGeneration.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/PowerGeneration.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ef97a56fb612f11aec03" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ef97a56fb612f11aec03">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.NTPC.html\" target=\"_blank\">NTPC<\/a>","<a href=\"/reports02/eq-in/risk/in.ADANIGREEN.html\" target=\"_blank\">ADANIGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.JSWENERGY.html\" target=\"_blank\">JSWENERGY<\/a>","<a href=\"/reports02/eq-in/risk/in.NTPCGREEN.html\" target=\"_blank\">NTPCGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.NHPC.html\" target=\"_blank\">NHPC<\/a>","<a href=\"/reports02/eq-in/risk/in.NLCINDIA.html\" target=\"_blank\">NLCINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.SJVN.html\" target=\"_blank\">SJVN<\/a>","<a href=\"/reports02/eq-in/risk/in.RPOWER.html\" target=\"_blank\">RPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.NAVA.html\" target=\"_blank\">NAVA<\/a>","<a href=\"/reports02/eq-in/risk/in.ACMESOLAR.html\" target=\"_blank\">ACMESOLAR<\/a>","<a href=\"/reports02/eq-in/risk/in.JPPOWER.html\" target=\"_blank\">JPPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.KPIGREEN.html\" target=\"_blank\">KPIGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.GMRPUI.html\" target=\"_blank\">GMRP&UI<\/a>","<a href=\"/reports02/eq-in/risk/in.INOXGREEN.html\" target=\"_blank\">INOXGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.RTNPOWER.html\" target=\"_blank\">RTNPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.KPEL.html\" target=\"_blank\">KPEL<\/a>","<a href=\"/reports02/eq-in/risk/in.GIPCL.html\" target=\"_blank\">GIPCL<\/a>","<a href=\"/reports02/eq-in/risk/in.GREENPOWER.html\" target=\"_blank\">GREENPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.SURANATP.html\" target=\"_blank\">SURANAT&P<\/a>","<a href=\"/reports02/eq-in/risk/in.INDOWIND.html\" target=\"_blank\">INDOWIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ENERGYDEV.html\" target=\"_blank\">ENERGYDEV<\/a>","<a href=\"/reports02/eq-in/risk/in.KARMAENG.html\" target=\"_blank\">KARMAENG<\/a>"],[0.5032845544418102,0.1041500989501066,0.08470316924314944,0.02865079368734746,0.07896101370323316,0.02623722495859798,0.01833018424947648,0.0373609750588414,0.02375386129097512,0.007614575339687271,0.02889090997836575,0.01400779858204208,0.01143184142613047,0.01156685081949749,0.008880993406536851,0.004584445688786064,0.002967142379577226,0.003751715721905275,0.0002346577458853019,0.000452718280387995,0.0001466572100867884,3.781783757366202e-05],[0.3555913214782166,0.1907022364102383,0.09551311389518648,0.08978367355118089,0.08660890994675952,0.03852605844245011,0.03479023878124369,0.01862901122017969,0.01675178221036719,0.0158174770553178,0.01434835300347003,0.009731632743957731,0.009694098250666219,0.009113249445253862,0.006139013506993072,0.002885885860441442,0.00287314273745773,0.001710402813143587,0.0003043107082266867,0.0002952100786200253,0.0001208523264145685,7.002553421480329e-05]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":22,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,22,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-19370199dbab7c3531cb" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-19370199dbab7c3531cb">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.NTPC.html\" target=\"_blank\">NTPC<\/a>","<a href=\"/reports02/eq-in/risk/in.ADANIGREEN.html\" target=\"_blank\">ADANIGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.JSWENERGY.html\" target=\"_blank\">JSWENERGY<\/a>","<a href=\"/reports02/eq-in/risk/in.NTPCGREEN.html\" target=\"_blank\">NTPCGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.NHPC.html\" target=\"_blank\">NHPC<\/a>","<a href=\"/reports02/eq-in/risk/in.NLCINDIA.html\" target=\"_blank\">NLCINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.SJVN.html\" target=\"_blank\">SJVN<\/a>","<a href=\"/reports02/eq-in/risk/in.RPOWER.html\" target=\"_blank\">RPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.NAVA.html\" target=\"_blank\">NAVA<\/a>","<a href=\"/reports02/eq-in/risk/in.ACMESOLAR.html\" target=\"_blank\">ACMESOLAR<\/a>","<a href=\"/reports02/eq-in/risk/in.JPPOWER.html\" target=\"_blank\">JPPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.KPIGREEN.html\" target=\"_blank\">KPIGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.GMRPUI.html\" target=\"_blank\">GMRP&UI<\/a>","<a href=\"/reports02/eq-in/risk/in.INOXGREEN.html\" target=\"_blank\">INOXGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.RTNPOWER.html\" target=\"_blank\">RTNPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.KPEL.html\" target=\"_blank\">KPEL<\/a>","<a href=\"/reports02/eq-in/risk/in.GIPCL.html\" target=\"_blank\">GIPCL<\/a>","<a href=\"/reports02/eq-in/risk/in.GREENPOWER.html\" target=\"_blank\">GREENPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.INDOWIND.html\" target=\"_blank\">INDOWIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ENERGYDEV.html\" target=\"_blank\">ENERGYDEV<\/a>","<a href=\"/reports02/eq-in/risk/in.KARMAENG.html\" target=\"_blank\">KARMAENG<\/a>"],[64.26198682638207,0.08508950715452372,13.2574076593588,2.788430902793615,9.695765990041602,2.486456290013694,0.03801484807743325,-0.002731653818228795,3.410937527252175,1.462010756604956,0.05217064718800011,1.14173060890197,null,0.002400301515564411,0.5540574561652798,0.3922571567532993,0.6039028511865834,0.002194565656278929,0.002358150589678224,-0.02036654532065311,0.0004434112819445632],[null,null,null,null,null,null,null,null,null,null,null,null,-1.909754909945854,null,null,null,null,null,null,null,null],[64.73255498668006,null,8.311214938256482,2.410791126153203,14.39631375337295,1.795632991765272,1.518817645859632,0.02129241468770853,3.965812947497756,1.38457849999028,0.04008474364586005,1.600301644378217,null,0.003475859850710865,0.2909907282245366,0.5501794034343129,0.7572826551316358,0.002114356172313208,0.01838782102691499,0.01939846109246387,0.005440425571026482]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2022-12-31<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":21,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2022-12-31","targets":2},{"name":"2025-09-30","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,21,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-9882d4ad00d0cd094978" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9882d4ad00d0cd094978">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.NTPC.html\" target=\"_blank\">NTPC<\/a>","<a href=\"/reports02/eq-in/risk/in.ADANIGREEN.html\" target=\"_blank\">ADANIGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.JSWENERGY.html\" target=\"_blank\">JSWENERGY<\/a>","<a href=\"/reports02/eq-in/risk/in.NTPCGREEN.html\" target=\"_blank\">NTPCGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.NHPC.html\" target=\"_blank\">NHPC<\/a>","<a href=\"/reports02/eq-in/risk/in.NLCINDIA.html\" target=\"_blank\">NLCINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.SJVN.html\" target=\"_blank\">SJVN<\/a>","<a href=\"/reports02/eq-in/risk/in.RPOWER.html\" target=\"_blank\">RPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.NAVA.html\" target=\"_blank\">NAVA<\/a>","<a href=\"/reports02/eq-in/risk/in.ACMESOLAR.html\" target=\"_blank\">ACMESOLAR<\/a>","<a href=\"/reports02/eq-in/risk/in.JPPOWER.html\" target=\"_blank\">JPPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.KPIGREEN.html\" target=\"_blank\">KPIGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.GMRPUI.html\" target=\"_blank\">GMRP&UI<\/a>","<a href=\"/reports02/eq-in/risk/in.INOXGREEN.html\" target=\"_blank\">INOXGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.RTNPOWER.html\" target=\"_blank\">RTNPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.KPEL.html\" target=\"_blank\">KPEL<\/a>","<a href=\"/reports02/eq-in/risk/in.GIPCL.html\" target=\"_blank\">GIPCL<\/a>","<a href=\"/reports02/eq-in/risk/in.GREENPOWER.html\" target=\"_blank\">GREENPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.INDOWIND.html\" target=\"_blank\">INDOWIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ENERGYDEV.html\" target=\"_blank\">ENERGYDEV<\/a>","<a href=\"/reports02/eq-in/risk/in.KARMAENG.html\" target=\"_blank\">KARMAENG<\/a>"],[59.23106964360844,0.08462864082372763,18.11167429509953,1.468388307993527,4.035190950669293,4.412897395611184,0.02153841094671624,0.1032521212637518,0.9433492241658564,0.7216007822460745,0.05918803644244048,0.8485157242790855,null,0.001663429978921568,1.982751940502379,0.4476312359647795,0.494249941876491,0.002065634689007205,0.01143040939512195,0.009182578393999163,0.002214013631901582],[null,null,null,null,null,null,null,null,null,null,null,null,3.464315027683741,null,null,null,null,null,null,null,null],[66.97391963309245,null,9.317596694698045,1.325138430555551,6.160664621325092,5.566981247149538,0.08548119194059174,0.1058867936401602,1.560808947160607,1.011378085474193,0.03788110967853203,1.246906849622192,null,0.001869636888872363,1.665492202154575,0.6357479578296605,0.7121004029236387,0.002026461133398883,0.0125121645214688,0.02330370203511669,0.005360199668843472]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2022-12-31<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":21,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2022-12-31","targets":2},{"name":"2025-09-30","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,21,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-27 </em></p>
+</div>
+</div>
+<div id="analysis-of-indian-power-generation-sector" class="section level1">
+<h1>Analysis of Indian Power Generation Sector</h1>
+<p>The provided documents primarily feature announcements and earnings call transcripts from key players in India’s power sector, with a strong emphasis on renewables (solar, wind, hydro) from companies like ACME Solar, Adani Green, Orient Green, Inox Wind/Green, KPI Green, KP Energy, NTPC Green, SJVN, NHPC, and some thermal/hydro players like NTPC, JSW Energy, GMR Power, and NLC India. These reveal a sector transitioning rapidly toward renewables amid govt. targets (500 GW RE by 2030), but facing execution and regulatory hurdles. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>, derived directly from the documents.</p>
+<div id="headwinds-challenges-slowing-momentum" class="section level2">
+<h2><strong>Headwinds (Challenges Slowing Momentum)</strong></h2>
+<ul>
+<li><strong>Subdued Generation &amp; Weather Dependency</strong>: Lower wind/solar output due to extended monsoons, poor wind seasons (e.g., Orient Green: 20% YoY H1 revenue growth but Q2 wind stable; NTPC: 6 BU drop in H1 gen.; Inox: monsoon-impacted Q2 execution).</li>
+<li><strong>PPA/Policy Delays &amp; Cancellations</strong>: Legacy projects (40 GW without PPAs) facing rebidding/cancellation (NTPC, KPI Green, SJVN). State policy changes (Tamil Nadu/Gujarat wind policies) impacting ops (Orient Green lobbying; KP Energy monitoring).</li>
+<li><strong>Grid Instability &amp; Curtailment</strong>: Excess solar causing duck curve issues, backing down (NTPC: DSM penalties; Orient Green: wind complements solar; SJVN: transmission shortages delaying solar commissioning).</li>
+<li><strong>Execution Slippages</strong>: Monsoon delays, land/ROW issues (Inox Wind: H1 30% of FY target; SJVN: wind ROW challenges; NTPC Green: Q2 muted at 600 MW vs. 900 MW in Q1).</li>
+<li><strong>Receivables &amp; Payment Cycles</strong>: Improving but persistent (NHPC: 28 days; Orient Green: &lt;30 days avg.; KP Energy: AP/Gujarat smooth).</li>
+</ul>
+</div>
+<div id="tailwinds-positive-drivers" class="section level2">
+<h2><strong>Tailwinds (Positive Drivers)</strong></h2>
+<ul>
+<li><strong>Robust Capacity Additions</strong>: Record additions (NTPC Group: 5.4 GW in 7 months; Inox: 350 MW H1; KPI Green: 76% revenue growth; SJVN: 680 MW Bikaner CODs). Govt. support via CPSU schemes, REIA roles (SJVN: 19.8 GW tenders).</li>
+<li><strong>Favorable Policies &amp; Incentives</strong>: GST cut on wind (5%); ALMM for components; hybridization rules; RTC/FDRE push (NTPC: CERC Suo Motu for feasible schedules; SJVN: PM Surya Ghar role).</li>
+<li><strong>Financial Strength</strong>: Strong EBITDA margins (NTPC Green: 88%; KPI Green: 36%; Orient Green: sustainable ops); low debt-equity (KP Energy: comfortable); credit upgrades (CARE A- for KP Energy).</li>
+<li><strong>Diversification</strong>: Hybrid/RE-RTC/BESS (NTPC: 12+ GW PSP/BESS; Inox Green: 12.5 GW O&amp;M); green H2/ammonia (KPI/SJVN MoUs); international (NHPC Nepal; NTPC Bangladesh/Sri Lanka).</li>
+<li><strong>Demand Resilience</strong>: Industrial/C&amp;I growth (Orient Green: C&amp;I focus; Adani/JSW NDRs); peak demand met by wind complementarity.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level2">
+<h2><strong>Growth Prospects</strong></h2>
+<ul>
+<li><strong>RE Dominance</strong>: 500 GW RE target; aggressive pipelines (NTPC: 149 GW by 2032/244 GW by 2037; KPI: 10 GW by 2030; SJVN: 5 GW Arunachal hydro + solar; Inox: 3.2 GW order book).</li>
+<li><strong>Thermal/Hydro Baseloading</strong>: Needed for grid stability (NTPC: 13 GW thermal 2032-37; SJVN Buxar 1.3 GW COD soon; NHPC: Subansiri/Dibang ramps).</li>
+<li><strong>New Tech/Exports</strong>: BESS/PSP (NTPC: 12 GW+; SJVN: 1.25 GW tender); green H2 (KPI/SJVN); nuclear (NTPC Mahi Banswara 2.8 GW); exports (NHPC Nepal; NTPC Mauritius).</li>
+<li><strong>Capex Ramp</strong>: NTPC: ₹7L Cr by 2032; group FY26: 9.8 GW CODs; financing via bonds/loans (NTPC: SBI ₹3,200 Cr; KPI: green bonds).</li>
+<li><strong>O&amp;M/Services</strong>: Inox Green: 12.5 GW portfolio; KP Energy: 2.2 GW order book.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level2">
+<h2><strong>Key Risks</strong></h2>
+<table>
+<colgroup>
+<col width="26%" />
+<col width="38%" />
+<col width="35%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Details from Documents</strong></th>
+<th><strong>Mitigation Mentioned</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory/Policy</strong></td>
+<td>PPA rebids (40 GW legacy); state changes (TN/Guj wind); DSM penalties (NTPC/Orient).</td>
+<td>Lobbying (Orient); TBCB focus (SJVN/NTPC); CERC orders (NTPC).</td>
+</tr>
+<tr class="even">
+<td><strong>Execution/Supply Chain</strong></td>
+<td>Land/ROW/monsoon delays (Inox/SJVN); module oversupply (solar prices drop).</td>
+<td>Tech-agnostic (Orient); EPC ramps (NTPC 3 GW RE awards).</td>
+</tr>
+<tr class="odd">
+<td><strong>Financial</strong></td>
+<td>High capex/debt (NTPC ₹23K Cr H1); receivables (NHPC unbilled ₹3.7K Cr).</td>
+<td>Low D/E (KP &lt;2x); refinancing (NTPC 6.11% cost); internal accruals.</td>
+</tr>
+<tr class="even">
+<td><strong>Operational</strong></td>
+<td>Weather/grid curtailment (NTPC/KPI); silt/floods (NHPC Teesta).</td>
+<td>Hybrid/BESS (NTPC/Inox); forecasting (KP IBM tie-up).</td>
+</tr>
+<tr class="odd">
+<td><strong>Market/Competition</strong></td>
+<td>Low tariffs (₹2.6-3/kWh solar); RE oversupply.</td>
+<td>Diversification (RTC/green H2); C&amp;I focus (Adani/Orient).</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="summary" class="section level2">
+<h2><strong>Summary</strong></h2>
+<p>India’s power sector is poised for explosive growth (500 GW RE by 2030, demand ~4T units by 2035), driven by economic expansion, RE push, and tech like BESS/hybrid. <strong>Tailwinds</strong> (capex surge, policy support) outweigh <strong>headwinds</strong> (grid/PPA delays, weather), enabling 10-20% revenue/EBITDA growth for leaders like NTPC (10% RE capacity by FY32), SJVN/NHPC (hydro ramps), and pure-plays (KPI/Inox 50-100% YoY). <strong>Prospects</strong> shine in RE-nuclear-hybrid (₹7L Cr capex), but <strong>risks</strong> (execution, regulation) could cause 10-20% slippages in CODs/tariffs. Sector ROE ~15-20% sustainable; monitor PPA conversions and grid upgrades for outperformance. Overall: <strong>Bullish with cautious execution focus</strong>.</p>
+<div id="general" class="section level3">
+<h3>General</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-indian-power-generation-sector" class="section level7">
+<p class="heading">Summary Analysis: Indian Power Generation Sector</p>
+<p>Based on the provided announcements from key listed players (e.g., ACME Solar, Adani Green, RattanIndia Power, KPI Green, NTPC Green, GIPCL, NLC India, etc.), the Indian power sector shows robust renewable energy (RE) expansion amid steady thermal operations. The sector benefits from government support and rising demand but faces regulatory hurdles and cost pressures. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>RE Capacity Acceleration</strong>: Multiple commissioning announcements highlight momentum in solar (e.g., GIPCL +105 MW at Khavda RE Park; NLC India +106 MW Phase-II at Barsingsar; NTPC Green +75.5 MW Khavda-I; total RE additions ~300+ MW across docs). CPSU schemes (NTPC) and hybrid parks signal policy support.</li>
+<li><strong>High Thermal Utilization</strong>: RattanIndia’s Amravati plant achieved 79% PLF and 85% availability in H1 FY26 (top in Maharashtra), with 749 coal rakes unloaded, indicating reliable fuel supply (FSA with SECL) and PPA stability (1200 MW with MSEDCL).</li>
+<li><strong>Demand Resilience</strong>: National generation up ~5% YoY (1,824 BU in FY25); peak demand projected at 250 GW (FY26). MSEDCL trends show stable base load demand.</li>
+<li><strong>Corporate Momentum</strong>: SPV incorporations (Adani Hydro, KPI Green, Orient Green) for wind/solar/hydro; preferential allotments/rights issues (Indowind, Orient) for funding; stock options (Inox Green) for talent retention.</li>
+<li><strong>Rating Upgrades</strong>: RattanIndia’s short-term facilities upgraded to ‘CRISIL A3+’.</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Financial Strain</strong>: RattanIndia reported H1 FY26 EBITDA of ₹337 Cr but net loss of ₹48 Cr due to high fuel (₹1,193 Cr), finance costs (₹260 Cr), and forex/other expenses; Q2 loss widened amid softening power exchange sales.</li>
+<li><strong>Regulatory/Compliance Burdens</strong>: Fines levied (JP Power: ₹89,680 each from BSE/NSE for Reg 17(1A) non-compliance); pending Change-in-Law claims (RattanIndia: ash utilization, coal sizing/STC hikes sub-judice in APTEL/Supreme Court).</li>
+<li><strong>Auditor/Governance Issues</strong>: Resignations (GMR Warora: S.R. Batliboi due to EY affiliate non-audit services); new appointments (SJVN).</li>
+<li><strong>Demand Fluctuations</strong>: MSEDCL peak demand dipped slightly in H1 FY26 due to early monsoons; national H1 FY26 growth slowed to -0.92% (thermal down 5%).</li>
+<li><strong>Operational Delays</strong>: New SPVs/subsidiaries (e.g., Adani AHE13L/16L, KPI KPIN Clean Power) yet to commence operations.</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>RE Dominance</strong>: Projected non-fossil growth at 16.65% (H1 FY26); national target 2,000 BU (FY26, +9.3% YoY). Players like Adani, KPI, NTPC Green scaling via SPVs (e.g., 1,255 MW Khavda pipeline).</li>
+<li><strong>Thermal Backbone Role</strong>: Thermal PLF at decade-high 69.45% (FY25); base load demand to rise (peak 277 GW by FY27 per NEP 2023).</li>
+<li><strong>Expansion Funding</strong>: Rights issues (Indowind ₹49.5 Cr), preferential equity (Orient Green ₹5.13 Cr), AGMs/EGMs for reports/plans.</li>
+<li><strong>Infra/Integration</strong>: Rail infra bids (JSW Energy for KSK Mahanadi-linked RCRIPL); investor meets (NHPC at CLSA/Avendus/JM Financial).</li>
+<li><strong>Group Capacity Milestones</strong>: NTPC Group at 84,924 MW post-additions; NGEL at 7,639 MW.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="20%" />
+<col width="46%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Examples from Docs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory/Legal</strong></td>
+<td>Change-in-Law disputes; fines; NCLT/APTEL delays.</td>
+<td>RattanIndia claims; JP Power fines; JSW RCRIPL approval pending.</td>
+</tr>
+<tr class="even">
+<td><strong>Financial</strong></td>
+<td>High debt/fuel costs; forex volatility; losses despite high PLF.</td>
+<td>RattanIndia net loss; GMR auditor exit on independence.</td>
+</tr>
+<tr class="odd">
+<td><strong>Operational</strong></td>
+<td>Fuel supply disruptions; monsoon-dependent demand; project delays.</td>
+<td>Coal rake reliance; MSEDCL dip; new SPVs pre-ops.</td>
+</tr>
+<tr class="even">
+<td><strong>Governance</strong></td>
+<td>Auditor churn; compliance lapses.</td>
+<td>GMR/S.R. Batliboi resignation; Reg 17(1A) violation.</td>
+</tr>
+<tr class="odd">
+<td><strong>Market</strong></td>
+<td>RE intermittency; thermal phase-down policies.</td>
+<td>Thermal growth slowdown (-5% H1 FY26); over-reliance on discoms (MSEDCL).</td>
+</tr>
+<tr class="even">
+<td><strong>External</strong></td>
+<td>Fraud/cheating claims (no impact per Reliance Power); geopolitical fuel risks.</td>
+<td>Fake bank guarantee arrest (unrelated to ops).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: Bullish on RE (tailwinds from policy/capex), cautious on thermal (headwinds from costs/regulations). Sector growth pegged at 7-9% annually, driven by demand (CAGR 5%+), but execution risks persist. Investors should monitor Q3 results, regulatory outcomes, and monsoon impacts. Total disclosures indicate proactive compliance amid expansion.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-27 </em></p>
+</div>
+</div>
+</div>
+<div id="indian-power-generation-sector-analysis" class="section level1">
+<h1>Indian Power Generation Sector Analysis</h1>
+<div id="tailwinds-positive-factors-1" class="section level2">
+<h2><strong>Tailwinds (Positive Factors)</strong></h2>
+<ul>
+<li><strong>Robust Policy Support &amp; RE Push</strong>: Strong government backing for 500 GW RE by 2030, including CPSU schemes, GST cut on wind components (12% to 5%), ALMM for wind/solar, hybridization allowances, and VGF for BESS (₹18 lakh/MWh). Initiatives like PM-Surya Ghar and REIA roles (e.g., SJVN’s 19.8 GW tenders) accelerate solar/wind deployment.</li>
+<li><strong>High Capacity Additions</strong>: Record additions in H1 FY26 (e.g., NTPC Group: 5.4 GW; NGEL: 1.5 GW; KPI Green: Strong solar/wind execution). Coal/hydro also progressing (e.g., NHPC’s Parbati-II 800 MW COD; SJVN’s Buxar TPP Unit-1).</li>
+<li><strong>Demand Surge</strong>: GDP growth (6.5-7%), industrialization, data centers/AI, and urbanization driving demand. RTC/FDRE hybrids gaining traction for grid stability.</li>
+<li><strong>Financing &amp; Cost Efficiency</strong>: Low-cost funding (e.g., NTPC green bonds at 6.11%; KP Energy rating upgrade to A-). Declining module/battery costs; captive coal mines boosting margins (NTPC: 16.8% receipts from captives).</li>
+<li><strong>Diversification</strong>: Shift to BESS/PSP (NTPC: 12.7 GW PSPs), green H2/ammonia (KPI, SJVN MoUs), nuclear (NTPC Mahi Banswara 2.8 GW), and international projects (NHPC Nepal, NTPC Bangladesh/Sri Lanka).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level2">
+<h2><strong>Headwinds (Challenges)</strong></h2>
+<ul>
+<li><strong>PPA &amp; Grid Issues</strong>: 40 GW legacy projects without PPAs facing cancellation/rebidding (Nov 2025 deadline). Grid evacuation delays/curtailment (Rajasthan/Gujarat solar; wind ROW issues). DSM penalties for deviations impacting hydro/RE.</li>
+<li><strong>Execution Delays</strong>: Extended monsoons, floods/silt (NHPC Teesta-V shutdown), land/forest clearances (SJVN Etalin/Attunli). Wind PLF variability (Orient Green: Q2 28% vs. 24.5% prior).</li>
+<li><strong>Receivables &amp; DISCOM Payments</strong>: Delays persist (NHPC: 28 days avg.; Orient Green: &lt;30 days). Water cess reversals/tax disputes (NHPC).</li>
+<li><strong>Subdued Demand/Generation</strong>: Milder summer/monsoon led to 6 BU drop in NTPC H1 generation; coal PLF moderation (70.5% vs. prior).</li>
+<li><strong>High Capex/Debt</strong>: Intense spending (NTPC Group: ₹23k Cr H1; NGEL: ₹6.6k Cr) amid rising debt (SJVN: ₹30k Cr), though D/E controlled (&lt;2x).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level2">
+<h2><strong>Growth Prospects</strong></h2>
+<ul>
+<li><strong>RE Dominance</strong>: 60-140 GW targets (NTPC: 60 GW RE by FY32; KPI: 10 GW by 2030; Inox Green: 17 GW O&amp;M). Hybrid/RTC/FDRE tenders (3 GW pipeline); solar parks (Khavda, Bikaner).</li>
+<li><strong>Thermal/Hydro Stability</strong>: 13 GW thermal + hydro/nuclear additions (NTPC FY26-28: 3.5 GW thermal/hydro). Coal PSPs/BESS for peaking (NTPC: 5 GW BESS at thermal).</li>
+<li><strong>Capex Ramp</strong>: FY26: ₹30-45k Cr (NTPC/NGEL); total 7L Cr by 2032. Regulated equity growth (NTPC: ₹1.16L Cr).</li>
+<li><strong>New Segments</strong>: Green H2/ammonia (KPI, SJVN), EV/green infra MoUs (KP Group), international (NHPC Nepal DPRs).</li>
+<li><strong>EBITDA/PAT Trajectory</strong>: RE margins 86-90% (NGEL, KPI); group PAT +4-10% YoY despite headwinds.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level2">
+<h2><strong>Key Risks</strong></h2>
+<ul>
+<li><strong>Regulatory/Policy</strong>: PPA rebidding, DSM tightening, CERC truing-up delays, Indus Water Treaty suspension impacting J&amp;K hydro.</li>
+<li><strong>Execution/Operational</strong>: Weather (monsoon/floods), supply chain (wind OEM delays), land/ROW (Arunachal hydro).</li>
+<li><strong>Financial</strong>: Debt servicing amid capex (pledge concerns at KPI), receivables (DISCOMs), forex (international).</li>
+<li><strong>Market/Competition</strong>: Oversupply in solar modules, low tariffs (₹2.6-2.9/kWh), competition in TBCB.</li>
+<li><strong>Geopolitical/External</strong>: Global tariffs (US-China), fuel volatility (coal imports).</li>
+</ul>
+</div>
+<div id="summary-1" class="section level2">
+<h2><strong>Summary</strong></h2>
+<p>The Indian power sector is poised for <strong>strong growth</strong> (tailwinds from RE policy, demand, capex), targeting 500 GW RE by 2030 amid economic expansion. Companies like NTPC (149 GW by 2032), KPI Green, and SJVN are leading with record additions (5+ GW H1 FY26), diversification (BESS/PSP/green H2), and high RE margins (86-90%). <strong>Headwinds</strong> include PPA/grid delays and execution slips, but regulated returns and financing mitigate them. <strong>Prospects</strong> are bright with hybrid/RTC focus and nuclear/international forays. <strong>Risks</strong> center on regulatory shifts and execution, but low D/E (&lt;2x) and captive fuel provide buffers. Overall, <strong>bullish outlook</strong> with 10-20% PAT CAGR feasible for leaders, prioritizing grid/infra resolution.</p>
+<div id="press-release" class="section level3">
+<h3>Press Release</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-indian-power-generation-sector-based-on-provided-press-releases" class="section level7">
+<p class="heading">Summary Analysis: Indian Power Generation Sector (Based on Provided Press Releases)</p>
+<p>The documents highlight a vibrant renewable energy (RE) sub-sector within Indian power generation, with aggressive capacity additions, low-tariff auctions, and government-backed projects dominating. Conventional power (thermal, gas, hydro) shows mixed signals, with divestments of stressed assets and transitions to IPP models. Overall, the sector exhibits strong momentum toward RE transition, aligned with India’s 500 GW RE target by 2030 and Net Zero by 2070. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-supportive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Supportive Factors)</strong></p>
+<ul>
+<li><strong>Policy &amp; Government Push</strong>: Strong central/state support, e.g., PM Modi laying foundation stones for SJVN (200 MW solar), NLC India (600 MW solar + 50 MW wind), and Gujarat’s Khavda park (Adani, ACME, NTPC). MoUs with states (NTPC-Gujarat) and PSUs (NLC-BARC/KABIL) signal accelerated approvals and funding.</li>
+<li><strong>RE Auction Momentum</strong>: Competitive low tariffs (e.g., Rs 4.35/kWh for RTC RE by ACME, Ayana/NTPC), with hybrid/solar/wind+storage winning bids. High CUF mandates (75-85%) drive tech innovation.</li>
+<li><strong>Capacity &amp; Financial Strength</strong>: Adani Green hits 15 GW operational (India’s largest, top-10 global); NLC reaches 6.8 GW; Orient/Indowind report record H1 profits (37-31% YoY EBITDA growth). Debt-free balance sheets (Reliance Power/Infra) and dividends (Nava 300%) boost investor confidence.</li>
+<li><strong>Partnerships &amp; Ecosystem</strong>: MoUs for 5 GW+ (Inox Wind/KP Energy 2.5 GW wind; Inox Solar/KPI Green 2.5 GW solar), O&amp;M tie-ups (Inox Green), and EPC efficiencies reduce costs.</li>
+<li><strong>Operational Efficiencies</strong>: Coal production up 26% (NLC), PLF 80%+ (Nava/MEL), refunds/excess interest reductions lower finance costs.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Fuel &amp; Legacy Asset Stress</strong>: Gas plants non-operational since 2016 (GMR Vemagiri/GREL) due to unaffordable gas; divestments at low valuations (Rs 653 Cr for 1.3 GW+). Thermal reliance persists amid RE shift.</li>
+<li><strong>Debt &amp; Restructuring</strong>: OTS settlements (GMR Rs 4,400 Cr deleveraging), arrears recovery (Nava MEL US$55 Mn pending), and high capex needs strain smaller players.</li>
+<li><strong>Execution Delays</strong>: Project timelines (e.g., ACME 30 months PPA signing; Nava solar H2 FY27) vulnerable to land/connectivity issues, despite portfolio advantages.</li>
+<li><strong>Margin Pressures</strong>: EBITDA margins stable but thin (Orient 48-60%, Indowind 54%); coal price volatility (recent cuts positive but uncertain).</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>RE Dominance</strong>: Pipeline massive—Adani 50 GW by 2030 (Khavda 30 GW epicenter); ACME 7.4 GW total (2.9 GW op + 4.5 GW UC + 13.5 GWh BESS); NLC/SJVN adding GW-scale solar/wind. RTC/hybrid with storage (e.g., Railways tender) ensures firm power.</li>
+<li><strong>Diversification</strong>: Beyond generation—O&amp;M (Inox Green 12.5 GW AUM), EPC, agri/mining (Nava Zambia avocados/sugar), international (Orient Croatia 10 MW).</li>
+<li><strong>Scale &amp; Economics</strong>: World’s largest RE parks (Khavda), water-positive ops (Adani), job creation (3,700 green jobs), and carbon offsets (28 Mn tonnes/year Adani) attract ESG capital. FY26 H1 revenue growth 14-20% across players signals sustained expansion.</li>
+<li><strong>Target</strong>: RE share rising (NLC 22% RE in 6.8 GW total); sector poised for 15-20% CAGR to meet 500 GW goal.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="30%" />
+<col width="26%" />
+<col width="42%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Examples from Docs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Execution/Regulatory</strong></td>
+<td>Delays in approvals, land, connectivity; PPA timelines.</td>
+<td>ACME 30-month commissioning; GMR divestment by Sep 2025.</td>
+</tr>
+<tr class="even">
+<td><strong>Financial</strong></td>
+<td>High capex (Rs 867 Cr SJVN solar), debt (GMR stressed assets), forex arrears.</td>
+<td>MEL US$55 Mn dues; interest refunds volatile.</td>
+</tr>
+<tr class="odd">
+<td><strong>Fuel/Commodity</strong></td>
+<td>Gas unavailability; coal price swings.</td>
+<td>GMR gas plants idle; Nava coal dependency.</td>
+</tr>
+<tr class="even">
+<td><strong>Competition</strong></td>
+<td>Auction intensity driving tariffs lower (Rs 4.35/kWh).</td>
+<td>Multiple bidders in REMCL 1 GW RTC.</td>
+</tr>
+<tr class="odd">
+<td><strong>Legal/External</strong></td>
+<td>Sub-judice issues (Reliance RCOM insolvency); geopolitical (Zambia ops).</td>
+<td>RCOM CIRP; Nava MEL arrears.</td>
+</tr>
+<tr class="even">
+<td><strong>Tech/Operational</strong></td>
+<td>Storage integration, high availability mandates (85%).</td>
+<td>RTC with ESS; weather-dependent wind/solar.</td>
+</tr>
+<tr class="odd">
+<td><strong>Macro</strong></td>
+<td>Interest rates, monsoon variability, policy shifts.</td>
+<td>Finance costs down 20% (Orient) but sensitive.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: Bullish on RE (80% of news positive), with tailwinds &gt;&gt; headwinds. Sector growth pegged at 15-25% CAGR through 2030, led by hybrids/storage. Conventional power faces contraction via divestments. Investors should prioritize RE pure-plays (Adani, ACME, Inox) while monitoring gas/thermal stress. Risks mitigated by govt backing but execution key to success.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

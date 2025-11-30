@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>Stationary</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Stationary</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Stationary.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Stationary.fan.CAP_WT.png" /></p>
+<p><img src="plots/Stationary.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Stationary.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Stationary.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Stationary.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Stationary.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e1c9f4ddeec8e7c9ff8e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e1c9f4ddeec8e7c9ff8e">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-3.94%","-1.19%"],["-5.6%","-1.71%"],["-8.04%","-0.6%"],["-6.53%","-0.79%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Stationary.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Stationary.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-47ef125a5cea7ee3a2a8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-47ef125a5cea7ee3a2a8">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.DOMS.html\" target=\"_blank\">DOMS<\/a>","<a href=\"/reports02/eq-in/risk/in.FLAIR.html\" target=\"_blank\">FLAIR<\/a>","<a href=\"/reports02/eq-in/risk/in.KOKUYOCMLN.html\" target=\"_blank\">KOKUYOCMLN<\/a>","<a href=\"/reports02/eq-in/risk/in.LINC.html\" target=\"_blank\">LINC<\/a>","<a href=\"/reports02/eq-in/risk/in.SUNDARAM.html\" target=\"_blank\">SUNDARAM<\/a>","<a href=\"/reports02/eq-in/risk/in.KSHITIJPOL.html\" target=\"_blank\">KSHITIJPOL<\/a>"],[0.7967668044821431,0.1166069345999694,0.04071198605241953,0.03143960207850355,0.0105332097044751,0.003941463082489207],[0.7586686459182398,0.1535526375807914,0.04724471521980997,0.03509899232692952,0.004322919455566993,0.001112089498662319]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-083ab4dc20fd5053f903" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-083ab4dc20fd5053f903">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.DOMS.html\" target=\"_blank\">DOMS<\/a>","<a href=\"/reports02/eq-in/risk/in.FLAIR.html\" target=\"_blank\">FLAIR<\/a>","<a href=\"/reports02/eq-in/risk/in.KOKUYOCMLN.html\" target=\"_blank\">KOKUYOCMLN<\/a>","<a href=\"/reports02/eq-in/risk/in.LINC.html\" target=\"_blank\">LINC<\/a>","<a href=\"/reports02/eq-in/risk/in.SUNDARAM.html\" target=\"_blank\">SUNDARAM<\/a>","<a href=\"/reports02/eq-in/risk/in.KSHITIJPOL.html\" target=\"_blank\">KSHITIJPOL<\/a>"],[29.79034374508331,40.17251992388674,7.098776926579115,6.954140944700999,-0.5230725548631601,-1.800606185543664],[41.81654667569025,null,7.642464299430605,11.67704699752335,-0.1805842229724434,-1.127993673558507]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-6daca8e2c3f2b0638888" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-6daca8e2c3f2b0638888">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.DOMS.html\" target=\"_blank\">DOMS<\/a>","<a href=\"/reports02/eq-in/risk/in.FLAIR.html\" target=\"_blank\">FLAIR<\/a>","<a href=\"/reports02/eq-in/risk/in.KOKUYOCMLN.html\" target=\"_blank\">KOKUYOCMLN<\/a>","<a href=\"/reports02/eq-in/risk/in.LINC.html\" target=\"_blank\">LINC<\/a>","<a href=\"/reports02/eq-in/risk/in.SUNDARAM.html\" target=\"_blank\">SUNDARAM<\/a>","<a href=\"/reports02/eq-in/risk/in.KSHITIJPOL.html\" target=\"_blank\">KSHITIJPOL<\/a>"],[33.28611792914383,28.63151431549326,14.01411394393534,8.678616330494508,2.487745064423434,0.4929901876160123],[39.75780384532477,null,14.59326158437236,13.47774340213489,2.577021698275768,0.9626551543989588]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-stationery-sector-analysis-headwinds-tailwinds-growth-prospects-and-key-risks" class="section level7">
+<p class="heading">Indian Stationery Sector Analysis: Headwinds, Tailwinds, Growth Prospects, and Key Risks</p>
+<p>Based on Q2 &amp; H1 FY26 earnings transcripts from <strong>DOMS Industries</strong>, <strong>Flair Writing Industries</strong>, and <strong>Linc Limited</strong> (key listed players in writing instruments, scholastic stationery, creative tools, and allied categories), the sector shows <strong>resilient growth</strong> amid transitional challenges. Aggregate revenue growth: DOMS +24% (Q2), Flair +19% (Q2)/+18% (H1), Linc +1% (Q2). EBITDA margins stable/improving (DOMS 17.5%, Flair 18.8%, Linc 11.3%). Core drivers include domestic volume-led demand, innovation, and capacity ramps, offset by GST disruptions. Below is a structured summary.</p>
+<div id="tailwinds-positive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Robust Domestic Demand &amp; Channel Penetration</strong>: GT remains dominant (70-77% mix), but e-com/MT/quick commerce (Blinkit/Instamart) growing. Festive/back-to-school seasonality supportive in H2. Regional strength in South/West; DOMS domestic sales +28%.</li>
+<li><strong>Product Innovation &amp; Portfolio Expansion</strong>: New launches driving mix shift—mechanical pencils (DOMS/Flair/Linc), markers/highlighters (DOMS/Linc), kits/combos (DOMS), creative tools (+70% at Flair), steel bottles/houseware (+121% at Flair), baby hygiene (DOMS Uniclan +ve). Premiumization (INR10-40 MRPs) gaining traction.</li>
+<li><strong>Exports Recovery</strong>: +18-41% YoY across firms; diversification to Latin America (Chile), Middle East, neighbors (Sri Lanka/Nepal). OEM exports strong at Flair (+53%).</li>
+<li><strong>Government Reforms</strong>: GST 2.0 cuts (0% on 45-50% products at DOMS; creative at Flair) create level playing field vs. unorganized players, boost disposable income via tax reductions.</li>
+<li><strong>Marketing &amp; Brand Building</strong>: KBC partnership (DOMS), cinema ties, digital campaigns enhancing aspiration. Co-branded (Warner Bros./Superman at DOMS).</li>
+<li><strong>Operational Efficiencies</strong>: Backward integration (nibs/pens at DOMS/Flair), automation yielding margin stability (16.5-18.8%).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>GST 2.0 Transition Disruptions</strong>: Sep’25 destocking/inventory clearance/order postponements impacted 45-50% SKUs (DOMS: sales 3-4% lower; Flair/Linc muted Sep). ITC ineligibility raises costs (passed via 3-4% primary price hikes, MRP cuts).</li>
+<li><strong>Capacity Constraints</strong>: Core scholastic/stationery flat/low-single digit (DOMS +4% Q2); pens/office supplies growth capped (DOMS/Flair). Delays from monsoons (DOMS 44-acre to Q1 FY27).</li>
+<li><strong>Cost Pressures</strong>: Employee costs up (1% pts QoQ at DOMS/Linc due to hiring/increments); inventory days elevated (Flair 92 vs. 85; Linc steady 60-65). Ad spends ~1-1.6%.</li>
+<li><strong>Seasonality &amp; Regional Variance</strong>: Diwali/Durga Puja slowdowns (East India weak at DOMS); Q3 expected softer.</li>
+<li><strong>Export Headwinds</strong>: US tariffs caused order postponements (DOMS mitigated via diversification); past geopolitical drag (Flair).</li>
+<li><strong>JV/Subsidiary Drag</strong>: Linc PAT -3.7% due to INR1.7 Cr H1 JV losses (UniLinc/SilkaLinc greenfield).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Near-Term (FY26)</strong>: Double-digit revenue guided—DOMS 18-20%, Flair &gt;15% CAGR (H1 at 18%), Linc 10%+. H2 acceleration via back-to-school/exams, GST normalization, new capacities (DOMS pencils/pens; Flair Valsad pens/creative Q4 FY26, Surat pencils). Volume-led (90%+ at DOMS/Flair); office supplies/pens +high double-digits (DOMS 80% Q2).</li>
+<li><strong>Medium-Term (FY27+)</strong>: Capacity unlocks to 3-5x revenue/INR1 capex (DOMS target). High-growth segments: Creative/houseware (Flair 30% H1 mix from 15%), baby hygiene, stationery (Linc 10-12% now). Exports to sustain 15-20% mix. Quick commerce/modern trade upside. Overall sector: 15-25% CAGR feasible with premiumization/organized shift.</li>
+<li><strong>Strategic Levers</strong>: 44-acre (DOMS), Valsad/Surat (Flair), Bengal (Linc-Morris); JVs (Mitsubishi INR20 pen at Linc, Flair-Flomaxe pencils). Capex: DOMS INR210-225 Cr, Flair INR80-90 Cr.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="41%" />
+<col width="25%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Execution</strong></td>
+<td>Capex delays (monsoon/GST); ramp-up inefficiencies (sub-50% utilization initially).</td>
+<td>Phased brownfield + greenfield; track record of efficiencies.</td>
+</tr>
+<tr class="even">
+<td><strong>Macro/Policy</strong></td>
+<td>Prolonged GST destocking; US/ geopolitical tariffs.</td>
+<td>Diversification; long-term GST positivity.</td>
+</tr>
+<tr class="odd">
+<td><strong>Competition</strong></td>
+<td>Unorganized in mass segments; crowded INR5-10 MRPs (Linc Pentonic dip).</td>
+<td>Innovation/premiumization; brand tie-ups.</td>
+</tr>
+<tr class="even">
+<td><strong>Financial</strong></td>
+<td>Margin compression (employee/capex ramp); WC stretch (inventory 60-92 days).</td>
+<td>Stable 16.5-18% EBITDA guide; net cash/debt negative (Flair/Linc).</td>
+</tr>
+<tr class="odd">
+<td><strong>Demand</strong></td>
+<td>Channel inventory overhang; regional/festive slowdowns.</td>
+<td>GT focus (75%); quick commerce buffer.</td>
+</tr>
+<tr class="even">
+<td><strong>External</strong></td>
+<td>Raw material volatility; forex (imports for nibs/machines).</td>
+<td>Backward integration; hedging implied.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: <strong>Positive with cautious optimism</strong>. Sector resilient (20%+ H1 growth ex-disruptions), poised for 15-20% FY26 acceleration via capacities/innovation. GST tailwind structurally bullish, but Q3 monitor for normalization. Risks manageable via diversification/execution focus. DOMS/Flair outperformers; Linc catching up. Investors: Favor capacity leaders with premium exposure.</p>
+</div>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3>Financial</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-of-indian-stationery-sector-based-on-q3nine-months-fy25-results-of-key-players-doms-flair-kokuyo-camlin-linc-sundaram-multi-pap" class="section level7">
+<p class="heading">Summary Analysis of Indian Stationery Sector (Based on Q3/Nine Months FY25 Results of Key Players: DOMS, Flair, Kokuyo Camlin, LINC, Sundaram Multi Pap)</p>
+<p>The Indian stationery sector shows <strong>mixed performance</strong> in Q3 FY25 (ended Dec 2024), with robust growth in leaders like DOMS and Flair offsetting weaknesses in laggards like Kokuyo Camlin and Sundaram. Aggregate revenue growth ~15-20% YoY for top players, driven by festive demand, but margins pressured by costs and operational issues. Below is a structured analysis of <strong>headwinds, tailwinds, growth prospects, and key risks</strong>.</p>
+<div id="tailwinds-positive-factors-1" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Strong Revenue Momentum</strong>: DOMS (consolidated Q3 revenue +35% YoY to ₹501 Cr, 9M +24% to ₹1,404 Cr), Flair (+18% Q3 to ₹265 Cr, 9M +7% to ₹782 Cr), and LINC (+1.5% Q3, +7% 9M standalone) reflect resilient demand for writing instruments, notebooks, and stationery amid education/office recovery post-COVID.</li>
+<li><strong>Margin Resilience &amp; Cost Discipline</strong>: DOMS PBT margins ~14-15%; Flair ~15%. Declining finance costs (e.g., DOMS -28% YoY, Flair -55%) due to debt repayment from IPO proceeds.</li>
+<li><strong>Capital Infusion</strong>: Post-IPO expansions (DOMS: ₹331 Cr net proceeds, 37% utilized; Flair: ₹273 Cr, 66% utilized) funding capex, working capital, and new units.</li>
+<li><strong>Seasonal Boost</strong>: Festive/back-to-school sales evident in inventory drawdowns (positive changes in most).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Operational Inefficiencies</strong>: Kokuyo Camlin reports Q3 loss (₹4 Cr PAT) and 9M profit plunge (-96% to ₹1.4 Cr) due to ₹22 Cr+ inventory discrepancies at one plant; ongoing forensic audit (Apr 2021-Sep 2024) signals control lapses.</li>
+<li><strong>Persistent Losses</strong>: Sundaram Multi Pap deepens losses (Q3 ₹2.7 Cr, 9M ₹4.3 Cr) amid high material costs (up 20% YoY) and negative working capital changes.</li>
+<li><strong>Cost Pressures</strong>: Employee expenses +15-25% YoY across board (e.g., DOMS +23%, Flair +14%); depreciation up due to capex. Raw material volatility (e.g., paper/plastics) hits margins.</li>
+<li><strong>Low Growth in Segments</strong>: LINC modest (+7% 9M); Kokuyo flat/declining sales (-5% 9M).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Expansion &amp; Diversification</strong>: IPO funds for new projects (DOMS: ₹280 Cr project partially funded; Flair: Valsad unit + capex). DOMS enters hygiene via Uniclan acquisition (51.77% stake, ₹55 Cr); LINC’s Turkey JV for exports.</li>
+<li><strong>Volume-Led Recovery</strong>: Education sector tailwinds (rising school enrollments, premiumization); subsidiaries/JVs boosting scale (DOMS subs contribute ~12% revenue).</li>
+<li><strong>Export/International Push</strong>: LINC’s Kenya sub and Turkey JV; DOMS’ steady other income.</li>
+<li><strong>Projected Trajectory</strong>: Leaders like DOMS/Flair could sustain 20%+ CAGR via capex (e.g., DOMS unutilized ₹208 Cr); sector benefits from ₹1 lakh Cr+ annual stationery market growing at 10-12% (urbanization, e-learning complements physical).</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Inventory &amp; Internal Controls</strong>: Kokuyo’s forensic audit flags potential prior-period restatements/fraud; Sundaram’s unconfirmed receivables/payables (long-outstanding, no provisioning).</li>
+<li><strong>Financial Leverage &amp; Utilization</strong>: Delays in IPO proceeds use (DOMS/Flair ~60% unutilized, parked in FDs); forex exposure (Kokuyo gains/losses volatile).</li>
+<li><strong>Single-Segment Dependence</strong>: All firms in “writing instruments/stationery” (Ind AS 108); vulnerable to raw material inflation (paper ~50% costs) or digital shift.</li>
+<li><strong>Audit/Regulatory</strong>: Modified review reports (Kokuyo: no conclusion; Sundaram: qualified on balances); bonus issues/sub-divisions (LINC) dilute EPS short-term.</li>
+<li><strong>Macro</strong>: Rural slowdown, competition from unorganized players; Code on Social Security 2020 pendency (LINC notes impact assessment needed).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: <strong>Optimistic for Leaders (DOMS/Flair)</strong> with 20%+ growth via expansions; <strong>Cautious for Laggards</strong> (Kokuyo/Sundaram) needing operational fixes. Sector poised for mid-teens growth but risks from controls/costs could cap upside. Monitor Q4 for IPO utilization and audit resolutions.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3>General</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-stationery-industry-analysis-headwinds-tailwinds-growth-prospects-and-key-risks" class="section level7">
+<p class="heading">Indian Stationery Industry Analysis: Headwinds, Tailwinds, Growth Prospects, and Key Risks</p>
+<p>Based on the provided disclosures from key players (DOMS Industries, Flair Writing Industries, Kokuyo Camlin, Kshitij Polyline, Linc Limited, and Sundaram Multi Pap), the Indian stationery sector (focused on writing instruments like pens, pencils, markers; and related products) exhibits robust fundamentals amid competitive dynamics. Linc’s strategy presentation provides the most comprehensive industry data, supplemented by peers’ operational updates. Market size: ~₹96-100 Bn (FY23) for writing/creative instruments, part of broader ₹38,500 Cr stationery market growing at 13% CAGR to ₹72,000 Cr by FY28. Pens dominate (65% share, ₹43 Bn, 7.5-8.5% CAGR). Here’s a structured summary:</p>
+<div id="tailwinds-positive-drivers" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Strong Domestic Demand</strong>: Driven by large student population (age 6-24: 400 Mn+), education budget (2.5-3% of GDP), and working professionals. Back-to-school/office demand resilient; coloring instruments (highlighters, markers) surging.</li>
+<li><strong>Premiumization Shift</strong>: Mass segment (&lt;₹15, 70-75% share) highly competitive/price-driven, but mid-premium (₹15-100) and premium (&gt;₹100) growing faster (~10% CAGR vs. 8%). Brands like Linc’s Pentonic (₹10+ segment, 35% revenue share) boosting margins (GPM up to 31.8%).</li>
+<li><strong>Export Momentum</strong>: India top-5 global pen exporter (251 Mn USD in CY24, +growth in Europe/NA/SEA). Flair’s 7th consecutive Plexconcil award (17% revenue from exports to 115 countries); Linc at 19% export revenue. Global ball/gel pen market: 4-12% CAGR.</li>
+<li><strong>Financial Health Improving</strong>: Debt reduction (Sundaram: ₹70 Cr to ₹4 Cr; Linc: net cash ₹18 Cr). Strong balance sheets enable capex (Linc: ₹35 Cr Kolkata expansion + Gujarat JV).</li>
+<li><strong>Innovation &amp; Diversification</strong>: New launches (recycled plastic pens, markers, calculators); JVs (Linc-Mitsubishi for rollers); stationery expansion (13% CAGR).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Intense Mass-Market Competition</strong>: Volume-driven, price-sensitive (₹5-15 segment: Cello/Flair/Reynolds/Linc dominate). Difficult to raise prices without volume loss; unorganized players erode margins.</li>
+<li><strong>Regulatory/Compliance Hurdles</strong>: GST/tax disputes (DOMS: ₹17.8L penalty for documentation lapse in Kashmir, paid under protest). Minor errors (Kshitij: valuation typo) highlight disclosure risks.</li>
+<li><strong>Geographic Imbalances</strong>: Rural/non-traditional outlets (kirana/pan shops) key for penetration, but West/South India lagging (Linc: 27→37% share FY19-25).</li>
+<li><strong>Input Cost Volatility</strong>: Implicit in financials (Linc GPM improved via premium mix, but raw plastic dependency).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<table>
+<colgroup>
+<col width="13%" />
+<col width="27%" />
+<col width="29%" />
+<col width="9%" />
+<col width="20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Segment</th>
+<th>FY23 Size (₹ Bn)</th>
+<th>FY28 Proj. (₹ Bn)</th>
+<th>CAGR</th>
+<th>Key Drivers</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Pens (65% share)</strong></td>
+<td>43</td>
+<td>62-65</td>
+<td>7.5-8.5%</td>
+<td>Premiumization, exports, students/professionals.</td>
+</tr>
+<tr class="even">
+<td><strong>Pencils</strong></td>
+<td>18</td>
+<td>23-24</td>
+<td>4.5-5.5%</td>
+<td>Primary for &lt;Class 5; wooden dominance.</td>
+</tr>
+<tr class="odd">
+<td><strong>Markers/Highlighters</strong></td>
+<td>5</td>
+<td>6.5-7</td>
+<td>5-6.5%</td>
+<td>Office/whiteboard demand.</td>
+</tr>
+<tr class="even">
+<td><strong>Overall Stationery</strong></td>
+<td>38.5k Cr</td>
+<td>72k Cr</td>
+<td>13%</td>
+<td>Corporate gifting (₹120 Bn global), art materials.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Exports</strong>: 12.5% global CAGR for ball/gel; India focus on Africa/SA/NA (Linc: 84% Europe growth CY24).</li>
+<li><strong>Capex/JVs</strong>: Linc’s ₹200 Cr revenue from Mitsubishi JV by FY30; 1.7L new touchpoints (4 yrs).</li>
+<li><strong>Revenue Mix Evolution</strong>: Own brands (Pentonic/Linc: 70%+); licensed (Uni-ball/Deli: 20%).</li>
+<li><strong>Projections</strong>: Industry ROE/ROCE 17-23%; Linc targets via 4.3x sales growth (FY20-25).</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ol style="list-style-type: decimal">
+<li><strong>Regulatory/Tax Exposure</strong>: GST enforcement (e.g., DOMS incident); potential appeals/costs (no material impact cited, but scalable).</li>
+<li><strong>Competition &amp; Margin Pressure</strong>: Mass segment commoditization; China imports.</li>
+<li><strong>Export Risks</strong>: FX volatility, geopolitical (e.g., Linc Africa dip -23%); trade barriers.</li>
+<li><strong>Execution Risks</strong>: Capex delays (Linc Q3 FY26); distribution expansion in non-metro.</li>
+<li><strong>Macro</strong>: Economic slowdown → education spend cut; raw material inflation.</li>
+<li><strong>Compliance/Market Risks</strong>: Disclosure errors; over-reliance on exports (17-19% revenue).</li>
+</ol>
+<p><strong>Overall Outlook</strong>: <strong>Positive (High Growth, Moderate Risks)</strong>. Tailwinds from demographics/premiumization/exports outweigh headwinds. Sector poised for 8-13% CAGR, led by organized players (Linc/Flair market share gains). Debt-free trends enhance resilience; monitor GST/competition. Investors: Favor premium/export-focused firms.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-stationery-sector-analysis-based-on-q2h1-fy26-earnings-transcripts-of-doms-flair-and-linc" class="section level7">
+<p class="heading">Indian Stationery Sector Analysis (Based on Q2/H1 FY26 Earnings Transcripts of DOMS, Flair, and Linc)</p>
+<p>The Indian stationery sector (focused on listed players like DOMS Industries, Flair Writing Industries, and Linc Limited) demonstrated resilience amid transitional challenges, with aggregate revenue growth of ~15-24% YoY across companies. DOMS led with 24% growth (driven by domestic volumes), Flair at 19% (creative/exports), and Linc at ~1-2% (steadying for H2 acceleration). Key themes include GST reforms, capacity ramps, and diversification. Below is a structured summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-structuralsupportive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Structural/Supportive Factors)</strong></p>
+<ul>
+<li><strong>GST 2.0 Reforms</strong>: Rate cuts to 0% on ~45-50% of products (e.g., pencils, scholastic stationery) create long-term demand uplift via higher disposable incomes (aided by FY25 budget tax cuts). Levels playing field for branded players vs. unorganized; companies passed on benefits via MRP reductions (~3-4% primary price hikes net of ITC loss).</li>
+<li><strong>Robust Domestic Demand</strong>: Volume-led growth (e.g., DOMS domestic +28%, Flair creative +70%, steel bottles +121%); back-to-school, exams, and festive restocking from Dec. General trade (~70-75% mix) remains core, supplemented by quick commerce/modern trade/e-com gains.</li>
+<li><strong>Export Recovery</strong>: 18-41% YoY growth; diversification to Latin America (Chile), Middle East, neighbors (Sri Lanka/Nepal) offsets US tariffs. OEM exports strong (Flair +53%).</li>
+<li><strong>Diversification &amp; Innovation</strong>: Shift to high-growth categories (creative/kits +70%, mechanical pencils/markers, hygiene, steel bottles/houseware). New launches (e.g., DOMS Warner Bros. pencils, Flair 14+ creative SKUs, Linc Swype markers) and marketing (KBC sponsorships, cinema ties) boost brand equity.</li>
+<li><strong>Operational Efficiencies</strong>: EBITDA margins stable/expanding (DOMS 17.5%, Flair 18.8%, Linc 11.3%); backward integration (nibs, pencils), automation yielding 50-52% gross margins (Flair).</li>
+</ul>
+</div>
+<div id="headwinds-challengesdrag-factors" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges/Drag Factors)</strong></p>
+<ul>
+<li><strong>GST Transition Disruptions</strong>: Sep’25 destocking/inventory clearance hit sales (DOMS: 3-4% missed growth; Flair/Linc: Sep slowdown); affected 45-50% portfolio, with ITC ineligibility raising costs (mitigated via pricing).</li>
+<li><strong>Capacity Constraints</strong>: Core categories (pencils/pens) volume-limited (DOMS scholastic flat YoY; Flair pens +4%); expansions delayed (DOMS 44-acre monsoon hit, Q1 FY27 start).</li>
+<li><strong>Cost Pressures</strong>: Employee costs up 0.8-1% of sales (hiring for ramps/sales teams); rebates/discounts elevated (GST credits, schemes); inventory days up (Flair 92, Linc steady 60-65).</li>
+<li><strong>Category-Specific Slowdowns</strong>: Pens muted (Flair +4%, Linc Pentonic degrowth in INR10 segment); regional variances (e.g., East India Durga Puja impact).</li>
+<li><strong>External Shocks</strong>: US tariffs caused order postponements (DOMS); geopolitical tensions subdued prior demand.</li>
+</ul>
+</div>
+<div id="growth-prospects-forward-opportunities" class="section level8">
+<p class="heading"><strong>Growth Prospects (Forward Opportunities)</strong></p>
+<ul>
+<li><strong>Revenue Trajectory</strong>: DOMS guides 18-20% FY26 (potentially 25% sans GST drag); Flair H1 at 18% (sustain via creative/exports); Linc targets double-digits (H2 acceleration). Sector ~15-20% CAGR medium-term.</li>
+<li><strong>Capex-Led Scale</strong>: INR150-225 Cr spends (DOMS), INR80-90 Cr (Flair); new facilities (Valsad/Surat for Flair, Bengal for Linc JVs) to unlock pencils/pens capacity (DOMS pencils first; Flair pens/creatives). Expect Q1-Q2 FY27 pickup.</li>
+<li><strong>Premiumization &amp; Mix Shift</strong>: Higher ASPs (2-4%), premium launches (INR20+ pens, mech pencils); stationery/kits rising (Linc 10-12% to higher; Flair creative from 22% to 30%+ mix).</li>
+<li><strong>Channel/Export Expansion</strong>: Quick commerce presence (all); GT deepening; exports via partnerships (DOMS-FILA, Flair OEM, Linc Mitsubishi/Kenya). JVs (e.g., Linc Uniball INR20 pen) for premium entry.</li>
+<li><strong>Consumer Tailwinds</strong>: Rising ambitions (back-to-school/exams), gifting/kits; hygiene/houseware adjacency (DOMS Uniclan, Flair steel bottles scaling to INR100+ Cr run-rate).</li>
+</ul>
+</div>
+<div id="key-risks-potential-vulnerabilities" class="section level8">
+<p class="heading"><strong>Key Risks (Potential Vulnerabilities)</strong></p>
+<ul>
+<li><strong>Execution on Transitions</strong>: Prolonged GST restocking (Q3-Q4 slower due to Diwali); capex delays/ramp-up inefficiencies could pressure margins (sub-70% utilization initially).</li>
+<li><strong>Export/Geopolitical Volatility</strong>: US tariffs/JV losses (Linc INR1.7 Cr H1 hit); over-reliance on select markets (mitigated by diversification).</li>
+<li><strong>Margin Compression</strong>: Employee/capex ramps, rebates (3-4% sales), ITC loss; operating leverage needs volume pickup (guided 16.5-18.5% EBITDA).</li>
+<li><strong>Competition &amp; Market Dynamics</strong>: Mass segments crowded (unorganized ~50-60% share); distributor/retail shifts (traditional trade incentives key); low penetration in premium/stationery.</li>
+<li><strong>Working Capital/Macro</strong>: Inventory buildup for launches (92 days Flair); monsoon/inflation; regional slowdowns (e.g., festivals).</li>
+</ul>
+<p><strong>Overall Summary</strong>: The sector is poised for 15-25% growth in FY26/H1 FY27, fueled by GST tailwinds, capex, and diversification, offsetting near-term headwinds like transitions and capacities. Branded players are gaining share via innovation/exports, but risks center on execution and external shocks. Outlook <strong>positive</strong> with structural shifts favoring organized players (target margins 16-19%). Monitor Q3 for GST normalization and H2 volume ramps.</p>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3>Press Release</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-stationery-sector-analysis-headwinds-tailwinds-growth-prospects-and-key-risks-1" class="section level7">
+<p class="heading">Indian Stationery Sector Analysis: Headwinds, Tailwinds, Growth Prospects, and Key Risks</p>
+<p>Based on Q2 &amp; H1 FY26 financial results from DOMS Industries (market leader in stationery/art materials), Flair Writing Industries (top pen brand with diversification), and Linc Limited (mid-tier player focused on writing instruments), the sector demonstrates <strong>resilient growth amid transitional challenges</strong>. DOMS and Flair reported robust double-digit revenue expansion (24% and 19% YoY in Q2, respectively), driven by diversified portfolios, while Linc showed modest 3% YoY topline growth with profitability pressures. Overall, H1 FY26 revenue growth averaged ~20% across leaders, but margins faced some compression. Below is a structured summary:</p>
+<div id="tailwinds-positive-drivers-1" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Strong Domestic Demand &amp; Distribution</strong>: All companies highlighted robust India consumption, fueled by a diversified product mix (scholastic stationery, art/creatives, kits, houseware). DOMS grew 25% YoY in H1 revenue to ₹1,130 cr via domestic ecosystem; Flair’s own-brand sales hit ₹291 cr (+20% YoY), with Creatives surging 70% YoY to ₹70 cr; Linc maintained steady income at ₹141 cr (+3% YoY).</li>
+<li><strong>Product Innovation &amp; Category Expansion</strong>: Aggressive launches (DOMS: scholastic/art/office; Flair: 36 SKUs incl. 17 pens/14 creatives; Linc: SWYPE markers, Pentonic pencils) drove category penetration. Flair’s Steel Bottles doubled to ₹26 cr.</li>
+<li><strong>Favorable Macro Environment</strong>: GST rate rationalization and income tax cuts (noted by DOMS/Flair) expected to boost disposable income/consumption. India’s fast-growing economy supports long-term demand.</li>
+<li><strong>Export Momentum</strong>: Flair exports +32% YoY; DOMS-FILA partnership progressing; Linc’s global reach in 40+ countries.</li>
+<li><strong>Operational Efficiency</strong>: EBITDA growth (DOMS +16%, Flair +19%, Linc +10%) despite scale-up, with healthy margins (17-19%).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-faced" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges Faced)</strong></p>
+<ul>
+<li><strong>GST 2.0 Transition</strong>: DOMS explicitly cited “headwinds” from reforms, contributing to EBITDA/PAT margin contraction (17.5% vs. 18.8% YoY; 10.7% vs. 11.7%).</li>
+<li><strong>Margin Pressures</strong>: Across board, EBITDA/PAT margins dipped YoY (DOMS: -130/-100 bps; Linc: PAT -86 bps in H1 due to JV losses of ₹1.68 cr). Rising costs or pricing pass-through issues amid inflation.</li>
+<li><strong>Moderate/Slower Growth in Segments</strong>: Linc’s topline lagged (3-4% YoY), with PAT -4%/-10% due to transitional JV losses and delayed ramps. Weaker Q1 sequentials in some areas.</li>
+<li><strong>Geopolitical/External Factors</strong>: Flair noted past export softness from instability; Linc’s Kenya ops slower-than-expected.</li>
+</ul>
+</div>
+<div id="growth-prospects-future-opportunities" class="section level8">
+<p class="heading"><strong>Growth Prospects (Future Opportunities)</strong></p>
+<ul>
+<li><strong>Capacity Expansion</strong>: DOMS’ 44-acre project for commercialization; Flair’s Valsad facility operational in Q4 FY26; Linc’s Bengal plant + JVs (Mitsubishi, Morris, Turkish) to scale from Q4 FY26 onward. Positions sector for 18-20%+ annual growth (DOMS target, bias to upper end).</li>
+<li><strong>Portfolio Diversification</strong>: High-potential categories (creatives, houseware, baby hygiene via DOMS’ Uniclan) and new pricing tiers. Flair eyes Creatives/exports as key drivers.</li>
+<li><strong>International Scaling</strong>: Partnerships (DOMS-FILA, Linc JVs) + 55+ countries coverage offer export upside amid global quality demand for Indian products.</li>
+<li><strong>Consumer Trends</strong>: Back-to-school, hobby/craft, office supplies align with youth demographics. Combined with R&amp;D/manufacturing edge, supports sustained 15-25% revenue CAGR.</li>
+<li><strong>Optimistic Guidance</strong>: Leaders project momentum into FY26 (Flair: robust profitability; DOMS: on-track for targets; Linc: innovation/JV inflection).</li>
+</ul>
+</div>
+<div id="key-risks-potential-downsides" class="section level8">
+<p class="heading"><strong>Key Risks (Potential Downsides)</strong></p>
+<ul>
+<li><strong>Execution Delays</strong>: Capex/JV ramps (e.g., Linc’s slower timelines, Flair’s geopolitical export risks) could delay benefits, impacting short-term profitability.</li>
+<li><strong>Margin Volatility</strong>: Ongoing cost pressures, raw material inflation, or competitive pricing amid GST changes; disclaimers highlight industry downtrends/tax risks.</li>
+<li><strong>Competition &amp; Market Saturation</strong>: Intense rivalry in writing instruments/stationery; moderate domestic growth (Linc) signals potential saturation without innovation.</li>
+<li><strong>Macro/Regulatory Uncertainty</strong>: Economic slowdowns, exchange fluctuations, litigation, or policy reversals (e.g., GST/income tax). Forward-looking statements note actuals may differ materially.</li>
+<li><strong>Debt/Financial Leverage</strong>: Linc’s net debt/EBITDA at -0.20x (cash positive), but scale-up capex could strain smaller players.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Bullish medium-term (2-3 years) with 15-20% sector growth potential, led by DOMS/Flair’s execution. Tailwinds from innovation/macro outweigh headwinds, but monitor Q3 for expansion progress and margins. Investors should watch JV/capex milestones for upside confirmation.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

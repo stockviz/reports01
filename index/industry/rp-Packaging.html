@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>Packaging</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Packaging</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Packaging.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Packaging.fan.CAP_WT.png" /></p>
+<p><img src="plots/Packaging.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Packaging.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Packaging.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Packaging.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Packaging.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-787bbf9385a5fe047dc6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-787bbf9385a5fe047dc6">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-2.44%","-2.2%"],["-4.52%","-5.78%"],["-6.22%","-8.37%"],["-2.58%","-4.88%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Packaging.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Packaging.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-9732b5a00ae707d6c5df" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9732b5a00ae707d6c5df">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.EPL.html\" target=\"_blank\">EPL<\/a>","<a href=\"/reports02/eq-in/risk/in.AGI.html\" target=\"_blank\">AGI<\/a>","<a href=\"/reports02/eq-in/risk/in.UFLEX.html\" target=\"_blank\">UFLEX<\/a>","<a href=\"/reports02/eq-in/risk/in.TCPLPACK.html\" target=\"_blank\">TCPLPACK<\/a>","<a href=\"/reports02/eq-in/risk/in.POLYPLEX.html\" target=\"_blank\">POLYPLEX<\/a>","<a href=\"/reports02/eq-in/risk/in.XPROINDIA.html\" target=\"_blank\">XPROINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.JINDALPOLY.html\" target=\"_blank\">JINDALPOLY<\/a>","<a href=\"/reports02/eq-in/risk/in.MOLDTKPAC.html\" target=\"_blank\">MOLDTKPAC<\/a>","<a href=\"/reports02/eq-in/risk/in.COSMOFIRST.html\" target=\"_blank\">COSMOFIRST<\/a>","<a href=\"/reports02/eq-in/risk/in.HUHTAMAKI.html\" target=\"_blank\">HUHTAMAKI<\/a>","<a href=\"/reports02/eq-in/risk/in.ESTER.html\" target=\"_blank\">ESTER<\/a>","<a href=\"/reports02/eq-in/risk/in.ORICONENT.html\" target=\"_blank\">ORICONENT<\/a>","<a href=\"/reports02/eq-in/risk/in.ARROWGREEN.html\" target=\"_blank\">ARROWGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.SHREERAMA.html\" target=\"_blank\">SHREERAMA<\/a>","<a href=\"/reports02/eq-in/risk/in.NAHARPOLY.html\" target=\"_blank\">NAHARPOLY<\/a>","<a href=\"/reports02/eq-in/risk/in.PYRAMID.html\" target=\"_blank\">PYRAMID<\/a>","<a href=\"/reports02/eq-in/risk/in.COMSYN.html\" target=\"_blank\">COMSYN<\/a>","<a href=\"/reports02/eq-in/risk/in.TPLPLASTEH.html\" target=\"_blank\">TPLPLASTEH<\/a>","<a href=\"/reports02/eq-in/risk/in.KANPRPLA.html\" target=\"_blank\">KANPRPLA<\/a>","<a href=\"/reports02/eq-in/risk/in.BBTCL.html\" target=\"_blank\">BBTCL<\/a>","<a href=\"/reports02/eq-in/risk/in.BALAJEE.html\" target=\"_blank\">BALAJEE<\/a>","<a href=\"/reports02/eq-in/risk/in.HITECHCORP.html\" target=\"_blank\">HITECHCORP<\/a>","<a href=\"/reports02/eq-in/risk/in.WORTHPERI.html\" target=\"_blank\">WORTHPERI<\/a>","<a href=\"/reports02/eq-in/risk/in.AERONEU.html\" target=\"_blank\">AERONEU<\/a>","<a href=\"/reports02/eq-in/risk/in.EMMBI.html\" target=\"_blank\">EMMBI<\/a>","<a href=\"/reports02/eq-in/risk/in.RPPL.html\" target=\"_blank\">RPPL<\/a>","<a href=\"/reports02/eq-in/risk/in.AMDIND.html\" target=\"_blank\">AMDIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ORIENTLTD.html\" target=\"_blank\">ORIENTLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.GUJRAFFIA.html\" target=\"_blank\">GUJRAFFIA<\/a>","<a href=\"/reports02/eq-in/risk/in.ROLLT.html\" target=\"_blank\">ROLLT<\/a>","<a href=\"/reports02/eq-in/risk/in.ANTGRAPHIC.html\" target=\"_blank\">ANTGRAPHIC<\/a>"],[0.1858817317939801,0.1271235261386125,0.07109736151089718,0.07765671023679431,0.08281501645798041,0.06246021808288123,0.03734629763782996,0.08566215423654094,0.0668537969253449,0.03483402258234904,0.01834010726254484,0.01969077017042302,0.01819830358934529,0.01768749487622814,0.01028347090357645,0.009792637705919259,0.01418313766703909,0.007416840823279419,0.006721990528952638,0.007709517811616449,0.007511950994430397,0.004796844344986474,0.004665043598232953,0.005245707140447026,0.004685265961017263,0.004491037655692386,0.002229976701241739,0.001415768651533959,0.00128557942296842,0.0009494787007802877,0.0009682398865338947],[0.1673395241307801,0.1269754535491768,0.09184873248408292,0.07199447671785979,0.06736079100563826,0.06119848506587135,0.05847856370243063,0.05095120931183852,0.04774515161043155,0.04277923457566479,0.02668178751644621,0.02333937760302987,0.02103334625626686,0.01800179903515546,0.01626279955512547,0.01528111450634903,0.01402545309127763,0.01331469174733325,0.01211270629631778,0.01078988632906266,0.008497337570427442,0.007602144596433067,0.005729845565856592,0.005351569932912676,0.005038926521421035,0.003578991176790818,0.002628087131098582,0.002086239721434466,0.0008323590255497589,0.0007573144312535551,0.0003826002366830187]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":31,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,31,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5d5c85560a3e51f4c9d6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5d5c85560a3e51f4c9d6">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.EPL.html\" target=\"_blank\">EPL<\/a>","<a href=\"/reports02/eq-in/risk/in.AGI.html\" target=\"_blank\">AGI<\/a>","<a href=\"/reports02/eq-in/risk/in.UFLEX.html\" target=\"_blank\">UFLEX<\/a>","<a href=\"/reports02/eq-in/risk/in.TCPLPACK.html\" target=\"_blank\">TCPLPACK<\/a>","<a href=\"/reports02/eq-in/risk/in.POLYPLEX.html\" target=\"_blank\">POLYPLEX<\/a>","<a href=\"/reports02/eq-in/risk/in.XPROINDIA.html\" target=\"_blank\">XPROINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.JINDALPOLY.html\" target=\"_blank\">JINDALPOLY<\/a>","<a href=\"/reports02/eq-in/risk/in.MOLDTKPAC.html\" target=\"_blank\">MOLDTKPAC<\/a>","<a href=\"/reports02/eq-in/risk/in.COSMOFIRST.html\" target=\"_blank\">COSMOFIRST<\/a>","<a href=\"/reports02/eq-in/risk/in.HUHTAMAKI.html\" target=\"_blank\">HUHTAMAKI<\/a>","<a href=\"/reports02/eq-in/risk/in.ESTER.html\" target=\"_blank\">ESTER<\/a>","<a href=\"/reports02/eq-in/risk/in.ORICONENT.html\" target=\"_blank\">ORICONENT<\/a>","<a href=\"/reports02/eq-in/risk/in.ARROWGREEN.html\" target=\"_blank\">ARROWGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.SHREERAMA.html\" target=\"_blank\">SHREERAMA<\/a>","<a href=\"/reports02/eq-in/risk/in.NAHARPOLY.html\" target=\"_blank\">NAHARPOLY<\/a>","<a href=\"/reports02/eq-in/risk/in.PYRAMID.html\" target=\"_blank\">PYRAMID<\/a>","<a href=\"/reports02/eq-in/risk/in.COMSYN.html\" target=\"_blank\">COMSYN<\/a>","<a href=\"/reports02/eq-in/risk/in.TPLPLASTEH.html\" target=\"_blank\">TPLPLASTEH<\/a>","<a href=\"/reports02/eq-in/risk/in.KANPRPLA.html\" target=\"_blank\">KANPRPLA<\/a>","<a href=\"/reports02/eq-in/risk/in.BBTCL.html\" target=\"_blank\">BBTCL<\/a>","<a href=\"/reports02/eq-in/risk/in.BALAJEE.html\" target=\"_blank\">BALAJEE<\/a>","<a href=\"/reports02/eq-in/risk/in.HITECHCORP.html\" target=\"_blank\">HITECHCORP<\/a>","<a href=\"/reports02/eq-in/risk/in.WORTHPERI.html\" target=\"_blank\">WORTHPERI<\/a>","<a href=\"/reports02/eq-in/risk/in.AERONEU.html\" target=\"_blank\">AERONEU<\/a>","<a href=\"/reports02/eq-in/risk/in.EMMBI.html\" target=\"_blank\">EMMBI<\/a>","<a href=\"/reports02/eq-in/risk/in.RPPL.html\" target=\"_blank\">RPPL<\/a>","<a href=\"/reports02/eq-in/risk/in.AMDIND.html\" target=\"_blank\">AMDIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ORIENTLTD.html\" target=\"_blank\">ORIENTLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.GUJRAFFIA.html\" target=\"_blank\">GUJRAFFIA<\/a>","<a href=\"/reports02/eq-in/risk/in.ROLLT.html\" target=\"_blank\">ROLLT<\/a>","<a href=\"/reports02/eq-in/risk/in.ANTGRAPHIC.html\" target=\"_blank\">ANTGRAPHIC<\/a>"],[0.4601528334606498,38.17035473645226,0.524759044463435,8.777978204713662,0.3388007422992079,0.6920558151046479,-13.72005113952451,6.956567722612033,22.29923042259878,1.096146207849955,0.4241580489785703,2.661707117897024,0.09270058749719085,2.162963605687907,5.126430746866053,1.33227470215121,2.296190237982098,2.029498190463372,3.014225025625759,-0.04078104981054267,2.624976012544983,2.479686853164235,1.748754269886856,null,0.5325166220779475,0.1434812842493009,0.2694713607599705,-0.1899673468355963,0.05704234814996227,-0.03724808727947819,0.09135364765162318],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,-0.004855374872141359,null,null,null,null,null,null,null],[null,34.57952074309642,0.3935141459123402,10.5975000969215,0.08877160897524594,1.185820649654007,null,7.238330929763712,28.93352645063703,1.178253169892952,-1.321303719323182,3.076679213377298,0.06821818239268899,2.655004373846152,6.333068051842591,1.861842743591902,2.611238071228822,2.508541315807837,3.426663281122768,0.5643753009268823,2.34723930357869,1.540340066899464,2.120356965314996,0.1028235148806474,0.8110282161448843,0.7068343395346957,-0.182939292172638,-0.291266946713835,0.08304384083578006,null,0.08012177537367822]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-03-31<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":31,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-03-31","targets":2},{"name":"2025-09-30","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,31,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e84c62fbe8bde5e1a6b4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e84c62fbe8bde5e1a6b4">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.EPL.html\" target=\"_blank\">EPL<\/a>","<a href=\"/reports02/eq-in/risk/in.AGI.html\" target=\"_blank\">AGI<\/a>","<a href=\"/reports02/eq-in/risk/in.UFLEX.html\" target=\"_blank\">UFLEX<\/a>","<a href=\"/reports02/eq-in/risk/in.TCPLPACK.html\" target=\"_blank\">TCPLPACK<\/a>","<a href=\"/reports02/eq-in/risk/in.POLYPLEX.html\" target=\"_blank\">POLYPLEX<\/a>","<a href=\"/reports02/eq-in/risk/in.XPROINDIA.html\" target=\"_blank\">XPROINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.JINDALPOLY.html\" target=\"_blank\">JINDALPOLY<\/a>","<a href=\"/reports02/eq-in/risk/in.MOLDTKPAC.html\" target=\"_blank\">MOLDTKPAC<\/a>","<a href=\"/reports02/eq-in/risk/in.COSMOFIRST.html\" target=\"_blank\">COSMOFIRST<\/a>","<a href=\"/reports02/eq-in/risk/in.HUHTAMAKI.html\" target=\"_blank\">HUHTAMAKI<\/a>","<a href=\"/reports02/eq-in/risk/in.ESTER.html\" target=\"_blank\">ESTER<\/a>","<a href=\"/reports02/eq-in/risk/in.ORICONENT.html\" target=\"_blank\">ORICONENT<\/a>","<a href=\"/reports02/eq-in/risk/in.ARROWGREEN.html\" target=\"_blank\">ARROWGREEN<\/a>","<a href=\"/reports02/eq-in/risk/in.SHREERAMA.html\" target=\"_blank\">SHREERAMA<\/a>","<a href=\"/reports02/eq-in/risk/in.NAHARPOLY.html\" target=\"_blank\">NAHARPOLY<\/a>","<a href=\"/reports02/eq-in/risk/in.PYRAMID.html\" target=\"_blank\">PYRAMID<\/a>","<a href=\"/reports02/eq-in/risk/in.COMSYN.html\" target=\"_blank\">COMSYN<\/a>","<a href=\"/reports02/eq-in/risk/in.TPLPLASTEH.html\" target=\"_blank\">TPLPLASTEH<\/a>","<a href=\"/reports02/eq-in/risk/in.KANPRPLA.html\" target=\"_blank\">KANPRPLA<\/a>","<a href=\"/reports02/eq-in/risk/in.BBTCL.html\" target=\"_blank\">BBTCL<\/a>","<a href=\"/reports02/eq-in/risk/in.BALAJEE.html\" target=\"_blank\">BALAJEE<\/a>","<a href=\"/reports02/eq-in/risk/in.HITECHCORP.html\" target=\"_blank\">HITECHCORP<\/a>","<a href=\"/reports02/eq-in/risk/in.WORTHPERI.html\" target=\"_blank\">WORTHPERI<\/a>","<a href=\"/reports02/eq-in/risk/in.AERONEU.html\" target=\"_blank\">AERONEU<\/a>","<a href=\"/reports02/eq-in/risk/in.EMMBI.html\" target=\"_blank\">EMMBI<\/a>","<a href=\"/reports02/eq-in/risk/in.RPPL.html\" target=\"_blank\">RPPL<\/a>","<a href=\"/reports02/eq-in/risk/in.AMDIND.html\" target=\"_blank\">AMDIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ORIENTLTD.html\" target=\"_blank\">ORIENTLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.GUJRAFFIA.html\" target=\"_blank\">GUJRAFFIA<\/a>","<a href=\"/reports02/eq-in/risk/in.ANTGRAPHIC.html\" target=\"_blank\">ANTGRAPHIC<\/a>"],[0.2435482065386771,10.84633278827289,1.085056879567825,6.034761178653506,0.4926025750781242,1.272666485170462,14.28340870527407,3.298820318348744,22.1583043041859,1.046118831579703,4.715891009548368,0.6059075500753831,0.01553722444854202,0.8124359427619954,1.432290281722979,2.399007348852991,0.7415700466159986,1.309050421739583,2.602634219542376,2.103417113473455,1.087501351289109,4.49974796881071,1.081338427026972,null,1.518648154635034,1.236651194396014,1.205846012897228,0.3497330220303143,0.1107811165328484,0.035921290465689],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.2532543859235735,null,null,null,null,null,null],[null,11.29528231357494,0.8627646380525573,7.372925433717314,0.3948345621154853,1.657941453271949,null,3.697046616303653,27.91196929715931,1.077669479784027,5.731076194738879,0.4847651466998643,0.01214240641204351,0.9932296036435546,2.102206144533675,2.808131439825976,1.126959090795153,1.096274822730264,2.994023732718206,2.491975386103855,1.661348655306278,2.708898237403509,1.273288683129157,0.389972315088678,1.890402621432527,1.466363220423407,1.2887469821698,0.3683094535720743,0.2576907197101769,0.05680443777094631]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-03-31<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-03-31","targets":2},{"name":"2025-09-30","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-27 </em></p>
+</div>
+</div>
+<div id="indian-packaging-industry-analysis-based-on-q2h1-fy26-earnings-transcripts-announcements" class="section level1">
+<h1>Indian Packaging Industry Analysis (Based on Q2/H1 FY26 Earnings Transcripts &amp; Announcements)</h1>
+<p>The provided documents from key players (e.g., Cosmo First, Ester Industries, UFlex, TCPL Packaging, Xpro India, Rajshree Polypack, Huhtamaki, Kanpur Plastipack, etc.) offer insights into films (BOPP/BOPET), flexible/rigid packaging, aseptic, and specialty segments. The industry faces cyclical pressures but shows resilience through expansions and sustainability focus. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="headwinds-challenges-impacting-performance" class="section level2">
+<h2><strong>Headwinds (Challenges Impacting Performance)</strong></h2>
+<ul>
+<li><strong>Import Dumping &amp; Margin Pressure</strong>: Heavy BOPET/BOPP imports (up 100-120% YoY in H1 FY26) from China/Bangladesh/Thailand/US (Cosmo, Ester, UFlex). Predatory pricing led to 20-30% gross margin erosion (e.g., BOPP: ₹22/kg vs. ₹25/kg; BOPET: ₹6/kg vs. ₹12/kg). Anti-dumping probes initiated but delays persist.</li>
+<li><strong>US Tariffs</strong>: 55% duties (up from 5%) on Indian films caused ₹6cr/Q impact (Cosmo, Ester); partial pass-through (25-50%), hurting exports (10-20% volume loss).</li>
+<li><strong>GST Reforms &amp; Seasonality</strong>: Slab cuts disrupted inventory/pack sizes (Sep’25 dip); extended monsoon/Diwali normalization hit domestic FMCG (Rajshree: -10cr sheets; TCPL: flat revenue).</li>
+<li><strong>Global Disruptions</strong>: China diversion to Europe (UFlex: Egypt volumes down); freight wars/tariffs (TCPL exports subdued).</li>
+<li><strong>Operational/Cost Pressures</strong>: New capex ramp-up costs (depreciation/interest up; Cosmo PAT muted); debt peaks (UFlex: ₹7,750cr net debt, 2.8x EBITDA); forex MTM losses (Ester: ₹10cr).</li>
+<li><strong>Demand Softness</strong>: Subdued volumes (Huhtamaki: flat; TCPL: high-single-digit domestic growth).</li>
+</ul>
+</div>
+<div id="tailwinds-positive-factors-supporting-resilience" class="section level2">
+<h2><strong>Tailwinds (Positive Factors Supporting Resilience)</strong></h2>
+<ul>
+<li><strong>Domestic Demand Recovery</strong>: GST cuts (Sep’25) expected to boost FMCG volumes (Cosmo/Huhtamaki: premiumization/upgradation); resilient consumer durables (Xpro: +25% Coex sheets/liners).</li>
+<li><strong>Capacity Ramp-Ups</strong>: New lines stabilizing (Cosmo BOPP: 2/3rd utilization; Kanpur FIBC: 82%; Pyramid: 66% overall, Chennai 40-50%).</li>
+<li><strong>Sustainability Push</strong>: EPR deferral (FY26 liability to FY27-29) aids recycling (Ester rPET +219% YoY); recyclable films traction (Rajshree BlueLoop 27-30%; Cosmo specialty 70-80% mix target).</li>
+<li><strong>Export Diversification</strong>: Non-US growth (Kanpur: Europe 51%, S.America 27%; TCPL: steady despite tariffs).</li>
+<li><strong>Cost Efficiencies</strong>: RM pass-through (Huhtamaki: COGS 60%); solar/recycling savings (Pyramid: ₹15cr/yr); automation (Xpro dielectric near 100%).</li>
+<li><strong>Policy Support</strong>: QCO relaxations ease RM imports (UFlex); PLI boosts capacitors (Xpro).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level2">
+<h2><strong>Growth Prospects</strong></h2>
+<ul>
+<li><strong>Volume/Market Expansion</strong>: Industry 10-15% CAGR (Cosmo: ₹3,500-3,800cr FY26; UFlex: 5% FY26 →10% FY27); specialty/dielectric (Xpro: +18% vol FY25); aseptic (UFlex: 12bn packs/yr).</li>
+<li><strong>Capex Pipeline</strong>: ₹100-1,000cr+ projects (Kanpur: ₹105cr non-wovens/FIBC; UFlex: Dharwad BOPP; Xpro: Barjora/UAE dielectric doubling).</li>
+<li><strong>Diversification</strong>: JVs/acquisitions (Kanpur-Essegomma textiles; AGI-Valex EU); non-wovens/IML (Rajshree); rigid/flexibles (Pyramid: 15% FY27 growth).</li>
+<li><strong>Sustainability/Exports</strong>: Recyclables/EPR (Ester ELITe JV: Nike offtake); EV/renewables dielectric (Xpro); China+1 (Xpro UAE).</li>
+<li><strong>Guidance</strong>: 5-15% topline (TCPL mid-teens; Huhtamaki 8-10%); EBITDA 11-16% (Cosmo 12%; Rajshree 16%).</li>
+</ul>
+</div>
+<div id="key-risks" class="section level2">
+<h2><strong>Key Risks</strong></h2>
+<table>
+<colgroup>
+<col width="43%" />
+<col width="28%" />
+<col width="28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Details</strong></th>
+<th><strong>Exposure</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Imports/Tariffs</strong></td>
+<td>China dumping; US 55% duties (Cosmo ₹55cr ann.); ADD delays.</td>
+<td>High (Films: Cosmo/Ester/UFlex).</td>
+</tr>
+<tr class="even">
+<td><strong>Demand Volatility</strong></td>
+<td>GST/monsoon disruptions; FMCG slowdown (Rajshree -10cr).</td>
+<td>Medium (Domestic flexibles).</td>
+</tr>
+<tr class="odd">
+<td><strong>Execution/Capex</strong></td>
+<td>Delays (Xpro Barjora dry runs; UFlex Egypt/Mexico). Debt rise (UFlex +₹1,000cr FY27).</td>
+<td>High (New projects).</td>
+</tr>
+<tr class="even">
+<td><strong>RM/Forex</strong></td>
+<td>Crude/polymer volatility; MTM losses (Ester ₹10cr).</td>
+<td>Medium (Global ops).</td>
+</tr>
+<tr class="odd">
+<td><strong>Oversupply</strong></td>
+<td>BOPP/BOPET capex wave (UFlex: 1L ton FY27).</td>
+<td>Medium (Films).</td>
+</tr>
+<tr class="even">
+<td><strong>Geopolitical</strong></td>
+<td>Trade wars (TCPL exports subdued); China+1 shifts.</td>
+<td>High (Exports 20-74%).</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="summary" class="section level2">
+<h2><strong>Summary</strong></h2>
+<p><strong>Industry Outlook</strong>: Resilient amid headwinds (imports/tariffs ~major drag, 100-120% import surge), with tailwinds from GST boosts, sustainability (EPR/recyclables), and expansions. FY26 growth muted (5-10% topline, 11-16% EBITDA) due to disruptions; FY27+ accelerates (10-15% via capex/specialty). Films vulnerable to dumping/oversupply; flexibles/rigid benefit from FMCG/EV. <strong>Net Positive</strong>: Domestic-led recovery + exports diversification; monitor tariffs/debt. Strong players (e.g., Cosmo/Xpro) prioritize specialty/sustainability for 15%+ CAGR. Risks tilted toward external shocks, but execution focus mitigates. Overall: <strong>Cautious Optimism</strong> for H2 FY26 rebound.</p>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-27 </em></p>
+</div>
+</div>
+</div>
+<div id="indian-packaging-industry-analysis-based-on-q2h1-fy26-announcements-transcripts" class="section level1">
+<h1>Indian Packaging Industry Analysis (Based on Q2/H1 FY26 Announcements &amp; Transcripts)</h1>
+<p>The Indian packaging industry, encompassing flexible films (BOPET, BOPP, CPP), rigid packaging (drums, IBCs), sheets/thermoforming, and specialty films (dielectric, aseptic), remains resilient amid global headwinds. Companies like Cosmo First, Polyplex, UFlex, Ester, Huhtamaki, Pyramid, Kanpur Plastipack, and others report steady volumes but margin pressures. H1 FY26 saw ~3-5% YoY revenue growth on average, with EBITDA margins at 9-16% (down QoQ in some due to costs). Key drivers include FMCG/e-commerce demand and sustainability mandates, offset by imports/tariffs.</p>
+<div id="headwinds-challenges" class="section level2">
+<h2><strong>Headwinds (Challenges)</strong></h2>
+<ul>
+<li><strong>Dumping &amp; Imports</strong>: Severe pressure from cheap Chinese/Bangladesh/Thailand imports (BOPET up 120% YoY, BOPP up 100%; Cosmo, Ester, Polyplex, UFlex). Predatory pricing eroded margins (BOPP: Rs22/kg vs Rs25/kg; BOPET: Rs6/kg vs Rs12/kg).</li>
+<li><strong>US/EU Tariffs</strong>: 55% US tariffs on Indian films (Rs6cr/Q2 impact for Cosmo; partial pass-through). Diversion to Europe increased local competition (Ester, UFlex).</li>
+<li><strong>Overcapacity &amp; Price Wars</strong>: Global/India additions (e.g., 2-3 BOPP lines FY27; Polyplex notes China focus). Utilization dipped (Polyplex ~79%; industry troughs).</li>
+<li><strong>GST/Seasonal Disruptions</strong>: Slab revisions caused inventory corrections/Diwali sales loss (TCPL, Pyramid, Huhtamaki). Extended monsoon hit domestic demand.</li>
+<li><strong>Input/Cost Pressures</strong>: Forex losses (Ester: Rs10cr), rising fixed costs (depreciation, power; Cosmo), crude volatility.</li>
+<li><strong>Regulatory Delays</strong>: EPR compliance deferred (10% FY26 liability to FY27+; Ester, Polyplex), but future mandates loom.</li>
+</ul>
+</div>
+<div id="tailwinds-positives" class="section level2">
+<h2><strong>Tailwinds (Positives)</strong></h2>
+<ul>
+<li><strong>Domestic Resilience</strong>: FMCG/food growth (5-10% thin BOPET demand; Polyplex). GST cuts (18%→5%) to boost consumption (Cosmo, Huhtamaki).</li>
+<li><strong>Export Traction</strong>: Diversification (Middle East/Europe; Kanpur 74% exports, Pyramid 79% growth). Nearshoring benefits (Polyplex #2 ex-China).</li>
+<li><strong>Sustainability Push</strong>: Recycled content (rPET up 219%; Polyplex Ecoblue, UFlex recycling). Paper alternatives (Huhtamaki blueloop 27-30%).</li>
+<li><strong>Capacity Ramp-Ups</strong>: Expansions yielding results (Cosmo new BOPP/CPP; Kanpur FIBC +20%; Pyramid IBC +42%). Automation/cost savings (8-9% margin lift; Pyramid).</li>
+<li><strong>Policy Support</strong>: Solar incentives (Pyramid Rs15cr savings), PLI for electronics/capacitors (Xpro dielectric).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level2">
+<h2><strong>Growth Prospects</strong></h2>
+<ul>
+<li><strong>Volume/Market Expansion</strong>: 5-10% CAGR thin BOPET (packaging 64%, industrial 36%; Polyplex). Flexible &gt; rigid shift; e-commerce/FMCG (Huhtamaki 15-20% FY27).</li>
+<li><strong>Specialty/High-Value Shift</strong>: Dielectric (EV/renewables; Xpro 100% util.), aseptic (Uflex 5.5% H1 growth), non-wovens/IBC (Kanpur 20-25% EBITDA).</li>
+<li><strong>Exports/Diversification</strong>: 10-15% growth (Kanpur, Pyramid); UAE/Mexico ramps (Xpro Rs150-200cr/plant).</li>
+<li><strong>Sustainability</strong>: EPR drives recycling (Rs3k cr topline, Rs500cr EBITDA; Uflex). Mono-PET/paper (Huhtamaki Rs350-380cr FY26).</li>
+<li><strong>Capex Pipeline</strong>: Rs85-105cr expansions (Polyplex BOPET/BOPP; overall 10-20% topline CAGR FY26-28).</li>
+<li><strong>Outlook</strong>: FY26 revenue +5-15% (Uflex Rs1800-1850cr EBITDA); FY27 10-20% (Pyramid Rs700cr, 11-12% EBITDA).</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level2">
+<h2><strong>Key Risks</strong></h2>
+<table>
+<colgroup>
+<col width="23%" />
+<col width="30%" />
+<col width="46%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Import Dumping</strong></td>
+<td>Margin erosion (20-30% drop)</td>
+<td>ADD petitions (Ester); specialty focus (Polyplex D-PAC 52%).</td>
+</tr>
+<tr class="even">
+<td><strong>Tariffs/Trade Wars</strong></td>
+<td>Export volumes -20-50% (US 55%)</td>
+<td>Diversification (Middle East/EU); nearshoring (Xpro UAE).</td>
+</tr>
+<tr class="odd">
+<td><strong>Overcapacity</strong></td>
+<td>Price wars; util. &lt;70%</td>
+<td>Debottlenecking (Polyplex 79%); value-add (Cosmo 70% specialty).</td>
+</tr>
+<tr class="even">
+<td><strong>RM Volatility/FX</strong></td>
+<td>Forex losses Rs10-170cr (Ester/Uflex)</td>
+<td>Hedging; backward integration (resin; Polyplex).</td>
+</tr>
+<tr class="odd">
+<td><strong>EPR/Regulatory</strong></td>
+<td>Compliance costs (10-30% recycled)</td>
+<td>Recycling capex (Uflex PET; Polyplex rPET 100%).</td>
+</tr>
+<tr class="even">
+<td><strong>Demand/Seasonal</strong></td>
+<td>5-10% Q2 dips</td>
+<td>Multi-segment (industrial 36%; Polyplex).</td>
+</tr>
+<tr class="odd">
+<td><strong>Debt/Capex</strong></td>
+<td>Debt/EBITDA 2.5-3x (Uflex Rs7.75k cr)</td>
+<td>Internal accruals; repayments (Rs500cr FY27).</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="summary-1" class="section level2">
+<h2><strong>Summary</strong></h2>
+<p><strong>Resilient yet Pressured</strong>: Indian packaging (films/rigid/flexible) grew 3-5% H1 FY26 amid imports/tariffs, but tailwinds like GST cuts, sustainability, and expansions signal recovery. <strong>Growth</strong>: 10-20% FY27 topline (specialty/recycling/exports); EBITDA 11-16%. <strong>Net Positive</strong>: Domestic FMCG + sustainability &gt; global headwinds, but imports/debt key watches. Sector ROE/EBITDA stable (8-16%); monitor US tariffs/EPR for inflection. (Sources: 14 cos’ transcripts/ppts; Polyplex most comprehensive outlook).</p>
+<div id="press-release" class="section level3">
+<h3>Press Release</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-of-indian-packaging-sector-based-on-provided-announcements" class="section level7">
+<p class="heading">Summary Analysis of Indian Packaging Sector (Based on Provided Announcements)</p>
+<p>The documents cover Q2/H1 FY26 results and strategic updates from 14 key players (e.g., AGI Greenpac, UFlex, EPL, Ester Industries, Mold-Tek, TPL Plastech, etc.), reflecting a <strong>mixed outlook</strong> for the sector. Overall, companies reported steady-to-moderate revenue growth (avg. ~10-15% YoY in H1 for many), driven by capacity expansions and diversification, but margins faced pressure amid external headwinds. The sector benefits from rising domestic demand (FMCG, pharma, chemicals) and sustainability mandates, positioning it for mid-term growth (CAGR 10-15% projected via capex). Below is a structured analysis:</p>
+<div id="headwinds-challenges-pressuring-performance" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges Pressuring Performance)</strong></p>
+<ul>
+<li><strong>Margin Compression &amp; Cost Pressures</strong>: EBITDA margins declined for several (e.g., Ester -59% YoY, TCPL -155 bps, Xpro -100 bps) due to softer realizations, raw material volatility, forex/MTM losses (UFlex, Ester), and higher depreciation/interest from capex (TCPL, UFlex).</li>
+<li><strong>Demand Softness &amp; Seasonality</strong>: Subdued FMCG volumes from prolonged monsoons, GST recalibration (destocking, delayed orders), and inflation (UFlex, TCPL, Huhtamaki revenue dips of 3-5%).</li>
+<li><strong>Import Competition &amp; Tariffs</strong>: Heavy dumping from China/Bangladesh/Thailand/US (Ester seeking anti-dumping duties; UFlex/MEA ops hit by US reciprocal tariffs redirecting cheap films).</li>
+<li><strong>Operational Delays</strong>: Project slippages (Xpro’s Barjora line; EPL leadership transition); forex gains/losses and non-cash adjustments impacting PAT (Xpro, UFlex).</li>
+<li><strong>Macro Factors</strong>: Geopolitical tensions, high food inflation (US/Europe), and consumer caution (UFlex Americas/Europe sales down 5-11%).</li>
+</ul>
+</div>
+<div id="tailwinds-supportive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Supportive Factors)</strong></p>
+<ul>
+<li><strong>Capacity Expansions &amp; Efficiency</strong>: Widespread brownfield/greenfield investments (AGI +30% glass capacity; Kanpur ₹105 Cr for FIBC/non-woven; UFlex aseptic/WPP/recycling; TPL Plastech Dahej ramp-up; Pyramid new IBC/drums), boosting volumes (Mold-Tek +11%, TPL +23%, Emmbi +14%).</li>
+<li><strong>Diversification &amp; Premiumization</strong>: Entry into high-growth segments like pharma (Mold-Tek +45% Q-o-Q), aluminum cans (AGI), non-wovens (Kanpur), JVs (Cosmo-Filmax Korea), and sustainable products (rPET/chips in Ester/UFlex).</li>
+<li><strong>Sustainability Push</strong>: EPR compliance driving recycling demand (UFlex processed 372M bottles; Ester ELITe JV with Nike/Loop); green energy shifts (TPL, Kanpur solar).</li>
+<li><strong>GST Rationalization</strong>: Short-term disruption but long-term boost to consumption/affordability (UFlex/TCPL outlook positive).</li>
+<li><strong>Strong Balance Sheets</strong>: Disciplined capex (funded via accruals/loans); improving ROCE (TPL +70 bps to 21%).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Volume-Led Expansion</strong>: H1 volumes up across board (AGI +11% revenue; Mold-Tek pharma/FMCG +19%; TPL chemicals/pharma +20-23%). New capacities to add 30-50% output in 1-3 years (e.g., AGI 500 TPD glass; UFlex 54K MTPA films).</li>
+<li><strong>Sector Tailwinds</strong>: Shift to plastics (TPL: glass/metal to composites); pharma/FMCG/chemicals demand (6-7% Asia CAGR); exports (70% for Kanpur); EV/sustainable packaging (UFlex rPET, Ester Twist™).</li>
+<li><strong>Strategic Moves</strong>: JVs/partnerships (Cosmo Korea; Ester Hyosung); global footprint (UFlex 9 locations; EPL 11 countries). Projected H2 recovery via festive demand, GST benefits, and capex fruition (Xpro/UFlex targeting FY27-28).</li>
+<li><strong>Overall Potential</strong>: Sector to grow to ₹12L Cr by 2030 (TPL est.); companies like AGI/Mold-Tek eye 15-20% CAGR via premium products.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Regulatory/Trade Risks</strong> (High): Escalating tariffs (US 25% on India/Nigeria), anti-dumping probes, EPR compliance shortfalls (carry-forward allowed but supply gaps persist).</li>
+<li><strong>Execution Risks</strong> (Medium-High): Capex delays (Xpro), ramp-up slippages, forex volatility (net debt/EBITDA rising to 4.5x for UFlex).</li>
+<li><strong>Demand/Macro Risks</strong> (Medium): Inflation/consumer slowdown persisting; weather/geopolitical disruptions.</li>
+<li><strong>Financial Risks</strong> (Medium): Margin erosion from imports/raw costs; debt buildup (e.g., UFlex gross debt +30% YoY).</li>
+<li><strong>Competitive Risks</strong>: Low-cost imports eroding pricing power (Ester films).</li>
+</ul>
+<p><strong>Overall Sector Outlook</strong>: <strong>Cautiously Optimistic</strong>. Short-term headwinds (margins/demand) cap H2 growth at 8-12%, but tailwinds from capex/sustainability position the sector for robust 15%+ CAGR over 3-5 years. Leaders like AGI, UFlex, and TPL (diversified, capex-heavy) are best-placed; monitor trade policies and project execution closely.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>Edible Oil</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Edible Oil</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/EdibleOil.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/EdibleOil.fan.CAP_WT.png" /></p>
+<p><img src="plots/EdibleOil.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/EdibleOil.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/EdibleOil.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/EdibleOil.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/EdibleOil.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-905eff0377798ed4ebf5" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-905eff0377798ed4ebf5">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-1.05%","-0.14%"],["-2.34%","0.73%"],["-2.47%","0.96%"],["-1.91%","3.85%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/EdibleOil.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/EdibleOil.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e36fec53d0c62cfb40c4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e36fec53d0c62cfb40c4">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.MARICO.html\" target=\"_blank\">MARICO<\/a>","<a href=\"/reports02/eq-in/risk/in.PATANJALI.html\" target=\"_blank\">PATANJALI<\/a>","<a href=\"/reports02/eq-in/risk/in.AWL.html\" target=\"_blank\">AWL<\/a>","<a href=\"/reports02/eq-in/risk/in.GOKULAGRO.html\" target=\"_blank\">GOKULAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.SUNDROP.html\" target=\"_blank\">SUNDROP<\/a>","<a href=\"/reports02/eq-in/risk/in.KRITINUT.html\" target=\"_blank\">KRITINUT<\/a>","<a href=\"/reports02/eq-in/risk/in.GOKUL.html\" target=\"_blank\">GOKUL<\/a>","<a href=\"/reports02/eq-in/risk/in.MKPL.html\" target=\"_blank\">MKPL<\/a>","<a href=\"/reports02/eq-in/risk/in.ROML.html\" target=\"_blank\">ROML<\/a>","<a href=\"/reports02/eq-in/risk/in.NKIND.html\" target=\"_blank\">NKIND<\/a>","<a href=\"/reports02/eq-in/risk/in.SHANTI.html\" target=\"_blank\">SHANTI<\/a>"],[0.55523172245166,0.2794600726386982,0.1245211628555274,0.02348878862380592,0.01248466591571282,0.001794973505963125,0.00156876031993529,0.000866924448094967,0.000280642349563343,0.0001580354478695124,0.0001442514431694519],[0.4705754015698007,0.3089424877692041,0.1696146161658197,0.03075525616913095,0.01426823548655018,0.002026343866574676,0.001988493913463238,0.001186812956652329,0.0003868773863485342,0.0002038112758451224,5.166344061060601e-05]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":11,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2d96a393f76efca2cc8e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2d96a393f76efca2cc8e">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.MARICO.html\" target=\"_blank\">MARICO<\/a>","<a href=\"/reports02/eq-in/risk/in.PATANJALI.html\" target=\"_blank\">PATANJALI<\/a>","<a href=\"/reports02/eq-in/risk/in.AWL.html\" target=\"_blank\">AWL<\/a>","<a href=\"/reports02/eq-in/risk/in.GOKULAGRO.html\" target=\"_blank\">GOKULAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.SUNDROP.html\" target=\"_blank\">SUNDROP<\/a>","<a href=\"/reports02/eq-in/risk/in.KRITINUT.html\" target=\"_blank\">KRITINUT<\/a>","<a href=\"/reports02/eq-in/risk/in.GOKUL.html\" target=\"_blank\">GOKUL<\/a>","<a href=\"/reports02/eq-in/risk/in.MKPL.html\" target=\"_blank\">MKPL<\/a>","<a href=\"/reports02/eq-in/risk/in.ROML.html\" target=\"_blank\">ROML<\/a>","<a href=\"/reports02/eq-in/risk/in.NKIND.html\" target=\"_blank\">NKIND<\/a>","<a href=\"/reports02/eq-in/risk/in.SHANTI.html\" target=\"_blank\">SHANTI<\/a>"],[1.09912738658774,61.72096484674115,16.54746428892195,4.995298879496894,0.2875128560624183,0.9409332330620772,0.7169115440315716,0.439356163293571,0.1644822685542693,-0.04447879930159732,0.01125385727521588],[1.020860252746269,57.3868437402105,27.52703225925284,11.14090025337997,0.08376240891355531,1.43993805105005,0.8710174417902018,0.4544873145929287,0.1993403401918101,-0.1340291433826951,0.009847081254584835]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":11,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2b1a860661e05a4a196d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2b1a860661e05a4a196d">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.MARICO.html\" target=\"_blank\">MARICO<\/a>","<a href=\"/reports02/eq-in/risk/in.PATANJALI.html\" target=\"_blank\">PATANJALI<\/a>","<a href=\"/reports02/eq-in/risk/in.AWL.html\" target=\"_blank\">AWL<\/a>","<a href=\"/reports02/eq-in/risk/in.GOKULAGRO.html\" target=\"_blank\">GOKULAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.SUNDROP.html\" target=\"_blank\">SUNDROP<\/a>","<a href=\"/reports02/eq-in/risk/in.KRITINUT.html\" target=\"_blank\">KRITINUT<\/a>","<a href=\"/reports02/eq-in/risk/in.GOKUL.html\" target=\"_blank\">GOKUL<\/a>","<a href=\"/reports02/eq-in/risk/in.MKPL.html\" target=\"_blank\">MKPL<\/a>","<a href=\"/reports02/eq-in/risk/in.ROML.html\" target=\"_blank\">ROML<\/a>","<a href=\"/reports02/eq-in/risk/in.NKIND.html\" target=\"_blank\">NKIND<\/a>","<a href=\"/reports02/eq-in/risk/in.SHANTI.html\" target=\"_blank\">SHANTI<\/a>"],[0.1215749413747155,28.0323384678232,46.44311216014271,11.13525857312202,0.3984441072657857,0.4594062679848745,1.031625454385885,0.1587052571178119,0.04719673785162454,0.004223496682680813,0.005499821153484899],[0.1201321575402871,27.89708836146692,51.97212259696598,16.72405198385304,0.4050003232737749,0.6305421197119865,1.983849709636826,0.1777973444543471,0.0745553666809827,0.007220868268569748,0.007639168147283631]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":11,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-indian-edible-oil-sector-based-on-q2h1-fy26-earnings-transcripts-of-awl-agri-marico-patanjali-foods-and-sundrop-brands" class="section level7">
+<p class="heading">Summary Analysis: Indian Edible Oil Sector (Based on Q2/H1 FY26 Earnings Transcripts of AWL Agri, Marico, Patanjali Foods, and Sundrop Brands)</p>
+<p>The transcripts from key players (AWL Agri ~70% edible oil revenue; Patanjali ~70%; Sundrop ~20-25% premium staples; Marico’s Saffola oils as a smaller premium segment) highlight a sector facing <strong>demand sluggishness in H1 FY26</strong> (industry volumes ~1% growth per Nielsen), but with <strong>optimism for H2 recovery</strong>. Overall, revenues grew 10-20% YoY (price-led), but volumes were flattish to negative (-2-7% YoY). Companies guided for <strong>low-single-digit volume growth (4-6%) in H2</strong>, sustained INR3.5k-11k/tonne margins, and FMCG diversification. Below is a structured analysis.</p>
+<div id="headwinds-key-challenges-in-h1-fy26" class="section level8">
+<p class="heading"><strong>Headwinds (Key Challenges in H1 FY26)</strong></p>
+<ul>
+<li><strong>High Commodity Prices &amp; Volatility</strong>: Palm oil +20-35% QoQ/YoY (cheapest oil but tight global supply); sunflower/soybean costliest; narrow palm-soya spread hurt soy demand. Led to 3% import degrowth, bulk/institutional shifts to cheaper alternatives, and 2-7% YoY volume declines (AWL: -2% soy share loss; Sundrop: sunflower bulk erosion; Patanjali: -7% volumes).</li>
+<li><strong>Nepal Imports (Sector-Wide Pain Point)</strong>: ~12% of soy imports (60-65kt/month, mostly packed pouches at 0% duty vs. India’s 16.5%). Cheaper by INR15/L, hitting North India (UP/Bihar/Bengal; AWL: 50-60% share loss in Delhi/Haryana/Punjab/Bihar; ~2-3% national soy share erosion).</li>
+<li><strong>Demand Sluggishness &amp; Grammage Play</strong>: H1 FMCG non-durables contracted 0.8% (MoSPI); edible oils +1% (Nielsen). Consumers shifted to 720-750g pouches (vs. 910g std.), rural/urban slowdown; GST 2.0 destocking (Sep ’25) shaved 2-3% growth.</li>
+<li><strong>High Base &amp; Cyclicality</strong>: Exceptional FY25 gains (commodity/inventory) led to 9-23% EBITDA/PAT YoY degrowth.</li>
+<li><strong>Working Capital Pressure</strong>: Unmet demand led to inventory buildup/higher finance costs (AWL).</li>
+</ul>
+</div>
+<div id="tailwinds-positive-drivers" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>GST 2.0 Rationalization</strong>: 85-95% portfolios now at 5% GST (from 12-18%). Boosts affordability; passed via price cuts/grammage hikes. Expected 300-400bps volume uplift (Patanjali/AWL); aids out-of-home (namkeen/bakery/frying) recovery (Marico).</li>
+<li><strong>Channel Shifts</strong>: Quick commerce +80-86% (AWL/Sundrop); e-comm +36-42%; B2B institutional +12-23% (Del Monte). Alternate channels &gt;INR4,400cr LTM revenue (AWL).</li>
+<li><strong>H2 Seasonality</strong>: 60% annual volumes in H2 (festivals/Diwali-Holi, weddings, rabi crops/winter soft oils). Rural recovery expected (better agri output despite rains).</li>
+<li><strong>Institutional/Branded Momentum</strong>: 20% volumes institutional (Marico/AWL); branded exports +37%; premium staples (oils) +13-16% value.</li>
+<li><strong>Cost Normalization</strong>: Copra/sunflower softening (Marico: -15%); oleo/glycerine gains (AWL).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Volume Outlook</strong>: H2 low-single digits (5-6% YoY; AWL/Patanjali); full-year flattish to +2-4% (normalized for G2G exports). Premium oils (sunflower/soy/mustard) to lead winter demand.</li>
+<li><strong>Revenue/EBITDA</strong>: 20%+ revenue growth (prices); EBITDA +double-digits H2 (margin stabilization at INR3.5k/tonne, gross INR11k/tonne). Core categories (popcorn/culinary/premium staples) salience rising to 64% (Sundrop).</li>
+<li><strong>Strategic Levers</strong>:
+<ul>
+<li><strong>Diversification</strong>: FMCG/foods growing 8-15% (Patanjali: 34% QoQ; AWL: EBITDA-positive); aim 50:50 oil:FMCG in 4yrs.</li>
+<li><strong>Innovation/Premiumization</strong>: New launches (high-protein PB, RTE popcorn, cold-pressed oils); 3-yr CAGR 7-8% targeted.</li>
+<li><strong>Distribution</strong>: 900k outlets (AWL); SFA tech for 5L outlets (Sundrop); rural expansion.</li>
+<li><strong>Exports/Oil Palm</strong>: AWL/Patanjali plantations scaling (1L+ ha); branded exports +37%.</li>
+</ul></li>
+<li><strong>Long-Term</strong>: Double-digit EBITDA (Sundrop); Rs10kcr foods by FY27 (AWL); Rs20kcr group revenue by 2030 (Marico-inspired resilience).</li>
+</ul>
+</div>
+<div id="key-risks" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="41%" />
+<col width="25%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Commodity/Imports</strong></td>
+<td>Nepal unresolved (SAFTA limits action); global supply tightness/geopolitics.</td>
+<td>Hedging, inventory mgmt; govt intervention advocacy.</td>
+</tr>
+<tr class="even">
+<td><strong>Demand/Macro</strong></td>
+<td>Prolonged rural weakness; FMCG contraction (-2.7% FY25).</td>
+<td>H2 seasonality; GST/volumes.</td>
+</tr>
+<tr class="odd">
+<td><strong>Competition</strong></td>
+<td>Unorganized/Nepal brands; grammage wars; new entrants (high-protein PB).</td>
+<td>Branded focus (76%); quick comm leadership (40-50% share).</td>
+</tr>
+<tr class="even">
+<td><strong>Margins</strong></td>
+<td>Volatility (INR3-6% EBITDA); working capital spikes.</td>
+<td>Per-tonne guidance; efficiency (SFA, SAP AI/ML).</td>
+</tr>
+<tr class="odd">
+<td><strong>Execution</strong></td>
+<td>GST transition drag; SFA rollout delays.</td>
+<td>Tech investments; B2B/e-comm buffer.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: <strong>Cautious H1 recovery to strong H2</strong> (volumes +5-6%, EBITDA double-digit). Sector resilient via diversification/channels, but Nepal/price volatility caps upside. Preferred plays: Branded/premium (quick comm leaders like AWL/Sundrop). Monitor Nepal policy &amp; rabi crops.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3>General</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-of-indian-edible-oil-sector-based-on-provided-announcements" class="section level7">
+<p class="heading">Summary Analysis of Indian Edible Oil Sector (Based on Provided Announcements)</p>
+<p>The documents cover key players like AWL Agri Business (Adani Wilmar), Gokul Refoils/Gokul Agro, Kriti Nutrients, Marico, M K Proteins, Patanjali Foods, Raj Oil Mills, Shanti Overseas, and Sundrop Brands. Insights reflect a mixed sector outlook amid high input inflation, portfolio shifts, and governance changes. Marico provides the most detailed operational view (Q2FY26 results), highlighting trends applicable sector-wide.</p>
+<div id="headwinds-challenges" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Input Cost Inflation</strong>: Severe pressure from copra (+113% YoY), rice bran oil (-28% but volatile), liquid paraffin (-3%), and HDPE (-2%) prices (Marico Annexure 3). Led to ~810 bps YoY gross margin contraction and EBITDA margin dip (16.1% in Q2FY26 vs. 19.6%; Marico).</li>
+<li><strong>Margin Squeeze &amp; Low Activity</strong>: Gokul Refoils reports minimal revenue (₹336 Cr Q4FY25) with high investments; EBITDA margins down 360 bps H1FY26 (Marico). Elevated pricing offsets volumes in core oils (Parachute/Saffola flattish volumes).</li>
+<li><strong>Governance/Operational Disruptions</strong>: Auditor resignation at Patanjali (fee dispute); promoter exits/reclassifications (AWL Adani stake sale); resignations/appointments (Gokul); AGM extensions (Shanti).</li>
+<li><strong>Demand/Channel Disruptions</strong>: Trade channel issues pre-GST changes (Marico); rural recovery slow despite good monsoons.</li>
+</ul>
+</div>
+<div id="tailwinds-positive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Robust Revenue Momentum</strong>: Marico +31% YoY consolidated (multi-quarter high); India +35% (driven by pricing power). International +20% CCG (Bangladesh 22%, MENA 27%).</li>
+<li><strong>Policy Support</strong>: GST rationalization (~30% portfolio benefit; Marico passed to consumers for affordability). Easing inflation, healthy monsoons, fiscal stimulus aiding rural recovery.</li>
+<li><strong>Portfolio Diversification</strong>: Foods scaling (Marico ₹1100 Cr ARR, +12% Q2; 25%+ CAGR target). Premium Personal Care/Digital-first (Beardo/Just Herbs/Plix &gt;₹1000 Cr ARR; +325 Cr Q2).</li>
+<li><strong>Financial Stability</strong>: Interim dividend (Kriti ₹3/share, 300%); market share gains (Marico 95%+ portfolios); low working capital (Marico 35 days).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Volume-Led Expansion</strong>: India volumes +7% Q2/+8% H1 (Marico); core steady (VAHO +16%). Project SETU to boost GT direct reach 1.5x by FY27.</li>
+<li><strong>High-Growth Segments</strong>: Foods to 8x FY20 scale by FY27 (Marico); Digital-first to 2.5x FY24 ARR. Premium intl. categories (shampoos/skin care) +25% CAGR.</li>
+<li><strong>International Strength</strong>: Double-digit CCG sustained; premiumisation reducing Bangladesh reliance (now diversified).</li>
+<li><strong>Medium-Term Outlook</strong>: Double-digit revenue growth (Marico); EBITDA margins to improve with scale (Foods +200 bps structural; Digital double-digit by FY27). Sector tailwinds from GST, rural revival.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Commodity Volatility</strong>: Hyperinflation in copra/oils could persist, eroding margins (Marico core brands pricing power tested).</li>
+<li><strong>Governance/Regulatory</strong>: Auditor churn (Patanjali/Gokul), promoter changes (AWL), AGM delays signal instability; SEBI scrutiny on disclosures (Raj Oil price query).</li>
+<li><strong>Demand/Macro</strong>: Slow rural recovery, competition in premium/foods; GST transition disruptions.</li>
+<li><strong>Execution</strong>: Dependence on diversification success (Foods/Digital ~22% India revenue now, target 25%); forex/devaluation in intl. markets (Vietnam/SA slow).</li>
+<li><strong>ESG/Compliance</strong>: Rising focus (Marico policies on animal welfare/biodiversity); potential supply chain risks.</li>
+</ul>
+<p><strong>Overall</strong>: Sector resilient with leaders (Marico) driving diversification amid inflation. Growth tilted to premium/foods/intl., but near-term margins volatile. Positive macro (GST/monsoons) supports 10-15% medium-term growth; monitor inputs/governance.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-27 </em></p>
+</div>
+</div>
+<div id="analysis-of-indian-edible-oil-sector" class="section level1">
+<h1>Analysis of Indian Edible Oil Sector</h1>
+<p>The analysis is derived from Q2/H1 FY26 earnings transcripts of key players: <strong>AWL Agri Business (Adani Wilmar)</strong> (dominant edible oil player), <strong>Patanjali Foods</strong>, <strong>Sundrop Brands</strong> (premium oils focus), and <strong>Marico</strong> (Saffola oils exposure). These provide granular insights into volumes, pricing, imports, demand trends, and outlook. The sector faces near-term demand softness but structural branded tailwinds.</p>
+<div id="headwinds" class="section level2">
+<h2><strong>Headwinds</strong></h2>
+<ul>
+<li><strong>Sluggish Demand &amp; Low Industry Growth</strong>: H1 edible oil volumes flat/1% growth (Nielsen); grammage reduction (e.g., 910g to 720-750g pouches) masks volume erosion. Urban demand weak; rural outperforming but overall FMCG non-durables contracted 0.8% H1 FY26 (MoSPI).</li>
+<li><strong>Commodity Price Volatility &amp; Spreads</strong>: Palm cheapest but up 35% YoY (Patanjali); sunflower costliest (Sundrop); low palm-soya spread hits soya demand. Sunflower inflation led to bulk/institutional shift to cheaper oils (volume erosion ~2-7% YoY).</li>
+<li><strong>Nepal Imports Disruption</strong>: ~12% of soya imports (60-65kt/month); 0% duty (SAFTA) vs. India’s 16.5%; packed form (90% pouches) competes directly, cheaper by ₹15/ltr. Caused ~50bps all-India market share loss (AWL strongest hit in UP/Bihar/Bengal with 50-60% share).</li>
+<li><strong>GST 2.0 Transition</strong>: Destocking in Sep’25 (pre-GST inventory liquidation); ~2% sales/volume impact (Sundrop); affected trade pipeline.</li>
+<li><strong>Import Contraction</strong>: Overall imports down 3%; palm imports lowest since May’25.</li>
+</ul>
+</div>
+<div id="tailwinds" class="section level2">
+<h2><strong>Tailwinds</strong></h2>
+<ul>
+<li><strong>Branded Penetration &amp; Alternate Channels</strong>: Branded oils 76% of sales (Patanjali); quick commerce +80-86% growth (AWL/Sundrop); e-comm +41-42%. Institutional sales ~20% (bakery/namkeen like Parle/Britannia).</li>
+<li><strong>Policy Boost (GST Cut)</strong>: Oils at 5% GST; downstream (namkeen/bakery) now 5% → expected consumption jump (fried items). ~55-95% portfolio benefits across players.</li>
+<li><strong>H2 Seasonality</strong>: 60% annual consumption in H2 (festivals Diwali-Holi, marriages, rabi crops: wheat/mustard/chana). Early festive momentum; rural agri recovery expected.</li>
+<li><strong>Price Normalization</strong>: Palm/sunflower stabilizing post-H1 peaks; sunflower harvest (Oct-Nov) to ease costs.</li>
+<li><strong>Market Share Recovery Potential</strong>: Players like AWL targeting mid-single digits (7% 3yr CAGR); premium/soft oils (sunflower/soya/mustard) strong in winter.</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level2">
+<h2><strong>Growth Prospects</strong></h2>
+<ul>
+<li><strong>Volume Recovery</strong>: H2 low-single digit (5-6%) targeted (AWL/Patanjali); full-year flattish H1 → H2 acceleration. Branded 3yr CAGR 7% (AWL).</li>
+<li><strong>Value Growth</strong>: 13-17% YoY (premium staples); revenue +20-26% from prices (AWL/Patanjali/Sundrop).</li>
+<li><strong>Channel/Category Shifts</strong>: Quick commerce (50%+ share in soya/mustard for AWL); institutional/out-of-home via GST. Premium/soft oils, exports (branded +37%).</li>
+<li><strong>Margin Stability</strong>: Gross margins ₹11k/tonne, EBITDA ₹3.5k/tonne (AWL guidance); 250bps GM expansion (Sundrop). H2 EBITDA +double digit.</li>
+<li><strong>Long-Term</strong>: Branded shift, rural revival, agri output improvement → mid-teens revenue CAGR feasible for leaders.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level2">
+<h2><strong>Key Risks</strong></h2>
+<ul>
+<li><strong>Nepal Imports Persistence</strong>: SAFTA limits govt intervention; 2-3% market share (~60kt/month) erosion in border states; no quick resolution.</li>
+<li><strong>Commodity/Geopolitical Volatility</strong>: Tight global supplies, unseasonal rains → crop risks; rupee depreciation amplifies.</li>
+<li><strong>Demand Sluggishness</strong>: Prolonged rural weakness (rabi failure); competition from unorganized/small players (wheat flour/oils).</li>
+<li><strong>Share Loss</strong>: Largest players (AWL 17% share) most exposed to cheap imports; bulk/institutional shifts.</li>
+<li><strong>Execution</strong>: GST destocking recurrence; working capital spikes from weak demand (higher interest, AWL).</li>
+</ul>
+</div>
+<div id="summary" class="section level2">
+<h2><strong>Summary</strong></h2>
+<p><strong>Indian Edible Oil sector</strong> (₹2L+cr market) is in H1 slowdown (flat volumes, 1% value growth) due to high prices, Nepal dumping, and GST transition, but H2 poised for recovery (5-6% volumes, 13-20% value) via festivals, GST downstream boost, and channel shifts (quick comm +80%). Branded players (AWL/Patanjali/Sundrop) target mid-single digit volumes with stable margins (₹3.5k/t EBITDA). <strong>Prospects strong</strong> (H2 60% consumption, premiumization), but <strong>Nepal imports &amp; volatility</strong> are top risks (2-3% share drag). Leaders like AWL eye 7% 3yr CAGR; sector ROE/margins resilient via pricing power. Outlook: <strong>Cautiously optimistic</strong> for FY26 (flattish full-year volumes → mid-teens revenue).</p>
+<div id="press-release" class="section level3">
+<h3>Press Release</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-edible-oil-sector-analysis" class="section level7">
+<p class="heading">Indian Edible Oil Sector Analysis</p>
+<p><strong>Based primarily on AWL Agri Business Ltd. (formerly Adani Wilmar Ltd.) Q2 FY26 results</strong> (key player with ~₹14K Cr edible oil revenue in Q2, 79% of total), supplemented by Patanjali Foods (post-Ruchi Soya acquisition, a major competitor) and contextual sector insights from documents. Sector faces import reliance (palm/soy), price volatility, and demand elasticity.</p>
+<div id="headwinds-challenges-pressuring-performance" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges Pressuring Performance)</strong></p>
+<ul>
+<li><strong>Soft Consumer Demand</strong>: Persistent weakness due to high edible oil prices (inflated over past 4 quarters), leading to downtrading (shift to cheaper alternatives), grammage reduction (e.g., smaller packs in soya/sunflower), and low-single-digit volume declines in categories like palm/mustard oils. Overall Q2 volume growth muted at 2% YoY.</li>
+<li><strong>Volume Moderation</strong>: Branded edible oils saw only low single-digit growth; total volumes flat/declining in some areas despite 26% revenue rise (largely price-led).</li>
+<li><strong>External Factors</strong>: Reduced imports from SAARC under FTAs/customs duty cuts; mustard price surge vs. soya prompting shifts. Broader fiscal year demand below expectations.</li>
+<li><strong>Segment Spillover</strong>: Food &amp; FMCG impacted by non-branded rice export declines and one-off base effects.</li>
+</ul>
+</div>
+<div id="tailwinds-supportive-factors-driving-resilience" class="section level8">
+<p class="heading"><strong>Tailwinds (Supportive Factors Driving Resilience)</strong></p>
+<ul>
+<li><strong>Revenue Momentum</strong>: Highest-ever LTM revenue ₹69,732 Cr (+28% YoY); Q2 ₹17,605 Cr (+22% YoY), led by edible oils (+26%) and Industry Essentials (+19%, volumes +20% via oleochemicals/de-oiled cake).</li>
+<li><strong>Channel Expansion</strong>: Alternate channels (quick commerce/e-com) revenue &gt;₹4,400 Cr LTM; Q-comm volumes +86% YoY. High market share: ~50% soya oil, 40% mustard. Direct retail at 9L outlets (+15% YoY), rural coverage 58K towns (11x since FY22). Micro-fulfillment centers enhancing rural throughput.</li>
+<li><strong>Sequential Recovery</strong>: Overall volumes +7% QoQ; Food &amp; FMCG +21% QoQ (highest-ever ex-G2G revenue).</li>
+<li><strong>Exports &amp; Branding</strong>: Branded edible oils/foods exports +40% YoY volumes/value. 3-yr volume CAGR 8% (Food &amp; FMCG 13%).</li>
+<li><strong>Competitor Context</strong>: Patanjali (₹4B revenue entity) advancing digital treasury/ERP integration for agility in forex/hedging, signaling operational efficiency gains.</li>
+</ul>
+</div>
+<div id="growth-prospects-opportunities-ahead" class="section level8">
+<p class="heading"><strong>Growth Prospects (Opportunities Ahead)</strong></p>
+<ul>
+<li><strong>Digital/Modern Channels</strong>: Quick commerce leadership to drive double-digit Food &amp; FMCG volumes; Food volumes already surpassing edible oils in alt channels. E-com penetration deepening.</li>
+<li><strong>Distribution Scale</strong>: Rural push (micro-centers, tech for salesman productivity) and general trade expansion to fuel branded penetration (e.g., new 750ml soya packs gaining traction).</li>
+<li><strong>Portfolio Diversification</strong>: Strong Industry Essentials (PBT ₹131 Cr in Q2, highest in 13Q); rice turnaround (+30% branded basmati volumes in H1). LTM normalized EBITDA ₹2,328 Cr (+11% YoY).</li>
+<li><strong>Long-Term Trends</strong>: 3-yr CAGR momentum; optimism on sequential gains. Sector tailwinds from FTAs (e.g., India-UK potential for labor-intensive exports, per clippings) and branded shift amid urbanization.</li>
+<li><strong>Innovation/Tech</strong>: Competitors like Patanjali/Marico (hair oil extension) highlight FMCG tech adoption (AI/ML, treasury solutions) for supply chain/risk mgmt, extendable to oils.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Commodity Volatility</strong>: Price inflation/derviatives losses (Q2 impact -₹130 Cr vs. +₹46 Cr gain prior); global supply disruptions could exacerbate demand softness.</li>
+<li><strong>Demand Persistence</strong>: Prolonged weak consumption (e.g., wheat flour flat, industry trends) risks margin erosion despite EBITDA resilience.</li>
+<li><strong>Competition &amp; Share Battles</strong>: Intense rivalry (AWL vs. Patanjali post-Ruchi); unbranded/loose oils pressure premiums. Kriti Nutrients (minor player) signals niche stability but no major threats.</li>
+<li><strong>Macro/Regulatory</strong>: Import duty changes, forex exposure (Patanjali hedging focus underscores this), monsoon/rural slowdowns. PAT dip -21% YoY (₹245 Cr) on strong base highlights profitability volatility.</li>
+<li><strong>Execution</strong>: Rural scaling, quick comm dependency amid potential e-com saturation.</li>
+</ul>
+</div>
+<div id="summary-1" class="section level8">
+<p class="heading"><strong>Summary</strong></p>
+<p>Indian edible oil sector shows <strong>resilient revenue growth (price + mild volumes)</strong> but <strong>muted profitability</strong> amid demand headwinds from price hikes. <strong>Tailwinds from alt channels/rural expansion</strong> (e.g., AWL’s 86% Q-comm surge) offset volumes, positioning branded players for <strong>10%+ CAGR via diversification/exports</strong>. <strong>Risks center on volatility/demand</strong>, but sequential recovery and tech adoption (Patanjali) signal optimism. Outlook: <strong>Moderately positive</strong> for leaders like AWL (LTM PAT ₹1,084 Cr), with Food/FMCG as growth engine. Monitor Q3 demand for sustained momentum.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

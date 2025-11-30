@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>Animal Feed</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Animal Feed</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/AnimalFeed.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/AnimalFeed.fan.CAP_WT.png" /></p>
+<p><img src="plots/AnimalFeed.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/AnimalFeed.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/AnimalFeed.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/AnimalFeed.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/AnimalFeed.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-3db1e09099ca6d2926b6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3db1e09099ca6d2926b6">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["1.89%","2.76%"],["-0.4%","2.15%"],["-1.51%","-0.9%"],["-2.98%","-3.88%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/AnimalFeed.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/AnimalFeed.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-b42baf862b9c73869c21" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b42baf862b9c73869c21">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.GODREJAGRO.html\" target=\"_blank\">GODREJAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.AVANTIFEED.html\" target=\"_blank\">AVANTIFEED<\/a>","<a href=\"/reports02/eq-in/risk/in.MUKKA.html\" target=\"_blank\">MUKKA<\/a>","<a href=\"/reports02/eq-in/risk/in.NARMADA.html\" target=\"_blank\">NARMADA<\/a>","<a href=\"/reports02/eq-in/risk/in.AJOONI.html\" target=\"_blank\">AJOONI<\/a>"],[0.426008153718073,0.5239482421858376,0.03276044894783348,0.007338589759868174,0.009944565388387696],[0.4917390271864089,0.4685870715871394,0.03223128762715051,0.003873723272226052,0.003568890327075091]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-58a8336b8a738cb5f1c9" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-58a8336b8a738cb5f1c9">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.GODREJAGRO.html\" target=\"_blank\">GODREJAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.AVANTIFEED.html\" target=\"_blank\">AVANTIFEED<\/a>","<a href=\"/reports02/eq-in/risk/in.MUKKA.html\" target=\"_blank\">MUKKA<\/a>","<a href=\"/reports02/eq-in/risk/in.NARMADA.html\" target=\"_blank\">NARMADA<\/a>","<a href=\"/reports02/eq-in/risk/in.AJOONI.html\" target=\"_blank\">AJOONI<\/a>"],[35.91251871110087,62.70720300341677,0.4736978905420651,0.1915603539177366,0.2719072631353912],[35.31233572309062,62.64252673522741,1.352309379322888,0.3125155645112178,0.380312597847871]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d8434d41b117b18eac86" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d8434d41b117b18eac86">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.GODREJAGRO.html\" target=\"_blank\">GODREJAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.AVANTIFEED.html\" target=\"_blank\">AVANTIFEED<\/a>","<a href=\"/reports02/eq-in/risk/in.MUKKA.html\" target=\"_blank\">MUKKA<\/a>","<a href=\"/reports02/eq-in/risk/in.NARMADA.html\" target=\"_blank\">NARMADA<\/a>","<a href=\"/reports02/eq-in/risk/in.AJOONI.html\" target=\"_blank\">AJOONI<\/a>"],[56.60578403131097,35.62211583642296,4.414925691765174,0.3220310747915168,0.4847234275977522],[56.89921138960264,35.77470333229763,6.20135725500019,0.4067476849771661,0.7179803381223727]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-animal-feed-sector-analysis" class="section level7">
+<p class="heading">Indian Animal Feed Sector Analysis</p>
+<p><strong>Based on Q2 FY26 Earnings Transcripts from Avanti Feeds (shrimp/aquafeed focus) and Godrej Agrovet (cattle feed dominant), with limited insights from Narmada Agrobase.</strong></p>
+<div id="headwinds" class="section level8">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Raw Material Price Volatility &amp; Escalation</strong>: Key inputs like fish meal (up to ₹125-130/kg from ₹97/kg QoQ), soya bean meal (₹46-47/kg from ₹42/kg), and wheat flour (₹32.5-33/kg) rose sharply due to lower Peru/Chile catches, excess rains reducing soya output (~10%), MSP hikes, and export permissions for wheat. This pressured margins (Avanti expects feed EBIT margins to revert to 9-10% from H1 highs; Godrej notes softening realizations offsetting volumes).</li>
+<li><strong>Weather &amp; Seasonality</strong>: Excess/unseasonal rains narrowed spraying windows, reduced acreages (e.g., chilli), and disrupted sowing/harvesting, indirectly hitting feed demand via aquaculture/livestock health. Sales peak in Q1, tapering in H2.</li>
+<li><strong>Pass-Through Limitations</strong>: Limited ability to raise feed prices amid competition, leading to margin compression despite volume gains.</li>
+</ul>
+</div>
+<div id="tailwinds" class="section level8">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Strong Volume Growth</strong>: Shrimp feed sales up 9% YoY H1 (320k MT vs. 293k MT); Godrej cattle feed +18% YoY (mid-teens overall Animal Feed), driven by operational efficiencies, geographic expansion, and market share gains.</li>
+<li><strong>Margin Resilience</strong>: Godrej’s underlying EBIT/tonne stable at ₹1,900-2,000 (despite reported dip from bill discounting); Avanti PBT +24% YoY in Q2 due to higher volumes, lower raw costs earlier, and overhead absorption.</li>
+<li><strong>Demand Upgrades</strong>: Higher milk prices boost shift to branded/compound cattle feed; aquaculture farmers confident despite tariffs, supported by diversification (value-added products, domestic focus).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Shrimp Feed</strong>: CY25 consumption ~12-13 lakh MT (shrimp production 7-8 lakh MT); Avanti targets FY26 sales at 575k MT (51-53% share), up from FY25.</li>
+<li><strong>Cattle Feed</strong>: Double-digit volume growth sustainable via quality upgrades, footprint expansion; Godrej emphasizes consumer-like GTM (go-to-market) strategies.</li>
+<li><strong>Overall Sector</strong>: ~13% H1 revenue growth (Godrej consolidated); diversification into fish/pet feed (Avanti trials with Thai Union; pet sales +149% QoQ to ₹95 lakh). Long-term: Rising protein demand, health awareness, govt. push for domestic consumption.</li>
+<li><strong>FY26 Outlook</strong>: Mid-teens FFB/yield growth in oil palm (feed-adjacent); Animal Feed as key growth pillar amid portfolio simplification (Godrej).</li>
+</ul>
+</div>
+<div id="key-risks" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Input Cost Inflation</strong>: Continued rises (fish meal to ₹125+/kg; soya/wheat shortages) could erode 10-12% historical margins if unpassed.</li>
+<li><strong>External Shocks</strong>: Weather extremes, diseases, El Niño-like events; global supply disruptions (e.g., Peru/Chile quotas).</li>
+<li><strong>Demand Fluctuations</strong>: Seasonality, farmer economics (e.g., shrimp tariffs indirectly via processing volumes); competition from unbranded/low-cost feeds.</li>
+<li><strong>Execution</strong>: Scaling new segments (fish/pet feed viability); over-reliance on few crops/raw materials; forex/ export incentives dependency.</li>
+</ul>
+<p><strong>Summary</strong>: Indian Animal Feed shows robust volume-led growth (10-18% YoY) amid rising protein demand, but faces near-term margin pressure from 20-30% raw material hikes. FY26 prospects positive (volumes up 10-15%) with diversification tailwinds, though risks from volatility/weather could cap EBITDA at 9-12%. Focus on efficiencies and value-adds key for outperformance.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3>General</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-indian-animal-feed-sector-based-on-provided-documents" class="section level7">
+<p class="heading">Summary Analysis: Indian Animal Feed Sector (Based on Provided Documents)</p>
+<p>The documents primarily cover key players in aquaculture feed (e.g., shrimp feed, fish meal) and related segments like cattle feed: <strong>Avanti Feeds</strong> (dominant with detailed FY25 audited results), <strong>Mukka Proteins</strong> (fish meal/oil), <strong>Ajooni Biotech</strong>, <strong>Godrej Agrovet</strong>, and <strong>Narmada Agrobase</strong>. Avanti Feeds’ robust financials (shrimp feed ~79% of revenue) reflect sector strength, driven by aquaculture demand, while others highlight corporate/governance updates and risks. Overall, the sector shows resilience amid regulatory headwinds.</p>
+<div id="tailwinds-positive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Strong Demand &amp; Revenue Growth</strong>: Avanti Feeds reported consolidated revenue from operations up 4.6% YoY to ₹5,61,226 lakhs (FY25), with total income at ₹5,77,774 lakhs (+5%). Shrimp Feed segment grew to ₹4,40,961 lakhs (up ~3%), Processed Shrimp to ₹1,18,027 lakhs (+9%). Net profit surged 41% to ₹55,705 lakhs, with EPS at ₹38.81 (vs. ₹26.21). Indicates booming aquaculture (shrimp farming) in India, fueled by export demand and domestic protein needs.</li>
+<li><strong>Operational Efficiency &amp; Investments</strong>: Avanti’s EBITDA margins improved (PBT up 37% to ₹73,749 lakhs); capex on PPE rose to ₹15,253 lakhs (from ₹13,106 lakhs), signaling capacity expansion. Cash from operations strong at ₹58,272 lakhs (up 122% YoY). Dividend of ₹9/share recommended.</li>
+<li><strong>Subsidiary Contributions</strong>: Avanti’s subsidiaries (e.g., Avanti Frozen Foods, 60% holding) added scale; unallocated income (₹16,548 lakhs) from investments boosted profits.</li>
+<li><strong>Sector Stability</strong>: Routine corporate actions (e.g., Godrej Agrovet ESOP allotment, Ajooni registers shift, Narmada committee reconstitution) suggest ongoing governance compliance without major disruptions.</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Regulatory &amp; Tax Pressures</strong>: Mukka Proteins faces ₹141 Cr GST demand (incl. interest/penalty) for FY22 from Gujarat authorities. Company deems it “not legally tenable” (issues with reconciliations/already disclosed), plans to contest – but could strain liquidity/cash flows if escalated.</li>
+<li><strong>Governance Turnover</strong>: Narmada Agrobase saw 2 Independent Directors resign (Aug 2025), leading to committee reconstitutions (Audit, NRC, etc.). Signals potential instability in smaller players.</li>
+<li><strong>Cost Pressures</strong>: Avanti’s material costs ~79% of expenses (₹4,42,926 lakhs); inventory fluctuations (e.g., +₹392 lakhs adjustment) hint at raw material volatility (soy, fishmeal). Employee costs up 26% YoY.</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Aquaculture Boom</strong>: Shrimp Feed (Avanti: 79% revenue) and Hatchery/Power segments poised for 10-15% CAGR, driven by India’s shrimp exports (target $10 Bn by 2025-26). Avanti’s total assets up 19% to ₹3,68,270 lakhs; equity up 18%.</li>
+<li><strong>Diversification</strong>: Avanti’s Processed Shrimp (21% revenue) grew fastest; Mukka’s fish solubles/oil align with specialty feed demand. Godrej Agrovet’s ESGS signals talent retention for innovation.</li>
+<li><strong>Financial Health</strong>: Avanti’s ROE implied high (profits attributable to owners ₹52,747 lakhs); net cash position strong (₹89,866 lakhs bank balances). Standalone results also stellar (PBT +62% to ₹65,874 lakhs).</li>
+<li><strong>Outlook</strong>: Sector could grow 8-12% annually with govt. push (e.g., PMMSY scheme), exports, and protein consumption rise (India’s per capita ~15kg vs. global 40kg).</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="40%" />
+<col width="24%" />
+<col width="35%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Impact Level</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory/Tax</strong></td>
+<td>Mukka’s ₹141 Cr GST notice (disputed but material @ ~50-100% of typical FY revenue); potential appeals tie up funds.</td>
+<td><strong>High</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Commodity Volatility</strong></td>
+<td>Feed raw materials (fishmeal, soy) sensitive to global prices/weather; Avanti’s changes in inventories (₹-16,797 lakhs) reflect this.</td>
+<td><strong>Medium-High</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Cyclicality</strong></td>
+<td>Shrimp farming prone to disease cycles (e.g., WSSV); Processed Shrimp margins dipped (₹412 lakhs Q4 vs. ₹2,249 lakhs prior).</td>
+<td><strong>Medium</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Governance/Liquidity</strong></td>
+<td>Board churn (Narmada); Avanti’s borrowings low (₹1,325 lakhs) but subsidiaries’ unaudited data adds opacity.</td>
+<td><strong>Medium</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Execution</strong></td>
+<td>High capex (Avanti ₹15k+ lakhs) risks delays; associate losses (₹-10.6 lakhs Q4).</td>
+<td><strong>Low-Medium</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Macro</strong></td>
+<td>Forex gains (₹1,554 lakhs) but import reliance exposes to INR volatility.</td>
+<td><strong>Low</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Sector Summary</strong>: <strong>Bullish with Caution</strong>. Tailwinds from aquaculture demand and Avanti’s 41% profit growth outweigh headwinds, projecting 10%+ growth. However, tax litigations (Mukka) and input costs pose near-term risks. Investors should monitor regulatory outcomes and shrimp cycle health. Avanti remains a sector bellwether with clean audits and strong balance sheet (debt/equity &lt;0.01).</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-indian-animal-feed-sector" class="section level7">
+<p class="heading">Summary Analysis: Indian Animal Feed Sector</p>
+<p>The Indian animal feed sector, encompassing cattle feed, shrimp feed, poultry feed, and emerging pet food, is poised for steady growth driven by rising livestock output (India contributes ~25% of global milk production) and a shift toward compound/scientific feeds. Insights from Avanti Feeds (shrimp feed dominant), Godrej Agrovet (cattle feed focus), and Narmada Agrobase (cattle feed &amp; cottonseed by-products) highlight a market projected to grow at ~6.9% CAGR from INR 1,110 Bn (2024) to INR 2,025 Bn (2033). However, volatility in raw materials and external shocks pose challenges. Below is a structured analysis.</p>
+<div id="tailwinds-positive-factors-1" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Robust Demand Growth</strong>: Strong volume-led expansion in cattle feed (e.g., Godrej: 18% YoY growth, mid-teens in cattle segment; Avanti: shrimp feed sales up to 320k MT in H1 FY26 vs. 293k MT prior). Livestock GVA share rose to 30% (2022-23), fueled by India’s dairy leadership and government schemes like National Livestock Mission.</li>
+<li><strong>Operational Efficiencies &amp; Market Share Gains</strong>: Companies report margin improvements via better overhead absorption (Avanti: feed PBT margins ~24% YoY), vendor discounting (Godrej: underlying EBIT/tonne at INR 1,900-2,000), and geographic expansion (Narmada: into Maharashtra/Punjab; Godrej: footprint gains).</li>
+<li><strong>Diversification &amp; Value-Addition</strong>: Shift to premium products (e.g., pelletized/enriched feeds at Narmada/Avanti; value-added dairy at Godrej). Pet care emerging (Avanti: sales up 2.5x QoQ to INR 95L; Godrej exploring).</li>
+<li><strong>Favorable Industry Dynamics</strong>: Cottonseed by-products (Narmada) growing at 5.9% CAGR; shrimp feed demand tied to 7-8L MT production (Avanti).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Raw Material Price Volatility</strong>: Key inputs (fish meal up to INR 125/kg, soya INR 47/kg, wheat INR 33/kg at Avanti; pass-through impacts revenues at Godrej). Rising trends due to poor catches (Peru/Chile), excess rains reducing soya output (~10%), and export incentives diverting supply.</li>
+<li><strong>Weather &amp; Seasonality</strong>: Excess/unseasonal rains narrowed spraying windows (Godrej crop protection down 30% YoY), indirectly hitting farmer incomes/feed demand. Sales peak in Q1 (Avanti: Q2 feed sales down 10k MT QoQ).</li>
+<li><strong>Margin Pressure</strong>: Expected feed margins to revert to 9-10% (Avanti) from H1 highs; unallocated expenses up (Godrej: employee costs, provisions).</li>
+<li><strong>External Trade Barriers</strong>: US reciprocal tariffs (50%) impacting shrimp processing (Avanti: diversification to non-US markets, but US salience ~66%).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Volume &amp; Capacity Ramp-Up</strong>: Underutilized capacities (Narmada: 50%; Avanti: FY26 feed sales ~575k MT) offer headroom. Mid-teens growth sustainable via exports (Avanti: shrimp processing to 17k MT; Narmada: SE Asia/Middle East/Africa) and domestic expansion.</li>
+<li><strong>EBITDA/PAT Expansion</strong>: H1 FY26 trends strong (Avanti: consolidated PBT up 39% YoY; Godrej: 14% YoY; Narmada: PAT margins to 8.6%). Value-added shifts (Godrej: dairy 36% salience; Avanti pet care) to boost margins to 10-12%.</li>
+<li><strong>Strategic Initiatives</strong>: CAPEX for automation/export infra (Narmada/Avanti); portfolio diversification (Godrej: maize herbicides, CDMO); govt. support (INR 25k Cr export promotion scheme).</li>
+<li><strong>Long-Term Outlook</strong>: FY26 revenue growth ~13-18% feasible (Avanti/Godrej guidance), with FY30 potential via multiple growth pillars (Godrej strategy refresh).</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Commodity Price Spikes</strong>: High sensitivity (Avanti: 1kg raw material rise erodes margins); global factors (El Niño, export bans) amplify.</li>
+<li><strong>Geopolitical/Trade Risks</strong>: US tariffs/CVD/ADD duties could cut volumes (Avanti: 17k MT guidance at risk if prolonged); refund speculative.</li>
+<li><strong>Weather &amp; Disease</strong>: Climate change/excess rains disrupt (Godrej Q2 hit); aquaculture diseases (Avanti).</li>
+<li><strong>Execution &amp; Competition</strong>: Delays in expansions/pet care ramp-up; market share erosion in commoditized segments (Godrej: no Nielsen data, but anecdotal gains).</li>
+<li><strong>Financial</strong>: Debt stability (Godrej/Narmada low D/E &lt;0.2); working capital seasonal spikes.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Moderately positive with 10-15% CAGR potential through H1 FY27, led by volumes and efficiencies. Tailwinds from demand outweigh headwinds if raw materials stabilize; monitor US trade and monsoons closely. Companies like Avanti/Godrej demonstrate resilience via diversification.</p>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3>Press Release</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-animal-feed-sector-analysis-1" class="section level7">
+<p class="heading">Indian Animal Feed Sector Analysis</p>
+<p>Based on the provided announcements from key players (Ajooni Biotech, Godrej Agrovet, Mukka Proteins, and Narmada Agrobase), the sector shows resilience amid sustainability focus and expansion efforts. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>, followed by an executive summary.</p>
+<div id="headwinds-challenges-2" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Rising Raw Material Costs</strong>: Narmada Agrobase explicitly notes EBITDA margin pressure (13.22% in Q2 FY26) due to elevated costs of cottonseed and allied inputs, amid steady demand for cattle feed. This reflects broader input cost volatility in agro-based feeds.</li>
+<li><strong>Margin Compression</strong>: Despite 19% YoY revenue growth, profitability faces squeezes from cost inflation, potentially impacting smaller players without scale.</li>
+<li><strong>Supply Chain Dependencies</strong>: Reliance on commodities like cottonseed, fish meal, and waste inputs exposes firms to price fluctuations and disruptions.</li>
+</ul>
+</div>
+<div id="tailwinds-supportive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Supportive Factors)</strong></p>
+<ul>
+<li><strong>Capital Infusion and Investor Confidence</strong>: Ajooni Biotech’s ₹45 Cr warrant issuance (to promoters, funds, and corporates) boosts authorized capital to ₹50 Cr, signaling strong backing for growth.</li>
+<li><strong>Government Partnerships</strong>: Godrej Agrovet’s ₹70 Cr MoU with Andhra Pradesh enhances dairy processing and oil palm farmer support via Samadhan Centers, leveraging state incentives.</li>
+<li><strong>Sustainability Momentum</strong>: Mukka Proteins’ ₹6 Cr acquisition of FABBCO (51% stake) scales Black Soldier Fly (BSF) tech for waste-to-protein (500 TPD capacity), aligning with circular economy and ESG trends.</li>
+<li><strong>Revenue Resilience</strong>: Narmada Agrobase’s H1 FY26 revenue of ₹2,370 Lakhs (up 19% YoY in Q2) underscores demand from dairy/poultry sectors.</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Expansion and Diversification</strong>: Godrej’s phased dairy upgrades and 5 new oil palm centers; Ajooni’s financial flexibility for “future growth initiatives”; Mukka’s rapid scaling into Bengaluru/Kochi via BSF for alternative proteins.</li>
+<li><strong>Alternative Proteins and Innovation</strong>: Mukka’s integration of insect-based feeds (reducing marine dependency) positions it for high-growth sustainable segments, with synergies from Ento Proteins.</li>
+<li><strong>Pure Veg and Health Focus</strong>: Ajooni’s veg feed/supplements tap premium livestock nutrition; Narmada’s cattle feed volumes signal rising dairy/poultry activities.</li>
+<li><strong>Market Expansion</strong>: Potential into exports (Narmada’s Asia-Pacific plans), urban waste management, and value-added products, with FY24 benchmarks (e.g., Ajooni ₹82 Cr revenue) indicating scalability.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Macro and Regulatory Uncertainties</strong>: Disclaimers highlight govt actions, political/economic shifts, tech risks, and litigation (common across filings).</li>
+<li><strong>Execution and Integration Risks</strong>: New facilities (e.g., Mukka’s 300 TPD Bengaluru plant) and acquisitions face operational delays or tech scaling issues.</li>
+<li><strong>Commodity and Environmental Volatility</strong>: Raw material hikes, weather impacts on oil palm/cottonseed, and landfill/waste regulations could disrupt supplies.</li>
+<li><strong>Competition and Market Saturation</strong>: Intensifying focus on sustainability may heighten rivalry among diversified players like Godrej and niche innovators like Mukka.</li>
+</ul>
+</div>
+</div>
+<div id="executive-summary" class="section level7">
+<p class="heading">Executive Summary</p>
+<p>The Indian animal feed sector benefits from <strong>strong tailwinds</strong> like capital raises (₹45 Cr+), govt tie-ups (₹70 Cr MoU), and sustainability innovations (BSF proteins), driving revenue growth (e.g., 19% YoY). <strong>Growth prospects</strong> are robust in alternative proteins, dairy/oil palm expansions, and veg feeds, fueled by livestock demand and ESG alignment. However, <strong>headwinds</strong> from raw material costs pressure margins, while <strong>key risks</strong> include regulatory shifts and execution challenges. Overall, sentiment is positive with strategic investments signaling 10-20%+ growth potential, but cost management is critical for sustained profitability. Sector players are positioning for long-term resilience amid India’s agri-economy push.</p>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

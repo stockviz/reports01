@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>Hotels &amp; Resorts</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Hotels &amp; Resorts</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/HotelsResorts.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/HotelsResorts.fan.CAP_WT.png" /></p>
+<p><img src="plots/HotelsResorts.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/HotelsResorts.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/HotelsResorts.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/HotelsResorts.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/HotelsResorts.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2ba95b1f6434807bdfb6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2ba95b1f6434807bdfb6">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-3.66%","-0.44%"],["-7.55%","-2.83%"],["-9.13%","-4.61%"],["-5.4%","-2%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/HotelsResorts.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/HotelsResorts.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-bc61bdf62d716b616ef6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bc61bdf62d716b616ef6">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.INDHOTEL.html\" target=\"_blank\">INDHOTEL<\/a>","ITCHOTELS","<a href=\"/reports02/eq-in/risk/in.EIHOTEL.html\" target=\"_blank\">EIHOTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.CHALET.html\" target=\"_blank\">CHALET<\/a>","<a href=\"/reports02/eq-in/risk/in.VENTIVE.html\" target=\"_blank\">VENTIVE<\/a>","THELEELA","<a href=\"/reports02/eq-in/risk/in.LEMONTREE.html\" target=\"_blank\">LEMONTREE<\/a>","<a href=\"/reports02/eq-in/risk/in.DBREALTY.html\" target=\"_blank\">DBREALTY<\/a>","<a href=\"/reports02/eq-in/risk/in.MHRIL.html\" target=\"_blank\">MHRIL<\/a>","<a href=\"/reports02/eq-in/risk/in.JUNIPER.html\" target=\"_blank\">JUNIPER<\/a>","ITDC","<a href=\"/reports02/eq-in/risk/in.SAMHI.html\" target=\"_blank\">SAMHI<\/a>","BRIGHOTEL","<a href=\"/reports02/eq-in/risk/in.PARKHOTELS.html\" target=\"_blank\">PARKHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.TAJGVK.html\" target=\"_blank\">TAJGVK<\/a>","<a href=\"/reports02/eq-in/risk/in.EIHAHOTELS.html\" target=\"_blank\">EIHAHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.ORIENTHOT.html\" target=\"_blank\">ORIENTHOT<\/a>","ADVENTHTL","<a href=\"/reports02/eq-in/risk/in.ROHLTD.html\" target=\"_blank\">ROHLTD<\/a>","VHLTD","<a href=\"/reports02/eq-in/risk/in.KAMATHOTEL.html\" target=\"_blank\">KAMATHOTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.HLVLTD.html\" target=\"_blank\">HLVLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.ASIANHOTNR.html\" target=\"_blank\">ASIANHOTNR<\/a>","<a href=\"/reports02/eq-in/risk/in.ADVANIHOTR.html\" target=\"_blank\">ADVANIHOTR<\/a>","<a href=\"/reports02/eq-in/risk/in.SINCLAIR.html\" target=\"_blank\">SINCLAIR<\/a>","<a href=\"/reports02/eq-in/risk/in.RHL.html\" target=\"_blank\">RHL<\/a>","<a href=\"/reports02/eq-in/risk/in.APOLSINHOT.html\" target=\"_blank\">APOLSINHOT<\/a>","<a href=\"/reports02/eq-in/risk/in.BYKE.html\" target=\"_blank\">BYKE<\/a>","<a href=\"/reports02/eq-in/risk/in.CCHHL.html\" target=\"_blank\">CCHHL<\/a>","<a href=\"/reports02/eq-in/risk/in.AHLEAST.html\" target=\"_blank\">AHLEAST<\/a>","<a href=\"/reports02/eq-in/risk/in.BLUECOAST.html\" target=\"_blank\">BLUECOAST<\/a>","<a href=\"/reports02/eq-in/risk/in.KAUSHALYA.html\" target=\"_blank\">KAUSHALYA<\/a>","<a href=\"/reports02/eq-in/risk/in.TGBHOTELS.html\" target=\"_blank\">TGBHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.HAVISHA.html\" target=\"_blank\">HAVISHA<\/a>"],[0.5089978785046633,0.1553481591559778,0.05835369855382918,0.05052827256415313,0.01506499077076224,0.02034583179941981,0.06044819116899487,0.02598876785649246,0.01683911024780441,0.009631848016563256,0.00200242944943204,0.02741828911160815,0.00297918454668737,0.007411455837222599,0.004759523587604099,0.004385374508771914,0.005250506578856244,0.004410532781432547,0.003278234650066595,0.001095965492293275,0.002382395937296474,0.001404737879216548,0.004743394302265449,0.0009091928275393113,0.001263202536119324,0.0009812380508528622,0.0008185252414065249,0.001211096161636387,0.0005248154611392484,0.000624073923030049,0.0001557077010120251,0.0001198308926611608,0.0001680714183030316,0.0001554724848864529],[0.368475056795647,0.1551227537467926,0.08222055505416755,0.06910489524687442,0.0609164596061802,0.04853960496200723,0.04304696220659107,0.02558215097483508,0.02268893214878239,0.0190933901893724,0.01748786364476556,0.01507578463152727,0.0104298774499886,0.01036406880306373,0.008963158860170267,0.007904298788599223,0.007403913383272238,0.004335193082640575,0.004060115053394887,0.003072844356170074,0.002513629474829374,0.002268019056097448,0.002242217272728939,0.001764355555342499,0.001531293544915477,0.001322623384339558,0.001190195378717308,0.0009545602396210212,0.0009149763561198797,0.0008441624452082212,0.0002422970749660241,0.0001098690693437733,0.000108917364219525,0.0001050047987087265]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":34,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,34,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-14c4fdf4e5b701d9156f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-14c4fdf4e5b701d9156f">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.INDHOTEL.html\" target=\"_blank\">INDHOTEL<\/a>","ITCHOTELS","<a href=\"/reports02/eq-in/risk/in.EIHOTEL.html\" target=\"_blank\">EIHOTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.CHALET.html\" target=\"_blank\">CHALET<\/a>","<a href=\"/reports02/eq-in/risk/in.VENTIVE.html\" target=\"_blank\">VENTIVE<\/a>","THELEELA","<a href=\"/reports02/eq-in/risk/in.LEMONTREE.html\" target=\"_blank\">LEMONTREE<\/a>","<a href=\"/reports02/eq-in/risk/in.DBREALTY.html\" target=\"_blank\">DBREALTY<\/a>","<a href=\"/reports02/eq-in/risk/in.MHRIL.html\" target=\"_blank\">MHRIL<\/a>","<a href=\"/reports02/eq-in/risk/in.JUNIPER.html\" target=\"_blank\">JUNIPER<\/a>","ITDC","<a href=\"/reports02/eq-in/risk/in.SAMHI.html\" target=\"_blank\">SAMHI<\/a>","BRIGHOTEL","<a href=\"/reports02/eq-in/risk/in.PARKHOTELS.html\" target=\"_blank\">PARKHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.TAJGVK.html\" target=\"_blank\">TAJGVK<\/a>","<a href=\"/reports02/eq-in/risk/in.EIHAHOTELS.html\" target=\"_blank\">EIHAHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.ORIENTHOT.html\" target=\"_blank\">ORIENTHOT<\/a>","<a href=\"/reports02/eq-in/risk/in.ROHLTD.html\" target=\"_blank\">ROHLTD<\/a>","VHLTD","<a href=\"/reports02/eq-in/risk/in.KAMATHOTEL.html\" target=\"_blank\">KAMATHOTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.HLVLTD.html\" target=\"_blank\">HLVLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.ASIANHOTNR.html\" target=\"_blank\">ASIANHOTNR<\/a>","<a href=\"/reports02/eq-in/risk/in.ADVANIHOTR.html\" target=\"_blank\">ADVANIHOTR<\/a>","<a href=\"/reports02/eq-in/risk/in.SINCLAIR.html\" target=\"_blank\">SINCLAIR<\/a>","<a href=\"/reports02/eq-in/risk/in.RHL.html\" target=\"_blank\">RHL<\/a>","<a href=\"/reports02/eq-in/risk/in.APOLSINHOT.html\" target=\"_blank\">APOLSINHOT<\/a>","<a href=\"/reports02/eq-in/risk/in.BYKE.html\" target=\"_blank\">BYKE<\/a>","<a href=\"/reports02/eq-in/risk/in.CCHHL.html\" target=\"_blank\">CCHHL<\/a>","<a href=\"/reports02/eq-in/risk/in.AHLEAST.html\" target=\"_blank\">AHLEAST<\/a>","<a href=\"/reports02/eq-in/risk/in.BLUECOAST.html\" target=\"_blank\">BLUECOAST<\/a>","<a href=\"/reports02/eq-in/risk/in.KAUSHALYA.html\" target=\"_blank\">KAUSHALYA<\/a>","<a href=\"/reports02/eq-in/risk/in.TGBHOTELS.html\" target=\"_blank\">TGBHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.HAVISHA.html\" target=\"_blank\">HAVISHA<\/a>"],[0.9116304920375355,7.988523299714345,18.13950418546745,10.95187948022395,9.722528095730762,1.440645830135356,6.650585516968474,0.7507315974691784,5.117158231359561,3.867655831759029,1.485690151922867,2.685359364160108,0.007570467614335549,2.239714146375117,0.05931420662742438,2.565202404856734,0.03453115814713665,1.111200423611123,0.2685509547384173,1.726464254807835,0.00680710297285268,-0.6030465704142165,0.6633055985935232,0.4288746093406263,0.6212454417425454,0.3416229006640052,0.1295394177490157,0.3313660855376915,0.3476283963544818,-0.1290875608355313,-0.001386415425798979,0.03861421340870107,-0.1452007535528226],[0.7604066830229158,11.59388258070733,20.43984018579428,15.23317441004012,12.23960138869893,6.908514601919778,7.543546241540268,1.123481003019759,5.150615139395453,4.235372202632623,null,3.300697116366985,0.01473569715005945,2.817473988718003,0.04992625583079559,2.331827388449235,0.02517425884801559,1.107668227626683,0.3669569867990176,1.316230410913848,-0.0005091981316076175,-0.5777280343226963,0.54700773845881,0.2888794017756293,null,0.603218958520972,0.1553835796340582,0.2982060796753537,0.2865178712456328,-0.1214032048298874,-0.01169851658701938,0.04015334649525016,-0.1740883830739994]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":33,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,33,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-02ad24c4de30443ec8d1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-02ad24c4de30443ec8d1">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.INDHOTEL.html\" target=\"_blank\">INDHOTEL<\/a>","ITCHOTELS","<a href=\"/reports02/eq-in/risk/in.EIHOTEL.html\" target=\"_blank\">EIHOTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.CHALET.html\" target=\"_blank\">CHALET<\/a>","<a href=\"/reports02/eq-in/risk/in.VENTIVE.html\" target=\"_blank\">VENTIVE<\/a>","THELEELA","<a href=\"/reports02/eq-in/risk/in.LEMONTREE.html\" target=\"_blank\">LEMONTREE<\/a>","<a href=\"/reports02/eq-in/risk/in.DBREALTY.html\" target=\"_blank\">DBREALTY<\/a>","<a href=\"/reports02/eq-in/risk/in.MHRIL.html\" target=\"_blank\">MHRIL<\/a>","<a href=\"/reports02/eq-in/risk/in.JUNIPER.html\" target=\"_blank\">JUNIPER<\/a>","ITDC","<a href=\"/reports02/eq-in/risk/in.SAMHI.html\" target=\"_blank\">SAMHI<\/a>","BRIGHOTEL","<a href=\"/reports02/eq-in/risk/in.PARKHOTELS.html\" target=\"_blank\">PARKHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.TAJGVK.html\" target=\"_blank\">TAJGVK<\/a>","<a href=\"/reports02/eq-in/risk/in.EIHAHOTELS.html\" target=\"_blank\">EIHAHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.ORIENTHOT.html\" target=\"_blank\">ORIENTHOT<\/a>","<a href=\"/reports02/eq-in/risk/in.ROHLTD.html\" target=\"_blank\">ROHLTD<\/a>","VHLTD","<a href=\"/reports02/eq-in/risk/in.KAMATHOTEL.html\" target=\"_blank\">KAMATHOTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.HLVLTD.html\" target=\"_blank\">HLVLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.ASIANHOTNR.html\" target=\"_blank\">ASIANHOTNR<\/a>","<a href=\"/reports02/eq-in/risk/in.ADVANIHOTR.html\" target=\"_blank\">ADVANIHOTR<\/a>","<a href=\"/reports02/eq-in/risk/in.SINCLAIR.html\" target=\"_blank\">SINCLAIR<\/a>","<a href=\"/reports02/eq-in/risk/in.RHL.html\" target=\"_blank\">RHL<\/a>","<a href=\"/reports02/eq-in/risk/in.APOLSINHOT.html\" target=\"_blank\">APOLSINHOT<\/a>","<a href=\"/reports02/eq-in/risk/in.BYKE.html\" target=\"_blank\">BYKE<\/a>","<a href=\"/reports02/eq-in/risk/in.CCHHL.html\" target=\"_blank\">CCHHL<\/a>","<a href=\"/reports02/eq-in/risk/in.AHLEAST.html\" target=\"_blank\">AHLEAST<\/a>","<a href=\"/reports02/eq-in/risk/in.BLUECOAST.html\" target=\"_blank\">BLUECOAST<\/a>","<a href=\"/reports02/eq-in/risk/in.KAUSHALYA.html\" target=\"_blank\">KAUSHALYA<\/a>","<a href=\"/reports02/eq-in/risk/in.TGBHOTELS.html\" target=\"_blank\">TGBHOTELS<\/a>","<a href=\"/reports02/eq-in/risk/in.HAVISHA.html\" target=\"_blank\">HAVISHA<\/a>"],[0.6202812348887632,14.39799177287165,9.4569243408902,10.01454058263955,8.092173105900637,0.4428762218398969,4.683148908732853,9.955339046905781,6.218065961221994,3.361739709137514,1.652277260725768,4.301550414504985,0.01790314832424851,2.237442460777338,0.03255963587723244,1.408208557681653,0.03750240840639237,1.116892400492528,0.1978605600703101,2.366993943411048,0.0247016520060631,1.092416724690351,0.3606042442801689,0.2024076544479888,0.4178944047522054,1.902436461341049,0.3612766855666774,0.247728956662255,0.4042200711330154,0.001797917741661067,0.0003852890934416129,0.1380013685177724,0.04204163958882241],[0.513791575351464,15.43416215738936,11.40649226815461,12.25582591840807,9.662201878939683,3.843456704094613,5.706816575636698,9.238735457704271,5.271296027379539,4.155456180141966,null,5.040931694262005,0.02840353242615703,2.834527153875095,0.02644331585544676,1.226581847617107,0.02685763823296134,1.39579390284385,0.3414449752603311,2.85700934319786,0.02019551627243204,1.36152907280015,0.3919981933552865,0.2227206592792789,null,3.303975152135159,0.4459754136354379,0.2215275586013348,0.4905749101004612,0.00159363504327966,0.0004687867306520548,0.1657690817370737,0.0372722080603954]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":33,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,33,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-hotels-resorts-sector-analysis" class="section level7">
+<p class="heading">Indian Hotels &amp; Resorts Sector Analysis</p>
+<p><strong>Overview</strong>: The sector exhibits robust recovery and growth momentum in FY26 H1, driven by strong domestic demand (corporate, weddings, MICE, leisure), resilient ADRs (3-13% YoY growth across peers), and limited supply in key markets (e.g., metros like Pune, Bangalore, Hyderabad; leisure like Maldives/Northeast). Companies like Juniper, Lemon Tree, Park Hotels, Ventive, and Viceroy reported double-digit RevPAR/TRevPAR growth (8-16% YoY), high occupancies (66-93%), and EBITDA margins (23-46%). Expansions via asset-light models, renovations, and acquisitions dominate, but renovations and monsoons caused short-term dips. Proforma adjustments highlight underlying strength post-IPO normalizations.</p>
+<div id="headwinds-challenges-pressuring-performance" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges Pressuring Performance)</strong></p>
+<ul>
+<li><strong>Seasonal/Weather Impacts</strong>: Monsoon disruptions led to softer Q2 occupancies (e.g., Kamat: revenue -12% YoY; Juniper: portfolio flat at 69%; Lemon Tree: Gurgaon -10%).</li>
+<li><strong>Renovations &amp; Capex</strong>: Temporary occupancy/RevPAR dips (e.g., Viceroy: Courtyard occupancy 31.5%; Lemon Tree: 3,000 rooms renovated, margins hit by 3-4.5%; Park: room closures in Gurgaon/Bangalore).</li>
+<li><strong>Cost Pressures</strong>: Employee costs up (Juniper: 20.6% of revenue; Kamat: pre-opening hikes); forex losses (Juniper: ₹7cr); higher energy despite green shifts.</li>
+<li><strong>Delays in Openings/Pipeline</strong>: Greenfield/Brownfield slippages (e.g., Park: Kolkata/Pune/Vizag delayed 1-1.5yrs; Kamat: Bhavnagar/Dehradun/Nashik pushed).</li>
+<li><strong>High Base Effects &amp; Muted Q2</strong>: Festive shifts (e.g., Diwali in Oct’25 vs. Nov’24 impacted Lemon Tree/Ventive); competition in mid-scale (e.g., Lemon Tree vs. Ginger/Clarks).</li>
+</ul>
+</div>
+<div id="tailwinds-positive-drivers-boosting-momentum" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Drivers Boosting Momentum)</strong></p>
+<ul>
+<li><strong>Demand Surge</strong>: Domestic/corporate travel strong (Juniper: 9-12% Oct ARR; Lemon Tree: mid-teens Q3 RevPAR; Park: 93% occupancy); weddings/MICE/festives (36 dates Nov-Mar); infrastructure (airports, roads, Northeast focus).</li>
+<li><strong>Supply Constraints</strong>: Favorable dynamics in metros/leisure (Ventive: no Pune luxury supply 5yrs; Viceroy: Hyderabad monopoly-like; Lemon Tree: 5-8% CAGR supply vs. 15-18% demand).</li>
+<li><strong>Pricing Power</strong>: ADR resilience (Juniper: 7-12%; Park: 13%; Ventive: 12%; Viceroy: 9-14%); direct bookings/loyalty (Ventive: 60% direct).</li>
+<li><strong>F&amp;B/Ancillary Strength</strong>: TRevPAR uplift (Ventive: 14%; Park: 17% F&amp;B growth); events/entertainment (Park: key driver).</li>
+<li><strong>Efficiency Gains</strong>: Renovations yielding RevPAR (Lemon Tree: 47% in Pune Keys); green energy (Juniper: 29% share); cost savings (Ventive: Maldives solar/biogas).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Portfolio Expansion</strong>: Asset-light dominant (Lemon Tree: 15 contracts/1,138 rooms Q2; Park: 600 rooms FY26; SAMHI/Kamat: 400-500 keys/yr); greenfield/brownfield (Ventive: 4,000 keys FY30; Juniper: Bangalore/Kaziranga/Guwahati; Park: Kolkata/Vizag/Pune/Navi Mumbai).</li>
+<li><strong>Acquisitions/ROFOs</strong>: High-margin adds (Ventive: Hilton Goa/Soho House; Park: Zillion Juhu/Kochi; ROFO pipelines in Juniper/Lemon Tree).</li>
+<li><strong>Luxury/Leisure Shift</strong>: Northeast/Andaman bids (Juniper/DB Realty); Maldives ramp-up (Ventive: 40% revenue growth); palaces (Park: Michelin/Condé Nast awards).</li>
+<li><strong>F&amp;B Diversification</strong>: Flurys (Park: 102 outlets, +22% Q2; 130 by FY26); events (Ventive/Juniper).</li>
+<li><strong>Projections</strong>: Double-digit RevPAR (mid-teens H2 per Lemon Tree/Park); EBITDA margins 30-40%+ (Juniper: 40%; Lemon Tree: 45% FY26); room growth to 3,000-4,000 keys (Park/Ventive).</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Company Example</th>
+<th>H1 FY26 Highlights</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Juniper</strong></td>
+<td>RevPAR +9%; EBITDA 36%; Bangalore/Northeast pipeline.</td>
+</tr>
+<tr class="even">
+<td><strong>Lemon Tree</strong></td>
+<td>RevPAR +8%; 242 hotels/20k rooms; Nehru Place Aurika.</td>
+</tr>
+<tr class="odd">
+<td><strong>Park</strong></td>
+<td>RevPAR +12%; 50 hotels target; Flurys 130 outlets.</td>
+</tr>
+<tr class="even">
+<td><strong>Ventive</strong></td>
+<td>EBITDA +50%; Maldives +40%; Goa/Soho acquisitions.</td>
+</tr>
+<tr class="odd">
+<td><strong>Viceroy</strong></td>
+<td>ADR +11-14%; ₹120cr capex for upgrades.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Execution Delays</strong>: Pipeline slippages (e.g., Kamat: 200+ rooms delayed; Park: 1-1.5yr shifts) could defer revenue.</li>
+<li><strong>Capex/Debt Burden</strong>: High spends (₹450cr Lemon Tree renovations; ₹120cr Viceroy; ₹2k cr Ventive 5yrs); debt/EBITDA 1.4-2x (rising with expansions).</li>
+<li><strong>Macro/Sectoral</strong>: Monsoon/geopolitics (Juniper/Kamat); GST hikes (Lemon Tree: 3.5% cost hit); supply in Tier-2/3 (Lemon Tree warns).</li>
+<li><strong>Forex/Seasonality</strong>: Maldives USD exposure (Ventive: natural hedge but MTM volatility); Q2 softness (multiple cos).</li>
+<li><strong>Competition/Over-Reliance</strong>: Branded supply (IHCL Ginger/Clarks); low-yield contracts (Ventive phasing out).</li>
+<li><strong>Regulatory</strong>: Permissions/bids (Juniper Andaman/Yashobhoomi; Park EM Bypass).</li>
+</ul>
+<p><strong>Summary Outlook</strong>: Sector in <strong>super-cycle</strong> (double-digit growth 3-5yrs; demand 10-18% vs. supply 5-8%). Tailwinds (demand-supply gap, infra) outweigh headwinds (seasonal/capex); growth via asset-light/luxury/leisure. Risks manageable with strong balance sheets (A+/AA ratings) but monitor debt/execution. Peers target 12-18% RevPAR CAGR; EBITDA margins 35-45% FY26+. Positive for listed players with metro/leisure exposure.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-27 </em></p>
+</div>
+</div>
+<div id="indian-hotels-resorts-sector-analysis-1" class="section level1">
+<h1>Indian Hotels &amp; Resorts Sector Analysis</h1>
+<p><strong>Summary Overview</strong>:<br />
+The Indian hospitality sector is in a <strong>multi-year growth super-cycle</strong>, driven by favorable demand-supply imbalances (demand CAGR ~11-13% vs. supply ~5-9% through FY27-30), rising GDP (projected US$6.8T by FY30), infrastructure push (airports, roads, tourism schemes like Swadesh Darshan 2.0), and structural shifts (corporate/MICE recovery, weddings, leisure, medical tourism). Key players (e.g., Chalet, Lemon Tree, EIH, Juniper, Park Hotels, Ventive) report strong Q2/H1 FY26 results: RevPAR +8-15% YoY, EBITDA margins 36-46%, occupancy 66-93%. Tailwinds dominate, but short-term headwinds persist. Growth prospects are robust (portfolio expansions to 20k+ rooms, asset-light models), tempered by execution risks.</p>
+<div id="headwinds-challenges" class="section level2">
+<h2><strong>Headwinds (Challenges)</strong></h2>
+<p>Short-term pressures from external shocks and internal investments, but largely transitory: - <strong>Macro/External Disruptions</strong>: Geopolitical tensions (Operation Sindoor, Middle East conflict), airline crash, excessive monsoons/floods delayed domestic travel (air traffic -2.4% YoY in Q2). Festivals (Dussehra/Diwali/Chhath Puja) shifted to Oct, muting Q2 demand (occupancy flat/decline in some markets). - <strong>Renovations/Capex Drag</strong>: Widespread upgrades (3k+ rooms across portfolios) caused room shutdowns, noise/disruption (e.g., Gurgaon -10% RevPAR, Keys Pune pre-renovation). OPEX spikes (renovation/tech/ex-gratia ~8% of revenue vs. 5% YoY) compressed margins (e.g., Lemon Tree -300bps to 43%). - <strong>Segment-Specific</strong>: GST revisions hurt input credits (3-3.5% EBITDA hit for sub-₹7.5k rooms); Maldives seasonality (Q2 weakest); high base effects from last year’s post-election pent-up demand. - <strong>Delays</strong>: Project slippages (e.g., permissions, owner issues; Bhavnagar to Apr’26, Dehradun/Nashik delayed).</p>
+</div>
+<div id="tailwinds-positive-factors" class="section level2">
+<h2><strong>Tailwinds (Positive Factors)</strong></h2>
+<p>Structural enablers fueling outperformance: - <strong>Demand &gt; Supply</strong>: Luxury/upper-upscale supply growth muted (5.3-7.2% CAGR vs. 11.6% demand); metros/Tier-1 resilient (e.g., Hyderabad/Bengaluru ARRs +20%). - <strong>Economic Boosters</strong>: Nominal GDP +10.1% CAGR; airline seats doubling (140→260 airports); govt. tourism infra (116 destinations); rising corporate/leisure (bleisure trends, GBTA report). - <strong>Operational Levers</strong>: ADR resilience (+5-15% YoY despite monsoons); F&amp;B/banqueting +15-22% (e.g., Flurys +22%); renovations yielding RevPAR jumps (Keys Pune +47%, LT Premier Hyderabad +100% ARR). - <strong>Efficiency Gains</strong>: Green energy (60% renewable), EV fleets, cost rationalization (e.g., Ventive Maldives +91% same-store EBITDA); asset-light fees +7-8%. - <strong>Brand Strength</strong>: Accolades (Michelin Keys, Condé Nast); loyalty programs (40%+ repeats); sustainability (net-zero pledges).</p>
+</div>
+<div id="growth-prospects-1" class="section level2">
+<h2><strong>Growth Prospects</strong></h2>
+<p>High conviction on <strong>double-digit CAGR</strong> (RevPAR 8-15%, EBITDA 15-24%, rooms 10-20% via asset-light): - <strong>Portfolio Expansion</strong>: 16k-20k+ pipeline rooms (e.g., Chalet ~4.5k keys; Lemon Tree 242 hotels/20k rooms; Park 50 hotels/3k keys by FY26). Focus: Northeast/Andaman/leisure (Kaziranga, Goa); metros (Delhi Aerocity, Mumbai/Navi Mumbai). - <strong>Asset-Light Acceleration</strong>: Management/franchise fees +7-8% (Lemon Tree 4k→35-40k rooms pipeline); ROFOs/auctions. - <strong>Revenue Streams</strong>: F&amp;B/weddings/MICE (36 dates Nov-Mar); annuities (90-98% occupancy); branded residences/villas (Ventive Goa/Sri Lanka ₹100cr+ rev). - <strong>Projections</strong>: EBITDA ₹1,000cr+ FY26+ (Ventive); ₹400cr rev (Kamat); franchise/managed ramp-up (5-7k rooms/yr). ROCE 18-20%; margins 40-45% post-renovations. - <strong>Super-Cycle</strong>: Supply constraints + demand diffusion (Tier 2/3) → pricing power; ₹1T sector by 2030.</p>
+</div>
+<div id="key-risks-1" class="section level2">
+<h2><strong>Key Risks</strong></h2>
+<p>Manageable but monitored: - <strong>Execution Delays</strong>: Permissions/owners (e.g., 1-1.5yr slippages); capex overruns (₹450cr+ renovations). - <strong>Demand Volatility</strong>: Geopolitics/weather (Q2 muted); seasonality (Maldives Q2 weak). - <strong>Margin Pressure</strong>: Renovation OPEX (6-8% rev); GST/debt costs (7-8.5%, improving); forex (Ventive USD debt). - <strong>Competition/Supply</strong>: Tier 2/3 influx; unbranded dominance. - <strong>Macro</strong>: Slowdown/inflation; over-leverage (net debt/EBITDA 1.4-1.7x). - <strong>Regulatory</strong>: Approvals (NGT, DDA); forex/interest rate risks.</p>
+<p><strong>Overall Outlook</strong>: Bullish. Sector poised for 12-15% RevPAR CAGR FY26-30; focus on luxury/asset-light mitigates risks. Investors should track Q3/H2 traction (weddings/MICE) and renovation pay-offs.</p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

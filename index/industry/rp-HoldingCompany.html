@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>Holding Company</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Holding Company</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/HoldingCompany.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/HoldingCompany.fan.CAP_WT.png" /></p>
+<p><img src="plots/HoldingCompany.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/HoldingCompany.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/HoldingCompany.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/HoldingCompany.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/HoldingCompany.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-bc90ec754c84035da94b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bc90ec754c84035da94b">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-3.5%","-1.58%"],["-5.68%","-2.59%"],["-5.92%","-2.41%"],["0.6%","1.27%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/HoldingCompany.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/HoldingCompany.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-42111b46c7ddbda05d01" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-42111b46c7ddbda05d01">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJAJFINSV.html\" target=\"_blank\">BAJAJFINSV<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHLDNG.html\" target=\"_blank\">BAJAJHLDNG<\/a>","<a href=\"/reports02/eq-in/risk/in.CHOICEIN.html\" target=\"_blank\">CHOICEIN<\/a>","<a href=\"/reports02/eq-in/risk/in.JMFINANCIL.html\" target=\"_blank\">JMFINANCIL<\/a>","<a href=\"/reports02/eq-in/risk/in.EDELWEISS.html\" target=\"_blank\">EDELWEISS<\/a>","PILANIINVS","<a href=\"/reports02/eq-in/risk/in.RANEHOLDIN.html\" target=\"_blank\">RANEHOLDIN<\/a>","<a href=\"/reports02/eq-in/risk/in.BFINVEST.html\" target=\"_blank\">BFINVEST<\/a>","<a href=\"/reports02/eq-in/risk/in.MAXIND.html\" target=\"_blank\">MAXIND<\/a>","<a href=\"/reports02/eq-in/risk/in.AFSL.html\" target=\"_blank\">AFSL<\/a>","<a href=\"/reports02/eq-in/risk/in.GFLLIMITED.html\" target=\"_blank\">GFLLIMITED<\/a>","<a href=\"/reports02/eq-in/risk/in.BILVYAPAR.html\" target=\"_blank\">BILVYAPAR<\/a>"],[0.6262580618431639,0.2540569865282686,0.03357079451396662,0.02979040527095297,0.03679237212130799,0.007078518660042252,0.005194384187364563,0.001895894720796677,0.002732915545625421,0.001483837377967552,0.001079114294936154,6.671493560734481e-05],[0.6531809421684767,0.24332485301667,0.0323424888412065,0.02720130090991373,0.02053132943014269,0.01082657083718518,0.003920720684889437,0.003245361166058624,0.002089272134657708,0.001978265836934079,0.001305586316193865,5.33086576716868e-05]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":12,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-3038f1eaedf5a79cdce8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3038f1eaedf5a79cdce8">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJAJFINSV.html\" target=\"_blank\">BAJAJFINSV<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHLDNG.html\" target=\"_blank\">BAJAJHLDNG<\/a>","<a href=\"/reports02/eq-in/risk/in.CHOICEIN.html\" target=\"_blank\">CHOICEIN<\/a>","<a href=\"/reports02/eq-in/risk/in.JMFINANCIL.html\" target=\"_blank\">JMFINANCIL<\/a>","<a href=\"/reports02/eq-in/risk/in.EDELWEISS.html\" target=\"_blank\">EDELWEISS<\/a>","PILANIINVS","<a href=\"/reports02/eq-in/risk/in.RANEHOLDIN.html\" target=\"_blank\">RANEHOLDIN<\/a>","<a href=\"/reports02/eq-in/risk/in.BFINVEST.html\" target=\"_blank\">BFINVEST<\/a>","<a href=\"/reports02/eq-in/risk/in.MAXIND.html\" target=\"_blank\">MAXIND<\/a>","<a href=\"/reports02/eq-in/risk/in.AFSL.html\" target=\"_blank\">AFSL<\/a>","<a href=\"/reports02/eq-in/risk/in.GFLLIMITED.html\" target=\"_blank\">GFLLIMITED<\/a>","<a href=\"/reports02/eq-in/risk/in.BILVYAPAR.html\" target=\"_blank\">BILVYAPAR<\/a>"],[92.10803514864604,2.146524352699694,0.05167216254690081,3.179860580419458,0.722795579432238,0.07392653136439792,0.003418245019890125,0.07825041518483265,-0.4181348676880572,0.1736909811563419,0.002457881261137724,-0.003841855582646474],[93.06389176369419,3.087652102186317,0.2051913182501055,2.900054623596641,0.6078372559325966,0.23213364252094,0.002442910899185316,0.09042258544161452,-0.3613459237782048,null,null,-0.004429141160864107]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":12,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e2f3c3fb79387fd2e7e2" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e2f3c3fb79387fd2e7e2">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJAJFINSV.html\" target=\"_blank\">BAJAJFINSV<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHLDNG.html\" target=\"_blank\">BAJAJHLDNG<\/a>","<a href=\"/reports02/eq-in/risk/in.CHOICEIN.html\" target=\"_blank\">CHOICEIN<\/a>","<a href=\"/reports02/eq-in/risk/in.JMFINANCIL.html\" target=\"_blank\">JMFINANCIL<\/a>","<a href=\"/reports02/eq-in/risk/in.EDELWEISS.html\" target=\"_blank\">EDELWEISS<\/a>","PILANIINVS","<a href=\"/reports02/eq-in/risk/in.RANEHOLDIN.html\" target=\"_blank\">RANEHOLDIN<\/a>","<a href=\"/reports02/eq-in/risk/in.BFINVEST.html\" target=\"_blank\">BFINVEST<\/a>","<a href=\"/reports02/eq-in/risk/in.MAXIND.html\" target=\"_blank\">MAXIND<\/a>","<a href=\"/reports02/eq-in/risk/in.AFSL.html\" target=\"_blank\">AFSL<\/a>","<a href=\"/reports02/eq-in/risk/in.GFLLIMITED.html\" target=\"_blank\">GFLLIMITED<\/a>"],[92.55146767656595,0.6034646508912768,0.3154508811397641,1.370088124550932,1.945979141058281,0.04660294539345262,0.03101239999130656,0.02302548280980966,0.07670093592591634,0.8546317947209524,0.0007577292259105602],[93.79655341684607,0.7418189554616169,0.3261960681419716,1.349207803433349,2.712704444397703,0.1010108470663227,0.02287824029266997,0.02364515110092976,0.0705955493125158,null,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":11,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-26 </em></p>
+<div id="analysis-of-indian-holding-companies-in-financial-services-based-on-provided-documents" class="section level7">
+<p class="heading">Analysis of Indian Holding Companies in Financial Services (Based on Provided Documents)</p>
+<p>The provided documents primarily cover Q1/Q2 FY26 earnings transcripts, announcements, and investor presentations from key Indian holding companies/financial services firms: <strong>Abans Financial Services (AFSL)</strong>, <strong>Bajaj Finserv (BFS)</strong>, <strong>JM Financial</strong>, <strong>Edelweiss Financial Services</strong>, <strong>Choice International</strong>, with ancillary mentions of <strong>Max India</strong> (senior care holding) and <strong>Rane Holdings</strong> (auto components holding). These represent diversified holding structures in NBFCs, insurance, wealth/asset management, capital markets, and lending.</p>
+<p>The analysis synthesizes <strong>common themes</strong> across these entities, focusing on their roles as holding companies (e.g., BFS oversees lending/insurance; JM Financial manages advisory/wealth; AFSL emphasizes fee-based assets). Overall, the sector shows resilient growth amid regulatory shifts, but with execution challenges.</p>
+<div id="tailwinds-positive-drivers" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Robust Fee-Based &amp; AUM Growth</strong>: AFSL hit ₹3,500 Cr AUM (first-time milestone, +exponential scaling via distributors/partners); JM Financial’s wealth AUM up 26% YoY to ₹32,021 Cr recurring; BFS’s AMC AUM crossed ₹30,000 Cr (fastest in &lt;2 years). Shift to high-margin fee income (AFSL: ₹165 Cr fee-based, 62% PBT margin) provides earnings stability.</li>
+<li><strong>Capital Markets Boom</strong>: JM Financial led IPOs (#1 by value, 56 filings ~₹1.2 Lakh Cr); AFSL strong in ECM/M&amp;A. Equity market tailwinds boost advisory/equities revenue (JM: +20% fees).</li>
+<li><strong>Insurance &amp; Lending Momentum</strong>: BFS General Insurance GWP +13.6% ex-1/n (outpacing industry); Life VNB +50%, margins to 17.1%; Lending AUM +24% (BFS Finance/Housing). Diversified portfolios (e.g., JM’s affordable homes +28% AUM).</li>
+<li><strong>Digital/Tech Efficiency</strong>: AI-driven cost reductions (BFS OPEX improvement); AFSL digital tools for leverage. Max India (non-finance) RoAS to 2x via influencers/e-com.</li>
+<li><strong>Funding &amp; Capital Strength</strong>: AFSL/JM/BFS raised via rights/preference (e.g., Max ₹124 Cr rights + ₹80 Cr warrants); strong solvency (BFS insurance 339-346%).</li>
+<li><strong>Macro Support</strong>: GST reforms boost insurance affordability; senior care demand (Max: +15% revenue).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Regulatory &amp; Accounting Shifts</strong>: BFS insurance hit by GST ITC loss (₹112 Cr PAT impact, 140 bps NBM drag); 1/n premium recognition flattens GWP comparability. AFSL awaits NBFC clearances abroad.</li>
+<li><strong>Elevated Costs &amp; Margins Pressure</strong>: BFS credit costs up 19% (2/3-wheelers, MSME); JM Private Markets impairments down but loan yields fell (12.1% vs 13.8%). Operating leverage nascent (AFSL front-loaded advisory costs).</li>
+<li><strong>Asset Quality Stress</strong>: BFS gross NPA 1.24% (up YoY); JM non-core loans running down (59% reduction). Competitive lending intensity (BFS Housing attrition).</li>
+<li><strong>Seasonal/Execution Delays</strong>: Max India Chandigarh project stalled (geopolitical/airport radius); occupancy ramp-up slow (Care Homes 25%).</li>
+<li><strong>De-Growth in Select Areas</strong>: JM Markets planned de-growth (₹164 Cr to ₹90 Cr); AFSL lending cautious.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High Double-Digit AUM/Revenue Trajectory</strong>: AFSL targets AUM doubling every 12-18 months; JM Wealth RMs +43% YoY, branches +11; BFS lending 24% AUM growth sustained. Fee income to dominate (AFSL/JM focus).</li>
+<li><strong>Product/Geographic Expansion</strong>: AFSL global arbitrage/private credit; BFS new AIFs/GIFT City; JM syndication/co-invests; Max 500 Care beds by Nov’25, AGEasy breakeven FY27-28.</li>
+<li><strong>Margin Expansion</strong>: Operating leverage as AUM scales (AFSL: fixed costs unchanged); BFS Life NBM to teens post-GST mitigation. JM ROE 14.4% H1.</li>
+<li><strong>Diversification &amp; Synergies</strong>: Holdings leveraging subsidiaries (BFS insurance JVs; JM ARC recoveries ₹1,273 Cr). Max: 1.5 Mn sq ft annual senior residences.</li>
+<li><strong>Outlook</strong>: 15-25% revenue growth (seen in H1 across firms); profitability inflection FY26-27 via scale (e.g., AFSL sustainable fee model; BFS 12% PAT growth ex-MTM).</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>H1 FY26 Snapshot (Aggregate Trends)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Revenue Growth</td>
+<td>+5-15% YoY (fees/lending lead)</td>
+</tr>
+<tr class="even">
+<td>AUM Growth</td>
+<td>+20-77% YoY</td>
+</tr>
+<tr class="odd">
+<td>PAT Growth</td>
+<td>+16-117% (post-impairments)</td>
+</tr>
+<tr class="even">
+<td>ROE</td>
+<td>9-14% (improving)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Regulatory/Policy</strong>: GST/IndAS/1/n changes (BFS); FDI/composite licenses pending. Geopolitical delays (Max).</li>
+<li><strong>Credit &amp; Asset Quality</strong>: NPA spikes (BFS 1.24% GNPA); ECL provisions volatile (JM -₹212 Cr H1 benefit but prior drags).</li>
+<li><strong>Execution &amp; Ramp-Up</strong>: Occupancy delays (Max 25%); scaling unproven (AFSL overseas NBFC; JM ARC resolutions).</li>
+<li><strong>Market/Competition</strong>: Volatility in equities/IPOs; intense lending competition (BFS MSME cut 25%). Quick commerce untested (Max).</li>
+<li><strong>Liquidity/Capital</strong>: Debt reduction ongoing (JM D/E 1.1x); rights/warrants dependency. High gearing in private credit.</li>
+<li><strong>Macro</strong>: Interest rates, monsoons/elections (AFSL); pollution/health seasonality (Max).</li>
+</ul>
+<p><strong>Overall Summary</strong>: Indian financial holding companies exhibit strong tailwinds from fee/AUM scaling and market buoyancy, positioning for 15-25% growth FY26+. Headwinds like regulations/credit costs are transitory, with prospects hinging on execution (e.g., occupancy, overseas). Risks center on regulation and asset quality, but diversified models (fees &gt; lending) and capital buffers mitigate them. <strong>Recommendation</strong>: Positive outlook for holdings like BFS/JM (ROE &gt;15% potential); monitor Q3 for GST/occupancy inflection. Sector PE re-rating likely on profitability ramps.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-26 </em></p>
+<div id="analysis-for-bajaj-finserv-limited-key-indian-holding-company-from-provided-documents" class="section level7">
+<p class="heading">Analysis for Bajaj Finserv Limited (Key Indian Holding Company from Provided Documents)</p>
+<p>Bajaj Finserv Limited (BFS) is a diversified non-banking financial holding company with subsidiaries in lending (Bajaj Finance Ltd - BFL, Bajaj Housing Finance Ltd - BHFL), insurance (Bajaj General Insurance, Bajaj Life Insurance), asset management, health, and direct lending platforms. The Q2 FY26 earnings transcript highlights robust consolidated performance (total income +11% YoY to ₹37,400 Cr, PAT +8% to ₹2,244 Cr or +12% ex-MTM). Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>, synthesized from the transcript.</p>
+<div id="headwinds-challenges-pressuring-performance" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges Pressuring Performance)</strong></p>
+<ul>
+<li><strong>Regulatory &amp; Tax Changes</strong>: GST reforms led to INR112 Cr PAT hit in Bajaj Life (loss of input tax credit; 140 bps NBM impact in H1, ~450 bps annualized). 1/n premium accounting in General Insurance distorted GWP comparability.</li>
+<li><strong>Elevated Credit Costs &amp; Asset Quality</strong>: BFL credit costs up 19% YoY due to 2/3-wheeler and MSME segments (GNPA 1.24%, NNPA 0.6%). BHFL faced portfolio attrition amid competition.</li>
+<li><strong>Insurance Profitability Pressures</strong>: Bajaj General underwriting losses up (combined ratio 102.3%); Bajaj Life PAT down sharply due to GST (INR13 Cr vs INR148 Cr YoY).</li>
+<li><strong>Planned De-growth in Segments</strong>: Bajaj Markets topline down (system migration); Bajaj Health still loss-making despite transaction growth.</li>
+<li><strong>Competitive Intensity</strong>: Price competition in General Insurance; MSME lending volumes cut 25% in BFL.</li>
+</ul>
+</div>
+<div id="tailwinds-positive-factors-supporting-momentum" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Factors Supporting Momentum)</strong></p>
+<ul>
+<li><strong>Strong Subsidiary Performance</strong>: BFL AUM +24% (₹4.62L Cr), PAT +23%; BHFL AUM +24%, PAT +18% with healthy asset quality (GNPA 0.26%).</li>
+<li><strong>Insurance Turnaround</strong>: Bajaj Life VNB +50% to ₹367 Cr, NBM +630 bps to 17.1% (Bajaj Life 2.0 strategy); General GWP +9% (13.6% ex-1/n), outperforms industry.</li>
+<li><strong>AMC Hypergrowth</strong>: AUM +77% YoY to ₹28,815 Cr (₹30,000 Cr as of date), fastest to ₹30K Cr milestone; equity mix 52%, non-group AUM 86%.</li>
+<li><strong>Emerging Businesses Scaling</strong>: Bajaj Health transactions +158% to 6.2 Mn; GST exemptions passed to customers as tailwind.</li>
+<li><strong>Allianz JV Completion</strong>: Approvals received; name changes done, acquisition closing soon for full control.</li>
+<li><strong>Capital Strength</strong>: High solvency (Life 346%, General 339%); OPEX efficiency (BFL 32.6%, BHFL 19.6%).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Lending (High Conviction)</strong>: BFL to sustain 24% AUM growth (diversified model, 1.2 Cr new loans +26%); BHFL balanced growth across segments (home loans +19%, LAP +29%).</li>
+<li><strong>Insurance Profitability Ramp</strong>: Life targeting teen NBM margins (post-GST mitigation via product mix/cost optimization); General to maintain top multiline ROE (&gt;20%). Protection growth (Life +71%, Group +23%).</li>
+<li><strong>AMC Leadership</strong>: Fastest scaler to ₹30K Cr; equity focus, SIP growth to propel AUM to top 25 ranks.</li>
+<li><strong>Emerging Synergies</strong>: Health’s network (133K doctors, 16K hospitals) for OPD/IPD; Markets disbursements up QoQ.</li>
+<li><strong>Medium-Term Outlook</strong>: 12-18% PAT growth ex-MTM; IndAS/RBC reforms as positives for solvent players. Allianz exit unlocks value; potential listing post-stabilization (2-3 yrs out).</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Segment</th>
+<th>H1 FY26 Growth</th>
+<th>Outlook</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>BFL</strong></td>
+<td>AUM +24%, PAT +23%</td>
+<td>Steady 20-25% AUM; AI-driven OPEX</td>
+</tr>
+<tr class="even">
+<td><strong>BHFL</strong></td>
+<td>AUM +24%, PAT +18%</td>
+<td>20%+ NII growth</td>
+</tr>
+<tr class="odd">
+<td><strong>Life Ins</strong></td>
+<td>VNB +50%, GWP +28%</td>
+<td>Teen margins; protection scale</td>
+</tr>
+<tr class="even">
+<td><strong>Gen Ins</strong></td>
+<td>GWP +9% (18% ex-bulky/1/n)</td>
+<td>Lowest multiline CR</td>
+</tr>
+<tr class="odd">
+<td><strong>AMC</strong></td>
+<td>AUM +77%</td>
+<td>Top-25 positioning</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks-1" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Credit &amp; Macro Risks</strong>: Elevated NPAs/MSME stress; interest rate volatility, economic slowdown impacting lending growth.</li>
+<li><strong>Regulatory/Policy Shifts</strong>: GST ITC loss recurrence; IRDAI changes (IndAS, RBC, Insurance Bill with 100% FDI/composites); MTM volatility in insurance.</li>
+<li><strong>Execution in Emerging Biz</strong>: Bajaj Health/Markets profitability delays; competition in healthtech/AMC.</li>
+<li><strong>Capital &amp; Listing Delays</strong>: Insurance surplus capital deployment; no near-term listing plans amid reforms.</li>
+<li><strong>Market/Competitive</strong>: Intense pricing in motor/health insurance; persistency dips in Life.</li>
+</ul>
+</div>
+<div id="summary" class="section level8">
+<p class="heading"><strong>Summary</strong></p>
+<p><strong>Bull Case (Tailwinds Dominate)</strong>: BFS is well-positioned for 15-20% consolidated growth, driven by lending scale (BFL/BHFL), insurance profitability (Life 2.0), and AMC breakout. Strong capital (solvency &gt;300%), diversified revenue, and post-Allianz control enhance optionality. Target: Sustainable 15%+ ROE, potential insurance listings in 2-3 yrs.</p>
+<p><strong>Bear Case (Headwinds Materialize)</strong>: GST/credit pressures cap PAT growth to &lt;10%; regulatory delays hinder insurance unlock. Near-term consolidated PAT growth muted at 8-12%.</p>
+<p><strong>Overall Outlook</strong>: <strong>Positive</strong>. Q2 demonstrates resilience (PAT +12% ex-MTM), with Bajaj Life turnaround as key inflection. Focus on fee-based/insurance stability offsets lending risks. Well-capitalized for M&amp;A/growth; monitor GST mitigation and BFL credit costs. <strong>Recommendation</strong>: Accumulate for long-term compounding in India’s financialization wave.</p>
+<p><em>Note: Analysis based primarily on Bajaj Finserv Q2 FY26 transcript (most comprehensive holding co data); cross-referenced with peers (e.g., JM Financial’s IPO/wealth strength, Abans’ fee-based pivot) for sector context. FY26 dates are forward-looking as per docs.</em></p>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3>Press Release</h3>
+<p><em>asof: 2025-11-26 </em></p>
+<div id="analysis-for-rane-holdings-limited-indian-holding-company-of-rane-group" class="section level7">
+<p class="heading">Analysis for Rane Holdings Limited (Indian Holding Company of Rane Group)</p>
+<p>Rane Holdings Limited (RHL), the holding company of the Rane Group (auto components manufacturer), reported Q3 FY25 and 9M FY25 results amid consolidation of subsidiary Rane NSK Steering Systems Ltd (RSSL). The analysis below draws from the provided earnings release and board outcome (dated Feb 06, 2025), contextualized with sector trends inferred from peer announcements (e.g., financial services firms highlighting fee-based growth and acquisitions amid economic recovery).</p>
+<div id="tailwinds" class="section level8">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Subsidiary Consolidation Boost</strong>: RSSL’s full consolidation drove 48% YoY revenue growth in Q3 FY25 (₹1,246 Cr vs. ₹841 Cr). Group sales reached ₹1,807 Cr aggregate, with strong exposure to high-margin segments (Intl. OEM &amp; Aftermarket: 21%; India Aftermarket: 10%).</li>
+<li><strong>Aftermarket Resilience</strong>: +13% YoY growth, offsetting weak domestic OEM offtake. PV segment dominates (66% of sales), aligning with India’s auto recovery.</li>
+<li><strong>International Diversification</strong>: Marginal growth in exports cushioned India OEM weakness (69% of sales).</li>
+<li><strong>PAT Momentum (9M View)</strong>: +88% YoY to ₹209 Cr, aided by exceptional items (e.g., RSSL claim settlements, fair value gains).</li>
+<li><strong>Strategic Stability</strong>: Re-appointment of CMD Ganesh Lakshminarayan (Apr 2025–Mar 2029) signals continuity.</li>
+</ul>
+</div>
+<div id="headwinds" class="section level8">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Margin Erosion</strong>: EBITDA margin fell 453 bps to 6.7% (Q3), due to RSSL’s adverse product mix, one-offs (obsolete inventory provisions, premium freight, forex reinstatement losses on overseas investments), and prior-year provision reversals.</li>
+<li><strong>Weak Domestic Demand</strong>: Like-for-like sales +1% only; lower Indian OEM offtake (despite 69% share) reflects auto sector slowdown (e.g., CV at 2%, FT at 3%).</li>
+<li><strong>One-Time Drags</strong>: Q3 PAT -91% to ₹4 Cr, hit by ₹10.5 Cr tax credit reversal (new tax regime adoption by REVL).</li>
+<li><strong>Cost Pressures</strong>: Employee expenses +34%, depreciation +48%, other expenses +29% YoY, amid forex volatility.</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Medium-Term Revenue Expansion</strong>: 9M revenue +13% (₹3,003 Cr); full RSSL integration and aftermarket/international focus could sustain 10-15% CAGR, targeting OEM recovery in PV/2W/exports.</li>
+<li><strong>Portfolio Optimization</strong>: Shift to annuity-like aftermarket (10-21% of sales) mirrors fee-based shifts in peers (e.g., Abans’ 70% EBIT from agency business).</li>
+<li><strong>Operational Leverage</strong>: EBITDA flat at ₹248 Cr (9M); cost controls post one-offs could expand margins to 9-11% as volumes normalize.</li>
+<li><strong>Sector Tailwinds</strong>: India’s auto components export push and EV/railways growth (peers like Choice highlight infra advisory synergies).</li>
+<li><strong>FY26 Outlook</strong>: Leadership renewal and claim settlements position for PAT recovery; pipeline in stationary engines/railways adds diversification.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="37%" />
+<col width="32%" />
+<col width="30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Cyclicality &amp; Demand</strong></td>
+<td>Heavy OEM reliance (esp. India 79%); auto slowdown could persist (e.g., weak CV/FT).</td>
+<td>Aftermarket buffer; intl. exposure.</td>
+</tr>
+<tr class="even">
+<td><strong>Margin/Operational</strong></td>
+<td>Product mix dilution, inventory obsolescence, freight/forex losses (evident in Q3).</td>
+<td>Inventory management; hedging.</td>
+</tr>
+<tr class="odd">
+<td><strong>Subsidiary Dependence</strong></td>
+<td>RSSL consolidation volatility; JV/associate profits volatile (-59% share YoY).</td>
+<td>Governance via holding structure.</td>
+</tr>
+<tr class="even">
+<td><strong>Regulatory/Tax</strong></td>
+<td>New tax regime reversals; forex on overseas assets (RML).</td>
+<td>Tax planning; forex hedges.</td>
+</tr>
+<tr class="odd">
+<td><strong>Macro</strong></td>
+<td>Input costs, global trade tensions (peers like Edelweiss/JM note rate risks).</td>
+<td>Cost pass-through; diversification.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Summary</strong>: RHL benefits from RSSL-led scale-up and aftermarket strength (tailwinds), but faces near-term margin headwinds from mix/costs and soft domestic OEM demand. Growth prospects are solid (10-15% revenue CAGR) via exports/aftermarket, with FY26 PAT rebound likely post one-offs. Key risks center on auto cyclicality and forex—manageable via diversification. Overall, positive 9M trajectory (PAT +88%) positions RHL as a steady holding play in auto ancillaries, akin to peers’ fee-led transformations. Investors should monitor Q4 OEM recovery.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>Sugar</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Sugar</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Sugar.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Sugar.fan.CAP_WT.png" /></p>
+<p><img src="plots/Sugar.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Sugar.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Sugar.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Sugar.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Sugar.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-83b086337e3fa9ebf8b4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-83b086337e3fa9ebf8b4">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-1.84%","-0.6%"],["-4.69%","-2.13%"],["-7.92%","-5.93%"],["-9.38%","-6.68%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Sugar.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Sugar.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8a6f8f8f46e34be2222d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8a6f8f8f46e34be2222d">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BALRAMCHIN.html\" target=\"_blank\">BALRAMCHIN<\/a>","<a href=\"/reports02/eq-in/risk/in.TRIVENI.html\" target=\"_blank\">TRIVENI<\/a>","<a href=\"/reports02/eq-in/risk/in.RENUKA.html\" target=\"_blank\">RENUKA<\/a>","<a href=\"/reports02/eq-in/risk/in.BANARISUG.html\" target=\"_blank\">BANARISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHIND.html\" target=\"_blank\">BAJAJHIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DALMIASUG.html\" target=\"_blank\">DALMIASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.DCMSRIND.html\" target=\"_blank\">DCMSRIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ZUARIIND.html\" target=\"_blank\">ZUARIIND<\/a>","<a href=\"/reports02/eq-in/risk/in.UTTAMSUGAR.html\" target=\"_blank\">UTTAMSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DHAMPURSUG.html\" target=\"_blank\">DHAMPURSUG<\/a>","<a href=\"/reports02/eq-in/risk/in.AVADHSUGAR.html\" target=\"_blank\">AVADHSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DWARKESH.html\" target=\"_blank\">DWARKESH<\/a>","<a href=\"/reports02/eq-in/risk/in.MAGADSUGAR.html\" target=\"_blank\">MAGADSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DBOL.html\" target=\"_blank\">DBOL<\/a>","<a href=\"/reports02/eq-in/risk/in.UGARSUGAR.html\" target=\"_blank\">UGARSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.MAWANASUG.html\" target=\"_blank\">MAWANASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.KCPSUGIND.html\" target=\"_blank\">KCPSUGIND<\/a>","<a href=\"/reports02/eq-in/risk/in.KMSUGAR.html\" target=\"_blank\">KMSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.PONNIERODE.html\" target=\"_blank\">PONNIERODE<\/a>","<a href=\"/reports02/eq-in/risk/in.KOTARISUG.html\" target=\"_blank\">KOTARISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.SAKHTISUG.html\" target=\"_blank\">SAKHTISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.RANASUG.html\" target=\"_blank\">RANASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.VISHWARAJ.html\" target=\"_blank\">VISHWARAJ<\/a>","<a href=\"/reports02/eq-in/risk/in.RAJSREESUG.html\" target=\"_blank\">RAJSREESUG<\/a>","<a href=\"/reports02/eq-in/risk/in.PRUDMOULI.html\" target=\"_blank\">PRUDMOULI<\/a>"],[0.28514041445832,0.1706165808474104,0.1201758138947183,0.05473214825710339,0.104841021231695,0.03227550050102699,0.03488637685264569,0.02310666406407683,0.01268149490332448,0.02261111066330782,0.01660413439525192,0.02459683739003818,0.01238453467126567,0.0137658119776529,0.01324552207712687,0.006587238642754783,0.009720962723308352,0.006074699832285669,0.00707455459864876,0.00346996350135313,0.00513348241943784,0.008637211089745007,0.006090619793302028,0.0039516844266185,0.001595616787581521],[0.2149238681292548,0.1871230417075418,0.1375334581884123,0.110191622818752,0.06370272600255655,0.05971021730729213,0.03548476470763102,0.02306085198727667,0.02115663366925295,0.01942245607776688,0.01832658521359137,0.01828829632272065,0.01658884033413597,0.01203055976693719,0.01088926543595232,0.007711049674484972,0.007326496031392134,0.005968786230268438,0.005964981123101162,0.005677219893575908,0.005568060881714676,0.00487553137727043,0.00366764767085823,0.00297392907042421,0.00183311037783525]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":25,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e912076083c23c8bbc6e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e912076083c23c8bbc6e">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BALRAMCHIN.html\" target=\"_blank\">BALRAMCHIN<\/a>","<a href=\"/reports02/eq-in/risk/in.TRIVENI.html\" target=\"_blank\">TRIVENI<\/a>","<a href=\"/reports02/eq-in/risk/in.RENUKA.html\" target=\"_blank\">RENUKA<\/a>","<a href=\"/reports02/eq-in/risk/in.BANARISUG.html\" target=\"_blank\">BANARISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHIND.html\" target=\"_blank\">BAJAJHIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DALMIASUG.html\" target=\"_blank\">DALMIASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.DCMSRIND.html\" target=\"_blank\">DCMSRIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ZUARIIND.html\" target=\"_blank\">ZUARIIND<\/a>","<a href=\"/reports02/eq-in/risk/in.UTTAMSUGAR.html\" target=\"_blank\">UTTAMSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DHAMPURSUG.html\" target=\"_blank\">DHAMPURSUG<\/a>","<a href=\"/reports02/eq-in/risk/in.AVADHSUGAR.html\" target=\"_blank\">AVADHSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DWARKESH.html\" target=\"_blank\">DWARKESH<\/a>","<a href=\"/reports02/eq-in/risk/in.MAGADSUGAR.html\" target=\"_blank\">MAGADSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DBOL.html\" target=\"_blank\">DBOL<\/a>","<a href=\"/reports02/eq-in/risk/in.UGARSUGAR.html\" target=\"_blank\">UGARSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.MAWANASUG.html\" target=\"_blank\">MAWANASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.KCPSUGIND.html\" target=\"_blank\">KCPSUGIND<\/a>","<a href=\"/reports02/eq-in/risk/in.KMSUGAR.html\" target=\"_blank\">KMSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.PONNIERODE.html\" target=\"_blank\">PONNIERODE<\/a>","<a href=\"/reports02/eq-in/risk/in.KOTARISUG.html\" target=\"_blank\">KOTARISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.SAKHTISUG.html\" target=\"_blank\">SAKHTISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.RANASUG.html\" target=\"_blank\">RANASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.VISHWARAJ.html\" target=\"_blank\">VISHWARAJ<\/a>","<a href=\"/reports02/eq-in/risk/in.RAJSREESUG.html\" target=\"_blank\">RAJSREESUG<\/a>","<a href=\"/reports02/eq-in/risk/in.PRUDMOULI.html\" target=\"_blank\">PRUDMOULI<\/a>"],[21.43978001434756,16.23774295337756,-0.3304957698040291,5.03438927259674,7.805818720306211,13.43105523252784,0.08397194288118345,1.628245313874694,0.07553318228932983,4.185456589050635,6.377509874821585,4.558119256148286,5.677341610276766,1.59333322143406,1.778873115709512,3.534432214846305,-1.522973308617542,0.03340676496407982,0.01167695132636095,-0.04723043387648483,4.49661810280692,2.319351472999907,-0.5435051023344744,0.03809618894053653,0.2267478991347922],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[27.59006981254721,18.2208957565667,-0.5610435386515982,9.201279624050271,1.793496618608956,15.48422542567782,0.06042932832225961,1.876039231046694,0.09456686463005606,3.739051233760135,6.817320205324862,4.39894741443902,5.259578514281202,1.594870741894683,-0.04814798394405854,2.464513556084057,-1.600887648892327,0.04102710030387929,0.01318388992632762,-0.7407855510503589,2.647035836835869,2.393986583883641,null,-0.4228958124456222,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-03-31<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":25,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-03-31","targets":2},{"name":"2025-09-30","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-65158418dc9a2ecb5c5e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-65158418dc9a2ecb5c5e">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BALRAMCHIN.html\" target=\"_blank\">BALRAMCHIN<\/a>","<a href=\"/reports02/eq-in/risk/in.TRIVENI.html\" target=\"_blank\">TRIVENI<\/a>","<a href=\"/reports02/eq-in/risk/in.RENUKA.html\" target=\"_blank\">RENUKA<\/a>","<a href=\"/reports02/eq-in/risk/in.BANARISUG.html\" target=\"_blank\">BANARISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHIND.html\" target=\"_blank\">BAJAJHIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DALMIASUG.html\" target=\"_blank\">DALMIASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.DCMSRIND.html\" target=\"_blank\">DCMSRIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ZUARIIND.html\" target=\"_blank\">ZUARIIND<\/a>","<a href=\"/reports02/eq-in/risk/in.UTTAMSUGAR.html\" target=\"_blank\">UTTAMSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DHAMPURSUG.html\" target=\"_blank\">DHAMPURSUG<\/a>","<a href=\"/reports02/eq-in/risk/in.AVADHSUGAR.html\" target=\"_blank\">AVADHSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DWARKESH.html\" target=\"_blank\">DWARKESH<\/a>","<a href=\"/reports02/eq-in/risk/in.MAGADSUGAR.html\" target=\"_blank\">MAGADSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DBOL.html\" target=\"_blank\">DBOL<\/a>","<a href=\"/reports02/eq-in/risk/in.UGARSUGAR.html\" target=\"_blank\">UGARSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.MAWANASUG.html\" target=\"_blank\">MAWANASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.KCPSUGIND.html\" target=\"_blank\">KCPSUGIND<\/a>","<a href=\"/reports02/eq-in/risk/in.KMSUGAR.html\" target=\"_blank\">KMSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.PONNIERODE.html\" target=\"_blank\">PONNIERODE<\/a>","<a href=\"/reports02/eq-in/risk/in.KOTARISUG.html\" target=\"_blank\">KOTARISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.SAKHTISUG.html\" target=\"_blank\">SAKHTISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.RANASUG.html\" target=\"_blank\">RANASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.VISHWARAJ.html\" target=\"_blank\">VISHWARAJ<\/a>","<a href=\"/reports02/eq-in/risk/in.RAJSREESUG.html\" target=\"_blank\">RAJSREESUG<\/a>","<a href=\"/reports02/eq-in/risk/in.PRUDMOULI.html\" target=\"_blank\">PRUDMOULI<\/a>"],[11.63699054394777,17.21497035124982,0.4342338426559096,2.098224939999545,10.71832081258109,8.703216739515335,0.08781854646045506,1.736807747921287,0.07658406064172844,3.158117086954971,5.335134658327062,3.834573937713821,2.631136862668071,5.684021566740397,3.385802761900626,2.844236729317716,0.473460086200542,0.02644078184237175,0.01609390701343903,0.3963464406556615,2.761145317648472,3.840645947947229,0.9255552142789532,1.397786201858407,0.01969584392186391],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[14.51121266061677,18.13716890933426,0.2985134298240822,3.203426348305639,12.19545386475547,9.077053086171361,0.06106952480812142,2.027733307064298,0.06756707281649497,2.7582009972624,6.351493305251301,3.416715599420537,3.116332930017734,7.114952244059696,4.038843058126774,3.607989317836881,0.5873729941256606,0.02155302929542814,0.01179305116959276,0.5266525195728494,2.436382210237751,4.158155657481032,null,1.329113824245052,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-03-31<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":25,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-03-31","targets":2},{"name":"2025-09-30","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-sugar-sector-analysis-based-on-q1q2-fy26-earnings-transcripts" class="section level7">
+<p class="heading">Indian Sugar Sector Analysis (Based on Q1/Q2 FY26 Earnings Transcripts)</p>
+<p>The analysis draws from recent earnings calls and announcements of key players (Balrampur Chini Mills - BCML, Dhampur Bio Organics - DBO, Zuari Industries, etc.) for Sugar Season (SS) 2025-26. The sector faces a surplus environment (net production ~31 MT vs. consumption ~28.5 MT, closing stocks ~6 MT), with UP SAP at INR 400/qtl (up INR 30) and FRP at INR 355 (up INR 15). Focus is on ethanol diversion (limited to 28% of approvals), exports (1.5 MT quota), and diversification.</p>
+<div id="headwinds" class="section level8">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Rising Input Costs</strong>: UP SAP hike (INR 400/qtl for early varieties) offsets by limited sugar price pass-through; FRP up 16% in 3 years. Cane costs up ~INR 20-30/qtl expected, pressuring margins (e.g., BCML, DBO cite cost inflation).</li>
+<li><strong>Lower Recoveries</strong>: UP/West UP hit by red rot, black bugs, pests (DBO net recovery down 93 bps to 9.55%; BCML expects improvement but cautious).</li>
+<li><strong>Ethanol Constraints</strong>: Sugar feedstock approvals only 289 Cr L (28% of total); 72% to grain/maize/rice. Stagnant prices erode viability; underutilization risks (e.g., BCML: 10% juice/25% C-heavy diversion).</li>
+<li><strong>Surplus Pressure</strong>: Production up (Maharashtra +39%, Karnataka +16%); exports capped at 1.5 MT vs. industry ask of 2+ MT, leading to stock buildup.</li>
+</ul>
+</div>
+<div id="tailwinds" class="section level8">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Improved Realizations</strong>: Sugar prices up 4-6% YoY (e.g., BCML/Dhampur: INR 40/kg+; Zuari: INR 4,033/qtl vs. INR 3,815). Post-export quota, prices surged INR 100/qtl initially.</li>
+<li><strong>Export Relief</strong>: 1.5 MT quota (earlier announcement aids Maharashtra/Karnataka; UP opportunistic to Nepal).</li>
+<li><strong>Operational Efficiencies</strong>: Higher cane crush (BCML: +7-8%); ethanol volumes up 24-44% via extended days (Zuari: 311 days, 85% utilization); power tariff hikes (UPPCL revision adds INR 6 Cr to Zuari EBITDA).</li>
+<li><strong>Government Support</strong>: Varietal improvements, cane development; informal talks on ethanol price hikes, UP relief (country liquor tweaks).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Ethanol Expansion</strong>: Blending at ~19% (nearing 20% target); potential E22+ mandates. Companies ramping via dual-feed (DBO), juice/C-heavy (BCML: 28 Cr L guidance), new JVs (Zuari: 180 KLPD ZEBPL, scaling to 1,000 KLPD). Country liquor up 45% (DBO).</li>
+<li><strong>Diversification</strong>: PLA/biodegradables (BCML: INR 1,093 Cr invested, imports for trials; mandates/policy push). Real estate (Zuari: INR 2,900 Cr GDV, DM model). Power/co-gen stable.</li>
+<li><strong>Volume Upside</strong>: Acreage stable/up slightly (57.35 lakh ha); better monsoons/recoveries expected (BCML/Zuari). Capacity utilization rising (distilleries 80-85%).</li>
+<li><strong>Long-Term</strong>: Bioethanol/SAF push; exports/de-stocking. EBITDA margins sustainable at 10-12% if prices hold (Zuari).</li>
+</ul>
+</div>
+<div id="key-risks" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="41%" />
+<col width="25%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Policy</strong></td>
+<td>Ethanol price stagnation; grain bias (78% allocation); export quota shortfalls; SAP hikes without offsets.</td>
+<td>Industry lobbying (price revisions, sugar reservations); UP relief package hopes.</td>
+</tr>
+<tr class="even">
+<td><strong>Operational</strong></td>
+<td>Pests/diseases (red rot/black bug spillover); erratic monsoons affecting yields/recoveries.</td>
+<td>Varietal replacement (e.g., Co-0238 shift); cane development (DBO/BCML focus).</td>
+</tr>
+<tr class="odd">
+<td><strong>Market</strong></td>
+<td>Global surplus (189 MT, prices at 16.5¢/lb); domestic decontrol delays.</td>
+<td>Exports, value-add (PLA/country liquor).</td>
+</tr>
+<tr class="even">
+<td><strong>Financial</strong></td>
+<td>Debt (Zuari deleveraging via INR 800 Cr inflows); transfer pricing volatility.</td>
+<td>EBITDA improvements (Zuari: +INR 3-6 Cr finance cost savings); internal accruals.</td>
+</tr>
+<tr class="odd">
+<td><strong>Competition</strong></td>
+<td>Grain ethanol dominance; new mills (e.g., Bindal impacting DBO).</td>
+<td>Dual-feed flexibility; niche (juice/B-heavy).</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="summary" class="section level8">
+<p class="heading"><strong>Summary</strong></p>
+<p>The Indian sugar sector is navigating a <strong>surplus SS25-26</strong> (tailwinds from realizations/exports offset headwinds like SAP hikes and ethanol curbs). <strong>Short-term pressures</strong> on margins (6-12% EBITDA range) from costs/recoveries, but <strong>growth anchored in ethanol (blending ramp-up)</strong> and diversification (PLA/real estate/country liquor). <strong>Prospects strong</strong> for 7-8% crush growth, higher utilization; <strong>risks policy/weather-dominant</strong>. Outlook <strong>cautiously optimistic</strong>—worst behind if ethanol prices revise and recoveries improve (clarity in 1-3 months per BCML). Sector resilient via govt. interventions, but grain shift caps sugar-mills’ ethanol play. Investors: Monitor UP/Central policy, Q3 recoveries.</p>
+<p><em>(Data as of Nov 2025 transcripts; ISMA-aligned estimates.)</em></p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-27 </em></p>
+</div>
+</div>
+<div id="indian-sugar-industry-analysis-headwinds-tailwinds-growth-prospects-and-key-risks" class="section level1">
+<h1>Indian Sugar Industry Analysis: Headwinds, Tailwinds, Growth Prospects, and Key Risks</h1>
+<p>The Indian sugar industry, as reflected in Q2 &amp; H1 FY26 investor presentations and earnings transcripts from key players (Avadh Sugar, Balrampur Chini, Dhampur Bio Organics, Dhampur Sugar Mills, Dwarikesh Sugar, Magadh Sugar, Zuari Industries), faces a mixed outlook. Production is projected to rebound in SS 2025-26 (34-35 MMT gross, ~31 MMT net post-ethanol diversion), but near-term pressures from surplus stocks (~5-6 MMT closing inventory), cost inflation, and policy gaps dominate. Ethanol blending (19.17% as of Sep’25) offers diversification, but grain bias in tenders limits upside. Below is a structured analysis.</p>
+<div id="headwinds-key-pressures" class="section level2">
+<h2><strong>Headwinds (Key Pressures)</strong></h2>
+<ul>
+<li><strong>Cost Inflation Outpacing Realizations</strong>: FRP hiked to ₹355/qt (10.25% recovery); UP SAP up ₹30 to ₹400/qt (early varieties). Cane costs rose 16% in 3 years, squeezing margins (e.g., EBITDA down 40-50% YoY for many; Avadh EBITDA ₹20 Cr vs ₹36 Cr). Recoveries fell (e.g., Dhampur net recovery -93 bps to 9.55%).</li>
+<li><strong>Surplus Supply &amp; Inventory Buildup</strong>: SS 2024-25 net production ~26-29 MMT vs. 28.5 MMT consumption; closing stocks ~5-6 MMT. UP output down to 9.3 MMT (red rot/pests). Projections for 2025-26 (34.35 MMT gross) risk further surplus without higher exports.</li>
+<li><strong>Stagnant Ethanol Pricing &amp; Grain Favoritism</strong>: No revision despite costs; ESY 2025-26 tenders allocate 68% to grains (Surplus FCI Rice/Maize), 16% sugarcane juice/B-heavy. Sugar-based underutilized (e.g., Balrampur maize gang at 60%).</li>
+<li><strong>Operational Disruptions</strong>: Early season closures (negligible crushing in H1 FY26 for some); unabsorbed fixed costs hit EBITDA (e.g., Dwarikesh -15.8% margin).</li>
+<li><strong>Low Realizations</strong>: Sugar at ₹3,900-4,100/qt, but volatile; global prices &lt;15¢/lb (4-yr low).</li>
+</ul>
+</div>
+<div id="tailwinds-supportive-factors" class="section level2">
+<h2><strong>Tailwinds (Supportive Factors)</strong></h2>
+<ul>
+<li><strong>Realization Improvements</strong>: Domestic sugar up 4-5% YoY (e.g., Avadh ₹3,985-3,994/qt; Dwarikesh ₹3,963/qt). Monthly trends stable at ₹4,000+/qt.</li>
+<li><strong>Ethanol Momentum</strong>: Blending at 19.17% (target 20%); H1 FY26 sales up 40-89% YoY for some (e.g., Dhampur 19.33 Mn L). Production surges (e.g., Zuari +44% to 311 days).</li>
+<li><strong>Export &amp; Policy Relief</strong>: 1.5 MMT export quota (vs. industry’s 2 MMT ask); UP power tariff +₹0.90/unit (effective Apr’24).</li>
+<li><strong>Capacity Expansions</strong>: Crushing up (e.g., Avadh Hargaon 13k TCD, Seohara 12k TCD); distillery debottlenecking (e.g., Dwarikesh 337.5 KLPD).</li>
+<li><strong>Diversification</strong>: Co-gen revenue (UPERC revision); real estate JVs (Zuari Infra GDV ₹2,900 Cr).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level2">
+<h2><strong>Growth Prospects</strong></h2>
+<ul>
+<li><strong>Production Rebound</strong>: SS 2025-26 gross 34-35 MMT (Maharashtra +39% to 13 MMT; Karnataka +16%; UP stable at 10.3 MMT). Varietal shifts (Co-0238 phase-out) to boost recoveries/yields.</li>
+<li><strong>Ethanol Expansion</strong>: Blending to E22+ (BIS approved); ESY 2025-26 tender 1,776 Cr L demand (vs. 1,050 Cr allocated). Grain/sugarcane mix; new capacities (e.g., ZEBPL 180 KLPD commissioning Nov’25).</li>
+<li><strong>Exports &amp; MSP Push</strong>: 1.5 MMT quota aids inventory drawdown; industry seeks MSP revision.</li>
+<li><strong>Value-Added Plays</strong>: Bioethanol (Zuari/ZEBPL targeting 1,000 KLPD); co-gen tariff escalations; real estate DM model (Zuari Infra pipeline ₹2,900+ Cr GDV).</li>
+<li><strong>Regional Tailwinds</strong>: Bihar mill revivals; UP varietal improvements/cane development.</li>
+</ul>
+<p><strong>Projected Metrics (Industry Avg., FY26)</strong>: Revenue flat-to-+5%; EBITDA margins 5-10% (post-cost pass-through); Ethanol 20%+ blending drives 20-30% distillery growth.</p>
+</div>
+<div id="key-risks-1" class="section level2">
+<h2><strong>Key Risks</strong></h2>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Mitigants</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Policy/Regulatory</strong></td>
+<td>Ethanol price freeze; grain bias (68% allocation); export quota shortfalls; no MSP.</td>
+<td>Industry lobbying; blending targets.</td>
+</tr>
+<tr class="even">
+<td><strong>Commodity/Price</strong></td>
+<td>Global surplus (189 MMT, +4.7% YoY); sugar &lt;₹4,000/qt persistence.</td>
+<td>Exports; cost controls.</td>
+</tr>
+<tr class="odd">
+<td><strong>Operational</strong></td>
+<td>Red rot/black bug; weather (monsoon variability); low recoveries (10-11%).</td>
+<td>Varietal replacement; pest mgmt.</td>
+</tr>
+<tr class="even">
+<td><strong>Financial</strong></td>
+<td>High debt (e.g., Dwarikesh ₹593 Cr); interest costs (5-7% of rev).</td>
+<td>Deleveraging (Zuari ₹800 Cr inflow FY27); EBITDA focus.</td>
+</tr>
+<tr class="odd">
+<td><strong>Demand/Supply</strong></td>
+<td>Surplus stocks (6 MMT close); ethanol diversion &lt;3.5 MMT.</td>
+<td>Consumption +2-3% YoY; exports.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="summary-1" class="section level2">
+<h2><strong>Summary</strong></h2>
+<p>The Indian sugar sector grapples with <strong>headwinds</strong> from cost pressures (cane hikes), surplus (31 MMT net vs. 28.5 MMT demand), and ethanol policy gaps, leading to margin compression (EBITDA -20-50% YoY). <strong>Tailwinds</strong> include realization gains (+4-5%), blending progress (19%+), and exports/power relief. <strong>Growth prospects</strong> hinge on 2025-26 rebound (34+ MMT), ethanol scaling (E20+), and diversification (bioethanol/co-gen/real estate), targeting 10-12% EBITDA margins. <strong>Key risks</strong> center on policy delays, pests/weather, and debt—watch UP/Bihar recoveries and ethanol tenders. Overall, <strong>cautiously optimistic</strong> for FY26 (flat revenue, improving H2 via new season), with ethanol as key pivot amid sugar cyclicality. Industry needs ethanol price hikes/MSP for sustained recovery.</p>
+<div id="press-release" class="section level3">
+<h3>Press Release</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-sugar-industry-analysis-q2-h1-fy26-insights" class="section level7">
+<p class="heading">Indian Sugar Industry Analysis: Q2 &amp; H1 FY26 Insights</p>
+<p>Using the provided press releases from key players (Avadh Sugar, Balrampur Chini Mills (BCML), Dalmia Bharat Sugar (DBSIL), Dwarikesh Sugar, Magadh Sugar, Zuari Industries’ Sugar division, and others), here’s a synthesized analysis of the <strong>Indian Sugar sector</strong>. The sector faced a seasonally weak Q2 (off-season for crushing), but showed resilience in revenue growth amid cost pressures. Overall, H1 FY26 reflected mixed profitability: top-line up ~5-20% YoY for most, but EBITDA/PAT down 20-80% due to higher input costs. Stronger performers like BCML and Zuari bucked the trend with EBITDA gains.</p>
+<div id="headwinds-key-challenges" class="section level8">
+<p class="heading"><strong>Headwinds (Key Challenges)</strong></p>
+<ul>
+<li><strong>Sugarcane Cost Escalation</strong>: Uniform complaint across UP-based mills (Avadh, Magadh, DBSIL, Dwarikesh, BCML, Zuari). State Advisory Price (SAP) hiked ₹30/quintal for 2025-26 season; FRP hikes in Maharashtra added pressure. Production costs now exceed sugar selling prices, eroding margins (e.g., DBSIL COP up; Avadh “financial viability strained”).</li>
+<li><strong>Static Output Prices</strong>: No revision in sugar MSP or ethanol prices (juice/B-heavy routes unchanged for 2 years), despite rising costs. Low sugar recovery rates (weather/crop quality issues) compounded this (Avadh, DBSIL).</li>
+<li><strong>Seasonal Weakness &amp; Low Operations</strong>: Q2/H1 off-season; minimal/no crushing (Dwarikesh: “virtually no operations,” leading to fixed cost under-absorption; losses widened to ₹32 Cr Q2). Sugar inventories high from prior surplus season (26.1 MMT net production in 2024-25).</li>
+<li><strong>Profitability Squeeze</strong>: EBITDA down 20-80% YoY (Avadh: 49 Cr vs 94; DBSIL: 146 Cr vs 179; Magadh: 22 Cr vs 57). PAT losses for most (Avadh -15 Cr; Dwarikesh -42 Cr; Magadh -10 Cr). Shree Renuka (FY25 context) noted 17-20% cane crush drop due to poor Maharashtra/Karnataka crops.</li>
+<li><strong>Other</strong>: Cane availability dips, red-rot infestation (Dwarikesh), erratic weather.</li>
+</ul>
+</div>
+<div id="tailwinds-positive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Power Tariff Hike</strong>: UPERC revision (+₹0.90/unit from Apr 2024) boosted profitability across UP mills (explicitly credited by Avadh, BCML, DBSIL, Zuari).</li>
+<li><strong>Revenue Resilience</strong>: Top-line growth via higher volumes/NSR (BCML: +29% Q2 revenue; DBSIL sugar NSR +4% to ₹39.9/kg; Avadh +6% Q2 income; Zuari ethanol realizations up).</li>
+<li><strong>Ethanol/Distillery Strength</strong>: Volumes up 3-13% (DBSIL +12% H1; BCML improvements; Zuari strong blending demand). Diversification co-products (power co-gen) aided (BCML EBITDA +145% Q2).</li>
+<li><strong>Capacity &amp; Efficiency Gains</strong>: Expansions operational (Avadh Hargaon to 13k TCD; Magadh Narkatiagunj steam savings; BCML 80k TCD total).</li>
+<li><strong>Sugar Market Recovery</strong>: Prices rebounded to ₹4,100/quintal (Dwarikesh); exports allowed at 1.5 MMT (BCML).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Production Rebound</strong>: ISMA projects 34-35 MMT gross sugar in 2025-26 (+19% net to 31 MMT post-ethanol diversion), aided by normal monsoon/higher yields (BCML, DBSIL optimistic). Early crushing starts (Zuari Oct 2025; Dwarikesh Nov 7/10).</li>
+<li><strong>Ethanol Blending Push</strong>: ESY 2025-26 allocation 1,050 Cr liters (though lower than offered); demand supports volumes/pricing revisions expected (all companies hopeful).</li>
+<li><strong>Diversification &amp; Capex</strong>:
+<ul>
+<li>Bioenergy/PLA: Zuari 180 KLPD bioethanol commissioning Nov 2025; BCML PLA plant (₹1,093 Cr spent, trading imported PLA).</li>
+<li>IMFL/Power: Triveni whisky awards signal premium alcohol growth.</li>
+<li>Real estate/EPCM synergies (Zuari subsidiaries strong).</li>
+</ul></li>
+<li><strong>Exports &amp; MSP Hike</strong>: 1.5 MMT export quota + potential MSP revision to offset costs (BCML closing stocks ~6 MMT).</li>
+<li><strong>Sustainability</strong>: Capacity upgrades, co-gen (74-175 MW across players), green energy focus position sector for policy support (20% blending target).</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="20%" />
+<col width="46%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Impacted Companies</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Policy/Regulatory</strong></td>
+<td>Delayed ethanol price hikes, MSP revision; export quota changes; power tariff sustainability.</td>
+<td>All (esp. BCML, Avadh)</td>
+</tr>
+<tr class="even">
+<td><strong>Cost/Supply Chain</strong></td>
+<td>Further SAP/FRP hikes without offsets; volatile cane supply/recovery (weather, area decline).</td>
+<td>UP/Maharashtra mills (DBSIL, Dwarikesh)</td>
+</tr>
+<tr class="odd">
+<td><strong>Market/Price</strong></td>
+<td>Sugar surplus if production exceeds consumption (28.5 MMT); weak realizations if exports low.</td>
+<td>Avadh, Magadh (losses)</td>
+</tr>
+<tr class="even">
+<td><strong>Operational</strong></td>
+<td>Crushing delays, low recovery (red-rot, monsoons); off-season fixed costs.</td>
+<td>Dwarikesh (no Q2 crush)</td>
+</tr>
+<tr class="odd">
+<td><strong>Financial</strong></td>
+<td>High debt (Zuari finance costs down but noted); forex/interest rate volatility (Shree Renuka refinancing).</td>
+<td>Smaller mills (losses widening)</td>
+</tr>
+<tr class="even">
+<td><strong>Macro</strong></td>
+<td>Economic slowdown affecting demand; global sugar prices/climate events.</td>
+<td>Export-reliant (BCML)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="summary-snapshot" class="section level8">
+<p class="heading"><strong>Summary Snapshot</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>Metric (H1 FY26 Avg. Across Peers)</th>
+<th>Performance</th>
+<th>Outlook</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Revenue</strong></td>
+<td>+5-20% YoY</td>
+<td>Strong (early crush, exports)</td>
+</tr>
+<tr class="even">
+<td><strong>EBITDA</strong></td>
+<td>-20-50% YoY</td>
+<td>Improving (power tariff, ethanol)</td>
+</tr>
+<tr class="odd">
+<td><strong>PAT</strong></td>
+<td>Losses/mixed (avg. -10 to +100 Cr swing)</td>
+<td>Turnaround in H2 FY26</td>
+</tr>
+<tr class="even">
+<td><strong>Sector Sentiment</strong></td>
+<td>Cautious optimism</td>
+<td>Rebound expected; policy-critical</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Verdict</strong>: Sector in transition—headwinds from costs dominate Q2/H1, but tailwinds (tariffs, ethanol, capacity) and 2025-26 rebound signal recovery. BCML/Zuari outperform; smaller mills (Dwarikesh/Magadh) vulnerable. Growth hinges on govt. interventions (ethanol/MSP hikes) amid 31 MMT production uptick. Investors: Watch UP crushing progress &amp; policy announcements.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

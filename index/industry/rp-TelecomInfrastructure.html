@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2025-11-28" />
+
+<title>Telecom - Infrastructure</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Telecom - Infrastructure</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">November 28, 2025</h4>
+
+</div>
+
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/TelecomInfrastructure.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/TelecomInfrastructure.fan.CAP_WT.png" /></p>
+<p><img src="plots/TelecomInfrastructure.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/TelecomInfrastructure.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/TelecomInfrastructure.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/TelecomInfrastructure.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/TelecomInfrastructure.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8cba9ff00fb790661838" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8cba9ff00fb790661838">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-1.22%","1.37%"],["-1.85%","7.1%"],["-4.03%","7.87%"],["-6.18%","7.06%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/TelecomInfrastructure.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/TelecomInfrastructure.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-27982ea14453b719e2fe" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-27982ea14453b719e2fe">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.INDUSTOWER.html\" target=\"_blank\">INDUSTOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.HFCL.html\" target=\"_blank\">HFCL<\/a>","PACEDIGITK","<a href=\"/reports02/eq-in/risk/in.VINDHYATEL.html\" target=\"_blank\">VINDHYATEL<\/a>","<a href=\"/reports02/eq-in/risk/in.GTLINFRA.html\" target=\"_blank\">GTLINFRA<\/a>","<a href=\"/reports02/eq-in/risk/in.SUYOG.html\" target=\"_blank\">SUYOG<\/a>"],[0.8328630021945561,0.110144830969883,0.008921476357289916,0.0157734473353799,0.02657916006697291,0.005718083075918124],[0.8470167868779924,0.0819951989743806,0.03681789008731055,0.01437259794533929,0.01396499222310246,0.005832533891874663]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ec2e926c3b6e84dd3a0f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ec2e926c3b6e84dd3a0f">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.INDUSTOWER.html\" target=\"_blank\">INDUSTOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.HFCL.html\" target=\"_blank\">HFCL<\/a>","PACEDIGITK","<a href=\"/reports02/eq-in/risk/in.VINDHYATEL.html\" target=\"_blank\">VINDHYATEL<\/a>","<a href=\"/reports02/eq-in/risk/in.GTLINFRA.html\" target=\"_blank\">GTLINFRA<\/a>","<a href=\"/reports02/eq-in/risk/in.SUYOG.html\" target=\"_blank\">SUYOG<\/a>"],[83.41344367829451,-72.03137635147912,31.71286831887868,18.04979875764392,-1.378051559703762,4.666515241815659],[37.72364972439494,-6.267577125562807,51.57980133044105,18.34217763043058,null,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-3e9e4bbf13e25c0e7b35" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3e9e4bbf13e25c0e7b35">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.INDUSTOWER.html\" target=\"_blank\">INDUSTOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.HFCL.html\" target=\"_blank\">HFCL<\/a>","PACEDIGITK","<a href=\"/reports02/eq-in/risk/in.VINDHYATEL.html\" target=\"_blank\">VINDHYATEL<\/a>","<a href=\"/reports02/eq-in/risk/in.GTLINFRA.html\" target=\"_blank\">GTLINFRA<\/a>","<a href=\"/reports02/eq-in/risk/in.SUYOG.html\" target=\"_blank\">SUYOG<\/a>"],[10.96796169636657,36.93253997792849,10.1794381451103,33.91678525656739,0.1626271929830214,1.612674473830952],[7.61446510841166,32.91678141738959,21.75428594192444,37.55184033929129,null,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3>Analyst</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-telecom-infrastructure-sector-analysis" class="section level7">
+<p class="heading">Indian Telecom Infrastructure Sector Analysis</p>
+<p><strong>Based on the provided documents</strong> (HFCL’s investor meet intimation, Indus Towers’ analyst meet schedule, and Suyog Telematics’ detailed Q2/H1 FY26 earnings transcript), the analysis focuses on the towerco/IP-1/fibre sub-segment. Suyog’s insights dominate, reflecting mid/small-cap dynamics amid large players like Indus Towers and equipment firms like HFCL. The sector shows resilience with 5G/fibre tailwinds but govt/PSU delays as key friction.</p>
+<div id="tailwinds-positive-drivers" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Operator Rollouts &amp; Upgrades</strong>: Airtel’s 5G deployment on ULS sites (2,500 sites for Suyog, +INR3-4k/site/month EBITDA upside with minimal CapEx). VI ramp-up post-Supreme Court/govt support (500+ sites loading, targeting 1,000+ by FY26-end). Jio/BSNL steady at ~27%/4.5% revenue share.</li>
+<li><strong>Govt/PSU Push</strong>: BSNL’s aggressive expansion (17k sites RFP; Suyog bidding 12.5k, expecting 6k GBT sites; rural focus with customer adds &gt;Airtel in Sep’25). MTNL fibre tender (1k+ km aerial fibre).</li>
+<li><strong>Fibre &amp; Diversification</strong>: Suyog’s 6k+ km network + INR35cr data centre EPC project (Q3/Q4 execution). Rising data demand (5G, data centres).</li>
+<li><strong>Financial Momentum</strong>: Suyog’s H1 YoY revenue +17%, EBITDA 75% (+297bps), PAT 30%; balanced revenue mix (top-2 operators &gt;60%).</li>
+<li><strong>Investor Engagement</strong>: HFCL/Indus scheduling meets signals confidence in business updates/industry outlook.</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Tender/Execution Delays</strong>: BSNL negotiations (volume discounts, 30-45 day delay to Dec’25); historical Q2 sluggishness (rains, low operator CapEx e.g., VI -28%, Airtel depn &gt; CapEx).</li>
+<li><strong>Margin Pressures</strong>: BSNL sites lower revenue/tenancy (INR8-10k rentals vs. INR15-20k private; drags avg. from INR30k to INR25k). Rising depn/interest (license renewals, debt ramp).</li>
+<li><strong>Seasonal/Operator Dependency</strong>: Q2 flattish despite growth; reliance on Airtel (46%), VI/BSNL ramp-up unproven.</li>
+<li><strong>CapEx Intensity</strong>: Suyog’s H1 INR97cr CapEx for ~900 sites (only 150 tenanted; 702 ready but awaiting BSNL integration).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Tenancy/Tower Expansion</strong>: Suyog targeting 8.5-9k tenancies by FY26-end (from 7.2k; +1k via organic, inorganic). FY27: 12-15k+ (6k BSNL over 12-15 months). FY26 revenue guidance INR250cr (H2 ~INR140cr, +42% YoY H2FY25).</li>
+<li><strong>Revenue Mix Evolution</strong>: BSNL to 15-20%; Airtel/Jio 45-50%; VI 30%. Fibre to 10-15% long-term (ABS/underground/FTTH).</li>
+<li><strong>Upside Catalysts</strong>: Airtel 5G (250+ sites Nov’25), VI daily loadings, BSNL EPC (2-2.5k sites), inorganic (Delhi/Rajasthan), data centre fibre.</li>
+<li><strong>Sector-Wide</strong>: 5G/6G fibre demand; rural BSNL/VI; stable 4-player market (Jio/Airtel/VI/BSNL).</li>
+</ul>
+</div>
+<div id="key-risks" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="28%" />
+<col width="24%" />
+<col width="47%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Mitigation (from Docs)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Execution/Operator Delay</strong></td>
+<td>BSNL integration 3-4 months; tender slips (e.g., Oct → Dec).</td>
+<td>Pre-CapEx (702 sites ready); promoter/bank funding aligned.</td>
+</tr>
+<tr class="even">
+<td><strong>Funding/CapEx</strong></td>
+<td>INR600cr+ for BSNL 6k sites (total debt to INR250cr <span class="citation">@9.5</span>% interest); H1 cash flow dip (advances/loans to INR35cr).</td>
+<td>INR150cr bank sanction +INR22cr promoter + accruals (funds 3k sites); phased rollout.</td>
+</tr>
+<tr class="odd">
+<td><strong>Revenue Concentration</strong></td>
+<td>Top-2 &gt;60%; BSNL lowers tenancy (stable INR25-27k).</td>
+<td>Diversify (fibre/inorganic); upgrades offset.</td>
+</tr>
+<tr class="even">
+<td><strong>Competition/Policy</strong></td>
+<td>BSNL shortlists 4-5 players; govt processes slow.</td>
+<td>Suyog strong (L1 in MTNL; strategic bidding).</td>
+</tr>
+<tr class="odd">
+<td><strong>Macro</strong></td>
+<td>Rainy seasons; telco CapEx cuts (Q2 examples).</td>
+<td>Balanced portfolio (macro/small cell/fibre).</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="summary" class="section level8">
+<p class="heading"><strong>Summary</strong></p>
+<p><strong>Bullish Outlook with Phased Execution</strong>: Tailwinds from 5G (Airtel), VI revival, BSNL rural push outweigh headwinds like delays/low BSNL realizations. Growth hinges on FY26 H2 (INR140cr revenue via 1k+ tenancies, upgrades, fibre), scaling to FY27 doubling. Risks center on BSNL execution/funding (high probability but 1-2q slippage). Sector stable (4 operators, govt support); Suyog’s 75%/30% margins resilient. Monitor Dec’25 BSNL LOI for catalysts. <strong>Net: Positive (High Growth Potential, Medium Risk)</strong>.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3>General</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="summary-analysis-indian-telecom-infrastructure-sector" class="section level7">
+<p class="heading">Summary Analysis: Indian Telecom Infrastructure Sector</p>
+<p>The Indian telecom infrastructure sector, exemplified by key players like <strong>Indus Towers</strong> (largest towerco with 256k towers, 416k co-locations), <strong>GTL Infrastructure</strong> (deleveraging), <strong>HFCL</strong> (ESG-rated), and <strong>Pace Digitek</strong> (telecom + BESS hybrid), shows robust fundamentals driven by 5G rollout and data demand. Q2/H1 FY26 financials indicate resilience amid moderated growth, with <strong>tailwinds</strong> from policy support and tech upgrades outweighing <strong>headwinds</strong> like declining sharing factors. <strong>Growth prospects</strong> are strong (projected 9-10% revenue CAGR), but <strong>risks</strong> center on execution and competition.</p>
+<div id="tailwinds-positive-drivers-1" class="section level8">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>5G Acceleration</strong>: Subscriptions hit 322Mn (Jun 2025, +77Mn QoQ); global projections to 980Mn by 2030 (75% of mobile subs). Indus added 4.5k co-locations/Q2; BTS &gt;500k. Drives tower demand (Indus towers +26k YoY).</li>
+<li><strong>Govt/Policy Support</strong>: RoW Rules 2024 (32 states), Green Energy Open Access (28 states), prepaid smart meters for telecom sites. Draft telecom policy targets ₹1Tn annual investment, 1Mn jobs by 2030.</li>
+<li><strong>Infra Sharing &amp; Efficiency</strong>: MSAs provide 6.27yr visibility (Indus); solar/RESco sites (36k), zero-diesel sites (62k). Acquisitions (Indus from Airtel: +10k towers).</li>
+<li><strong>Deleveraging &amp; Sustainability</strong>: GTL settled Canara Bank dues (NCLT/DRT withdrawn); Indus net debt/EBITDA at 0.81x (down); HFCL ESG score 70.7.</li>
+<li><strong>Diversification</strong>: BESS boom (Pace: ₹5.9k Cr energy orderbook, 10GWh capacity); Indus Africa entry (Nigeria/Uganda/Zambia).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Declining Sharing Factor</strong>: Indus avg. 1.63x (down from 1.79x FY23); exits (295/Q2) offset additions.</li>
+<li><strong>Cost Pressures</strong>: Power/fuel ~38% of revenue (Indus ₹31B/Q2, +7% YoY); high capex (Indus ₹26B/Q2, +69% YoY).</li>
+<li><strong>Seasonality &amp; Moderated Growth</strong>: Pace H1 revenue -24% YoY (₹900Cr vs. ₹1,188Cr) due to service-heavy mix; Indus EBITDA -6% YoY.</li>
+<li><strong>Pricing Competition</strong>: BESS tenders &lt;₹2L/MW/month (Rajasthan/Gujarat); aggressive bids from infra/global players.</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Domestic Demand</strong>: Data users/devices surge; 5G/6G, AI/IoT, satellite (Starlink licensed). Indus FY25 revenue +5% to ₹301B; H1 FY26 +9%; guidance intact. Pace FY26 top-line ₹2.6-2.7k Cr (+10-11% YoY), FY27 ₹3.1-3.2k Cr.</li>
+<li><strong>Orderbook/Visibility</strong>: Indus: ₹1.25Tn min. lease receivables; Pace: ₹9.1k Cr (energy 64%, telecom 36%), +₹8-10k Cr expected FY26.</li>
+<li><strong>BESS Synergy</strong>: Pace annuity model (₹420Cr/yr revenue at 85% EBITDA from ₹3.3k Cr assets); 10GWh capacity by FY27 (₹6-7k Cr peak revenue).</li>
+<li><strong>Exports/Expansion</strong>: Pace Africa (Kenya telecom); Indus pan-India + international.</li>
+<li><strong>Margins</strong>: Indus EBITDA 56%, ROCE 26%; Pace PAT 11-12%, EBITDA 21-25%.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="41%" />
+<col width="27%" />
+<col width="31%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Details</strong></th>
+<th><strong>Mitigants</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Operational</strong></td>
+<td>Execution delays (Pace: 40/75 MSEDCL sites FY26); high capex (Indus ₹69B FY25).</td>
+<td>Strong orderbook, MSAs; backward integration (Pace containers).</td>
+</tr>
+<tr class="even">
+<td><strong>Financial</strong></td>
+<td>Debt/leases (Indus ₹165B net debt); WC stretch (Pace DSO high, net WC ₹970Cr).</td>
+<td>Deleveraging (Indus cash positive sans leases); IPO funds (Pace ₹630Cr capex).</td>
+</tr>
+<tr class="odd">
+<td><strong>Market/Competition</strong></td>
+<td>Sharing factor decline; BESS pricing wars (₹1.7L/MW bids unsustainable).</td>
+<td>Product control (Pace mfg.); 5G demand.</td>
+</tr>
+<tr class="even">
+<td><strong>Regulatory/External</strong></td>
+<td>RoW delays, EMF norms; cell imports (50-60% cost, forex risk).</td>
+<td>Policy tailwinds; back-to-back pricing (Pace).</td>
+</tr>
+<tr class="odd">
+<td><strong>Macro</strong></td>
+<td>Fuel volatility; tariff hikes absent (ARPU boost via plan changes).</td>
+<td>Energy efficiency (solar/low-diesel).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: Sector poised for 10-15% CAGR FY26-28 on 5G/BESS tailwinds; Indus/Pace exemplify stability/growth. Monitor sharing factor and BESS bids for near-term volatility. Positive deleveraging (GTL) signals recovery. <strong>Recommendation</strong>: Bullish with cautious execution watch.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3>Investor</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-telecom-infrastructure-sector-analysis-1" class="section level7">
+<p class="heading">Indian Telecom Infrastructure Sector Analysis</p>
+<p><strong>Based on recent disclosures from HFCL Limited (investor meeting intimation), Indus Towers Limited (analyst meet schedule), and Suyog Telematics Limited (Q2 &amp; H1 FY26 earnings transcript), the sector shows robust activity amid 5G rollouts, BSNL expansion, and telco stabilization. These inputs highlight tower deployments, fiber projects, and investor engagement by key players. Below is a structured analysis of headwinds, tailwinds, growth prospects, and key risks.</strong></p>
+<div id="tailwinds" class="section level8">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Telco Rollout Momentum</strong>: Airtel’s 5G upgrades on ULS sites (e.g., Suyog managing 2,500 sites with INR3-4k/month upside per site, minimal capex) and VI’s ramp-up (500+ sites loading post positive Supreme Court/govt developments; Suyog targeting 1,000+ by FY26-end). Jio steady at ~23% revenue share.</li>
+<li><strong>BSNL Govt Push</strong>: Aggressive 17k-site RFP (Suyog bidding 12.5k, expecting 6k GBT sites); operating cash profitability and rural customer adds (outpacing Airtel in Sep’25). Additional EPC tenders (6-7k sites).</li>
+<li><strong>Fiber &amp; Diversification</strong>: Demand from data centers (Suyog’s INR35cr EPC project), MTNL (1k+ km aerial fiber), and FTTH/ABS. Sector fiber potential high with 5G/6G and data center growth.</li>
+<li><strong>Stable Multi-Operator Landscape</strong>: 4-player market (Airtel ~47%, Jio ~23%, VI ~26%, BSNL ~5% for Suyog); rural focus and tariff hikes boosting ARPU (Airtel at INR250).</li>
+<li><strong>Investor Interest</strong>: Active engagements (HFCL-Arihant Capital meet; Indus-CLSA Forum) signal confidence.</li>
+</ul>
+</div>
+<div id="headwinds" class="section level8">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Seasonal &amp; Execution Delays</strong>: Q2 FY26 “flattish” due to monsoons; telco capex down (VI -28%, Airtel dep &gt; capex, Jio near-zero). BSNL processes delayed 1-1.5 months (negotiation for discounts; expected Dec’25).</li>
+<li><strong>Revenue Dilution</strong>: BSNL sites lower rentals (INR7-10k vs. INR15-20k for private telcos), dropping revenue per tenancy (Sep’24: INR30k → Sep’25: INR25k). Site integration lags (3-4 months for BSNL).</li>
+<li><strong>Capex Intensity</strong>: Heavy funding needs (Suyog: INR600cr for 6k BSNL sites; total debt to INR250cr at 9.5% interest, eroding PAT margins from 42% to 30%).</li>
+<li><strong>Operator Dependency</strong>: Revenue tied to telco capex cycles; Q2 sluggishness despite 16% YoY growth.</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Tower/Tenancy Expansion</strong>: Suyog from 7,163 tenancies → 8.5-9k by FY26-end (organic: VI/Airtel; spill to FY27 for BSNL); FY27 potential 15k+ with 6k BSNL + inorganic. Sector-wide: BSNL 17k sites over 12-15 months.</li>
+<li><strong>Financial Upside</strong>: Suyog FY26 guidance intact at INR250cr revenue (H2 ~INR140cr, +42% YoY H2FY25), EBITDA 75%, PAT INR80cr (30% margin). H1 YoY +17%; upgrades/inorganic to offset BSNL delays.</li>
+<li><strong>5G &amp; Beyond</strong>: Airtel 5G on 2,500 sites by FY26-end; Jio talks post-IPO. Fiber to 10-15% revenue by 2030.</li>
+<li><strong>Inorganic &amp; EPC</strong>: Suyog eyeing Delhi/Rajasthan acquisitions; BSNL EPC (2-2.5k sites, one-time +5yr maintenance).</li>
+<li><strong>Sector Outlook</strong>: Stable 4-telco ecosystem, rural penetration, data center boom; tenancy ratio steady ~1.2.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>BSNL Execution</strong>: Govt delays/material (TCS) issues; volume discounts eroding margins. 50% capex ready, balance funding phased over 18 months.</li>
+<li><strong>Funding &amp; Leverage</strong>: Debt ramp (INR150cr sanction + promoter INR22cr); interest/depreciation pressure on PAT (stable 28-30% targeted).</li>
+<li><strong>Customer/Revenue Concentration</strong>: Top-2 (Airtel+Jio) ~70%; BSNL growth to 15-20% risks mix imbalance if private rollouts slow.</li>
+<li><strong>Competition</strong>: Big players (Indus, ATC) dominate; Suyog differentiates via BSNL agility but faces capex edge.</li>
+<li><strong>Macro/External</strong>: Telco capex volatility, rainy seasons, policy flips (e.g., VI revival dependent on govt).</li>
+</ul>
+<p><strong>Summary</strong>: The sector benefits from 5G tailwinds, BSNL revival, and VI stability, driving tenancy growth to 15k+ for players like Suyog by FY27 and FY26 revenue targets of INR250cr+. EBITDA margins resilient at 75%, but headwinds like delays and BSNL dilution cap per-tenancy realization at INR25-27k. Key to watch: BSNL order closure (Dec’25), debt execution, and H2 deployments. Overall positive with balanced risks, positioning infra for multi-year expansion.</p>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3>Press Release</h3>
+<p><em>asof: 2025-11-27 </em></p>
+<div id="indian-telecom-infrastructure-sector-analysis-2" class="section level7">
+<p class="heading">Indian Telecom Infrastructure Sector Analysis</p>
+<p><strong>Based on recent disclosures from key players (HFCL, Indus Towers, Pace Digitek, Suyog Telematics, Vindhya Telelinks) covering Q2/H1 FY26 results, orders, acquisitions, and strategic updates.</strong></p>
+<div id="tailwinds-supportive-factors" class="section level8">
+<p class="heading"><strong>Tailwinds (Supportive Factors)</strong></p>
+<ul>
+<li><strong>Robust Demand and Revenue Momentum</strong>: HFCL reported 19.78% QoQ revenue growth to ₹1,043 Cr with 5x EBITDA surge; Indus Towers saw 9.7% YoY revenue rise to ₹8,188 Cr driven by tower additions (256K towers, +26K YoY); Vindhya Telelinks achieved 3-4% YoY PAT growth with strong cable/EPC execution.</li>
+<li><strong>International and Diversification Expansion</strong>: HFCL’s exports hit 28% of revenue (up from 10% YoY), with defence wins (e.g., thermal sights, BMP-2 upgrades, new Andhra Pradesh facility for ammo/grenades). Indus plans Africa entry; overall global traction in Europe/US/ME/APAC.</li>
+<li><strong>Order Wins and Infrastructure Buildout</strong>: Pace Digitek secured ₹186 Cr O&amp;M contract from Tata Teleservices (3.5 years, extendable); Suyog acquiring 120 Delhi/NCR sites for ₹13.5 Cr; Vindhya’s ₹86 Cr order book signals visibility.</li>
+<li><strong>Government and Policy Support</strong>: Tailwinds from PLI schemes, PM Gati Shakti, rural water/power/renewables infra (Vindhya EPC); solar PV/railway/OF cables demand booming.</li>
+<li><strong>Efficiency and Tech Focus</strong>: Indus emphasizes AI/automation; stable sharing factors (1.62x); capacity expansions (HFCL/Vindhya in cables/defence).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level8">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Profitability Pressures</strong>: Indus EBITDA/PAT down 6-17% YoY despite revenue growth (margin at 56.3%); HFCL Q1 loss turned positive but YoY PAT flat; higher finance costs/depreciation at Vindhya (up due to capex).</li>
+<li><strong>Execution Delays and Receivables</strong>: Vindhya EPC hit by govt funding delays (e.g., UP-JJM project, ₹846 Cr dues); Indus operating cash flow down 59% YoY.</li>
+<li><strong>Macro/Geo Pressures</strong>: Global upheaval, protectionism, raw material volatility (copper/aluminium/oil) noted by Vindhya; YoY revenue dips (HFCL -4.6%, Vindhya flat).</li>
+<li><strong>Market Saturation Risks</strong>: Declining sharing factors (Indus 1.62x vs. 1.65x YoY); lean co-location revenues down.</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level8">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High Visibility Pipeline</strong>: Strong order books/capex (Vindhya ₹3670L optical fibre expansion by Oct 2026, ₹5510L solar cables); HFCL defence pivot; Suyog fundraise (₹271 Cr) for expansion post-acquisition.</li>
+<li><strong>5G/Digital Infra Boom</strong>: Implicit demand for RAN/transport/WiFi/OF cables (HFCL/Vindhya); data centers, sensors, factory automation.</li>
+<li><strong>Diversified Verticals</strong>: Renewables (solar cables/storage), railways, defence (self-reliance push), water/irrigation EPC; international forays (Africa/Europe/US).</li>
+<li><strong>Consolidation and Tenancy Upside</strong>: Suyog adding Airtel/Jio sites for multi-tenancy; Indus +4.3K towers QoQ; potential 20-30% sector growth from 5G densification/rural rollout.</li>
+<li><strong>EBITDA Margin Expansion</strong>: HFCL at 19.5% (up 1456 bps QoQ); peers targeting via cost efficiencies/AI.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level8">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Payment and Liquidity</strong>: High receivables/working capital strain from govt delays (Vindhya/Indus); capex funding needs amid rising finance costs.</li>
+<li><strong>Geopolitical/Supply Chain</strong>: Volatility in input costs, trade barriers, global realignments impacting exports/cables.</li>
+<li><strong>Competition and Regulation</strong>: Intense rivalry in towers/OFC/EPC; tenancy churn, sharing factor erosion; regulatory/tax changes (SEBI/DoT).</li>
+<li><strong>Execution/Debt Risks</strong>: Project delays, capex overruns (e.g., Vindhya expansions); leverage from fundraises/acquisitions (Suyog).</li>
+<li><strong>Macro Sensitivity</strong>: Economic slowdowns, oil/Fibre price fluctuations; over-reliance on few clients (e.g., telcos like Airtel/Jio/Tata).</li>
+</ul>
+<p><strong>Overall Summary</strong>: The sector exhibits resilience with revenue tailwinds from infra demand/exports/defence, but faces profitability headwinds from costs/delays. Growth prospects are strong (15-20%+ CAGR potential via 5G/renewables/global), supported by policy and consolidation. Risks center on liquidity/geo-macro factors—mitigable via diversification/efficiency. Positive outlook for FY26, with HFCL/Indus as bellwethers.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
