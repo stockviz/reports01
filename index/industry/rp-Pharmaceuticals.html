@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-13" />
+
+<title>Pharmaceuticals</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Pharmaceuticals</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 13, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Pharmaceuticals.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Pharmaceuticals.fan.CAP_WT.png" /></p>
+<p><img src="plots/Pharmaceuticals.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Pharmaceuticals.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Pharmaceuticals.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Pharmaceuticals.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Pharmaceuticals.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8de10ab9e522b2ffc0d1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8de10ab9e522b2ffc0d1">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["2.63%","2.54%"],["-1.22%","-0.06%"],["-4.6%","-0.28%"],["-6.46%","0.87%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Pharmaceuticals.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Pharmaceuticals.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-58baeeceea59d82515e5" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-58baeeceea59d82515e5">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.SUNPHARMA.html\" target=\"_blank\">SUNPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.DIVISLAB.html\" target=\"_blank\">DIVISLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.TORNTPHARM.html\" target=\"_blank\">TORNTPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.CIPLA.html\" target=\"_blank\">CIPLA<\/a>","<a href=\"/reports02/eq-in/risk/in.DRREDDY.html\" target=\"_blank\">DRREDDY<\/a>","LUPIN","<a href=\"/reports02/eq-in/risk/in.ZYDUSLIFE.html\" target=\"_blank\">ZYDUSLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.MANKIND.html\" target=\"_blank\">MANKIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ALKEM.html\" target=\"_blank\">ALKEM<\/a>","<a href=\"/reports02/eq-in/risk/in.AUROPHARMA.html\" target=\"_blank\">AUROPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.BIOCON.html\" target=\"_blank\">BIOCON<\/a>","<a href=\"/reports02/eq-in/risk/in.GLENMARK.html\" target=\"_blank\">GLENMARK<\/a>","<a href=\"/reports02/eq-in/risk/in.ABBOTINDIA.html\" target=\"_blank\">ABBOTINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.LAURUSLABS.html\" target=\"_blank\">LAURUSLABS<\/a>","<a href=\"/reports02/eq-in/risk/in.GLAXO.html\" target=\"_blank\">GLAXO<\/a>","<a href=\"/reports02/eq-in/risk/in.IPCALAB.html\" target=\"_blank\">IPCALAB<\/a>","<a href=\"/reports02/eq-in/risk/in.AJANTPHARM.html\" target=\"_blank\">AJANTPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.JBCHEPHARM.html\" target=\"_blank\">JBCHEPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.GLAND.html\" target=\"_blank\">GLAND<\/a>","<a href=\"/reports02/eq-in/risk/in.EMCURE.html\" target=\"_blank\">EMCURE<\/a>","<a href=\"/reports02/eq-in/risk/in.PFIZER.html\" target=\"_blank\">PFIZER<\/a>","<a href=\"/reports02/eq-in/risk/in.WOCKPHARMA.html\" target=\"_blank\">WOCKPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.ASTRAZEN.html\" target=\"_blank\">ASTRAZEN<\/a>","<a href=\"/reports02/eq-in/risk/in.PPLPHARMA.html\" target=\"_blank\">PPLPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.ERIS.html\" target=\"_blank\">ERIS<\/a>","<a href=\"/reports02/eq-in/risk/in.SAILIFE.html\" target=\"_blank\">SAILIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.ACUTAAS.html\" target=\"_blank\">ACUTAAS<\/a>","<a href=\"/reports02/eq-in/risk/in.NEULANDLAB.html\" target=\"_blank\">NEULANDLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.APLLTD.html\" target=\"_blank\">APLLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.JUBLPHARMA.html\" target=\"_blank\">JUBLPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.NATCOPHARM.html\" target=\"_blank\">NATCOPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.ONESOURCE.html\" target=\"_blank\">ONESOURCE<\/a>","<a href=\"/reports02/eq-in/risk/in.GRANULES.html\" target=\"_blank\">GRANULES<\/a>","<a href=\"/reports02/eq-in/risk/in.COHANCE.html\" target=\"_blank\">COHANCE<\/a>","<a href=\"/reports02/eq-in/risk/in.CAPLIPOINT.html\" target=\"_blank\">CAPLIPOINT<\/a>","<a href=\"/reports02/eq-in/risk/in.RUBICON.html\" target=\"_blank\">RUBICON<\/a>","<a href=\"/reports02/eq-in/risk/in.CONCORDBIO.html\" target=\"_blank\">CONCORDBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.ALIVUS.html\" target=\"_blank\">ALIVUS<\/a>","<a href=\"/reports02/eq-in/risk/in.CORONA.html\" target=\"_blank\">CORONA<\/a>","<a href=\"/reports02/eq-in/risk/in.SANOFICONR.html\" target=\"_blank\">SANOFICONR<\/a>","<a href=\"/reports02/eq-in/risk/in.VIYASH.html\" target=\"_blank\">VIYASH<\/a>","<a href=\"/reports02/eq-in/risk/in.SANOFI.html\" target=\"_blank\">SANOFI<\/a>","<a href=\"/reports02/eq-in/risk/in.JSLL.html\" target=\"_blank\">JSLL<\/a>","<a href=\"/reports02/eq-in/risk/in.PGHL.html\" target=\"_blank\">PGHL<\/a>","<a href=\"/reports02/eq-in/risk/in.MARKSANS.html\" target=\"_blank\">MARKSANS<\/a>","<a href=\"/reports02/eq-in/risk/in.STAR.html\" target=\"_blank\">STAR<\/a>","<a href=\"/reports02/eq-in/risk/in.BLUEJET.html\" target=\"_blank\">BLUEJET<\/a>","<a href=\"/reports02/eq-in/risk/in.SUDEEPPHRM.html\" target=\"_blank\">SUDEEPPHRM<\/a>","<a href=\"/reports02/eq-in/risk/in.AKUMS.html\" target=\"_blank\">AKUMS<\/a>","<a href=\"/reports02/eq-in/risk/in.AARTIPHARM.html\" target=\"_blank\">AARTIPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.FDC.html\" target=\"_blank\">FDC<\/a>","<a href=\"/reports02/eq-in/risk/in.SHILPAMED.html\" target=\"_blank\">SHILPAMED<\/a>","<a href=\"/reports02/eq-in/risk/in.SUPRIYA.html\" target=\"_blank\">SUPRIYA<\/a>","<a href=\"/reports02/eq-in/risk/in.ZOTA.html\" target=\"_blank\">ZOTA<\/a>","<a href=\"/reports02/eq-in/risk/in.SPARC.html\" target=\"_blank\">SPARC<\/a>","<a href=\"/reports02/eq-in/risk/in.INNOVACAP.html\" target=\"_blank\">INNOVACAP<\/a>","<a href=\"/reports02/eq-in/risk/in.SENORES.html\" target=\"_blank\">SENORES<\/a>","<a href=\"/reports02/eq-in/risk/in.GUJTHEM.html\" target=\"_blank\">GUJTHEM<\/a>","<a href=\"/reports02/eq-in/risk/in.ORCHPHARMA.html\" target=\"_blank\">ORCHPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.AARTIDRUGS.html\" target=\"_blank\">AARTIDRUGS<\/a>","<a href=\"/reports02/eq-in/risk/in.SMSPHARMA.html\" target=\"_blank\">SMSPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.RPGLIFE.html\" target=\"_blank\">RPGLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.DCAL.html\" target=\"_blank\">DCAL<\/a>","<a href=\"/reports02/eq-in/risk/in.GUFICBIO.html\" target=\"_blank\">GUFICBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.UNICHEMLAB.html\" target=\"_blank\">UNICHEMLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.HIKAL.html\" target=\"_blank\">HIKAL<\/a>","<a href=\"/reports02/eq-in/risk/in.BLISSGVS.html\" target=\"_blank\">BLISSGVS<\/a>","<a href=\"/reports02/eq-in/risk/in.PANACEABIO.html\" target=\"_blank\">PANACEABIO<\/a>","IOLCP","<a href=\"/reports02/eq-in/risk/in.MOREPENLAB.html\" target=\"_blank\">MOREPENLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.INDOCO.html\" target=\"_blank\">INDOCO<\/a>","<a href=\"/reports02/eq-in/risk/in.AMRUTANJAN.html\" target=\"_blank\">AMRUTANJAN<\/a>","<a href=\"/reports02/eq-in/risk/in.SOLARA.html\" target=\"_blank\">SOLARA<\/a>","<a href=\"/reports02/eq-in/risk/in.WINDLAS.html\" target=\"_blank\">WINDLAS<\/a>","NGLFINE","<a href=\"/reports02/eq-in/risk/in.BETA.html\" target=\"_blank\">BETA<\/a>","<a href=\"/reports02/eq-in/risk/in.SYNCOMF.html\" target=\"_blank\">SYNCOMF<\/a>","<a href=\"/reports02/eq-in/risk/in.HESTERBIO.html\" target=\"_blank\">HESTERBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.JAGSNPHARM.html\" target=\"_blank\">JAGSNPHARM<\/a>","LINCOLN","<a href=\"/reports02/eq-in/risk/in.BAJAJHCARE.html\" target=\"_blank\">BAJAJHCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.INDSWFTLAB.html\" target=\"_blank\">INDSWFTLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.SAKAR.html\" target=\"_blank\">SAKAR<\/a>","<a href=\"/reports02/eq-in/risk/in.VENUSREM.html\" target=\"_blank\">VENUSREM<\/a>","<a href=\"/reports02/eq-in/risk/in.WANBURY.html\" target=\"_blank\">WANBURY<\/a>","<a href=\"/reports02/eq-in/risk/in.SIGACHI.html\" target=\"_blank\">SIGACHI<\/a>","<a href=\"/reports02/eq-in/risk/in.THEMISMED.html\" target=\"_blank\">THEMISMED<\/a>","<a href=\"/reports02/eq-in/risk/in.ANUHPHR.html\" target=\"_blank\">ANUHPHR<\/a>","<a href=\"/reports02/eq-in/risk/in.KOPRAN.html\" target=\"_blank\">KOPRAN<\/a>","<a href=\"/reports02/eq-in/risk/in.AHCL.html\" target=\"_blank\">AHCL<\/a>","<a href=\"/reports02/eq-in/risk/in.KILITCH.html\" target=\"_blank\">KILITCH<\/a>","<a href=\"/reports02/eq-in/risk/in.MEDICAMEQ.html\" target=\"_blank\">MEDICAMEQ<\/a>","<a href=\"/reports02/eq-in/risk/in.ALBERTDAVD.html\" target=\"_blank\">ALBERTDAVD<\/a>","<a href=\"/reports02/eq-in/risk/in.AMANTA.html\" target=\"_blank\">AMANTA<\/a>","HALEOSLABS","<a href=\"/reports02/eq-in/risk/in.MEDICO.html\" target=\"_blank\">MEDICO<\/a>","<a href=\"/reports02/eq-in/risk/in.ZIMLAB.html\" target=\"_blank\">ZIMLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.VALIANTLAB.html\" target=\"_blank\">VALIANTLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.BAFNAPH.html\" target=\"_blank\">BAFNAPH<\/a>","<a href=\"/reports02/eq-in/risk/in.NECLIFE.html\" target=\"_blank\">NECLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.LYKALABS.html\" target=\"_blank\">LYKALABS<\/a>","<a href=\"/reports02/eq-in/risk/in.BROOKS.html\" target=\"_blank\">BROOKS<\/a>","<a href=\"/reports02/eq-in/risk/in.AAREYDRUGS.html\" target=\"_blank\">AAREYDRUGS<\/a>","<a href=\"/reports02/eq-in/risk/in.NATCAPSUQ.html\" target=\"_blank\">NATCAPSUQ<\/a>","<a href=\"/reports02/eq-in/risk/in.ALPA.html\" target=\"_blank\">ALPA<\/a>","<a href=\"/reports02/eq-in/risk/in.KREBSBIO.html\" target=\"_blank\">KREBSBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.BALAXI.html\" target=\"_blank\">BALAXI<\/a>","<a href=\"/reports02/eq-in/risk/in.PAR.html\" target=\"_blank\">PAR<\/a>","<a href=\"/reports02/eq-in/risk/in.BALPHARMA.html\" target=\"_blank\">BALPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.VAISHALI.html\" target=\"_blank\">VAISHALI<\/a>","<a href=\"/reports02/eq-in/risk/in.BIOFILCHEM.html\" target=\"_blank\">BIOFILCHEM<\/a>","<a href=\"/reports02/eq-in/risk/in.VIVIMEDLAB.html\" target=\"_blank\">VIVIMEDLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.VINEETLAB.html\" target=\"_blank\">VINEETLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.MANGALAM.html\" target=\"_blank\">MANGALAM<\/a>","<a href=\"/reports02/eq-in/risk/in.LASA.html\" target=\"_blank\">LASA<\/a>","<a href=\"/reports02/eq-in/risk/in.ORTINGLOBE.html\" target=\"_blank\">ORTINGLOBE<\/a>"],[0.1786918336284549,0.07720535283550162,0.04210270541809383,0.07363930029948813,0.07629141128894493,0.05297165768973856,0.02264629318138074,0.02315469506619392,0.03373155019042335,0.0318672293665605,0.02642562730260427,0.03018108005292718,0.01369038708148529,0.03892891970398486,0.01086524806456509,0.01994558481950506,0.01202323755541125,0.01580841981484166,0.01421679204232533,0.004273801595964114,0.007645682604517869,0.01126054832030565,0.005358769671592835,0.009927366578498732,0.008025815236431489,0.01256649492336572,0.01072374637080736,0.0109228361159635,0.00432938264452012,0.007529198413548631,0.007377457855709768,0.006646841985209623,0.008139730895978152,0.00563295283795215,0.003439818337433872,0.001248818929821435,0.003989346103030955,0.002799148466692272,0.0006914534026765254,0.002767095563015199,0.003390610543035977,0.003592677094243902,0.003236944538925728,0.004055491598255473,0.003958268199927787,0.005669438255121649,0.001526688949471874,0.001349084929536754,0.001250069378277684,0.003611984030770523,0.001882937182822965,0.00345723529046849,0.001738879109053763,0.002046235825631763,0.001242550897236342,0.001080708587011566,0.001723986246938542,0.0009916989456791509,0.00102442170186337,0.001306582381099482,0.001018173560558483,0.0008453750118074282,0.001308668804538525,0.0008286407406114757,0.0007666016142682877,0.0007742976642029679,0.001409080624005896,0.0005915142285474406,0.0008513373011472463,0.00133584304208171,0.0007354309494418928,0.0009442483854109454,0.0009942956862856265,0.0006281874420513372,0.0003734703044238716,0.0004459840205548458,0.0006567744390593692,0.0005932171392202174,0.0003332906780628355,0.0005678507317968933,0.0004682490789157798,0.0004989203379775521,0.0004726436248458276,0.0005739722331826274,0.000519575797501724,0.0004797268564160768,0.0002648623867182136,0.0002264799176373507,0.0003596901005244998,0.0001599249276285365,0.0001998622028944141,0.000178459185150675,0.0001547283290328037,7.516876741874117e-05,0.0001110060453738358,0.0001491342702048693,0.000140602415216577,8.389463515499639e-05,7.15955694112095e-05,0.0001422924980264677,0.0001035304382498846,8.115004903077981e-05,0.0001048431398155206,7.94417044546523e-05,6.076798819717849e-05,2.795825647166575e-05,3.858315758909161e-05,3.201893045523231e-05,5.733080562006202e-05,7.494776633187299e-05,3.124544151617258e-05,4.832116881999278e-05,4.832467311366808e-05,2.630458873349602e-05,2.024760061002676e-05,1.178680284132049e-05],[0.1799675061051878,0.07169435869349487,0.06055532773260275,0.04699107707312103,0.04644315146114802,0.04436517165186844,0.04047539895107709,0.03756019986574377,0.03063512724408798,0.0294121495438349,0.02667580244946298,0.02513856075041613,0.02476391386268685,0.02404177773227006,0.0197766494552029,0.01618175243445124,0.01584928563910161,0.013460672766174,0.01308155501613275,0.01210789569639212,0.01024940372936149,0.00984515815826353,0.009656975101439688,0.009478958663023885,0.008998047864903175,0.008567852044064907,0.007524837488420215,0.007268305358443534,0.006801721442976149,0.006619549114935716,0.006546457952990143,0.006115951534085192,0.006051027788907178,0.005891021663738318,0.005755959625558545,0.005607200650100128,0.005606286354382708,0.004961187293744565,0.004319631675838999,0.004296997388557075,0.004262297897501754,0.004042101366706299,0.003942320644129295,0.003760782636084201,0.00370712353909926,0.003495921228375633,0.003351821223917457,0.003310520430289963,0.003186556804718277,0.00282085164161293,0.00277770475806797,0.002763574733344233,0.002431125436477229,0.002087678343277262,0.001915698881368814,0.001722323149824515,0.001613749439725928,0.001508697299256631,0.001505324466729695,0.001494475407499086,0.001444985324000745,0.001444145396834504,0.001426603167997914,0.001377073712913656,0.00118425355819286,0.001135314676897365,0.001008411306243836,0.0009585887515755252,0.0009571451267585487,0.0009351057878860447,0.0008232423630530144,0.0008034209568538646,0.0007563675370617534,0.0007367167410682462,0.0006071492264342981,0.0005942222223913742,0.0005921486521997174,0.0005805821551812774,0.0005332706327703735,0.0005292416071448125,0.0005085146544695593,0.000482367546799659,0.0004574759552584622,0.0004444702080437034,0.000411958027317135,0.0004026925807645419,0.0003626123063004919,0.0003575946164063349,0.0002868657496158132,0.0002832741860560025,0.0002537717443417968,0.0002026805496828096,0.0001852520609833144,0.0001848102242969065,0.0001720669543215979,0.000171165782466152,0.0001566814134691569,0.0001483783834612147,0.000126977739204706,0.0001146413089505452,0.0001096804891249358,9.859520037882116e-05,8.6394383365043e-05,7.405357849022471e-05,6.306890601923261e-05,5.527333200756079e-05,5.361535077836685e-05,5.329162884971156e-05,5.259606416516847e-05,4.50892151168919e-05,2.602899291214774e-05,2.589775429242263e-05,2.546466684732976e-05,2.350921141342554e-05,1.939706799537195e-05,5.288916374922121e-06]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":116,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,50,100,116]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a6cc0eaa0b3037b6393b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a6cc0eaa0b3037b6393b">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.SUNPHARMA.html\" target=\"_blank\">SUNPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.DIVISLAB.html\" target=\"_blank\">DIVISLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.TORNTPHARM.html\" target=\"_blank\">TORNTPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.CIPLA.html\" target=\"_blank\">CIPLA<\/a>","<a href=\"/reports02/eq-in/risk/in.DRREDDY.html\" target=\"_blank\">DRREDDY<\/a>","LUPIN","<a href=\"/reports02/eq-in/risk/in.ZYDUSLIFE.html\" target=\"_blank\">ZYDUSLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.MANKIND.html\" target=\"_blank\">MANKIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ALKEM.html\" target=\"_blank\">ALKEM<\/a>","<a href=\"/reports02/eq-in/risk/in.AUROPHARMA.html\" target=\"_blank\">AUROPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.BIOCON.html\" target=\"_blank\">BIOCON<\/a>","<a href=\"/reports02/eq-in/risk/in.GLENMARK.html\" target=\"_blank\">GLENMARK<\/a>","<a href=\"/reports02/eq-in/risk/in.LAURUSLABS.html\" target=\"_blank\">LAURUSLABS<\/a>","<a href=\"/reports02/eq-in/risk/in.GLAXO.html\" target=\"_blank\">GLAXO<\/a>","<a href=\"/reports02/eq-in/risk/in.IPCALAB.html\" target=\"_blank\">IPCALAB<\/a>","<a href=\"/reports02/eq-in/risk/in.AJANTPHARM.html\" target=\"_blank\">AJANTPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.JBCHEPHARM.html\" target=\"_blank\">JBCHEPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.GLAND.html\" target=\"_blank\">GLAND<\/a>","<a href=\"/reports02/eq-in/risk/in.EMCURE.html\" target=\"_blank\">EMCURE<\/a>","<a href=\"/reports02/eq-in/risk/in.PFIZER.html\" target=\"_blank\">PFIZER<\/a>","<a href=\"/reports02/eq-in/risk/in.WOCKPHARMA.html\" target=\"_blank\">WOCKPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.ASTRAZEN.html\" target=\"_blank\">ASTRAZEN<\/a>","<a href=\"/reports02/eq-in/risk/in.PPLPHARMA.html\" target=\"_blank\">PPLPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.ERIS.html\" target=\"_blank\">ERIS<\/a>","<a href=\"/reports02/eq-in/risk/in.SAILIFE.html\" target=\"_blank\">SAILIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.ACUTAAS.html\" target=\"_blank\">ACUTAAS<\/a>","<a href=\"/reports02/eq-in/risk/in.NEULANDLAB.html\" target=\"_blank\">NEULANDLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.APLLTD.html\" target=\"_blank\">APLLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.JUBLPHARMA.html\" target=\"_blank\">JUBLPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.NATCOPHARM.html\" target=\"_blank\">NATCOPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.ONESOURCE.html\" target=\"_blank\">ONESOURCE<\/a>","<a href=\"/reports02/eq-in/risk/in.GRANULES.html\" target=\"_blank\">GRANULES<\/a>","<a href=\"/reports02/eq-in/risk/in.COHANCE.html\" target=\"_blank\">COHANCE<\/a>","<a href=\"/reports02/eq-in/risk/in.CAPLIPOINT.html\" target=\"_blank\">CAPLIPOINT<\/a>","<a href=\"/reports02/eq-in/risk/in.RUBICON.html\" target=\"_blank\">RUBICON<\/a>","<a href=\"/reports02/eq-in/risk/in.CONCORDBIO.html\" target=\"_blank\">CONCORDBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.ALIVUS.html\" target=\"_blank\">ALIVUS<\/a>","<a href=\"/reports02/eq-in/risk/in.CORONA.html\" target=\"_blank\">CORONA<\/a>","<a href=\"/reports02/eq-in/risk/in.SANOFICONR.html\" target=\"_blank\">SANOFICONR<\/a>","<a href=\"/reports02/eq-in/risk/in.VIYASH.html\" target=\"_blank\">VIYASH<\/a>","<a href=\"/reports02/eq-in/risk/in.SANOFI.html\" target=\"_blank\">SANOFI<\/a>","<a href=\"/reports02/eq-in/risk/in.JSLL.html\" target=\"_blank\">JSLL<\/a>","<a href=\"/reports02/eq-in/risk/in.PGHL.html\" target=\"_blank\">PGHL<\/a>","<a href=\"/reports02/eq-in/risk/in.MARKSANS.html\" target=\"_blank\">MARKSANS<\/a>","<a href=\"/reports02/eq-in/risk/in.STAR.html\" target=\"_blank\">STAR<\/a>","<a href=\"/reports02/eq-in/risk/in.BLUEJET.html\" target=\"_blank\">BLUEJET<\/a>","<a href=\"/reports02/eq-in/risk/in.SUDEEPPHRM.html\" target=\"_blank\">SUDEEPPHRM<\/a>","<a href=\"/reports02/eq-in/risk/in.AKUMS.html\" target=\"_blank\">AKUMS<\/a>","<a href=\"/reports02/eq-in/risk/in.AARTIPHARM.html\" target=\"_blank\">AARTIPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.FDC.html\" target=\"_blank\">FDC<\/a>","<a href=\"/reports02/eq-in/risk/in.SHILPAMED.html\" target=\"_blank\">SHILPAMED<\/a>","<a href=\"/reports02/eq-in/risk/in.SUPRIYA.html\" target=\"_blank\">SUPRIYA<\/a>","<a href=\"/reports02/eq-in/risk/in.ZOTA.html\" target=\"_blank\">ZOTA<\/a>","<a href=\"/reports02/eq-in/risk/in.SPARC.html\" target=\"_blank\">SPARC<\/a>","<a href=\"/reports02/eq-in/risk/in.INNOVACAP.html\" target=\"_blank\">INNOVACAP<\/a>","<a href=\"/reports02/eq-in/risk/in.SENORES.html\" target=\"_blank\">SENORES<\/a>","<a href=\"/reports02/eq-in/risk/in.GUJTHEM.html\" target=\"_blank\">GUJTHEM<\/a>","<a href=\"/reports02/eq-in/risk/in.ORCHPHARMA.html\" target=\"_blank\">ORCHPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.AARTIDRUGS.html\" target=\"_blank\">AARTIDRUGS<\/a>","<a href=\"/reports02/eq-in/risk/in.SMSPHARMA.html\" target=\"_blank\">SMSPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.RPGLIFE.html\" target=\"_blank\">RPGLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.DCAL.html\" target=\"_blank\">DCAL<\/a>","<a href=\"/reports02/eq-in/risk/in.GUFICBIO.html\" target=\"_blank\">GUFICBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.UNICHEMLAB.html\" target=\"_blank\">UNICHEMLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.HIKAL.html\" target=\"_blank\">HIKAL<\/a>","<a href=\"/reports02/eq-in/risk/in.BLISSGVS.html\" target=\"_blank\">BLISSGVS<\/a>","<a href=\"/reports02/eq-in/risk/in.PANACEABIO.html\" target=\"_blank\">PANACEABIO<\/a>","IOLCP","<a href=\"/reports02/eq-in/risk/in.MOREPENLAB.html\" target=\"_blank\">MOREPENLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.INDOCO.html\" target=\"_blank\">INDOCO<\/a>","<a href=\"/reports02/eq-in/risk/in.AMRUTANJAN.html\" target=\"_blank\">AMRUTANJAN<\/a>","<a href=\"/reports02/eq-in/risk/in.SOLARA.html\" target=\"_blank\">SOLARA<\/a>","<a href=\"/reports02/eq-in/risk/in.WINDLAS.html\" target=\"_blank\">WINDLAS<\/a>","NGLFINE","<a href=\"/reports02/eq-in/risk/in.SYNCOMF.html\" target=\"_blank\">SYNCOMF<\/a>","<a href=\"/reports02/eq-in/risk/in.HESTERBIO.html\" target=\"_blank\">HESTERBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.JAGSNPHARM.html\" target=\"_blank\">JAGSNPHARM<\/a>","LINCOLN","<a href=\"/reports02/eq-in/risk/in.BAJAJHCARE.html\" target=\"_blank\">BAJAJHCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.INDSWFTLAB.html\" target=\"_blank\">INDSWFTLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.SAKAR.html\" target=\"_blank\">SAKAR<\/a>","<a href=\"/reports02/eq-in/risk/in.VENUSREM.html\" target=\"_blank\">VENUSREM<\/a>","<a href=\"/reports02/eq-in/risk/in.WANBURY.html\" target=\"_blank\">WANBURY<\/a>","<a href=\"/reports02/eq-in/risk/in.SIGACHI.html\" target=\"_blank\">SIGACHI<\/a>","<a href=\"/reports02/eq-in/risk/in.THEMISMED.html\" target=\"_blank\">THEMISMED<\/a>","<a href=\"/reports02/eq-in/risk/in.ANUHPHR.html\" target=\"_blank\">ANUHPHR<\/a>","<a href=\"/reports02/eq-in/risk/in.KOPRAN.html\" target=\"_blank\">KOPRAN<\/a>","<a href=\"/reports02/eq-in/risk/in.AHCL.html\" target=\"_blank\">AHCL<\/a>","<a href=\"/reports02/eq-in/risk/in.KILITCH.html\" target=\"_blank\">KILITCH<\/a>","<a href=\"/reports02/eq-in/risk/in.MEDICAMEQ.html\" target=\"_blank\">MEDICAMEQ<\/a>","<a href=\"/reports02/eq-in/risk/in.ALBERTDAVD.html\" target=\"_blank\">ALBERTDAVD<\/a>","<a href=\"/reports02/eq-in/risk/in.AMANTA.html\" target=\"_blank\">AMANTA<\/a>","HALEOSLABS","<a href=\"/reports02/eq-in/risk/in.MEDICO.html\" target=\"_blank\">MEDICO<\/a>","<a href=\"/reports02/eq-in/risk/in.ZIMLAB.html\" target=\"_blank\">ZIMLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.VALIANTLAB.html\" target=\"_blank\">VALIANTLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.BAFNAPH.html\" target=\"_blank\">BAFNAPH<\/a>","<a href=\"/reports02/eq-in/risk/in.NECLIFE.html\" target=\"_blank\">NECLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.LYKALABS.html\" target=\"_blank\">LYKALABS<\/a>","<a href=\"/reports02/eq-in/risk/in.BROOKS.html\" target=\"_blank\">BROOKS<\/a>","<a href=\"/reports02/eq-in/risk/in.AAREYDRUGS.html\" target=\"_blank\">AAREYDRUGS<\/a>","<a href=\"/reports02/eq-in/risk/in.NATCAPSUQ.html\" target=\"_blank\">NATCAPSUQ<\/a>","<a href=\"/reports02/eq-in/risk/in.ALPA.html\" target=\"_blank\">ALPA<\/a>","<a href=\"/reports02/eq-in/risk/in.KREBSBIO.html\" target=\"_blank\">KREBSBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.BALAXI.html\" target=\"_blank\">BALAXI<\/a>","<a href=\"/reports02/eq-in/risk/in.PAR.html\" target=\"_blank\">PAR<\/a>","<a href=\"/reports02/eq-in/risk/in.BALPHARMA.html\" target=\"_blank\">BALPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.VAISHALI.html\" target=\"_blank\">VAISHALI<\/a>","<a href=\"/reports02/eq-in/risk/in.BIOFILCHEM.html\" target=\"_blank\">BIOFILCHEM<\/a>","<a href=\"/reports02/eq-in/risk/in.VIVIMEDLAB.html\" target=\"_blank\">VIVIMEDLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.VINEETLAB.html\" target=\"_blank\">VINEETLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.MANGALAM.html\" target=\"_blank\">MANGALAM<\/a>","<a href=\"/reports02/eq-in/risk/in.LASA.html\" target=\"_blank\">LASA<\/a>","<a href=\"/reports02/eq-in/risk/in.ORTINGLOBE.html\" target=\"_blank\">ORTINGLOBE<\/a>"],[4.509068858822897,0.1645143742199348,0.1501430035984233,11.85516436421207,0.4654451113384345,1.363655595830857,0.6772049169859938,6.022614608573575,0.7980380949653849,3.03927690901254,0.03627034522474241,2.025526361849838,3.972614884520861,0.1388263596496195,3.144934345561658,3.276868622288679,0.0862010355960549,6.555017701283108,5.348244481928032,2.016464320578211,-0.001188609600275391,0.09285747766376887,1.510356494082301,1.366750683994588,2.163933797212348,1.740721867680992,0.3138150588195812,2.088717609208157,0.04071819850889696,0.09658181003154742,0.3841439388411099,1.594534125841486,0.4376109151304037,1.969192756691155,null,1.147241274564615,1.000787834431365,null,0.01252932933943267,0.02132752568657995,0.05889269948844447,0.4064396500432597,0.01971579160602254,0.4261751965458473,1.595566319971865,0.8730455456511722,null,1.54090672062061,0.8608959021261761,1.158869761452552,0.2197934857136707,0.5285597084971626,-0.1697382779058891,-0.01402468979090912,0.4479543796352056,0.2559553534064301,0.07600266793874497,0.1560952053262813,0.02365333104548029,0.1471522089454508,0.01204648902614114,0.4401686085594381,0.1329559630006447,-0.02149117598371552,0.004056089026425621,0.4715141454940606,-0.001355624667675893,0.2368821639116228,0.1971464931657533,-0.006427676552034695,0.08958743502288297,0.1131448284043966,0.2403489633825233,0.06117261705375766,0.2056841760585177,0.1022511439928302,0.08445379167898544,0.2451019197615194,0.09766059241922265,0.1169139433363209,0.06336202237751683,0.2058075983929276,0.1535897567900981,0.139770389125273,-0.1076952876426621,0.1077446087965486,0.1117690827871961,null,0.06740456573140767,0.01294962925585534,-0.01510205268401143,null,0.05188657401281702,0.02812721428904326,0.07457451195886011,0.03155686029409856,0.03059356025136365,-0.5406961786519445,0.0207823920105486,0.0196090662712893,0.00901417253728385,-0.02425728802612992,0.053364327104057,-0.07450305466065085,0.009312217710241814,0.032256894368857,0.01322926963178588,0.005723891875528434,0.01415572256750385,null,-0.05719209788947063,-0.04223842206466328,-0.0009494858944437512,-0.001547606629433023],[3.825544115662638,0.09061769468104612,0.08185004756043794,14.00155480295878,0.2773363294178561,1.239649222887147,0.376358955856445,3.858361787484904,0.7058087586854648,2.222022065273078,0.02477070398962877,9.329901285483066,null,0.07266278589073485,3.129123396604243,3.169841984036003,0.07105583966194651,5.960803592677181,5.722201264765064,2.906358492008696,0.002184908867116413,0.06859403739372981,0.5221011135219263,1.29573955905576,1.966098248556596,1.595777285100949,0.5238917589906235,1.281609074835518,0.02234199121382328,0.05196721705479961,0.3250406808266772,1.899693170387338,null,1.774556876584028,0.451403910957227,0.9151964186838306,1.321873996618577,0.4382152742728203,0.008092566303973484,0.02301590221958259,0.02819092671623024,0.4312525502105735,0.02775720136939692,0.7018431847691069,1.426682181752796,0.6430073180662514,0.3747820237606062,1.283497934848089,0.6224504405224043,0.7922133349254077,0.3495315887691667,0.505380070994171,-0.1320552065747964,-0.007498999395073528,0.4491617833767125,0.324895314670863,0.1100791606833906,0.08318032092068613,0.01469510005365672,0.1827143709812346,0.006459010529147858,0.3511517010444135,0.1419230104015441,0.2821455433126906,0.0004117712864950164,0.357283830284137,-0.001478174883560681,0.2542001408629234,0.1721390507140785,-0.004001602342932311,0.19469383385766,0.05905550447386725,0.2136350768709582,0.0814414147921434,0.1841825569096413,0.1227792989273593,0.06333977713755259,0.226147339603408,0.1173795107058473,0.1110183773264336,0.05361850946041945,0.2359186823896509,0.1076146199763452,0.06398597495569444,-0.07924882111568378,0.1205109473685482,0.0447138838716751,0.09776570807477389,0.06630444338022638,0.01519623445119444,-0.01695855393175839,0.05508827533651899,0.05465289302843304,0.02647459116382344,0.04245690820559772,0.02061928750482073,0.02695588456977097,-0.427835416611291,6.854056018277303e-05,0.02017504154894749,0.009486972341801965,-0.03604539397699232,0.03934079117931629,-0.05567309700762005,0.01110018080955808,0.03449473614234765,0.009874003737124709,0.007984651414094433,0.00876825217229445,-0.05008133257430458,-0.03307626529416353,-0.08797879950963405,-0.01644327678943156,-0.00231910148787036],[4.619415560648735,null,null,13.84590754917742,0.2012329078266359,null,null,6.816965526144025,null,null,null,9.785946307449489,6.346600025930332,null,null,2.737326659019013,0.05662051270871474,7.123155853616503,7.051137895958089,null,null,null,0.07994525521474671,null,2.543766142714213,2.138736700656858,null,1.711399899299287,0.01942047843040781,null,0.005022489229153499,2.003777120867249,null,2.145440449247605,0.9092078075722816,null,1.625504969169469,0.8061753486616717,null,0.05227254406315308,null,null,0.02455725520030278,1.042496772428111,1.88439426060105,null,0.6796153428835175,null,null,0.8637275289206464,0.5173788565870882,null,-0.1896946281926113,null,0.4955261264011455,0.2584635143190147,0.1452272508824495,null,0.01185957328409933,null,0.003815187021810969,0.2825535351615803,null,0.3479607429143601,null,null,null,null,null,-0.00337092221883063,0.3270819330547693,-0.007731215991335001,0.2454913182118146,0.1303410185843511,null,0.1363215063167787,0.04809600672870361,null,0.1425905140662742,0.1611448722124354,0.07824102629839591,0.2902287278486302,0.1401733886028964,null,null,0.1568137105581592,0.06363967250258691,null,null,null,null,null,null,null,null,null,null,-0.4133886792897253,-0.0004913243785797678,0.0187762104311299,null,null,null,null,0.01360329862997108,null,null,null,null,null,null,-0.06950811362644446,null,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":114,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,50,100,114]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a62631b8727701bb9d30" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a62631b8727701bb9d30">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.SUNPHARMA.html\" target=\"_blank\">SUNPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.DIVISLAB.html\" target=\"_blank\">DIVISLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.TORNTPHARM.html\" target=\"_blank\">TORNTPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.CIPLA.html\" target=\"_blank\">CIPLA<\/a>","<a href=\"/reports02/eq-in/risk/in.DRREDDY.html\" target=\"_blank\">DRREDDY<\/a>","LUPIN","<a href=\"/reports02/eq-in/risk/in.ZYDUSLIFE.html\" target=\"_blank\">ZYDUSLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.MANKIND.html\" target=\"_blank\">MANKIND<\/a>","<a href=\"/reports02/eq-in/risk/in.ALKEM.html\" target=\"_blank\">ALKEM<\/a>","<a href=\"/reports02/eq-in/risk/in.AUROPHARMA.html\" target=\"_blank\">AUROPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.BIOCON.html\" target=\"_blank\">BIOCON<\/a>","<a href=\"/reports02/eq-in/risk/in.GLENMARK.html\" target=\"_blank\">GLENMARK<\/a>","<a href=\"/reports02/eq-in/risk/in.LAURUSLABS.html\" target=\"_blank\">LAURUSLABS<\/a>","<a href=\"/reports02/eq-in/risk/in.GLAXO.html\" target=\"_blank\">GLAXO<\/a>","<a href=\"/reports02/eq-in/risk/in.IPCALAB.html\" target=\"_blank\">IPCALAB<\/a>","<a href=\"/reports02/eq-in/risk/in.AJANTPHARM.html\" target=\"_blank\">AJANTPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.JBCHEPHARM.html\" target=\"_blank\">JBCHEPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.GLAND.html\" target=\"_blank\">GLAND<\/a>","<a href=\"/reports02/eq-in/risk/in.EMCURE.html\" target=\"_blank\">EMCURE<\/a>","<a href=\"/reports02/eq-in/risk/in.PFIZER.html\" target=\"_blank\">PFIZER<\/a>","<a href=\"/reports02/eq-in/risk/in.WOCKPHARMA.html\" target=\"_blank\">WOCKPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.ASTRAZEN.html\" target=\"_blank\">ASTRAZEN<\/a>","<a href=\"/reports02/eq-in/risk/in.PPLPHARMA.html\" target=\"_blank\">PPLPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.ERIS.html\" target=\"_blank\">ERIS<\/a>","<a href=\"/reports02/eq-in/risk/in.SAILIFE.html\" target=\"_blank\">SAILIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.ACUTAAS.html\" target=\"_blank\">ACUTAAS<\/a>","<a href=\"/reports02/eq-in/risk/in.NEULANDLAB.html\" target=\"_blank\">NEULANDLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.APLLTD.html\" target=\"_blank\">APLLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.JUBLPHARMA.html\" target=\"_blank\">JUBLPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.NATCOPHARM.html\" target=\"_blank\">NATCOPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.ONESOURCE.html\" target=\"_blank\">ONESOURCE<\/a>","<a href=\"/reports02/eq-in/risk/in.GRANULES.html\" target=\"_blank\">GRANULES<\/a>","<a href=\"/reports02/eq-in/risk/in.COHANCE.html\" target=\"_blank\">COHANCE<\/a>","<a href=\"/reports02/eq-in/risk/in.CAPLIPOINT.html\" target=\"_blank\">CAPLIPOINT<\/a>","<a href=\"/reports02/eq-in/risk/in.RUBICON.html\" target=\"_blank\">RUBICON<\/a>","<a href=\"/reports02/eq-in/risk/in.CONCORDBIO.html\" target=\"_blank\">CONCORDBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.ALIVUS.html\" target=\"_blank\">ALIVUS<\/a>","<a href=\"/reports02/eq-in/risk/in.CORONA.html\" target=\"_blank\">CORONA<\/a>","<a href=\"/reports02/eq-in/risk/in.SANOFICONR.html\" target=\"_blank\">SANOFICONR<\/a>","<a href=\"/reports02/eq-in/risk/in.VIYASH.html\" target=\"_blank\">VIYASH<\/a>","<a href=\"/reports02/eq-in/risk/in.SANOFI.html\" target=\"_blank\">SANOFI<\/a>","<a href=\"/reports02/eq-in/risk/in.JSLL.html\" target=\"_blank\">JSLL<\/a>","<a href=\"/reports02/eq-in/risk/in.PGHL.html\" target=\"_blank\">PGHL<\/a>","<a href=\"/reports02/eq-in/risk/in.MARKSANS.html\" target=\"_blank\">MARKSANS<\/a>","<a href=\"/reports02/eq-in/risk/in.STAR.html\" target=\"_blank\">STAR<\/a>","<a href=\"/reports02/eq-in/risk/in.BLUEJET.html\" target=\"_blank\">BLUEJET<\/a>","<a href=\"/reports02/eq-in/risk/in.SUDEEPPHRM.html\" target=\"_blank\">SUDEEPPHRM<\/a>","<a href=\"/reports02/eq-in/risk/in.AKUMS.html\" target=\"_blank\">AKUMS<\/a>","<a href=\"/reports02/eq-in/risk/in.AARTIPHARM.html\" target=\"_blank\">AARTIPHARM<\/a>","<a href=\"/reports02/eq-in/risk/in.FDC.html\" target=\"_blank\">FDC<\/a>","<a href=\"/reports02/eq-in/risk/in.SHILPAMED.html\" target=\"_blank\">SHILPAMED<\/a>","<a href=\"/reports02/eq-in/risk/in.SUPRIYA.html\" target=\"_blank\">SUPRIYA<\/a>","<a href=\"/reports02/eq-in/risk/in.ZOTA.html\" target=\"_blank\">ZOTA<\/a>","<a href=\"/reports02/eq-in/risk/in.SPARC.html\" target=\"_blank\">SPARC<\/a>","<a href=\"/reports02/eq-in/risk/in.INNOVACAP.html\" target=\"_blank\">INNOVACAP<\/a>","<a href=\"/reports02/eq-in/risk/in.SENORES.html\" target=\"_blank\">SENORES<\/a>","<a href=\"/reports02/eq-in/risk/in.GUJTHEM.html\" target=\"_blank\">GUJTHEM<\/a>","<a href=\"/reports02/eq-in/risk/in.ORCHPHARMA.html\" target=\"_blank\">ORCHPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.AARTIDRUGS.html\" target=\"_blank\">AARTIDRUGS<\/a>","<a href=\"/reports02/eq-in/risk/in.SMSPHARMA.html\" target=\"_blank\">SMSPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.RPGLIFE.html\" target=\"_blank\">RPGLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.DCAL.html\" target=\"_blank\">DCAL<\/a>","<a href=\"/reports02/eq-in/risk/in.GUFICBIO.html\" target=\"_blank\">GUFICBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.UNICHEMLAB.html\" target=\"_blank\">UNICHEMLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.HIKAL.html\" target=\"_blank\">HIKAL<\/a>","<a href=\"/reports02/eq-in/risk/in.BLISSGVS.html\" target=\"_blank\">BLISSGVS<\/a>","<a href=\"/reports02/eq-in/risk/in.PANACEABIO.html\" target=\"_blank\">PANACEABIO<\/a>","IOLCP","<a href=\"/reports02/eq-in/risk/in.MOREPENLAB.html\" target=\"_blank\">MOREPENLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.INDOCO.html\" target=\"_blank\">INDOCO<\/a>","<a href=\"/reports02/eq-in/risk/in.AMRUTANJAN.html\" target=\"_blank\">AMRUTANJAN<\/a>","<a href=\"/reports02/eq-in/risk/in.SOLARA.html\" target=\"_blank\">SOLARA<\/a>","<a href=\"/reports02/eq-in/risk/in.WINDLAS.html\" target=\"_blank\">WINDLAS<\/a>","NGLFINE","<a href=\"/reports02/eq-in/risk/in.SYNCOMF.html\" target=\"_blank\">SYNCOMF<\/a>","<a href=\"/reports02/eq-in/risk/in.HESTERBIO.html\" target=\"_blank\">HESTERBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.JAGSNPHARM.html\" target=\"_blank\">JAGSNPHARM<\/a>","LINCOLN","<a href=\"/reports02/eq-in/risk/in.BAJAJHCARE.html\" target=\"_blank\">BAJAJHCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.INDSWFTLAB.html\" target=\"_blank\">INDSWFTLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.SAKAR.html\" target=\"_blank\">SAKAR<\/a>","<a href=\"/reports02/eq-in/risk/in.VENUSREM.html\" target=\"_blank\">VENUSREM<\/a>","<a href=\"/reports02/eq-in/risk/in.WANBURY.html\" target=\"_blank\">WANBURY<\/a>","<a href=\"/reports02/eq-in/risk/in.SIGACHI.html\" target=\"_blank\">SIGACHI<\/a>","<a href=\"/reports02/eq-in/risk/in.THEMISMED.html\" target=\"_blank\">THEMISMED<\/a>","<a href=\"/reports02/eq-in/risk/in.ANUHPHR.html\" target=\"_blank\">ANUHPHR<\/a>","<a href=\"/reports02/eq-in/risk/in.KOPRAN.html\" target=\"_blank\">KOPRAN<\/a>","<a href=\"/reports02/eq-in/risk/in.AHCL.html\" target=\"_blank\">AHCL<\/a>","<a href=\"/reports02/eq-in/risk/in.KILITCH.html\" target=\"_blank\">KILITCH<\/a>","<a href=\"/reports02/eq-in/risk/in.MEDICAMEQ.html\" target=\"_blank\">MEDICAMEQ<\/a>","<a href=\"/reports02/eq-in/risk/in.ALBERTDAVD.html\" target=\"_blank\">ALBERTDAVD<\/a>","<a href=\"/reports02/eq-in/risk/in.AMANTA.html\" target=\"_blank\">AMANTA<\/a>","HALEOSLABS","<a href=\"/reports02/eq-in/risk/in.MEDICO.html\" target=\"_blank\">MEDICO<\/a>","<a href=\"/reports02/eq-in/risk/in.ZIMLAB.html\" target=\"_blank\">ZIMLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.VALIANTLAB.html\" target=\"_blank\">VALIANTLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.BAFNAPH.html\" target=\"_blank\">BAFNAPH<\/a>","<a href=\"/reports02/eq-in/risk/in.NECLIFE.html\" target=\"_blank\">NECLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.LYKALABS.html\" target=\"_blank\">LYKALABS<\/a>","<a href=\"/reports02/eq-in/risk/in.BROOKS.html\" target=\"_blank\">BROOKS<\/a>","<a href=\"/reports02/eq-in/risk/in.AAREYDRUGS.html\" target=\"_blank\">AAREYDRUGS<\/a>","<a href=\"/reports02/eq-in/risk/in.NATCAPSUQ.html\" target=\"_blank\">NATCAPSUQ<\/a>","<a href=\"/reports02/eq-in/risk/in.ALPA.html\" target=\"_blank\">ALPA<\/a>","<a href=\"/reports02/eq-in/risk/in.KREBSBIO.html\" target=\"_blank\">KREBSBIO<\/a>","<a href=\"/reports02/eq-in/risk/in.BALAXI.html\" target=\"_blank\">BALAXI<\/a>","<a href=\"/reports02/eq-in/risk/in.PAR.html\" target=\"_blank\">PAR<\/a>","<a href=\"/reports02/eq-in/risk/in.BALPHARMA.html\" target=\"_blank\">BALPHARMA<\/a>","<a href=\"/reports02/eq-in/risk/in.VAISHALI.html\" target=\"_blank\">VAISHALI<\/a>","<a href=\"/reports02/eq-in/risk/in.BIOFILCHEM.html\" target=\"_blank\">BIOFILCHEM<\/a>","<a href=\"/reports02/eq-in/risk/in.VIVIMEDLAB.html\" target=\"_blank\">VIVIMEDLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.VINEETLAB.html\" target=\"_blank\">VINEETLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.MANGALAM.html\" target=\"_blank\">MANGALAM<\/a>","<a href=\"/reports02/eq-in/risk/in.LASA.html\" target=\"_blank\">LASA<\/a>","<a href=\"/reports02/eq-in/risk/in.ORTINGLOBE.html\" target=\"_blank\">ORTINGLOBE<\/a>"],[1.42044073066306,0.08045515789647796,0.09865176064078084,12.43130410177065,0.3016511852925233,1.090255246663069,0.3935684274912314,6.105571719924483,0.7177788911163697,2.972092720843432,0.1095026576270739,2.534949328144137,2.161073504159941,0.06234574547040937,3.195046223911819,2.080887552572788,0.05565196034674777,4.93205430392465,5.910837100809259,0.7711806996873228,0.02509847497164268,0.09099289140097019,7.889206221870731,0.06452107361967581,1.801028186888104,0.3759949028595385,0.2526727542774422,2.928933846741248,0.06655517672544239,0.0305219034283254,0.321678719555262,1.686264785868832,0.902936805103545,0.8522566862949721,null,0.4439732361957028,1.048458942176549,null,0.005027733352848269,0.03871208869788168,0.03561895336280784,0.1515495265507091,0.01038448360002406,0.4888673163958838,2.097903286923882,0.5838829020648485,null,2.91625751379468,0.3142084354343822,0.9586556468031222,0.4574976521367578,0.2310080617622744,0.183474344358169,0.0004485451934732747,0.5606767995918225,0.2110824089935095,0.0511098500717868,0.2880187224361299,0.04038095388662431,0.3110263141860322,0.007526168352216385,1.199578568777677,0.3005546766958266,0.9023569740866344,0.01273007364882201,0.3415392947099323,0.004235974708703416,0.7568057946605686,0.6249061979039617,0.01393136240612957,0.1211198420834252,0.9979917189179267,0.1896632820954081,0.1395507605456378,0.1861369330502827,0.1163017278886987,0.0691480656929048,0.2258886453552747,0.2774711069772152,0.2021759919425703,0.08655677304312777,0.1469250053081187,0.13280292581006,0.2344178472448511,0.119001582510346,0.2402157420875184,0.2157720043063495,null,0.07318508508966259,0.05107343597871171,0.1022591964225834,null,0.1202931753383763,0.0557856858335072,0.1173634968524664,0.1460555080883372,0.00318571724766422,0.5000631780105779,0.04666232797959874,0.0341905809507547,0.1476844923059752,0.06261128483539061,0.03709290878466692,0.009952112980240237,0.1031202872388705,0.03397881207204292,0.1036067074218385,0.03921638958645698,0.00516158729295259,null,0.01519836993887951,0.08140782707976445,0.04157322933936042,5.970164298825476e-05],[1.554047660954078,0.04759417456814907,0.0581247831399631,13.04679716322558,0.2096916180904208,0.9282383124972863,0.2324792008086123,7.546952615180294,0.6642520908291032,1.696731326766953,0.07818846359057838,2.357627830826298,null,0.03520232008292116,2.293880566936225,2.143736673695173,0.05008286087184347,4.949871664269669,6.698275525142668,1.192730990473169,0.01416103469053314,0.07640072312834467,7.543964665100473,0.4166421756321304,1.16754529108099,0.5735242773631489,0.3864338118211275,2.783524723303244,0.03921224832782724,0.02082251069425343,0.5123837790176313,2.271037811651454,null,0.7987197714567651,0.4241795875744256,0.419217453754574,0.8046678650057904,0.3717895200227959,0.003787507301110756,0.04862723392881434,0.01834195679588156,0.1763747379395788,0.01324823819527967,0.7299596403357368,1.978552062998592,0.4099618707674053,0.1674676388611639,2.079959971568163,0.4111071672271465,0.8328632596438709,0.5278459194984081,0.2519337645685049,0.1701414173521563,0.0002828410414060908,0.6416212825573697,0.2536285699091664,0.05969027054647823,0.2876365851620283,0.02549763887408019,0.3266936148181935,0.004686589646343262,1.072686530167906,0.3169504556374053,1.260263727068018,0.008062867942096447,0.3093966270630554,0.002865663806259529,0.7840927892038754,0.6203499917608241,0.008870937275298156,0.2203913741172925,0.9355254046803834,0.230643849251603,0.164880301716694,0.1844972264952892,0.132721553531281,0.09575362082187416,0.231150994938831,0.2768954635889423,0.2283988095647813,0.08286200939955894,0.2249036905249609,0.180016535337822,0.1754581317496486,0.1177925984628345,0.2944916924219528,0.2610608873214756,0.08114927778073375,0.07301273876409561,0.05708022744577512,0.1108261505299146,0.1292663286230795,0.120459251800576,0.06292021964409626,0.1635390726407993,0.1434735195546985,0.01881798206509206,0.440598344683686,0.05778023996486031,0.03731199186775658,0.1044336853050674,0.06452961411819276,0.04059860539753649,0.007582675987745775,0.1138912679558367,0.03665971597119223,0.1055925068817214,0.04257723081769943,0.009942361848336105,0.03226053596954494,0.01856442978300217,0.1106589599738581,0.02967999064455343,4.120889568875486e-05],[2.104357754378062,null,null,13.45444461776408,0.1645897578230591,null,null,7.267050062942875,null,null,null,3.838263031077978,4.910196409290651,null,null,2.468514171491886,0.03979744296165756,5.801818623606941,8.399887279896976,null,null,null,8.420092380868295,null,1.600364916219268,0.8604976457977747,null,3.448582108239277,0.03757799500453003,null,0.4097763991781998,1.823905675727739,null,0.9915951328812059,0.8423983818015157,null,0.9411004139421271,0.6677611230914604,null,0.08371288064260572,null,null,0.01278754720389302,1.027752610957479,2.242609601199448,null,0.3179605972648153,null,null,0.9861638730379503,0.6795577775194207,null,0.2243540698721661,null,0.7104041557384857,0.2792912914233433,0.07561062376353495,null,0.02393490110693415,null,0.003197242725102542,1.019850763091472,null,1.65145948595757,null,null,null,null,null,0.008343478525625678,0.3360038767683651,0.8629404242818919,0.3223315353986519,0.2120951886416395,null,0.1492100389138501,0.1086176038170189,null,0.2906459355392806,0.2821138172251333,0.1095680636118647,0.2758032349563386,0.2424192600651147,null,null,0.3643143050575761,0.2941207041721253,null,null,null,null,null,null,null,null,null,null,0.3399609795442531,0.05039287718155223,0.04216305709454527,null,null,null,null,0.1308500486287513,null,null,null,null,null,null,0.1131453858504943,null,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":114,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,50,100,114]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+</div>
+<div id="indian-pharmaceuticals-sector-analysis-q2-fy26-insights" class="section level3">
+<h3>Indian Pharmaceuticals Sector Analysis: Q2 FY26 Insights</h3>
+<p>Based on the provided earnings transcripts and announcements from key players (Sun Pharma, Divi’s Labs, Torrent, Cipla, Zydus Lifesciences, Lupin, Glenmark, Aurobindo, Alkem, Laurus Labs, etc.), here’s a <strong>summary analysis</strong> of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>. The sector shows robust Q2 performance (e.g., Sun: 8.6% sales growth, 31.3% EBITDA; Lupin: 24% revenue growth, 31.3% margins; Zydus: 17% growth, 32.9% EBITDA), driven by diversified portfolios, but faces US-centric pressures.</p>
+<div id="headwinds-challenges" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>US Generics Pricing Erosion &amp; Competition</strong>: Acute in lenalidomide/Revlimid (Sun: flat QoQ, tail-end sales; Cipla/Lupin: minimal Q3 contribution, FY26 &lt;50% of FY25). Albuterol erosion (Lupin). Base business low single-digit price declines (Sun, Lupin).</li>
+<li><strong>Regulatory Hurdles</strong>: US FDA inspections (Cipla: VAI at Bengaluru, reinspection at Indore; Lupin: OAI at Nagpur injectables; Zydus: EIRs at facilities). Delays in approvals (e.g., Lupin Dulera CRL response).</li>
+<li><strong>Higher Costs</strong>: R&amp;D intensity up (Cipla: +50 bps to 7.1%; Sun: 5.4%; Lupin: 7.5%), forex volatility, working capital spikes (Sun: GxMDL escrow; Zydus: acquisitions).</li>
+<li><strong>Margin Pressures in H2</strong>: Normalized post-Q2 peaks (Lupin: 25-26% FY26 guidance; Cipla: 22.75-24%). ETR normalization (Sun: 25%; Cipla: 27%).</li>
+<li><strong>Macro Uncertainties</strong>: US tariffs (Sun/Cipla: paused Section 232; uncertain for IM), muted acute/respiratory seasons (Cipla India slowdown).</li>
+</ul>
+</div>
+<div id="tailwinds-positives" class="section level6">
+<h6><strong>Tailwinds (Positives)</strong></h6>
+<ul>
+<li><strong>India Formulations Outperformance</strong>: Core growth 8-11% (Sun: #1, 8.3% share; Cipla: 7% YoY, 1.2x IPM; Lupin: 8.8%, 65% chronic mix; Zydus: 9%). Volume-led (Sun), chronic focus (cardiac/diabetes/respi).</li>
+<li><strong>US Specialty/Complex Gains</strong>: ILUMYA/CEQUA/ODOMZO/LEQSELVI (Sun: &gt;generics); albuterol leadership (Cipla: 22% share); Tolvaptan exclusivity (Lupin).</li>
+<li><strong>ROW/EM Growth</strong>: Europe 15-27% (Cipla: USD110mn; Lupin: 27%; Zydus: 39%); Brazil/SA turnarounds (Lupin: 141% LC; Sun: 10.9%).</li>
+<li><strong>Margin Expansion</strong>: Gross margins 67-79% (Sun/Cipla); EBITDA 25-33% via mix shift (specialty/CDMO), backward integration (Divi’s).</li>
+<li><strong>PLI/Export Incentives</strong>: Boosted other income (Lupin: +INR40cr).</li>
+<li><strong>Acquisitions/Synergies</strong>: Zydus (Comfort Click/Amplitude for VMS/MedTech); Lupin (VISUfarma for Europe ophthalmology).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Short-Term (FY26-27)</strong>: Double-digit revenue (India 10-12% via GLP-1 launches: semaglutide/tirzepatide first-wave; Cipla/Lupin/Zydus). US: USD1bn+ sustained (Lupin Tolvaptan/Risperdal/Pegfilgrastim; Sun LEQSELVI/UNLOXCYT). Biosimilars ramp (Lupin: 5 by FY30; Cipla filgrastim). Peptides/GLP-1 (Divi’s peptides; multiple semaglutide filings).</li>
+<li><strong>Medium-Term (3-5 Yrs)</strong>: Specialty scale (Sun: ILUMYA 35 markets; Lupin: ophthalmology USD150mn; Zydus: Saroglitazar PBC NDA Q4FY26). CDMO (Divi’s: peptides leadership). MedTech/Vaccines (Zydus: Amplitude/dialyzers; Cipla flu). Green propellants/respiratory (Lupin Ellipta/Respimat).</li>
+<li><strong>Pipeline</strong>: 50+ US ANDAs (Lupin); biosims (Pegfilgrastim/Ranibizumab); oncology/injectables/transdermals (Zydus/Divi’s). Constant currency 10-12% (Divi’s).</li>
+<li><strong>Overall</strong>: 15-20% sector CAGR feasible via complex/specialty (30-50% US mix target), EM/Europe (20%+), India outperformance.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Details</strong></th>
+<th><strong>Mitigants</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory/Compliance</strong></td>
+<td>FDA OAI/VAI delays (Lupin Nagpur, Cipla Indore); biosimilar interchangeability.</td>
+<td>Site investments (Lupin USD250mn Coral Springs); responses filed.</td>
+</tr>
+<tr class="even">
+<td><strong>Competition/Litigation</strong></td>
+<td>US generics entry (Mirabegron Feb hearing - Lupin; Revlimid).</td>
+<td>Exclusivities (Tolvaptan 180-day); strong pipeline.</td>
+</tr>
+<tr class="odd">
+<td><strong>Pricing/Tariffs</strong></td>
+<td>US erosion (5-10%); Section 232/301 probes (Sun/Cipla).</td>
+<td>Specialty shift; US mfg (Cipla/Lupin).</td>
+</tr>
+<tr class="even">
+<td><strong>Execution</strong></td>
+<td>GLP-1 capacity/supply (peptides CMO reliance); acquisitions integration (Zydus debt).</td>
+<td>In-house builds; partnerships (Eli Lilly - Cipla).</td>
+</tr>
+<tr class="odd">
+<td><strong>Macro</strong></td>
+<td>Forex (gains in Q2 but volatile); muted seasons (Cipla respi).</td>
+<td>Diversification (chronic 60%+).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: Bullish with 15%+ growth potential, led by specialty/complex (US/India), but H2 moderation expected. Sector ROCE/EBITDA strong (20-30%); focus on US compliance, biosimilars, GLP-1s critical for FY27 inflection.</p>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-12-02 </em></p>
+<div id="indian-pharmaceuticals-sector-analysis-based-on-provided-announcements" class="section level9">
+<p class="heading">Indian Pharmaceuticals Sector Analysis (Based on Provided Announcements)</p>
+<div id="headwinds-challenges-1" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>US FDA Compliance Issues</strong>: Persistent scrutiny evident in multiple inspections. Sun Pharma’s Halol facility classified as OAI with Import Alert (shipments refused to US barring shortages). Lupin (Goa: 7 Form-483 obs), Aurobindo/Eugia (Unit-II: 9 procedural obs). These signal CGMP gaps, remediation costs, and potential revenue disruptions from US exports.</li>
+<li><strong>Tax/Regulatory Penalties</strong>: Torrent Pharma faces ₹41.33 Cr GST penalty (erroneous export refunds; appeal planned). Dr. Reddy’s subsidiary Aurigene hit with ₹0.65 Cr GST penalty (GSTR-09 discrepancies). Indicates audit risks in tax compliance.</li>
+<li><strong>ESG Downgrade</strong>: Cipla’s rating dipped (65→64) due to US subsidiary product recall, highlighting quality/supply chain vulnerabilities.</li>
+</ul>
+</div>
+<div id="tailwinds-positives-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positives)</strong></p>
+<ul>
+<li><strong>Clean Inspections</strong>: Strong compliance signals from Divi’s Labs (Unit-I: no 483 obs), Alkem (Armenia GMP at Sikkim: no critical/major obs), Glenmark (Aurangabad PAI: zero obs). Supports US market credibility.</li>
+<li><strong>ESG Recognition</strong>: Mankind Pharma assigned ‘64.8’ (Grade B) rating, boosting investor perception.</li>
+<li><strong>Strategic Restructuring</strong>: Zydus Lifesciences’ subsidiary shift (preferential shares to charitable trust) at arm’s length, maintaining control while enabling non-profit goals.</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Expansion</strong>: Laurus Labs secures 531.77 acres in Andhra Pradesh for “Laurus Pharma Zone” (₹5,630 Cr investment, 6,350 jobs over 8 years). Signals aggressive scaling in formulations/APIs.</li>
+<li><strong>Regulatory Resilience</strong>: Majority of inspections procedural/no-obs, with companies committing to swift responses/CGMP adherence (e.g., Sun, Lupin, Aurobindo). Clean slates (Divi’s, Glenmark) enable US growth.</li>
+<li><strong>Diversification</strong>: Global GMP nods (e.g., Alkem-Armenia) open non-US markets; ESG focus positions sector for sustainable finance.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ol style="list-style-type: decimal">
+<li><strong>US FDA Escalation</strong>: OAI/Import Alerts (Sun) could spread; unresolved obs risk Warning Letters, export bans, and 10-20% revenue hits (US ~30-40% of sales for majors).</li>
+<li><strong>Litigation/Financial Drag</strong>: GST penalties (₹42 Cr+ aggregate) may escalate on appeals, tying up cash (~0.1-1% of revenue for affected firms).</li>
+<li><strong>Supply/Quality Disruptions</strong>: Recalls (Cipla) and obs amplify scrutiny; procedural fixes demand capex (₹100s Cr).</li>
+<li><strong>Macro Pressures</strong>: High remediation costs amid pricing pressures; ESG slips could hike funding costs.</li>
+</ol>
+<p><strong>Overall Summary</strong>: Mixed signals—US FDA headwinds dominate (5/12 docs negative), pressuring near-term US exports/compliance costs, but clean inspections (3 positives) and Laurus’ mega-expansion signal resilience/growth. Sector risks skewed regulatory (FDA ~60% focus), but tailwinds from diversification/expansion support FY26 recovery. Monitor FDA classifications and appeals for stock impacts.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+</div>
+<div id="indian-pharmaceuticals-sector-analysis-headwinds-tailwinds-growth-prospects-and-key-risks" class="section level3">
+<h3>Indian Pharmaceuticals Sector Analysis: Headwinds, Tailwinds, Growth Prospects, and Key Risks</h3>
+<p><strong>Overview</strong>: The sector analysis is derived from Q2 FY26 earnings transcripts and announcements of major players (Sun Pharma, Divi’s Labs, Cipla, Lupin, Zydus Lifesciences, Torrent, Glenmark, etc.). The industry shows robust revenue growth (e.g., Sun: +8.6% QoQ, Lupin: +24% YoY) driven by complex generics, specialty launches, and India formulations outperforming IPM (8-11% growth). Margins expanded (e.g., Lupin: 31.3%, Cipla: 25%), aided by product mix and efficiencies. Focus areas: US complex/specialty, India chronics, biosimilars, GLP-1s. R&amp;D spends high (7-8% of sales).</p>
+<div id="headwinds-challenges-2" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>US Pricing Erosion &amp; Competition</strong>: Generics face declines (Sun: US generics offset innovative growth; Divi’s: pricing pressures despite stable volumes; Cipla/Lupin: Revlimid tail-off, Albuterol erosion). Lenalidomide sales dropping sharply post-exclusivity.</li>
+<li><strong>Regulatory Scrutiny</strong>: USFDA inspections (Lupin: OAI at Pithampur/Nagpur; Cipla: VAI at Bengaluru). Compliance risks delay launches (e.g., Lupin’s injectables).</li>
+<li><strong>Patent/LOE Impacts</strong>: India LOEs (Lupin: Gibtulio/Ajaduo; Sun: tenders); US litigations (Lupin: Mirabegron hearing Feb’26).</li>
+<li><strong>Macro/External Pressures</strong>: US tariffs (Sun/Cipla: uncertainty on Section 232/301); forex volatility; raw material costs (Divi’s: monitoring China/Russia sanctions).</li>
+<li><strong>Margin Pressures in Select Segments</strong>: Generics (Divi’s: 39.5% material costs); higher R&amp;D (Cipla: +50bps to 7.1%).</li>
+</ul>
+</div>
+<div id="tailwinds-positive-factors" class="section level6">
+<h6><strong>Tailwinds (Positive Factors)</strong></h6>
+<ul>
+<li><strong>India Formulations Strength</strong>: Outperforming IPM (Sun: 11% YoY, #1 share; Cipla: 7-8.8%; Lupin: 8.8% core Rx). Chronic mix rising (Sun: 32.9%; Lupin: 65%). Volume-led growth; respiratory revival.</li>
+<li><strong>US Innovative/Complex Launches</strong>: Tolvaptan (Lupin: exclusivity runway); injectables/biosimilars (Cipla: filgrastim, glucagon; Lupin: Victoza, Risperdal). FDA biosimilar easing boosts momentum.</li>
+<li><strong>Biosimilars &amp; Peptides Momentum</strong>: FDA draft guidance lowers barriers (Cipla/Lupin/Zydus). Launches like Pegfilgrastim (Lupin), oncology biosimilars (Zydus: #1 India oncology).</li>
+<li><strong>Europe/EM Growth</strong>: Lupin: 27% YoY Europe; Cipla: 15% EMEU; Sun: strong ex-US innovative.</li>
+<li><strong>Margin Expansion</strong>: Gross margins up (Lupin: 73.3%; Sun: 79.3%) via mix, efficiencies, lower in-licensed share.</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="28%" />
+<col width="38%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Region/Segment</strong></th>
+<th><strong>Key Drivers</strong></th>
+<th><strong>Outlook (FY26-28)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>US (30-40% rev)</strong></td>
+<td>Complex injectables (Lupin/Cipla: 4-5 launches FY26-27), biosimilars (5 products by FY30, Lupin), respiratory (Dulera/Respimat/Ellipta). Specialty (ophthalmology via VISUfarma, Lupin: USD150mn run-rate FY27).</td>
+<td>Double complex share; USD1bn+ sustained (Lupin). 10-15% CAGR.</td>
+</tr>
+<tr class="even">
+<td><strong>India (30-35%)</strong></td>
+<td>Chronics/respiratory revival; GLP-1s (Cipla/Lupin/Sun: Semaglutide/Tirzepatide first-wave). 80+ launches (Lupin).</td>
+<td>10-12% growth, 1.2-1.3x IPM (Lupin/Sun).</td>
+</tr>
+<tr class="odd">
+<td><strong>Europe/Developed (10-15%)</strong></td>
+<td>VISUfarma (Lupin: Italy/Spain entry); Luforbec (Lupin: 27% YoY). Green propellants.</td>
+<td>20%+ CAGR (Lupin).</td>
+</tr>
+<tr class="even">
+<td><strong>EM (15-20%)</strong></td>
+<td>Brazil/SA turnaround (Lupin: 141%/strong); biosimilars/vaccines (Zydus).</td>
+<td>15-20% growth.</td>
+</tr>
+<tr class="odd">
+<td><strong>Emerging (Biosims/Peptides/CDMO)</strong></td>
+<td>GLP-1 (multi-company); peptides (Divi’s: CoE); NCEs (Zydus: Saroglitazar PBC NDA FY26). CDMO biologics (Zydus).</td>
+<td>High teens CAGR; specialty to 20-30% mix.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall</strong>: 12-15% revenue CAGR FY26-28; EBITDA margins 24-26% sustained (Lupin/Cipla). ROCE 20-25%.</p>
+</div>
+<div id="key-risks-2" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<table>
+<colgroup>
+<col width="27%" />
+<col width="32%" />
+<col width="40%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk</strong></th>
+<th><strong>Impact</strong></th>
+<th><strong>Mitigation</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>US Regulatory/Compliance</strong></td>
+<td>Launch delays (e.g., Lupin Nagpur OAI).</td>
+<td>Site upgrades; VAI progress (Cipla).</td>
+</tr>
+<tr class="even">
+<td><strong>Pricing/Competition</strong></td>
+<td>Erosion in Revlimid/Albuterol/Spiriva (Sun/Cipla/Lupin).</td>
+<td>Complex launches, biosimilars.</td>
+</tr>
+<tr class="odd">
+<td><strong>US Tariffs/PBMs</strong></td>
+<td>IM products at risk (Sun/Cipla).</td>
+<td>US mfg expansion (Cipla/Lupin: USD250mn Coral Springs).</td>
+</tr>
+<tr class="even">
+<td><strong>GLP-1 Supply/Capacity</strong></td>
+<td>CMO reliance; competition (Cipla/Lupin).</td>
+<td>In-house build-up; partnerships.</td>
+</tr>
+<tr class="odd">
+<td><strong>Patent Litigations</strong></td>
+<td>Mirabegron/Tolvaptan delays (Lupin).</td>
+<td>Strong defenses; base cases assume limited entrants.</td>
+</tr>
+<tr class="even">
+<td><strong>Forex/Raw Materials</strong></td>
+<td>Volatility (Divi’s).</td>
+<td>Backward integration; hedging.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Summary</strong>: Indian pharma is resilient with <strong>strong tailwinds</strong> from India outperformance, US complex/specialty launches, biosimilars, and GLP-1s driving 12-15% growth and 24-26% margins. <strong>Headwinds</strong> like US pricing/regs are offset by innovation focus. <strong>Prospects</strong> brightest in US specialty (ophthalmology/respi), India chronics/GLP-1, Europe/EM. <strong>Risks</strong> center on USFDA compliance, tariffs, and competition—mitigated via US capex, R&amp;D (7-8%), and diversification. Sector ROCE ~25%; optimistic FY26-28 amid policy tailwinds (FDA biosimilars, India GST reforms).</p>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+</div>
+<div id="analysis-of-indian-pharmaceuticals-sector-based-on-provided-documents" class="section level3">
+<h3>Analysis of Indian Pharmaceuticals Sector (Based on Provided Documents)</h3>
+<p>The provided documents consist of regulatory filings, financial results (Q1/Q2 FY26), and press releases from major Indian pharma players: Sun Pharma, Torrent Pharma, Cipla, Dr. Reddy’s, Zydus Lifesciences, Lupin, Mankind Pharma, Aurobindo Pharma, Alkem Labs, Glenmark, Laurus Labs, and Biocon Biologics. These reflect a <strong>resilient sector</strong> with robust Q1/Q2 FY26 performance amid global expansion, but tempered by regulatory and operational challenges. Key metrics: Revenues grew 6-35% YoY across most firms; EBITDA margins stable/improving (20-32%); strong US/Europe/India focus; biosimilars/generics driving momentum.</p>
+<p>Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-drivers" class="section level6">
+<h6><strong>Tailwinds (Positive Drivers)</strong></h6>
+<ul>
+<li><strong>Strong Financial Momentum</strong>: Revenues up significantly (e.g., Cipla: +8% YoY to ₹7,589 Cr; Mankind: +20.8% to ₹3,697 Cr; Laurus: +35% to ₹1,653 Cr in Q2). EBITDA margins resilient (25-32%; Laurus at 26%, Torrent at 32.5%). Healthy cash positions (Cipla: ₹9,901 Cr net cash; Aurobindo: $170 Mn net cash).</li>
+<li><strong>Domestic Market Outperformance</strong>: India chronic therapies booming (Torrent: 13% vs. IPM 9%; Mankind: Cardiac/Anti-diabetics 1.3x/1.2x IPM; Cipla: Urology/Cardiac double-digit). Consumer health stable despite monsoons/GST.</li>
+<li><strong>US/Europe Approvals &amp; Launches</strong>: 7+ USFDA approvals (Aurobindo: 7 ANDAs; Zydus/Lupin biosimilars). Biosimilars traction (Dr. Reddy’s AVT03 EC approval; Lupin Pegfilgrastim; Biocon Denosumab settlement). US revenues up (Cipla: $233 Mn; Aurobindo: +3.1% YoY).</li>
+<li><strong>Emerging Markets &amp; CDMO Growth</strong>: Africa/Brazil/Europe strong (Cipla: Africa +5% USD; Torrent Brazil +16% CC). CDMO surging (Laurus: +74% H1; Aurobindo ARV +68.7%).</li>
+<li><strong>R&amp;D/Product Innovation</strong>: High spends (Cipla: 7.1%; Laurus: 4.3%). Launches like Sun’s Ilumya (India psoriasis), Alkem’s DSS probiotic.</li>
+<li><strong>Regulatory Wins</strong>: Glenmark’s Monroe facility VAI status (restarts ops); Torrent/Tax optimizations.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-3" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>Supply/Operational Disruptions</strong>: Torrent Germany supply issues; Mankind GST 2.0/monsoon impacting OTC; Cipla gRevlimid base erosion expected.</li>
+<li><strong>Margin Pressures</strong>: Slight dips (Mankind EBITDA margin -280 bps YoY to 25%; Aurobindo API -17% YoY). One-offs like acquisition costs (Torrent).</li>
+<li><strong>Declines in Segments</strong>: Aurobindo Beta-lactam/API down 20%; Laurus Bio -8% H1 due to scale-up delays; Mankind Consumer Health -3% YoY.</li>
+<li><strong>Currency/External Factors</strong>: Forex gains/losses noted (most reports); uneven monsoons/GST rollout.</li>
+<li><strong>Historical Regulatory Hangovers</strong>: Glenmark Monroe Warning Letter resolved, but past FDA scrutiny lingers.</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Biosimilars/Complex Generics</strong>: High potential in oncology/bone health (Biocon/Dr. Reddy’s/Lupin denosumab/pegfilgrastim). US pipeline robust (Torrent JB Pharma acquisition: ₹11,917 Cr stake; Aurobindo 876 ANDAs filed).</li>
+<li><strong>Chronic/High-Value Therapies</strong>: India focus (IPM outperformance in CV/Diabetes/Respiratory). Global: Oncology/immunology (Laurus ADC investments).</li>
+<li><strong>CDMO/CMO Expansion</strong>: Laurus/Aurobindo scaling capacities (peptides, fermentation); multi-year contracts.</li>
+<li><strong>Geographic Diversification</strong>: US (differentiated assets like Cipla Albuterol #1); Europe (Aurobindo +18% YoY); EM/Africa (Cipla #2 prescription).</li>
+<li><strong>Pipeline &amp; Investments</strong>: 20+ biosimilars (Biocon); ARVs leadership (Laurus 21% YoY); R&amp;D for obesity (Cipla Tirzepatide).</li>
+<li><strong>Outlook</strong>: FY26 guidance intact (Aurobindo confident); 10-20% revenue growth feasible via launches (e.g., Cipla upcoming US generics).</li>
+</ul>
+<table>
+<colgroup>
+<col width="51%" />
+<col width="27%" />
+<col width="20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Key Metrics (Aggregate Trends from Reports)</strong></th>
+<th><strong>Q2 FY26 YoY Growth</strong></th>
+<th><strong>EBITDA Margin</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Revenues</td>
+<td>+6-35%</td>
+<td>20-32%</td>
+</tr>
+<tr class="even">
+<td>US/Europe</td>
+<td>+3-18%</td>
+<td>Stable</td>
+</tr>
+<tr class="odd">
+<td>India Domestic</td>
+<td>+7-15%</td>
+<td>Chronic-led</td>
+</tr>
+<tr class="even">
+<td>CDMO/ARV</td>
+<td>+50-75%</td>
+<td>High-margin</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks-3" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<ul>
+<li><strong>Regulatory/Compliance</strong>: FDA/EC dependencies (delays in approvals/launches; e.g., Cipla gRevlimid timing gap). Past issues (Glenmark Warning Letter).</li>
+<li><strong>US Market Pricing/Competition</strong>: Generic erosion (gRevlimid); high competition in $1B+ molecules (Pegfilgrastim sales $1.3B).</li>
+<li><strong>Supply Chain/Geopolitical</strong>: Disruptions (Germany, GST); forex volatility; raw material shortages.</li>
+<li><strong>Execution Risks</strong>: CDMO scale-up delays (Laurus Bio); acquisition integration (Torrent JB Pharma pending approvals).</li>
+<li><strong>Financial/Legal</strong>: Debt leverage (though low: Aurobindo/Torrent 0.3x); NPPA settlements (Torrent exceptional items); patent litigations (Biocon settlements).</li>
+<li><strong>Macro</strong>: Economic slowdowns, inflation, rupee depreciation; monsoon/GST impacts on domestic.</li>
+</ul>
+</div>
+<div id="summary" class="section level6">
+<h6><strong>Summary</strong></h6>
+<p><strong>Bullish Outlook with Balanced Risks</strong>: Indian pharma exhibits <strong>strong tailwinds</strong> from US/Europe approvals, chronic India growth, and CDMO/biosimilars, driving 10-30% YoY revenue momentum and 25%+ margins. <strong>Growth prospects</strong> are robust (biosimilars pipeline, EM expansion, R&amp;D), positioning the sector for 15-20% FY26 growth. However, <strong>headwinds</strong> like supply disruptions and margin dips persist, with <strong>key risks</strong> centered on regulations (FDA) and US competition. Overall, <strong>net positive</strong>—resilience via diversification/cash buffers supports sustained value creation, but monitor US generics erosion and regulatory filings. Sector PE likely premium on biosimilar catalysts.</p>
+<p><em>Data as of Nov-Dec 2025 filings; sector capex/R&amp;D (~5-7% sales) signals long-term bets.</em></p>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
