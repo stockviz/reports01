@@ -1,0 +1,133 @@
+---
+title: Daily NIFTY 500 Streaks Report
+subtitle: StockViz
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: rmdlib		
+    includes:
+        in_header: header.html
+        after_body: ../footer.html
+---
+
+```{r dt_chunk, include=FALSE}
+
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+
+```
+
+---
+date: `r createdDate`
+---
+
+*Looking for pre-canned, scientifically developed, statistically robust strategies? Check out [StockViz](https://stockviz.biz)! *
+
+```{r, calc_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+
+library('RODBC')
+library('RPostgres')
+library('quantmod')
+library('PerformanceAnalytics')
+library('xtable')
+library('knitr')
+library('DT')
+
+options(stringsAsFactors = FALSE)
+options("scipen"=100)
+
+#source("C:/stockviz/r/config.r")
+source("/mnt/hollandr/config.r")
+
+lcon <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, ldbname, ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+pgCon <- dbConnect(RPostgres::Postgres(), host=ldbserver2, user=ldbuser2, password=ldbpassword2, dbname=ldbname2, sslmode='allow')
+
+asofDt<-dbGetQuery(pgCon, "select max(date_stamp) from eod_adjusted_nse")[[1]]
+startDate <- asofDt - 365
+
+iName <- 'NIFTY 500'
+iDf <- sqlQuery(lcon, sprintf("select time_stamp, px_close from BHAV_INDEX where index_name='%s' and time_stamp >= '%s' and time_stamp <= '%s'", iName, startDate, asofDt))
+iXts <- xts(iDf[,2], iDf[,1])
+iRet <- dailyReturn(iXts)
+
+kableTable <- list()
+
+symbols <- sqlQuery(lcon, sprintf("select SYMBOL from INDEX_NSE_3 where INDEX_NAME='%s'", iName))$SYMBOL
+positiveStreak <- data.frame(SYMBOL = "", DAYS=0, RET=0.0)
+negativeStreak <- data.frame(SYMBOL = "", DAYS=0, RET=0.0)
+
+for(i in 1:length(symbols)){
+	sym <- symbols[i]
+	pxDf <- dbGetQuery(pgCon, "select date_stamp, c from eod_adjusted_nse where ticker = $1 and date_stamp >= $2 and date_stamp <= $3", params=list(sym, startDate, asofDt))
+	if(nrow(pxDf) == 0) next
+	pXts <- xts(pxDf$c, pxDf$date_stamp)
+	pRet <- dailyReturn(pXts)
+	
+	if(last(index(pRet)) != last(index(iRet))) next
+	
+	relRet <- pRet - iRet
+	numRows <- nrow(relRet)
+	if(as.numeric(last(relRet)) < 0){
+		for(j in numRows:1){
+			if(as.numeric(relRet[j]) > 0){
+				break
+			}
+		}
+		j<-j+1
+		streakLength <- numRows-j+1
+		if ( streakLength > 3 ) {
+			negativeStreak <- rbind(negativeStreak, c(toString(sym), numRows-j+1, 100*as.numeric(Return.cumulative(pRet[j:numRows]))))
+		}
+	} else if(as.numeric(last(relRet)) > 0){
+		for(j in numRows:1){
+			if(as.numeric(relRet[j]) < 0){
+				break
+			}
+		}
+		j<-j+1
+		streakLength <- numRows-j+1
+		if ( streakLength > 3 ) {
+			positiveStreak <- rbind(positiveStreak, c(toString(sym), numRows-j+1, 100*as.numeric(Return.cumulative(pRet[j:numRows]))))
+		}
+	}
+}
+
+positiveStreak <- positiveStreak[-1,]
+negativeStreak <- negativeStreak[-1,]
+
+positiveStreak$DAYS <- as.numeric(positiveStreak$DAYS)
+negativeStreak$DAYS <- as.numeric(negativeStreak$DAYS)
+
+positiveStreak$RET <- round(as.numeric(positiveStreak$RET), 2)
+negativeStreak$RET <- round(as.numeric(negativeStreak$RET), 2)
+
+positiveStreak <- positiveStreak[order(positiveStreak$DAYS, decreasing = T),]
+negativeStreak <- negativeStreak[order(negativeStreak$DAYS, decreasing = T),]
+
+names(positiveStreak) <- c("SYMBOL", "LENGTH", "RETURNS")
+names(negativeStreak) <- c("SYMBOL", "LENGTH", "RETURNS")
+	
+kableTable[[1]] <- datatable(positiveStreak, rownames = F, class = 'cell-border stripe', 
+						filter='none', options = list(dom = 't', pageLength = nrow(positiveStreak)))	
+
+
+kableTable[[2]] <- datatable(negativeStreak, rownames = F, class = 'cell-border stripe', 
+						filter='none', options = list(dom = 't', pageLength = nrow(negativeStreak)))	
+
+```
+
+```{r, date_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE}
+cat(toString(startDate), "through", toString(asofDt), "\n")
+
+```
+
+```{r, index_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE}
+
+cat("### Positive Streaks", "\n\n")
+htmltools::tagList(print(kableTable[[1]]))
+cat("### Negative Streaks", "\n\n")
+htmltools::tagList(print(kableTable[[2]]))
+```

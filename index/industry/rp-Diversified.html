@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Diversified</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Diversified</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Diversified.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Diversified.fan.CAP_WT.png" /></p>
+<p><img src="plots/Diversified.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Diversified.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Diversified.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Diversified.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Diversified.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a723e40b4a2b972b7a97" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a723e40b4a2b972b7a97">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["0.21%","1.52%"],["-1.08%","1.07%"],["-4.81%","1.87%"],["-8.18%","3.5%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Diversified.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Diversified.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-cbfd98503df094744ee7" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-cbfd98503df094744ee7">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.3MINDIA.html\" target=\"_blank\">3MINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.GODREJIND.html\" target=\"_blank\">GODREJIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DCMSHRIRAM.html\" target=\"_blank\">DCMSHRIRAM<\/a>","<a href=\"/reports02/eq-in/risk/in.BALMLAWRIE.html\" target=\"_blank\">BALMLAWRIE<\/a>","<a href=\"/reports02/eq-in/risk/in.TTKHLTCARE.html\" target=\"_blank\">TTKHLTCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.DVL.html\" target=\"_blank\">DVL<\/a>","<a href=\"/reports02/eq-in/risk/in.MAHESHWARI.html\" target=\"_blank\">MAHESHWARI<\/a>"],[0.4975323457598306,0.2133921858247771,0.2071025537545184,0.05498648228815376,0.0150106053636243,0.009938397995345365,0.002037429013750543],[0.4194897526180181,0.3550602928317357,0.1716844208338214,0.03074169885009986,0.01307883855685084,0.008612651355529344,0.00133234495394468]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":7,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-fe7c919eb58e492829a8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-fe7c919eb58e492829a8">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.3MINDIA.html\" target=\"_blank\">3MINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.GODREJIND.html\" target=\"_blank\">GODREJIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DCMSHRIRAM.html\" target=\"_blank\">DCMSHRIRAM<\/a>","<a href=\"/reports02/eq-in/risk/in.BALMLAWRIE.html\" target=\"_blank\">BALMLAWRIE<\/a>","<a href=\"/reports02/eq-in/risk/in.TTKHLTCARE.html\" target=\"_blank\">TTKHLTCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.DVL.html\" target=\"_blank\">DVL<\/a>","<a href=\"/reports02/eq-in/risk/in.MAHESHWARI.html\" target=\"_blank\">MAHESHWARI<\/a>"],[16.22151519351178,48.06079609694049,16.84613166977926,5.640904122658852,1.746076999108334,-1.520777865955852,0.4306187455127911],[16.92855795743664,52.33177743408852,17.98631701106844,5.145261439433359,1.742031144758102,-2.186461942172921,0.4053278838456951],[18.77808746571831,55.04296320669487,22.07123729237356,4.638397240309965,1.831543215323618,-2.767556304266023,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":7,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1273935a46a0b769e05e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1273935a46a0b769e05e">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.3MINDIA.html\" target=\"_blank\">3MINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.GODREJIND.html\" target=\"_blank\">GODREJIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DCMSHRIRAM.html\" target=\"_blank\">DCMSHRIRAM<\/a>","<a href=\"/reports02/eq-in/risk/in.BALMLAWRIE.html\" target=\"_blank\">BALMLAWRIE<\/a>","<a href=\"/reports02/eq-in/risk/in.TTKHLTCARE.html\" target=\"_blank\">TTKHLTCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.DVL.html\" target=\"_blank\">DVL<\/a>","<a href=\"/reports02/eq-in/risk/in.MAHESHWARI.html\" target=\"_blank\">MAHESHWARI<\/a>"],[11.27087413344163,27.10723247558835,36.26528118908194,6.071157454592918,2.35953752726551,1.386915764580926,2.186620782505223],[10.96799527020832,33.77409016641536,34.70257346131554,5.881401785817508,2.172478499490374,1.206464741916346,1.999197632626261],[9.78640064548741,42.18484406117122,35.98011023727413,6.676662960858954,2.145987429297631,1.226797033284399,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":7,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="analysis-of-indian-diversified-companies-3m-india-dcm-shriram" class="section level9">
+<p class="heading">Analysis of Indian Diversified Companies (3M India &amp; DCM Shriram)</p>
+<p>Using the provided announcements as input, these documents are regulatory disclosures under SEBI (LODR) Reg 30, detailing scheduled analyst/investor interactions. They emphasize no new/unpublished price-sensitive information (UPSI) will be shared, focusing instead on public data (e.g., prior financial results, investor presentations). No direct financial metrics, strategies, or market commentary are included. Below is a derived analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong> for these Indian diversified firms (3M India: conglomerate in industrials/healthcare/safety; DCM Shriram: chemicals/agri/shriram group diversification). Insights are inferred from the context of proactive investor engagement.</p>
+<div id="headwinds-challengesnegative-factors" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges/Negative Factors)</strong></p>
+<ul>
+<li><strong>Limited Visibility on Operations</strong>: Announcements highlight reliance on <em>already public</em> info (e.g., DCM Shriram’s Q2/H1 FY26 results and concall from Oct 2025). No forward-looking guidance suggests potential caution amid macroeconomic pressures (e.g., global supply chain issues for 3M or agri/chemical volatility for DCM Shriram).</li>
+<li><strong>Scheduling Uncertainties</strong>: Explicit note on possible changes “due to exigencies” (e.g., 3M India’s meeting) indicates operational/logistical headwinds, potentially from travel, regulatory, or market disruptions.</li>
+<li><strong>Neutral Disclosure Tone</strong>: Absence of enthusiasm or new catalysts implies near-term caution in diversified sectors exposed to cyclicality (e.g., industrials, chemicals).</li>
+</ul>
+</div>
+<div id="tailwinds-positive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Robust Investor Engagement</strong>: Scheduled one-on-one with HDFC Mutual Fund (3M India, Sep 23, 2025) and in-person summit participation (DCM Shriram at Anand Rathi G-200, Nov 14, 2025) signals strong institutional interest from top players.</li>
+<li><strong>Proactive Compliance &amp; Transparency</strong>: Timely filings (digitally signed by CS/COs) build investor confidence, especially post-results seasons, aiding liquidity and valuation support.</li>
+<li><strong>Sector Momentum</strong>: In-person Mumbai/Bangalore meets reflect post-pandemic normalization, favoring diversified firms with stable earnings visibility.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Moderate, Engagement-Driven</strong>: No explicit growth data, but investor meets post-earnings (DCM Shriram references Sep 2025 results) suggest stability in core segments. Tailwinds from India’s capex cycle (infrastructure for 3M; agri/chemical recovery for DCM) could drive mid-single-digit growth, inferred from routine interactions.</li>
+<li><strong>Longer-Term Potential</strong>: Diversified portfolios provide resilience; e.g., 3M’s innovation edge and DCM’s shriram synergies. Publicly available concalls/presentations (hosted on websites) likely reinforce FY26 guidance, with prospects tied to domestic demand.</li>
+<li><strong>Outlook</strong>: Neutral-positive; meetings could unlock feedback for strategic pivots, but capped by “no UPSI” commitment.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="30%" />
+<col width="26%" />
+<col width="42%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Mitigation from Docs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory/Disclosure</strong></td>
+<td>Breach of SEBI norms if UPSI inadvertently shared.</td>
+<td>Explicit “no UPSI” disclaimer.</td>
+</tr>
+<tr class="even">
+<td><strong>Event Cancellation</strong></td>
+<td>Changes due to “exigencies” (company/investor side).</td>
+<td>Advance notice to exchanges.</td>
+</tr>
+<tr class="odd">
+<td><strong>Market/External</strong></td>
+<td>Volatility in inputs (e.g., commodities for DCM) or global peers (3M).</td>
+<td>Focus on filed public info reduces speculation.</td>
+</tr>
+<tr class="even">
+<td><strong>Sector-Specific</strong></td>
+<td>Cyclical slowdowns in industrials/agri amid monsoons/inflation.</td>
+<td>Investor meets signal ongoing dialogue.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="overall-summary" class="section level12">
+<p class="heading"><strong>Overall Summary</strong></p>
+<p>These announcements portray <strong>stable, investor-friendly operations</strong> with no major red flags, underscoring tailwinds from institutional access amid a compliant framework. Headwinds are minimal and procedural, while growth prospects remain anchored to prior public disclosures (e.g., unaudited results). Key takeaway: Positive sentiment indicator for Indian diversified names, but substantive insights require earnings transcripts/presentations referenced herein. No material risks elevated; monitor for meeting outcomes or revisions.</p>
+<p><em>Recommendation</em>: Review linked websites (3MIndia.com, DCMShriram.com) for full investor materials. Analysis dated to doc timelines (Sep-Nov 2025).</p>
+</div>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3><strong>Financial</strong></h3>
+<p><em>asof: 2025-12-01 </em></p>
+<div id="summary-analysis-headwinds-tailwinds-growth-prospects-and-key-risks-for-indian-diversified-companies-q3fy25" class="section level9">
+<p class="heading">Summary Analysis: Headwinds, Tailwinds, Growth Prospects, and Key Risks for Indian Diversified Companies (Q3FY25)</p>
+<p>The provided documents cover unaudited Q3FY25 (quarter and 9M ended Dec 31, 2024) results from seven diversified Indian listed companies spanning industrials (3M India, Balmer Lawrie), conglomerates (Godrej Industries, Dhunseri Ventures), chemicals/agri (DCM Shriram), healthcare (TTK Healthcare), and logistics (Maheshwari Logistics). These firms exhibit multi-segment operations (e.g., healthcare, realty, agri, packaging, treasury). Overall, the portfolio shows <strong>resilient YoY growth</strong> (avg. revenue +10-20%, PAT +15-50% in most), driven by select segments, but faces <strong>sequential softness</strong> and cost pressures. Below is a structured analysis.</p>
+<div id="headwinds-key-challenges-observed" class="section level12">
+<p class="heading"><strong>Headwinds (Key Challenges Observed)</strong></p>
+<ul>
+<li><strong>Cost Inflation &amp; Margin Pressure</strong>: Material costs, freight, and employee expenses rose (e.g., 3M India: EBITDA -12-15% YoY/QoQ due to input/freight hikes; Godrej: operating margins dipped in some segments; Maheshwari: high finance costs at ~3% of revenue).</li>
+<li><strong>Sequential Declines</strong>: Revenue/EBITDA soft QoQ (3M: -2% sales; Maheshwari: revenue -ve; Balmer Lawrie: flat). Soft end-markets (e.g., 3M’s Safety/Industrial -1.4% YoY).</li>
+<li><strong>Segment Volatility</strong>: Agri/food (Godrej Agrovet flat; DCM Sugar seasonal); logistics (Maheshwari revenue -10% YoY amid competition).</li>
+<li><strong>Regulatory/Compliance</strong>: Dhunseri Ventures flagged loan to related party without special resolution (₹22.5 Cr repaid, but potential penalties).</li>
+<li><strong>External</strong>: Soft demand in cyclical areas (e.g., Godrej Crop Protection -ve; 3M consumer soft).</li>
+</ul>
+</div>
+<div id="tailwinds-positive-factors-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>YoY Topline/PAT Growth</strong>: Strong across board (Godrej: +34% income, +77% PAT; DCM: +23% sales, +29% PAT; TTK: +11% sales, exceptional land sale gain; 3M: +8% sales led by Healthcare +23%).</li>
+<li><strong>Segment Strength</strong>: Realty (Godrej Properties: ₹5,446 Cr bookings); Healthcare/Medical Devices (3M Health Care +23%, TTK steady); Chemicals/Agri (DCM Chloro-Vinyl +44%; Godrej Chemicals +21%).</li>
+<li><strong>Investments &amp; OCI Gains</strong>: Dhunseri/3M/Godrej reported fair value gains (e.g., Dhunseri OCI ₹137 Cr from investments).</li>
+<li><strong>Operational Efficiency</strong>: Capacity expansions (DCM Sugar +2,100 TCD); cost controls (Balmer Lawrie stable margins).</li>
+<li><strong>Diversification Benefits</strong>: Multi-segment buffers (Godrej: Realty 28% revenue contribution).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High-Potential Segments</strong>:
+<ul>
+<li><strong>Realty/Infra</strong>: Godrej Properties (₹10,800 Cr pipeline); Balmer Lawrie Logistics Infra.</li>
+<li><strong>Healthcare/Consumer</strong>: 3M/TTK (devices, welfare); Godrej Consumer (double-digit volume growth).</li>
+<li><strong>Agri/Chemicals</strong>: DCM expansions; Godrej Agrovet margins improving (feed +45% EBIT/MT).</li>
+<li><strong>Logistics/Packaging</strong>: Maheshwari/Balmer (industrial packaging, infra growth).</li>
+</ul></li>
+<li><strong>Strategic Moves</strong>: Godrej ₹500 Cr investment in Capital sub; 3M amalgamation synergies; TTK new director for governance.</li>
+<li><strong>Outlook</strong>: 10-15% revenue CAGR feasible (driven by 20-30% in realty/healthcare); EBITDA margins 10-15% with cost discipline. Portfolio diversification reduces sector risks.</li>
+<li><strong>Macro Support</strong>: Festive/rabi season tailwinds (DCM sugar); export push (3M +58% Chemicals exports).</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table style="width:100%;">
+<colgroup>
+<col width="27%" />
+<col width="23%" />
+<col width="27%" />
+<col width="21%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Impacted Cos.</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Cyclical/Commodity</strong></td>
+<td>Volatility in agri/sugar (DCM, Godrej); input costs (3M, Maheshwari).</td>
+<td>All</td>
+<td>Hedging, diversification.</td>
+</tr>
+<tr class="even">
+<td><strong>Regulatory/Compliance</strong></td>
+<td>Loan violations (Dhunseri); SOP fines (TTK); NCLT schemes (3M).</td>
+<td>Dhunseri, TTK</td>
+<td>Repayments, waivers sought.</td>
+</tr>
+<tr class="odd">
+<td><strong>Forex/Debt</strong></td>
+<td>High finance costs (Maheshwari 3.5% rev.; Dhunseri forex gains volatile).</td>
+<td>Maheshwari, Dhunseri</td>
+<td>Debt reduction (Godrej D/E 0.6x).</td>
+</tr>
+<tr class="even">
+<td><strong>Execution/Competition</strong></td>
+<td>Soft demand (3M industrial); logistics margins (Maheshwari).</td>
+<td>3M, Maheshwari</td>
+<td>Capex (DCM), subs growth (Godrej).</td>
+</tr>
+<tr class="odd">
+<td><strong>Governance</strong></td>
+<td>Related-party loans; director changes.</td>
+<td>Dhunseri, TTK</td>
+<td>New indep. directors, audits.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Summary</strong>: These diversified firms delivered <strong>robust YoY performance</strong> (portfolio avg. PAT +30-40%) amid headwinds like costs and sequential dips, buoyed by tailwinds in healthcare/realty. <strong>Growth prospects strong</strong> (15%+ CAGR via expansions/diversification), but <strong>risks center on compliance, costs, and cyclicality</strong>. Portfolio resilience from multi-sectors; monitor debt (avg. D/E ~0.5x) and regulatory resolutions. Positive for FY26 if macros stabilize.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="analysis-for-indian-diversified-sector-based-on-provided-announcements" class="section level9">
+<p class="heading">Analysis for Indian Diversified Sector (Based on Provided Announcements)</p>
+<p>The provided documents represent regulatory disclosures (Reg 30, SEBI LODR) from diversified Indian listed companies spanning industrials (3M India, Balmer Lawrie, DCM Shriram), consumer/FMCG/healthcare (Godrej Industries, TTK Healthcare), logistics (Maheshwari Logistics), and ventures/packaging (Dhunseri Ventures). These reflect operational, financial, governance, and compliance updates as of Oct-Nov 2025. Overall, the sector shows resilience amid tax resolutions and steady financials, but with pockets of transition risks. Below is a structured summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-momentum" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Momentum)</strong></p>
+<ul>
+<li><strong>Tax Dispute Resolutions</strong>: 3M India’s full settlement of FY09 tax arrears (Rs 2.28 Cr refund under Vivad Se Vishwas Scheme) reduces legacy liabilities, freeing cash for operations. Signals improving regulatory environment for corporates.</li>
+<li><strong>Strong Financial Performance</strong>: TTK Healthcare reported H1 FY26 revenue of Rs 430 Cr (+6% YoY), PAT Rs 33.4 Cr (+46% adj. for one-offs), with robust segments like Medical Devices (+19% QoQ) and Consumer Products. High other income (Rs 37 Cr) from investments supports liquidity.</li>
+<li><strong>Operational Recognition</strong>: Maheshwari Logistics’ “Excellent Logistics Performance” award from JK Super Cement validates efficiency in a high-growth logistics sector (India’s infra push via Gati Shakti).</li>
+<li><strong>Employee Incentives</strong>: Godrej Industries’ fresh ESOP grants (832 options) indicate talent retention confidence in diversified ops (FMCG, chemicals).</li>
+<li><strong>Governance Efficiency</strong>: Routine actions like AGM communications (Dhunseri Ventures) and RO shift approval (DCM Shriram to Haryana) enhance compliance and cost efficiencies.</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Management Transitions</strong>: Balmer Lawrie’s COO superannuation (N V Balaji, effective Mar 2026) and redesignation (J Suresh Antony as Head-IP) could cause short-term disruptions in industrial packaging amid superannuation cycles in PSUs.</li>
+<li><strong>Segment Weakness</strong>: TTK Healthcare’s Protective Devices division shows persistent losses (Rs -10 Cr in Q2 FY26), linked to USAID order cancellations and inventory write-offs (Rs 5.9 Cr in FY25).</li>
+<li><strong>ESOP Lapses</strong>: Godrej noted 683 lapsed grants, signaling minor employee attrition or performance issues.</li>
+<li><strong>Cash Flow Volatility</strong>: TTK’s operating cash flow turned negative (Rs -22.5 Cr in H1 FY26) due to working capital swings (higher receivables), despite investing cash inflows (Rs 39.8 Cr).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Diversified Revenue Streams</strong>: TTK’s segments (e.g., Animal Welfare +11% QoQ, Foods steady) highlight resilience across healthcare, consumer, and med-tech; total assets up 1% YoY to Rs 1,296 Cr. Potential in med-devices (orthopaedics, heart valves) amid India’s Atmanirbhar push.</li>
+<li><strong>Logistics &amp; Infra Tail</strong>: Maheshwari’s award positions it for cement/ infra volume growth (India’s capex cycle).</li>
+<li><strong>Tax Relief as Catalyst</strong>: 3M’s scheme opt-in for multiple FYs (2004-14) could unlock further refunds, boosting capex in industrials.</li>
+<li><strong>PSU Stability</strong>: Balmer Lawrie’s smooth succession in packaging supports industrial demand (e.g., lean manufacturing expertise).</li>
+<li><strong>Sector-Wide</strong>: Digital governance (e.g., Dhunseri AGM links) aids investor access; RO shifts (DCM) enable state incentives.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Regulatory/Litigation Hangover</strong>: Ongoing tax appeals (3M opted for 10 FYs) expose to protracted disputes; TTK’s prior exceptional items (land sale gains Rs 20 Cr, inventory write-offs) indicate vulnerability to policy pauses (e.g., USAID).</li>
+<li><strong>Segment/OpCo Profitability</strong>: TTK’s Protective Devices drag (high inventory, export dependency) could pressure margins if global aid fluctuates.</li>
+<li><strong>Leadership Gaps</strong>: Balmer Lawrie’s transition risks execution delays in core packaging ops.</li>
+<li><strong>Macro Sensitivities</strong>: High finance costs (TTK Rs 1.6 Cr H1) amid rate environment; logistics (Maheshwari) exposed to fuel/commodity volatility.</li>
+<li><strong>Liquidity/Compliance</strong>: TTK’s negative op-cash flow and high bank deposits (Rs 588 Cr) signal capex restraint; lapsed ESOPs hint at retention risks in talent-scarce diversified firms.</li>
+</ul>
+<p><strong>Overall Summary</strong>: Indian Diversified sector exhibits <strong>strong tailwinds</strong> from financial stability (TTK’s growth) and resolutions (3M tax), with <strong>moderate growth prospects</strong> in med-tech/logistics (10-15% sector CAGR potential). Headwinds are transitional (mgmt changes), but <strong>key risks</strong> center on segment losses and regulatory overhangs. Positive bias; monitor Q3 results for cash flow sustainability. Sector PE likely supported by refunds/ESOPs, but watch forex/inventory in exports.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="analysis-for-indian-diversified-3m-india-dcm-shriram" class="section level9">
+<p class="heading">Analysis for Indian Diversified (3M India &amp; DCM Shriram)</p>
+<p>The provided documents are routine SEBI LODR Regulation 30 intimation letters disclosing scheduled analyst/investor meetings. They contain <strong>no new financial, operational, or strategic disclosures</strong>, explicitly stating that discussions will rely on already-public information (e.g., filed results, investor presentations, concall transcripts). No unpublished price-sensitive info will be shared. This limits substantive analysis, but key inferences are summarized below:</p>
+<div id="headwinds-challengesnegative-factors-1" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges/Negative Factors)</strong></p>
+<ul>
+<li><strong>Minimal visibility</strong>: No explicit headwinds mentioned. Routine scheduling of meetings suggests operational stability but highlights potential “exigencies” (e.g., unforeseen changes due to company or investor-side issues), which could signal scheduling volatility in a dynamic market environment.</li>
+<li><strong>Neutral impact</strong>: In a broader diversified sector context (e.g., industrials/chemicals with exposure to cyclical demand), lack of proactive guidance here doesn’t reveal slowdowns but also doesn’t counter macro pressures like input cost inflation or slowing capex (inferred from sector norms, not documents).</li>
+</ul>
+</div>
+<div id="tailwinds-positive-factors-2" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Strong investor engagement</strong>:
+<ul>
+<li>3M India: One-on-one with HDFC Mutual Fund (large institutional player) at HQ indicates targeted interest from top-tier investors.</li>
+<li>DCM Shriram: Participation in high-profile Anand Rathi G-200 Summit with in-person meetings reflects proactive IR amid recent results (Q2/H1 FY26 unaudited filings).</li>
+</ul></li>
+<li><strong>Transparency boost</strong>: Both firms emphasize public-data-only discussions and website hosting, enhancing governance perception and accessibility for diversified portfolios.</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Limited direct insight</strong>: No forward-looking commentary. Indirectly positive:
+<ul>
+<li>3M India’s Bangalore HQ meeting suggests confidence in core markets (e.g., electronics, healthcare, safety—diversified segments with India growth tailwinds).</li>
+<li>DCM Shriram’s post-results conference (post-Q2 FY26 concall) aligns with filed “Investor Presentations,” implying sustained momentum in agri/chemicals/sugar verticals.</li>
+</ul></li>
+<li><strong>Sector inference</strong>: Signals ongoing growth narrative from prior public disclosures, with institutional interest as a proxy for optimism in India’s diversified industrials (e.g., 7-10%+ CAGR potential in export/manufacturing hubs like Mumbai/Bangalore).</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Event uncertainty</strong>: Explicit note on possible cancellations/rescheduling due to “exigencies,” which could disrupt IR momentum.</li>
+<li><strong>No new info risk</strong>: Reliance on historical data means meetings won’t address emerging risks (e.g., regulatory changes, monsoon impacts for DCM Shriram, or global supply chain for 3M India).</li>
+<li><strong>Market perception</strong>: In a volatile Nifty/BSE context, lack of fresh catalysts could pressure stock momentum if peers announce stronger updates.</li>
+</ul>
+<p><strong>Overall Summary</strong>: These filings underscore robust IR practices for 3M India and DCM Shriram, fostering tailwinds via institutional access amid neutral headwinds. Growth prospects and risks remain tied to prior public filings (e.g., Q2 FY26 results), with no material updates. Positive for diversified Indian portfolios emphasizing governance, but monitor actual meeting outcomes for deeper insights. No red flags; investor interest is a mild bullish signal.</p>
+</div>
+</div>
+</div>
+<div id="meeting" class="section level3">
+<h3><strong>Meeting</strong></h3>
+<p><em>asof: 2025-12-02 </em></p>
+<div id="summary-analysis-indian-diversified-sector-based-on-provided-corporate-announcements" class="section level9">
+<p class="heading">Summary Analysis: Indian Diversified Sector (Based on Provided Corporate Announcements)</p>
+<p>The documents cover AGM/postal ballot outcomes, voting results, and Q2/H1 FY26 financials from diversified Indian companies (e.g., 3M India, Godrej Industries, DCM Shriram, Balmer Lawrie, TTK Healthcare, Dhunseri Ventures, Maheshwari Logistics). These span sectors like industrials, chemicals, logistics, healthcare, packaging, and ventures. Overall, the sector exhibits resilience with strong financial momentum, but faces execution and regulatory challenges. Key insights:</p>
+<div id="tailwinds-positive-drivers" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Robust Financial Performance</strong>: Q2/H1 FY26 results show revenue growth (e.g., DCM Shriram: +11% YoY H1 revenue to ₹6,888 Cr, PAT +67% to ₹273 Cr; TTK Healthcare: +6% H1 revenue, PAT +46% adjusted; Balmer Lawrie: stable revenue ~₹1.3 lakh lakh, PAT +8% H1). EBITDA margins improved (DCM: 9.4%; Balmer: healthy segment results).</li>
+<li><strong>Shareholder Confidence</strong>: Overwhelming approvals (&gt;99% in most cases) for AGMs/postal ballots (3M India: all 7 resolutions passed; Godrej: investments/RPTs approved 99.5-99.9%; Maheshwari: key resolutions passed).</li>
+<li><strong>Capital Returns &amp; Incentives</strong>: Dividends declared (DCM: ₹3.6/share, 180%; 3M: implied from AGM). Govt incentives boosted income (DCM: ₹76 Cr Chemicals segment).</li>
+<li><strong>Strategic Flexibility</strong>: RTA changes (DCM), auditor appointments/re-approvals signal governance stability.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Segment Volatility</strong>: Seasonal/declining segments (DCM Sugar: H1 loss ₹35 Cr; TTK Protective Devices: ongoing losses ₹1,569 lakh H1; Balmer “Others”: consistent losses ₹4,377 lakh H1).</li>
+<li><strong>Subsidiary Underperformance</strong>: Dhunseri Ventures approved (&gt;99.8%) disposal/liquidation of material subsidiary Twelve Cupcakes Pte Ltd (Singapore), indicating value erosion/strategic exit.</li>
+<li><strong>Cost Pressures</strong>: Rising employee/finance costs (DCM: +19% H1; Balmer: +5% H1), inventory fluctuations (DCM: +₹656 Cr H1 reduction aiding cash flow).</li>
+<li><strong>Abstentions in RPTs</strong>: Promoters abstained in related party approvals (3M/Godrej), highlighting governance scrutiny.</li>
+</ul>
+</div>
+<div id="growth-prospects-4" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Expansions &amp; Acquisitions</strong>: DCM commissioned ECH plant (35k TPA, balance soon); acquired Hindusthan Speciality Chemicals (100% stake); Godrej investing ₹5,000 Cr in FS Limited for capital acquisition. Balmer/TTK: Diversified segments (e.g., DCM Chemicals +36% H1; TTK Medical Devices/Foods growth).</li>
+<li><strong>Diversification</strong>: Multi-segment plays (Balmer: Packaging/Logistics up; TTK: Animal Welfare/Consumer steady). Logistics (Maheshwari) stable post-AGM.</li>
+<li><strong>Capex &amp; Incentives</strong>: DCM/Balmer capex ~₹350-500 Cr H1; policy incentives (DCM Gujarat scheme).</li>
+<li><strong>Outlook</strong>: 10-15% revenue CAGR potential from chemicals/healthcare/logistics tailwinds; dividends signal confidence.</li>
+</ul>
+</div>
+<div id="key-risks-4" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Regulatory/Compliance</strong>: Heavy reliance on RPT approvals (3M/Godrej/Maheshwari); MCA/SEBI circular adherence critical. Postal ballots for disposals (Dhunseri) expose to shareholder pushback.</li>
+<li><strong>Operational</strong>: Segment losses (sugar/protectives), forex/seasonality (DCM inventory swings), capex execution (DCM ECH ramp-up).</li>
+<li><strong>Financial</strong>: Debt ratios stable but monitored (DCM 0.11x; ratios like DSCR 4.6x healthy); working capital strain (Balmer negative operating cash H1).</li>
+<li><strong>External</strong>: Commodity volatility (chemicals/power/fuel 14-15% expenses); geopolitical/supply chain (TTK USAID cancellation precedent); minority interests (Balmer/TTK).</li>
+<li><strong>Governance</strong>: Auditor/Scrutinizer reports clean, but RTA transitions (DCM) need seamless execution.</li>
+</ul>
+<p><strong>Overall Verdict</strong>: Strong tailwinds from earnings/dividends offset moderate headwinds; growth anchored in chemicals/acquisitions (high teens prospects), but risks tilt toward execution/segment health. Sector rating: <strong>Positive (Buy/Hold)</strong> with monitors on RPTs/subsidiary disposals. (Data as of Sep/Oct 2025 filings.)</p>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="summary-analysis-for-indian-diversified-sector-chemicals-agri-industrial-focus" class="section level9">
+<p class="heading">Summary Analysis for Indian Diversified Sector (Chemicals, Agri, Industrial Focus)</p>
+<p>Using the provided announcements from Godrej Industries, DCM Shriram Ltd., Balmer Lawrie &amp; Co. Ltd., and Dhunseri Ventures Ltd., the sector exhibits resilience amid expansions and strong chemicals performance, tempered by macro challenges. Key themes include capacity build-ups, sustainability focus, and segment-specific growth.</p>
+<div id="tailwinds" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Robust Chemicals Momentum</strong>: Godrej doubling/tripling capacities (e.g., Fatty Alcohol +35KT, Specialities +21KT) with ₹750 Cr investment; DCM’s chemicals revenue +50% YoY to ₹913 Cr (PBDIT +195%), driven by caustic volumes (+22%), H2O2/ECH commissioning, and HSCL acquisition.</li>
+<li><strong>Sustainability Edge</strong>: Godrej targeting 75% renewable energy and green chemistry; DCM’s 35% green energy share, backward integration (proposed salt works acquisition), and circular operations.</li>
+<li><strong>Diversified Segment Strength</strong>: DCM’s Agri (Shriram Farm Solutions +27% revenue) and Fenesta (+28% revenue, 71% order book growth); Balmer Lawrie’s stable diversified portfolios (Q2 total income ~₹647 Cr).</li>
+<li><strong>Capex Momentum</strong>: Multiple expansions (DCM: Caustic, Sugar, CBG; Dhunseri: BOPP plants foundation; Godrej: Fermentation/Surfactants).</li>
+</ul>
+</div>
+<div id="headwinds" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Macro Pressures</strong>: DCM highlights global policy uncertainty, geopolitical tensions, US tariffs disrupting supply chains; India’s outperformance noted but risks persist.</li>
+<li><strong>Segment Volatility</strong>: DCM Sugar/Ethanol revenues -6% YoY due to lower volumes/margins; policy hurdles (ethanol export fees sub-judice, sugar export needs).</li>
+<li><strong>Modest Declines</strong>: Balmer Lawrie Q2 PBT/PAT down ~5% YoY (₹65.5 Cr/₹48.5 Cr) amid flat income; minor operational slips (DCM press release revision).</li>
+<li><strong>Execution Delays</strong>: Pending regulatory approvals (DCM salt works), phased commissioning (e.g., DCM ECH balance capacity).</li>
+</ul>
+</div>
+<div id="growth-prospects-5" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High-Conviction Expansion Pipeline</strong>: Godrej’s USD 1 Bn chemicals goal by 2030 via ₹750+ Cr capex; DCM’s FY25-27 projects (Aluminium Chloride, Renewables, Fenesta extrusion) to boost specialties/advanced materials.</li>
+<li><strong>Strategic Moves</strong>: DCM backward integration (salt, power); Godrej green innovations (biocatalysis); Dhunseri expanding manufacturing in J&amp;K; agri R&amp;D (DCM 11 new products).</li>
+<li><strong>Financial Upside</strong>: DCM H1 FY26 consolidated revenue +11% (₹6,888 Cr), PAT +67%; Balmer Lawrie H1 PAT +8% to ₹104 Cr—supports further investments.</li>
+<li><strong>Sector Tail</strong>: Demand in HPC, paints, agro, building materials; global reach (Godrej 80+ countries).</li>
+</ul>
+</div>
+<div id="key-risks-5" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Policy/Regulatory</strong>: Ethanol/sugar export restrictions, retrospective levies (DCM); acquisition approvals.</li>
+<li><strong>Commodity/External Shocks</strong>: Raw material volatility (salt, energy), ECU margins, trade protectionism/geopolitics impacting costs/supply chains.</li>
+<li><strong>Execution/Operational</strong>: Capex overruns, commissioning delays; competition in chemicals/specialties.</li>
+<li><strong>Economic Sensitivity</strong>: Moderation in volumes (DCM Bioseed); currency/global slowdown affecting exports.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Strong tailwinds from chemicals capex and sustainability position the sector for 10-20%+ growth, offsetting headwinds via diversification. Monitor policy clarity and execution for sustained momentum. (Positive bias; avg. PAT growth ~50-150% YoY in highlighted firms.)</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

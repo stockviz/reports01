@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Hospital</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Hospital</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Hospital.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Hospital.fan.CAP_WT.png" /></p>
+<p><img src="plots/Hospital.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Hospital.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Hospital.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Hospital.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Hospital.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-935d3a37546e5518be12" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-935d3a37546e5518be12">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["3.4%","5.35%"],["0.64%","4.24%"],["-3.59%","-0.32%"],["-0.83%","-0.34%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Hospital.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Hospital.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-35c300307e94146f283e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-35c300307e94146f283e">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.APOLLOHOSP.html\" target=\"_blank\">APOLLOHOSP<\/a>","<a href=\"/reports02/eq-in/risk/in.MAXHEALTH.html\" target=\"_blank\">MAXHEALTH<\/a>","<a href=\"/reports02/eq-in/risk/in.FORTIS.html\" target=\"_blank\">FORTIS<\/a>","<a href=\"/reports02/eq-in/risk/in.NH.html\" target=\"_blank\">NH<\/a>","<a href=\"/reports02/eq-in/risk/in.ASTERDM.html\" target=\"_blank\">ASTERDM<\/a>","<a href=\"/reports02/eq-in/risk/in.MEDANTA.html\" target=\"_blank\">MEDANTA<\/a>","<a href=\"/reports02/eq-in/risk/in.KIMS.html\" target=\"_blank\">KIMS<\/a>","<a href=\"/reports02/eq-in/risk/in.AGARWALEYE.html\" target=\"_blank\">AGARWALEYE<\/a>","<a href=\"/reports02/eq-in/risk/in.RAINBOW.html\" target=\"_blank\">RAINBOW<\/a>","<a href=\"/reports02/eq-in/risk/in.HCG.html\" target=\"_blank\">HCG<\/a>","<a href=\"/reports02/eq-in/risk/in.JLHL.html\" target=\"_blank\">JLHL<\/a>","<a href=\"/reports02/eq-in/risk/in.PARKHOSPS.html\" target=\"_blank\">PARKHOSPS<\/a>","<a href=\"/reports02/eq-in/risk/in.YATHARTH.html\" target=\"_blank\">YATHARTH<\/a>","<a href=\"/reports02/eq-in/risk/in.ARTEMISMED.html\" target=\"_blank\">ARTEMISMED<\/a>","<a href=\"/reports02/eq-in/risk/in.INDRAMEDCO.html\" target=\"_blank\">INDRAMEDCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SHALBY.html\" target=\"_blank\">SHALBY<\/a>","<a href=\"/reports02/eq-in/risk/in.GPTHEALTH.html\" target=\"_blank\">GPTHEALTH<\/a>","<a href=\"/reports02/eq-in/risk/in.GKSL.html\" target=\"_blank\">GKSL<\/a>","<a href=\"/reports02/eq-in/risk/in.LOTUSEYE.html\" target=\"_blank\">LOTUSEYE<\/a>"],[0.2740192170767484,0.2810519190602074,0.1678476971000678,0.04396507561632336,0.0516074369099669,0.03396525919737289,0.06139386333126102,0.01206045059040256,0.02128863908692286,0.01064124154413866,0.01608115878181585,0.002471511031680054,0.00897228816230186,0.004377150483614548,0.006382397256401467,0.001502736904882841,0.001272659183561523,0.0005241181550580321,0.0005751805272719257],[0.226481547179525,0.2175236654838467,0.1438902337698672,0.0783140754013209,0.06811142859252979,0.06378001009838195,0.05877281468575411,0.02928958997991598,0.02555448782921963,0.01737126916205421,0.01668907912765156,0.01643696092200912,0.01379382622570109,0.007994817871334979,0.007838172343056934,0.003544963607325574,0.002181286912524706,0.001843605327991883,0.0005881654799885234]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":19,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,19,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-05634e571487f36fa903" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-05634e571487f36fa903">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.APOLLOHOSP.html\" target=\"_blank\">APOLLOHOSP<\/a>","<a href=\"/reports02/eq-in/risk/in.MAXHEALTH.html\" target=\"_blank\">MAXHEALTH<\/a>","<a href=\"/reports02/eq-in/risk/in.FORTIS.html\" target=\"_blank\">FORTIS<\/a>","<a href=\"/reports02/eq-in/risk/in.NH.html\" target=\"_blank\">NH<\/a>","<a href=\"/reports02/eq-in/risk/in.ASTERDM.html\" target=\"_blank\">ASTERDM<\/a>","<a href=\"/reports02/eq-in/risk/in.MEDANTA.html\" target=\"_blank\">MEDANTA<\/a>","<a href=\"/reports02/eq-in/risk/in.KIMS.html\" target=\"_blank\">KIMS<\/a>","<a href=\"/reports02/eq-in/risk/in.AGARWALEYE.html\" target=\"_blank\">AGARWALEYE<\/a>","<a href=\"/reports02/eq-in/risk/in.RAINBOW.html\" target=\"_blank\">RAINBOW<\/a>","<a href=\"/reports02/eq-in/risk/in.HCG.html\" target=\"_blank\">HCG<\/a>","<a href=\"/reports02/eq-in/risk/in.JLHL.html\" target=\"_blank\">JLHL<\/a>","<a href=\"/reports02/eq-in/risk/in.PARKHOSPS.html\" target=\"_blank\">PARKHOSPS<\/a>","<a href=\"/reports02/eq-in/risk/in.YATHARTH.html\" target=\"_blank\">YATHARTH<\/a>","<a href=\"/reports02/eq-in/risk/in.ARTEMISMED.html\" target=\"_blank\">ARTEMISMED<\/a>","<a href=\"/reports02/eq-in/risk/in.INDRAMEDCO.html\" target=\"_blank\">INDRAMEDCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SHALBY.html\" target=\"_blank\">SHALBY<\/a>","<a href=\"/reports02/eq-in/risk/in.GPTHEALTH.html\" target=\"_blank\">GPTHEALTH<\/a>","<a href=\"/reports02/eq-in/risk/in.LOTUSEYE.html\" target=\"_blank\">LOTUSEYE<\/a>"],[0.7986286442310612,0.9520057911202501,0.3634990042535508,30.35711580517985,10.23602929495918,13.9079462046678,0.1976297618705046,5.151188277142783,4.58990811213384,0.01478578956845968,9.256169308146861,null,3.297921056926218,1.801962004361512,4.613753256202132,0.6769939824858949,0.8507424582108188,0.02464216847467798],[0.4582130064816017,0.721819446325705,0.2564211098381382,31.91020692328168,11.3918655115206,12.33522298270657,0.103663158320837,5.329157940003833,3.985044660789291,0.008906271348691626,9.918168647953227,null,3.593557933948011,2.169990870100717,4.210575829693556,0.8286190862599367,0.9452261177384202,0.01770581898209115],[0.4526348171256008,0.6193687261283728,0.2472551233619034,36.99551638452125,11.08515488811964,13.27067213568101,0.07502914088223274,6.887921130172186,4.775960767623774,0.009524936389694276,9.733847633929207,2.917153869989482,4.08390732831386,2.435073935478405,4.589711082085515,0.7810596928751258,1.030758015534014,0.009450391788718386]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":18,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,18,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d783b7758c2651ef5cb9" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d783b7758c2651ef5cb9">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.APOLLOHOSP.html\" target=\"_blank\">APOLLOHOSP<\/a>","<a href=\"/reports02/eq-in/risk/in.MAXHEALTH.html\" target=\"_blank\">MAXHEALTH<\/a>","<a href=\"/reports02/eq-in/risk/in.FORTIS.html\" target=\"_blank\">FORTIS<\/a>","<a href=\"/reports02/eq-in/risk/in.NH.html\" target=\"_blank\">NH<\/a>","<a href=\"/reports02/eq-in/risk/in.ASTERDM.html\" target=\"_blank\">ASTERDM<\/a>","<a href=\"/reports02/eq-in/risk/in.MEDANTA.html\" target=\"_blank\">MEDANTA<\/a>","<a href=\"/reports02/eq-in/risk/in.KIMS.html\" target=\"_blank\">KIMS<\/a>","<a href=\"/reports02/eq-in/risk/in.AGARWALEYE.html\" target=\"_blank\">AGARWALEYE<\/a>","<a href=\"/reports02/eq-in/risk/in.RAINBOW.html\" target=\"_blank\">RAINBOW<\/a>","<a href=\"/reports02/eq-in/risk/in.HCG.html\" target=\"_blank\">HCG<\/a>","<a href=\"/reports02/eq-in/risk/in.JLHL.html\" target=\"_blank\">JLHL<\/a>","<a href=\"/reports02/eq-in/risk/in.PARKHOSPS.html\" target=\"_blank\">PARKHOSPS<\/a>","<a href=\"/reports02/eq-in/risk/in.YATHARTH.html\" target=\"_blank\">YATHARTH<\/a>","<a href=\"/reports02/eq-in/risk/in.ARTEMISMED.html\" target=\"_blank\">ARTEMISMED<\/a>","<a href=\"/reports02/eq-in/risk/in.INDRAMEDCO.html\" target=\"_blank\">INDRAMEDCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SHALBY.html\" target=\"_blank\">SHALBY<\/a>","<a href=\"/reports02/eq-in/risk/in.GPTHEALTH.html\" target=\"_blank\">GPTHEALTH<\/a>","<a href=\"/reports02/eq-in/risk/in.LOTUSEYE.html\" target=\"_blank\">LOTUSEYE<\/a>"],[1.245257034395734,0.6971910216581753,0.3753901704824774,27.93535567376567,11.59401088600624,10.93970721117361,0.1777116333603401,11.12625139291717,3.392617229801172,0.1071531194481894,7.518846125306952,null,2.291719554179927,2.318064139273463,3.896146161041519,2.629632714546156,0.9771032950024366,0.1172999711050806],[0.7867865475484399,0.603340343577351,0.2852157458783253,21.37863615835205,14.18620707255476,11.66528489060846,0.1292217134368655,11.02150896985284,5.059049363833977,0.09127575120796848,9.24933862051304,null,2.929539172529673,2.93228636476791,4.114494801009386,2.872936903181468,0.8411555008229133,0.1291552863198589],[0.8000307970492821,0.5378845268443188,0.2897587507646897,22.21634300713178,14.73901264982456,13.81781362173947,0.1198268731135007,13.0580202585221,5.330024465443429,0.08187701619145882,9.471189528231468,2.708921881653722,3.599345665782476,3.442321219488088,4.795354572240496,3.69658420363785,1.125155473625091,0.1705354887162262]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":18,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,18,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+</div>
+<div id="analysis-of-indian-hospital-sector-based-on-q2h1-fy26-earnings-transcripts" class="section level3">
+<h3>Analysis of Indian Hospital Sector (Based on Q2/H1 FY26 Earnings Transcripts)</h3>
+<p>The provided documents cover earnings calls and announcements from key players like <strong>Max Healthcare</strong>, <strong>Fortis Healthcare</strong>, <strong>Rainbow Children’s Medicare</strong>, <strong>Yatharth Hospital</strong>, <strong>Medanta (Global Health)</strong>, and others (e.g., Apollo, Aster DM, KIMS, Jupiter). These reflect a <strong>robust sector outlook</strong> with 17-28% revenue growth, driven by expansions and specialties, amid some seasonal softness. Below is a structured summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-drivers" class="section level6">
+<h6><strong>Tailwinds (Positive Drivers)</strong></h6>
+<ul>
+<li><strong>Capacity Expansion Momentum</strong>: Aggressive brownfield/greenfield additions (e.g., Max: 160-400 beds at Mohali/Smart/Nanavati; Fortis: 550 beds in H1; Yatharth: 700 beds in Q2; Rainbow: 780 beds over 2 years). Operational leverage from high occupancies (65-77%) in mature units.</li>
+<li><strong>ARPOB &amp; Case Mix Improvement</strong>: 3-10% YoY growth (Max: 3% network, 7% existing; Fortis: 5.8%; Yatharth: 9% mature). Shift to high-acuity specialties (oncology up 29% at Fortis; transplants/ICUs at Rainbow/Yatharth).</li>
+<li><strong>Payer &amp; Revenue Mix</strong>: Balanced payor (cash/insurance ~50:50); digital/international revenue surging (Max: INR231cr intl., 30% digital; Fortis: 8% intl.; Rainbow: IVF scaling).</li>
+<li><strong>Regulatory Boost</strong>: CGHS revisions (effective Oct’25) to add INR150-200cr EBITDA (Max: &gt;INR200cr revenue; Yatharth/Fortis: 1-2.5% uplift). Insurance renewals resolved.</li>
+<li><strong>Margin Resilience</strong>: EBITDA margins 23-34% (Fortis: 23.9%; Rainbow: 33.5%; Yatharth adj. 26.7%). Mature hospitals at 26-27%+.</li>
+<li><strong>Cash Generation &amp; Balance Sheets</strong>: Strong FCF (Max: INR291cr; Yatharth: net cash INR369cr); low debt (Fortis: 0.96x; many debt-free).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>Seasonality &amp; Volume Softness</strong>: Low seasonal illnesses (e.g., Rainbow: IP de-growth 1%, occupancy down 8-10pp in mature units; absent pneumonia/vector-borne dips).</li>
+<li><strong>New Unit Drag</strong>: EBITDA dilution from ramps (Yatharth: 3.3% Q2 drag; Rainbow: early festive compression; Fortis: Noida/Dwarka at 15-18% margins).</li>
+<li><strong>Receivables &amp; Cash Flow Lumpiness</strong>: Institutional buildup (Max: AR days up; Fortis: govt. 180 days). Salary/opex changes impacted OCF (Yatharth: 58% vs. hist. 70-80%).</li>
+<li><strong>Operational Hiccups</strong>: Insurance impasses (resolved but past cashless halts); doctor attrition (~1%, Max); project delays (pollution/approvals: Max Gurugram; Rainbow NCR stalled).</li>
+<li><strong>Mix Shifts</strong>: Higher institutional/govt. share (Yatharth: 37%) caps ARPOB initially; medical tourism visa issues (Rainbow intl. normalizing).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Bed Additions &amp; Revenue CAGR</strong>: 20-30%+ growth guided (Fortis/Rainbow: 20% CAGR; Yatharth: 30%+ FY26; Max: 17-24% H1). Targets: 3,000+ beds by FY28 (Yatharth); NCR/Tier-2 focus (Rainbow NE; Fortis Punjab).</li>
+<li><strong>Super-Specialty Scaling</strong>: Oncology/cardio/transplants/ICUs (Max: Lucknow onco; Fortis: robotics +66%; Rainbow: 40% tertiary/quaternary).</li>
+<li><strong>Geographic Diversification</strong>: NCR dominance + NE/Tier-2 (Rainbow Guwahati/Warangal; Yatharth Agra; Fortis Lucknow O&amp;M).</li>
+<li><strong>Intl./Digital/MVTP</strong>: 25-26% intl. growth; 20-53% digital surges. Offices/partnerships (Yatharth: Baghdad/Tashkent; Max: 9% revenue).</li>
+<li><strong>M&amp;A/IVF/Beyond</strong>: Bolt-ons (Rainbow/Warangal; Yatharth/Agra); asset-light (Fortis/Agilus diagnostics 7% growth; Rainbow IVF 40%).</li>
+<li><strong>Margin Upside</strong>: 25-29% potential (Fortis/Rainbow) from ramps/leverage; CGHS full impact FY27.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<ul>
+<li><strong>Execution/Regulatory Delays</strong>: Approvals/NOCs/pollution (Max/Fortis/Rainbow NCR stalled); CGHS portal glitches delaying full benefits.</li>
+<li><strong>Competition Intensity</strong>: NCR/Tier-2 (Max Noida/Lucknow peers; Rainbow Pune/Hyderabad).</li>
+<li><strong>Payer/Receivable Risks</strong>: Insurance renewals/GIPSA impasses recurring; govt. lumpiness (180+ days); Ayushman/CGHS caps.</li>
+<li><strong>Seasonality/External Shocks</strong>: Absent peaks (Q2 dips); floods/monsoons (Fortis Punjab).</li>
+<li><strong>Margin Pressure</strong>: New units drag (15-18 months breakeven); doctor costs (21.5% revenue, Yatharth); inflation/chemicals.</li>
+<li><strong>Debt/Capex Overhang</strong>: Rising (Fortis net debt INR2,219cr); INR1,400-1,500cr 3-5yr capex (Yatharth); funding needs if M&amp;A accelerates.</li>
+<li><strong>Talent/Clinical</strong>: Low attrition but key departures (Max NCR); building super-specialties takes time.</li>
+</ul>
+</div>
+<div id="overall-summary" class="section level6">
+<h6><strong>Overall Summary</strong></h6>
+<p>The <strong>Indian hospital sector</strong> is in a <strong>high-growth phase</strong> (17-28% revenue, 20-35% EBITDA growth), fueled by <strong>capacity ramps</strong>, <strong>specialty shifts</strong>, and <strong>CGHS tailwinds</strong>. <strong>Tailwinds dominate</strong> (expansions, ARPOB/margins up), positioning for <strong>20-30% CAGR</strong> via NCR/Tier-2/MVTP. <strong>Headwinds are transient</strong> (seasonality, ramps), but <strong>risks like execution/competition/payers</strong> warrant monitoring. <strong>Outlook: Bullish</strong> for leaders with strong balance sheets (net cash/debt-free), targeting 25-30% margins and 3,000+ beds by FY28. Sector resilience evident despite Q2 softness.</p>
+<p><em>Note: Analysis aggregates common themes; company-specific variances exist (e.g., Rainbow pediatrics seasonality).</em></p>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3><strong>Financial</strong></h3>
+<p><em>asof: 2025-12-02 </em></p>
+<div id="analysis-of-indian-hospital-sector-q3-fy25-results-from-key-players" class="section level9">
+<p class="heading">Analysis of Indian Hospital Sector (Q3 FY25 Results from Key Players)</p>
+<p>Based on the Q3 FY25 (ended Dec 2024) financial results of major listed hospital chains (Apollo Hospitals, Fortis, Narayana Hrudayalaya, KIMS, Rainbow Children’s, HCG, Jupiter Lifeline, Yatharth, Shalby, Artemis, Dr. Agarwal’s), here’s a sector-level summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>. The sector shows robust revenue momentum but moderated profitability amid expansions and legacy issues.</p>
+<div id="tailwinds-positive-drivers-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Strong Revenue Growth</strong>: Near-universal YoY topline expansion (10-20%+), driven by volume recovery (IP/OP growth 5-15%), ARPOB hikes (4-11%), and occupancy up to 68-74%. Apollo led with 14% consolidated growth to ₹5,527 Cr; Fortis/KIMS/Narayana ~13-15%.</li>
+<li><strong>EBITDA Margin Resilience</strong>: Expansion in most (Apollo 24% YoY growth to 13.8%; Narayana ~22%; Rainbow ~23%). Focus specialties (cardiac, oncology) and cost controls aided.</li>
+<li><strong>PAT Turnaround</strong>: Apollo HealthCo flipped to profit (₹32 Cr vs. loss); Rainbow/Fortis PAT up 50-60% YoY.</li>
+<li><strong>Operational Efficiency</strong>: Bed utilization improving; digital/pharmacy segments scaling (Apollo 24/7 GMV up 11%).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Rising Costs</strong>: Employee/doctor fees (20-25% of revenue) and finance costs (up due to capex debt) pressured margins. Fortis EBITDA dipped QoQ; HCG reported losses/exceptions.</li>
+<li><strong>Margin Pressure</strong>: Consolidated EBITDA margins stable but thin (10-24%); high depreciation from expansions eroded PAT (e.g., Apollo standalone PAT flat QoQ).</li>
+<li><strong>Seasonal/External Factors</strong>: Q3 dip in some (Apollo revenue down QoQ); forex losses, inventory changes impacted.</li>
+<li><strong>Legacy Burdens</strong>: Fortis/HCG burdened by past impairments (₹3-11 Cr), provisions, and high other expenses (~20% of revenue).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Expansion</strong>: Aggressive bed adds (Apollo: 3,512 over 3-4 yrs; KIMS/Yatharth acquiring hospitals; Rainbow/Jupiter greenfield). Target: 10-15% CAGR.</li>
+<li><strong>Inorganic Push</strong>: Acquisitions (KIMS Quorn’s NRI; Yatharth MGS Infotech; Dr. Agarwal’s eye hospitals) for quick scale.</li>
+<li><strong>Diversification</strong>: Digital/pharmacy (Apollo 15% growth), specialties (oncology/cardiac), international (Narayana Cayman). IPO/QIP funds for capex (Artemis ₹330 Cr CCDs).</li>
+<li><strong>Guidance</strong>: On-track FY25 targets; clinical milestones (robotic surgeries) boost branding.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Regulatory/Litigation</strong>: Fortis/HCG face SFIO/SEBI probes, land disputes (Karnataka HC), brand litigations (Fortis “Fortis” marks auctioned). Yatharth IT searches/blocked assets (₹618 Cr).</li>
+<li><strong>Debt &amp; Leverage</strong>: Debt:Equity 0.2-0.6x; interest coverage 3-10x but rising capex strains (Apollo/Fortis finance costs up 20-50%).</li>
+<li><strong>Execution/Operational</strong>: Expansion delays (Yatharth land issues), impairments (Fortis subsidiaries), forex (intl ops), doctor retention.</li>
+<li><strong>Macro</strong>: Inflation in consumables/staff, competition, payer mix shifts. Auditor emphasis on contingencies (e.g., HCG Karnataka land).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Sector resilient with 12-15% revenue growth, but profitability hinges on debt mgmt./cost control. Expansions signal 15-20% FY26 potential, tempered by regulatory overhang. Investors favor multi-hospital chains with strong balance sheets (Apollo/Fortis leaders).</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+</div>
+<div id="summary-analysis-of-indian-hospital-sector-based-on-provided-documents" class="section level3">
+<h3>Summary Analysis of Indian Hospital Sector (Based on Provided Documents)</h3>
+<p>The documents cover recent disclosures from key players like <strong>Max Healthcare</strong> (strong Q2/H1 FY26 earnings), <strong>Fortis</strong>, <strong>Narayana Health</strong>, <strong>Aster DM</strong>, <strong>Medanta (Global Health)</strong>, <strong>KIMS</strong>, <strong>Rainbow Children’s</strong>, <strong>HCG</strong>, <strong>Jupiter Life Line</strong>, <strong>Yatharth</strong>, <strong>Apollo</strong>, and <strong>Dr. Agarwal’s</strong>. These reflect a <strong>resilient sector</strong> with robust operational momentum, expansion focus, and inorganic growth, amid some execution and regulatory challenges. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-supportive-factors" class="section level6">
+<h6><strong>Tailwinds (Supportive Factors)</strong></h6>
+<ul>
+<li><strong>Strong Operational Metrics</strong>: Max Healthcare reported Q2 FY26 revenue +21% YoY (₹2,692 Cr), EBITDA +23% (₹694 Cr, 26.9% margin), driven by +19% OBD growth, 77% occupancy, and stable ARPOB (₹77.3k). H1 FY26 revenue +24% YoY. International revenue +25% YoY (9% of hospital revenue).</li>
+<li><strong>Expansion Momentum</strong>: Brownfield additions (Max: 160 beds Mohali, 268 beds Nanavati-Max; Medanta: Guwahati land). Network growth to ~5,200 beds (Max).</li>
+<li><strong>Inorganic Growth</strong>: Acquisitions/completions (Narayana: UK hospital; Rainbow: 76% stake in Pratiksha; Fortis: IHH stake to 31.17%; HCG: subsidiary investments). Subsidiary conversions (Jupiter Pharmacy).</li>
+<li><strong>Ancillary Revenue</strong>: Max Lab (+16% YoY), <a href="mailto:Max@Home" class="email">Max@Home</a> (+20% YoY); digital revenue ~30% of gross (Max).</li>
+<li><strong>Regulatory Wins</strong>: Asset unfreezing (Yatharth); office shifts (Aster DM); ESOP approvals (Apollo, Dr. Agarwal’s).</li>
+<li><strong>Clinical/Research Strength</strong>: High transplant volumes, publications, trials (Max); awards/recognition across peers.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>One-Time Volatility</strong>: Max PAT +59% YoY but adjusted +16% (₹149 Cr tax benefit from mergers); free cash flow dipped (₹291 Cr vs ₹464 Cr YoY).</li>
+<li><strong>Debt &amp; Capex Pressure</strong>: Max net debt ₹2,067 Cr (up QoQ); ₹456 Cr capex in Q2. H1 cash ops ₹679 Cr but dividends/land buys strained liquidity.</li>
+<li><strong>Occupancy/ARPOB Fluctuations</strong>: Max occupancy 77% (down from 79% YoY); ARPOB flat/slight dip in some units.</li>
+<li><strong>Subsidiary Dilution</strong>: KIMS stake in Arunodaya Hospitals fell to 64.36% (6.3% drop &gt;5% threshold).</li>
+<li><strong>Ramping New Units</strong>: Lower margins/ROCE in new acquisitions (Max New Units: 16.7% EBITDA margin); integration risks.</li>
+<li><strong>External Scrutiny</strong>: Recent tax attachments resolved (Yatharth), but signals potential compliance burdens.</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Bed/Capacity Ramp-Up</strong>: ~3,000 beds via brownfield (Max); greenfield land banks (Medanta Guwahati, Max Gurgaon/Lucknow). Target 20-25% ROCE post-ramp.</li>
+<li><strong>Volume-Led Expansion</strong>: OBDs +19-22% YoY (Max); OP consults +27%; institutional mix up to 34%.</li>
+<li><strong>M&amp;A/Inorganic Pipeline</strong>: Robust deal flow (Max divestments sharpen focus; Fortis/IHH stake hikes; Rainbow/Narayana acquisitions). O&amp;M/leases (Max Mohali/Thane/Dehradun).</li>
+<li><strong>Diversification</strong>: Labs/home care/digital (<a href="mailto:Max@Home" class="email">Max@Home</a> ₹63 Cr Q2, +20%; 60+ cities for Max Lab). International (Narayana UK).</li>
+<li><strong>Margin/ROCE Improvement</strong>: Existing units EBITDA/bed +7% YoY (Max ₹76.5 lakhs); overall ROCE 23-27%.</li>
+<li><strong>Sector Tailwinds</strong>: Rising demand (OBDs/ARPOB), super-specialty shift (oncology, transplants), payor mix optimization (self-pay/international up).</li>
+</ul>
+<p><strong>Projected Outlook</strong>: 20-25% revenue CAGR feasible via 10-15% bed growth + volume/pricing levers; EBITDA margins stable at 25-27%.</p>
+</div>
+<div id="key-risks-2" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="22%" />
+<col width="44%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Details</strong></th>
+<th><strong>Mitigants from Docs</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Execution/Integration</strong></td>
+<td>New unit ramp-up delays (Max New Units low margins); M&amp;A synergies (Narayana UK, Rainbow).</td>
+<td>Phased commissioning (Max towers); proven track record (Max Jaypee integration).</td>
+</tr>
+<tr class="even">
+<td><strong>Financial</strong></td>
+<td>Rising debt/capex (Max net debt up); FCF volatility; indirect costs +15% YoY (merit hikes, CSR).</td>
+<td>Strong ops cash (Max H1 ₹679 Cr); ROCE focus (32% ex-CWIP).</td>
+</tr>
+<tr class="odd">
+<td><strong>Regulatory/Tax</strong></td>
+<td>Tax probes (Yatharth resolved but lingering); ESOP/approvals.</td>
+<td>Compliance emphasis; quick resolutions.</td>
+</tr>
+<tr class="even">
+<td><strong>Operational</strong></td>
+<td>Occupancy dips (seasonal infections down); ALOS stable but flat.</td>
+<td>Digital/ancillaries buffer (30% revenue).</td>
+</tr>
+<tr class="odd">
+<td><strong>Competition/External</strong></td>
+<td>Intense rivalry; divestments (Max rural hospitals).</td>
+<td>Super-specialty focus; brand strength (awards, research).</td>
+</tr>
+<tr class="even">
+<td><strong>Subsidiary</strong></td>
+<td>Dilution (KIMS); control erosion.</td>
+<td>Retain majority (&gt;50%).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Sector Summary</strong>: <strong>Bullish with Momentum</strong>. Tailwinds from volumes/expansions outweigh headwinds (debt, ramps). Growth anchored in 15-20% bed additions + 10-15% OBD/pricing; risks manageable via strong balance sheets (Max ROCE 23%) and inorganic playbook. Peers like Max exemplify leadership (market cap leader). Monitor debt, tax, and integration for Q3 FY26.</p>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+</div>
+<div id="analysis-of-the-indian-hospital-sector-q2h1-fy26-insights" class="section level3">
+<h3>Analysis of the Indian Hospital Sector (Q2/H1 FY26 Insights)</h3>
+<p>Based on the provided earnings transcripts and announcements from key players like <strong>Max Healthcare</strong>, <strong>Fortis Healthcare</strong>, <strong>Rainbow Children’s Medicare</strong>, <strong>Yatharth Hospital</strong>, <strong>Global Health (Medanta)</strong>, and others (e.g., Apollo, HCG, Jupiter), the Indian hospital sector demonstrates <strong>robust growth momentum</strong> amid expansions, but faces execution and cyclical challenges. The sector reported <strong>average revenue growth of 17-28% YoY</strong>, <strong>EBITDA margins of 23-34%</strong>, and <strong>occupancy of 66-77%</strong>. Below is a structured summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-drivers-2" class="section level6">
+<h6><strong>Tailwinds (Positive Drivers)</strong></h6>
+<ul>
+<li><strong>Strong Operational Metrics</strong>: Consistent revenue (17-28% YoY) and EBITDA growth (18-28% YoY) driven by volume (OBDs up 13-19%), ARPOB hikes (3-10% in existing units, higher in new ones), and occupancy gains (66-77%). Mature hospitals grew 14-19% like-for-like.</li>
+<li><strong>Capacity Utilization &amp; Leverage</strong>: High occupancy in existing units (79%+ for Max/Fortis matures); brownfield expansions yielding immediate EBITDA positivity (e.g., Max Mohali/Nanavati, Fortis Manesar EBITDA-positive &lt;1 year).</li>
+<li><strong>Favorable Reimbursements</strong>: CGHS rate revision (effective Oct 2025) adds INR200cr+ revenue (Max), 10%+ uplift on ~INR2,000cr exposure; benefits for ECHS/PSUs (2-2.5% overall revenue upside per Yatharth).</li>
+<li><strong>Payer Mix Stability</strong>: Balanced cash/insurance (47-53%); self-pay spikes during insurance disruptions convert to reimbursable later.</li>
+<li><strong>Digital &amp; International Boost</strong>: Digital revenue ~30% (Max), international up 25-26% (INR169-231cr), 5-9% of revenue.</li>
+<li><strong>Governance &amp; Ratings</strong>: CRISIL upgrades (Yatharth A/Stable), new auditors/leadership (Rainbow CEO, Yatharth ID).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-3" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>Seasonality &amp; Low Illness Incidence</strong>: Pediatric players (Rainbow) hit hard—IP volumes down 1-9% YoY due to weak seasonal diseases; mature units more exposed (8-10% occupancy/revenue shortfall).</li>
+<li><strong>Receivables &amp; Cash Flow Pressure</strong>: Institutional buildup (Max free cash flow INR291cr vs. historical); debtor days up but improving (Yatharth reduced 8-10 days).</li>
+<li><strong>Insurance Disruptions</strong>: Temporary cashless halts resolved, but impacted growth (Max insurance lowest among peers); ongoing renewals (GIPSA).</li>
+<li><strong>Project Delays</strong>: Pollution/GRAP (Rainbow Gurgaon, Max), approvals (multiple).</li>
+<li><strong>Margin Dilution from Ramps</strong>: New units drag EBITDA 3-5% (Yatharth 3.3%); doctor costs 21.5% of revenue.</li>
+<li><strong>Debt in Some</strong>: Fortis net debt/EBITDA 0.96x (up from 0.16x due to acquisitions).</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Bed Additions</strong>: Aggressive—Fortis/Yatharth 400-1,000 beds FY26; Max/Rainbow 300-500; total 20-47% capacity growth. Targets: 3,000+ beds by FY28 (Yatharth doubling in 3-4 years).</li>
+<li><strong>M&amp;A/Brownfield Focus</strong>: Bolt-ons (Yatharth Agra 250 beds EBITDA-positive Day 1; Fortis Jalandhar/Greater Noida lease; Rainbow Warangal/Guwahati). Hub-spoke models scaling (Rainbow spokes breakeven 12-18 months).</li>
+<li><strong>Super-Specialty Shift</strong>: Oncology (Fortis 29%, Max), transplants, robotics driving ARPOB (7-19% in new/mature). IVF (Rainbow 40% growth, 3% revenue).</li>
+<li><strong>Geographic Expansion</strong>: NCR/North (Yatharth/Max/Fortis), Northeast (Rainbow), Tier-2 (Agra, Lucknow). Medical tourism via offices/airport tie-ups (Yatharth 45-55% ARPOB premium).</li>
+<li><strong>Guidance</strong>: 20-30%+ revenue CAGR (Rainbow 20%, Yatharth 30%+); ARPOB 8-10%; EBITDA 25-29% (mature ramps).</li>
+<li><strong>Capex</strong>: INR1,400-1,500cr over 4-5 years (internal accruals, net cash INR555-3,692cr).</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th><strong>Company</strong></th>
+<th><strong>FY26 Bed Adds</strong></th>
+<th><strong>Rev Growth Guide</strong></th>
+<th><strong>EBITDA Margin Guide</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Max</td>
+<td>800+</td>
+<td>20+ qtrs growth</td>
+<td>26-27%</td>
+</tr>
+<tr class="even">
+<td>Fortis</td>
+<td>400-500</td>
+<td>16-20%</td>
+<td>22.5-25%</td>
+</tr>
+<tr class="odd">
+<td>Rainbow</td>
+<td>150+</td>
+<td>20% CAGR</td>
+<td>25%+ (pre-capex)</td>
+</tr>
+<tr class="even">
+<td>Yatharth</td>
+<td>1,000</td>
+<td>30%+</td>
+<td>23%+ (upside)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks-3" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<ul>
+<li><strong>Execution/Integration</strong>: Ramp-up delays (15-18 months breakeven); brownfield/greenfield overruns (pollution, approvals).</li>
+<li><strong>Regulatory/Payer</strong>: Insurance renegotiations; CGHS portal delays/super-specialty codes; govt scheme lumpiness (180-day receivables).</li>
+<li><strong>Competition</strong>: NCR hotspots (Noida/Lucknow—Max/Fortis/Yatharth); peer capacity adds.</li>
+<li><strong>Cyclical/External</strong>: Seasonality (pediatrics), weather/festivals, geopolitical (international visas—Rainbow).</li>
+<li><strong>Financial</strong>: Debt for capex (Fortis 0.96x); receivables volatility; doctor attrition (1-1.5%, Max).</li>
+<li><strong>Macro</strong>: Inflation (chemicals offset by GST cuts 0.3-0.5%); high capex (INR1cr/bed greenfield).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: <strong>Bullish</strong>—sector poised for 20%+ CAGR on expansions/reimbursements, with net cash buffers. Near-term ramps/CGHS to drive H2 FY26 re-rating; monitor seasonality/execution. Valuations supported by 25-30% EBITDA margins at scale.</p>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+</div>
+<div id="analysis-of-indian-hospital-sector-q2-fy26-insights-from-key-players" class="section level3">
+<h3>Analysis of Indian Hospital Sector (Q2 FY26 Insights from Key Players)</h3>
+<p>The Indian hospital sector demonstrated <strong>resilient growth</strong> in Q2 FY26 (ended Sep 30, 2025), with most listed players (Max Healthcare, Apollo, Fortis, Narayana, Aster DM, Medanta, KIMS, Rainbow Children’s, HCG, Yatharth, Artemis, Shalby) reporting <strong>double-digit YoY revenue growth</strong> (avg. ~15-25%), driven by volume expansion, bed additions, and premiumization. EBITDA margins held steady at <strong>20-27%</strong>, reflecting operational leverage. However, seasonality (e.g., lower monsoon infections) and ramp-up costs in new units tempered some gains. Below is a structured summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>, synthesized from the filings.</p>
+<div id="tailwinds-positive-drivers-3" class="section level6">
+<h6><strong>Tailwinds (Positive Drivers)</strong></h6>
+<ul>
+<li><strong>Strong Demand &amp; Volumes</strong>: IP/OP growth of 10-25% YoY across peers (e.g., Max OBDs +19%, Fortis +13%, Narayana +9%). Occupancy stable at 65-77% (Max 77%, Fortis 71%, Yatharth 64%).</li>
+<li><strong>Premiumization &amp; ARPOB/ARPP Uptick</strong>: ARPOB rose 5-15% YoY (Max ₹77k, Fortis ₹2.51 Cr annualized, Artemis ₹81k), fueled by high-end specialties (oncology, cardiology up 20-29% YoY) and international patients (Max +25%, Fortis +26%, Artemis +30%).</li>
+<li><strong>Operational Efficiency</strong>: EBITDA margins resilient/improving (Max 26.9%, Narayana 25.9%, HCG 19.1%); cost controls and scale benefits evident.</li>
+<li><strong>Ancillary Revenue</strong>: Labs/home care growing (Max Lab +16%, <span class="citation">@Home</span> +20%; Fortis diagnostics +7%).</li>
+<li><strong>Policy Support</strong>: Govt. schemes (e.g., Ayushman) boosting institutional mix (Fortis 34%).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-4" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>Seasonality</strong>: Lower infections/monsoon impact softened Q2 (Rainbow, Aster noted; KIMS ARPOB dip QoQ).</li>
+<li><strong>Margin Pressure in New Units</strong>: Emerging/ramping hospitals dragged margins (Fortis new units 16.7%; HCG emerging 12.6%; Yatharth new Delhi/Faridabad).</li>
+<li><strong>Rising Costs</strong>: Employee expenses, capex/debt servicing up (Fortis free cash down; KIMS EBITDA -7% YoY due to depreciation/interest).</li>
+<li><strong>One-offs</strong>: Tax/merger impacts (Max PAT adjusted -16% ex-one-time; HCG exceptional items).</li>
+<li><strong>Debt Build-up</strong>: Net debt rose (Fortis ₹2,219 Cr; Yatharth expansions funded internally but peers like KIMS note interest pressure).</li>
+</ul>
+</div>
+<div id="growth-prospects-4" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Capacity Expansion</strong>: Aggressive bed adds (Max +428, Fortis +191, Rainbow +350, Yatharth +950, Aster Kasaragod 264 beds). Total sector adding 2,000+ beds in FY26 via brownfield/greenfield/M&amp;A.</li>
+<li><strong>High-Margin Specialties</strong>: Oncology/cardio focus (Apollo proton therapy, HCG LINAC 71%; Shalby robotics). International revenue 8-9% of mix, growing 25%+.</li>
+<li><strong>Geographic Diversification</strong>: Entry into new markets (Rainbow Northeast, Yatharth Agra, Fortis Lucknow O&amp;M).</li>
+<li><strong>Tech/Digital</strong>: Robotics, AI (Shalby autonomous robot, Max digital 30% revenue); labs/home care scaling.</li>
+<li><strong>M&amp;A/Inorganic</strong>: QCIL merger (Aster), JHL integration (Max); robust pipeline.</li>
+<li><strong>Projections</strong>: Peers guide 15-25% revenue CAGR; sector tailwinds from aging population, insurance penetration (IRDAI health premium +15%).</li>
+</ul>
+</div>
+<div id="key-risks-4" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Details</strong></th>
+<th><strong>Mitigants</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Execution</strong></td>
+<td>Ramp-up delays in new beds (e.g., Fortis Manesar, Rainbow Electronic City); integration risks (Yatharth Agra).</td>
+<td>Phased expansions, strong balance sheets (Yatharth net cash ₹3,692 Mn).</td>
+</tr>
+<tr class="even">
+<td><strong>Financial</strong></td>
+<td>Debt rise (Fortis 0.96x Net Debt/EBITDA); forex (Narayana Cayman).</td>
+<td>Internal accruals (Rainbow ₹5,558 Mn cash); low leverage (Max 2,067 Cr debt).</td>
+</tr>
+<tr class="odd">
+<td><strong>Regulatory</strong></td>
+<td>Approvals (CCI/NCLT for mergers: Aster-QCIL, Max-JHL); tax disputes (Yatharth IT unfreeze positive).</td>
+<td>Progressing (Aster no-objection received).</td>
+</tr>
+<tr class="even">
+<td><strong>Operational</strong></td>
+<td>Seasonality/pandemics; talent shortages; competition.</td>
+<td>Diversified specialties, clinical excellence (awards, NABH/JCI).</td>
+</tr>
+<tr class="odd">
+<td><strong>Macro</strong></td>
+<td>Inflation, IR rates; payor mix shifts.</td>
+<td>Premium focus, international revenue buffer.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="overall-summary-1" class="section level6">
+<h6><strong>Overall Summary</strong></h6>
+<p>The sector is <strong>bullish</strong> with <strong>tailwinds</strong> from demand surge, expansions, and premiumization outweighing <strong>headwinds</strong> like seasonality and ramp-up costs. <strong>Growth prospects</strong> are robust (15-25% CAGR via 2,000+ beds, specialties), but <strong>risks</strong> center on execution/debt. Peers like Max/Fortis/Yatharth exemplify strength; monitor new unit ramps and M&amp;A closures for FY26 outperformance. Sector ROCE 20-25% sustainable with leverage control.</p>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

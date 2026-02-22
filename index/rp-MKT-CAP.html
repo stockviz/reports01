@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Mkt. Cap. Classification Analysis</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Mkt. Cap. Classification Analysis</h1>
+<h3 class="subtitle">Constituent Changes</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#section">2025-06-30</a></li>
+<li><a href="#section-1">2024-12-31</a></li>
+<li><a href="#section-2">2024-06-30</a></li>
+<li><a href="#section-3">2023-12-31</a></li>
+<li><a href="#section-4">2023-06-30</a></li>
+<li><a href="#section-5">2022-12-31</a></li>
+<li><a href="#section-6">2022-06-30</a></li>
+<li><a href="#section-7">2021-12-31</a></li>
+<li><a href="#section-8">2021-06-30</a></li>
+<li><a href="#section-9">2020-12-31</a></li>
+<li><a href="#section-10">2020-06-30</a></li>
+<li><a href="#section-11">2019-12-31</a></li>
+<li><a href="#section-12">2019-06-30</a></li>
+<li><a href="#section-13">2018-12-31</a></li>
+<li><a href="#section-14">2018-06-30</a></li>
+</ul>
+</div>
+
+<div id="section" class="section level3">
+<h3>2025-06-30</h3>
+<div id="htmlwidget-18461d09db3dea0484ec" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-18461d09db3dea0484ec">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["APOLLOHOSP","ENRIN","ETERNAL","INDHOTEL","JINDALSTEL","LUPIN","MANKIND","MAXHEALTH","MAZDOCK","SHREECEM","SOLARINDS","UNIONBANK"],["BOSCHLTD","CUMMINSIND","DABUR","HEROMOTOCO","ICICIPRULI","IOB","JSWENERGY","NTPCGREEN","POLYCAB","RVNL","SWIGGY","ZOMATO"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":17,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,17,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-f1f31885df2a2dd285c7" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-f1f31885df2a2dd285c7">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["AIIL","BOSCHLTD","CHOLAHLDNG","CUMMINSIND","DABUR","GODFRYPHLP","HEROMOTOCO","HEXT","ICICIPRULI","IOB","ITCHOTELS","JSWENERGY","KPRMILL","LAURUSLABS","MEDANTA","NH","NTPCGREEN","POLYCAB","RADICO","RVNL","SWIGGY",""],["ABFRL","APARINDS","APOLLOHOSP","DEEPAKNTR","ENDURANCE","IGL","IKS","INDHOTEL","IRB","JINDALSTEL","LUPIN","MANKIND","MAXHEALTH","MAZDOCK","NIACL","OLAELEC","PSB","SHREECEM","SOLARINDS","SYNGENE","TATATECH","UNIONBANK"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":27,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,27,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-3def7c0d7ebc26a3057e" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-3def7c0d7ebc26a3057e">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["ABFRL","ABLBL","ACUTAAS","ADOR","AEGISVOPAK","AEROENTER","AFSL","AGARWALEYE","AJAXENGG","ALIVUS","APARINDS","ARIS","ATHERENERG","BAJAJINDEF","BELRISE","BHARATSE","BIRLANU","BLUSPRING","BORANA","CIFL","COHANCE","CPCAP","CURAA","DDEVPLSTIK","DEEPAKNTR","DENTA","DHARAN","DIGITIDE","ENDURANCE","GUJTHEM","IGL","IKS","INDOFARM","IRB","ISHANCH","JUBLCPL","KAVDEFENCE","KRISHIVAL","LAXMIDENTL","MCLOUD","MOSCHIP","NATCAPSUQ","NAVKARURB","NIACL","NIBE","NPST","ODIGMA","OLAELEC","ONESOURCE","ORCHASP","OSWALPUMPS","PRABHA","PRIMO","PROSTARM","PROTEAN","PSB","QPOWER","QUADFUTURE","RAJOOENG","SCODATUBES","SETL","SPECTRUM","STALLION","SUMEETINDS","SUNDROP","SUPREME","SWANDEF","SYNGENE","TATATECH","THELEELA","TICL","TINNARUBR","UMIYA-MRO","URAVIDEF","WAAREEINDO","WAAREERTL"],["ADORWELD","AHL","AIIL","AMIORG","ATFL","BCG","CAREERP","CHOLAHLDNG","GLS","GODFRYPHLP","HIL","ISEC","IWEL","KAVVERITEL","KBCGLOBAL","KPRMILL","LAURUSLABS","MBECL","MEDANTA","MELSTAR","MRO-TEK","NH","RADICO","RANEENGINE","RBL","SATINDLTD","SECURCRED","SUVENPHAR","TCLCONS","UMANGDAIRY","URAVI","VERTOZ","VISESHINFO","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":81,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,50,81,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-1" class="section level3">
+<h3>2024-12-31</h3>
+<div id="htmlwidget-386af3e47dc4756cae13" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-386af3e47dc4756cae13">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["BAJAJHFL","CGPOWER","CUMMINSIND","HYUNDAI","ICICIPRULI","INDUSTOWER","NAUKRI","NTPCGREEN","POLYCAB","RVNL","SWIGGY","ZOMATO"],["APOLLOHOSP","ATGL","BHEL","CANBK","ETERNAL","IDBI","INDUSINDBK","JINDALSTEL","MANKIND","NHPC","SHREECEM","UNIONBANK"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":17,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,17,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-01c01c60d8c7f806b0ef" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-01c01c60d8c7f806b0ef">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["360ONE","ABFRL","APOLLOHOSP","ATGL","BHEL","CANBK","GVT&amp;D","IDBI","IKS","INDUSINDBK","JINDALSTEL","KAYNES","MANKIND","NHPC","OLAELEC","PREMIERENE","SHREECEM","UNIONBANK","VMM","WAAREEENER"],["APOLLOTYRE","BANDHANBNK","CGPOWER","CUMMINSIND","DELHIVERY","GLAND","GODIGIT","HINDCOPPER","ICICIPRULI","INDUSTOWER","ITI","MEDANTA","MRPL","MSUMI","NAUKRI","POLYCAB","POONAWALLA","RVNL","STARHEALTH","ZFCVINDIA"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":25,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-9796159a9851c1785ab3" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-9796159a9851c1785ab3">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["ABDL","ABINFRA","ACMESOLAR","ADORWELD","AFCONS","AFFORDABLE","AGIIL","AHL","AKUMS","AMIORG","ANUHPHR","APOLLOTYRE","ARKADE","ATFL","ATLASCYCLE","AVANTEL","AVL","BALAJEE","BANDHANBNK","BANSALWIRE","BINANIIND","BLACKBUCK","CAREERP","CARRARO","CCCL","CEIGALL","CEWATER","DAMCAPITAL","DBEIL","DELHIVERY","DIFFNKG","ECOSMOBLTY","EIEL","EMCURE","EUREKAFORB","FIRSTCRY","GALAPREC","GARUDA","GLAND","GLOBALE","GLS","GODAVARIB","GODIGIT","HIL","HINDCOPPER","IGIL","INDOUS","INNOVANA","INTERARCH","ITI","KAVVERITEL","KBCGLOBAL","KMEW","KPEL","KRN","KROSS","LLOYDSENT","MAMATA","MANBA","MANCREDIT","MASTERTR","MEDANTA","MFML","MOBIKWIK","MRO-TEK","MRPL","MSUMI","NIVABUPA","NORTHARC","OCCLLTD","ORIENTTECH","PNGJL","POONAWALLA","RACLGEAR","RAYMONDLSL","RELIABLE","RELTD","ROSSTECH","RPEL","RUBFILA","RVTH","SAGILITY","SAILIFE","SANATHAN","SANOFICONR","SANSTAR","SATINDLTD","SENORES","SRD","SSDL","STARHEALTH","STYLEBAAZA","SURAJLTD","SURAKSHA","SUVENPHAR","SUYOG","TCLCONS","TOLINS","TRANSRAILL","UNIECOM","UNIMECH","URAVI","UYFINCORP","VENTIVE","VINCOFE","VRAJ","WCIL","XTGLOBAL","ZFCVINDIA"],["360ONE","ABFRL","ACUTAAS","ADOR","AEROENTER","AFSL","ALIVUS","BILVYAPAR","BIRLANU","BKMINDST","COHANCE","CPCAP","DEEPENR","DHARAN","FRETAIL","GVT&amp;D","IDFC","ISMTLTD","JETAIRWAYS","JUBLINDS","KAVDEFENCE","KAYNES","LGBFORGE","NEUEON","SUMEETINDS","SUNDROP","TCNSBRANDS","TICL","TV18BRDCST","UMIYA-MRO","URAVIDEF","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":114,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,50,100,114]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-2" class="section level3">
+<h3>2024-06-30</h3>
+<div id="htmlwidget-d96c7d74a31e3ed22d38" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-d96c7d74a31e3ed22d38">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["BHEL","BOSCHLTD","HEROMOTOCO","JSWENERGY","MOTHERSON","NHPC","ZYDUSLIFE"],["BERGEPAINT","ICICIGI","ICICIPRULI","MARICO","POLYCAB","SBICARD","SRF"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":12,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-08e006ba258d2a53cbc4" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-08e006ba258d2a53cbc4">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["APARINDS","BDL","BERGEPAINT","BHARTIHEXA","BLUESTARCO","BSE","COCHINSHIP","GODIGIT","GODREJIND","HINDCOPPER","HUDCO","ICICIGI","ICICIPRULI","IRB","ITI","MARICO","MEDANTA","MOTILALOFS","MRPL","NATIONALUM","NLCINDIA","POLYCAB","POWERINDIA","SBICARD","SRF","TATAINVEST"],["BHEL","BOSCHLTD","CREDITACC","DEVYANI","GRINDWELL","HATSUN","HEROMOTOCO","IIFL","JSWENERGY","KANSAINER","KPRMILL","MANYAVAR","MOTHERSON","NH","NHPC","PEL","RAMCOCEM","RELAXO","SKFINDIA","SUNDRMFAST","SUNTV","TATACHEM","TIMKEN","ZEEL","ZYDUSLIFE",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":31,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,31,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-7d56a7e9d0bc6cbeaff8" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-7d56a7e9d0bc6cbeaff8">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["AADHARHFC","AFIL","AIIL","AQYLON","AWFIS","BALUFORGE","BESTAGRO","BLSE","BOROSCI","CAPITALSFB","COMSYN","CREDITACC","DAVANGERE","DEEDEV","DEVYANI","DIGIDRIVE","DOLATALGO","ENTERO","EPACK","EXICOM","FILATFASH","FORCEMOT","GLOSTERLTD","GOPAL","GPTHEALTH","GRINDWELL","HATSUN","IIFL","INDGN","IXIGO","JGCHEM","JNKINDIA","JSFB","JUNIPER","JYOTICNC","KANSAINER","KPRMILL","KRONOX","KRYSTAL","LANCORHOL","MANYAVAR","MEDIASSIST","MODTHREAD","MUKKA","NEUEON","NH","NOVAAGRI","PARKHOTELS","PEL","PLATIND","PVSL","RAMCOCEM","RELAXO","RETAIL","RKSWAMY","RPTECH","SAURASHCEM","SCILAL","SIGNPOST","SINCLAIR","SKFINDIA","SRM","STANLEY","SUNDRMFAST","SUNTV","TARACHAND","TATACHEM","TBOTEK","TIMKEN","UDAICEMENT","UEL","VHLTD","VSTL","ZEEL"],["APARINDS","BDL","BLUESTARCO","BSE","CLCIND","COCHINSHIP","EASTSILK","GODREJIND","HINDCOPPER","HUDCO","IRB","ITI","MEDANTA","METALFORGE","MOTILALOFS","MRPL","NATIONALUM","NLCINDIA","POWERINDIA","RELCAPITAL","SABTN","SPTL","TATACOFFEE","TATAINVEST","TATAMETALI","TINPLATE","UJJIVAN","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":79,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,50,79,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-3" class="section level3">
+<h3>2023-12-31</h3>
+<div id="htmlwidget-824983d89737a64579c8" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-824983d89737a64579c8">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["ADANIENSOL","IOB","IRFC","JIOFIN","LODHA","NESTLEIND","PFC","POLYCAB","RECLTD","SHRIRAMFIN","UNIONBANK"],["ADANITRANS","AWL","BOSCHLTD","HDFC","HEROMOTOCO","IRCTC","MOTHERSON","PIIND","TIINDIA","UPL",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":16,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,16,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d0119993ba1d8412d1df" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-d0119993ba1d8412d1df">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["AJANTPHARM","AWL","BOSCHLTD","CREDITACC","EXIDEIND","GLENMARK","HEROMOTOCO","IRCTC","IREDA","JSWINFRA","KALYANKJIL","KEI","LLOYDSME","MAZDOCK","MOTHERSON","NAM-INDIA","NH","PIIND","SJVN","SUZLON","TATATECH","TIINDIA","UPL"],["AARTIIND","ABFRL","ATUL","BATAINDIA","BDL","CARBORUNIV","CROMPTON","IOB","IRFC","KAJARIACER","LAURUSLABS","LODHA","NAVINFLUOR","PFC","PFIZER","POLYCAB","RAJESHEXPO","RECLTD","SHRIRAMFIN","SUMICHEM","UNIONBANK","VINATIORGA","WHIRLPOOL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":28,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,28,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-403d65bed2aa46c2e8a7" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-403d65bed2aa46c2e8a7">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["AARTECH","AARTIIND","ABFRL","ACLGATI","AEROFLEX","AMNPLST","ARE&amp;M","ASKAUTOLTD","ATL","ATLANTAA","ATUL","AZAD","BAJEL","BATAINDIA","BDL","BLUEJET","CARBORUNIV","CELLO","CONCORDBIO","CROMPTON","CYIENTDLM","DIACABS","DIAMINESQ","DOLPHIN","DOMS","EMSLIMITED","EPIGRAL","ESAFSFB","FEDFINA","FLAIR","GANDHAR","GATECH","GENSOL","GTECJAINX","GVPTECH","HAPPYFORGE","HMAAGRO","HONASA","IDEAFORGE","INDIASHLTR","INNOVACAP","INOXINDIA","IRMENERGY","JLHL","KAJARIACER","KALAMANDIR","LAURUSLABS","LGHL","LLOYDSENGG","LORDSCHLO","LTFOODS","MAXESTATES","MOTISONS","MUFIN","MUFTI","MUTHOOTMF","MVGJL","NAVINFLUOR","NETWEB","NIITMTS","NUVAMA","ORIENTCER","PAKKA","PFIZER","PLAZACABLE","PROZONER","PRUDMOULI","PYRAMID","RAJESHEXPO","RATNAVEER","RBZJEWEL","REDTAPE","RISHABH","RRKABEL","SAMHI","SAMPANN","SANDUMA","SBFC","SECMARK","SEMAC","SENCO","SHAH","SICALLOG","SIGNATURE","SONAMLTD","SRGHFL","SUMICHEM","SUNCLAY","SURAJEST","THEJO","TICL","TPHQ","TREL","TVSHLTD","TVSSCS","UCAL","UDS","URAVIDEF","UTKARSHBNK","VALIANTLAB","VINATIORGA","VLEGOV","VPRPL","WELSPUNLIV","WHIRLPOOL","WINSOME","YASHO","YATHARTH","YATRA","ZAGGLE"],["4THDIM","AJANTPHARM","AJRINFRA","AMARAJABAT","ATLANTA","BIRLATYRE","CREDITACC","DAAWAT","DHARSUGAR","EXIDEIND","GAL","GATI","GISOLUTION","GLENMARK","INDLMETER","JBFIND","JSWISPL","KALYANKJIL","KEERTI","KEI","LSIL","MAXVIL","MAZDOCK","MFL","NAM-INDIA","NH","ORIENTABRA","PDPL","PRESSMN","PROZONINTU","REVATHI","RMCL","RNAVAL","SEPOWER","SJVN","SONAMCLOCK","SREINFRA","STAMPEDE","SUNCLAYLTD","SUZLON","TANTIACONS","TATASTLLP","UCALFUEL","UJAAS","VICEROY","VIVIMEDLAB","WELSPUNIND","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":115,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,50,100,115]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-4" class="section level3">
+<h3>2023-06-30</h3>
+<div id="htmlwidget-38bf69b87a376be7b65a" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-38bf69b87a376be7b65a">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["CANBK","IDBI","JINDALSTEL","MANKIND","PNB","TIINDIA","TVSMOTOR"],["INDUSTOWER","JSWENERGY","LODHA","NAUKRI","NYKAA","PAGEIND","TATAELXSI"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":12,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-0548024b08d2b6146812" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-0548024b08d2b6146812">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["BDL","CARBORUNIV","FACT","IIFL","INDUSTOWER","JSL","JSWENERGY","LODHA","MAHABANK","NAUKRI","NIACL","NYKAA","PAGEIND","PSB","RVNL","TATAELXSI"],["BLUEDART","CANBK","CLEAN","EMAMILTD","FINEORG","GILLETTE","IDBI","JINDALSTEL","LALPATHLAB","NAM-INDIA","PNB","PPLPHARMA","TIINDIA","TRIDENT","TTML","TVSMOTOR"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":21,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,21,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-6df5302084acfc42e7df" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-6df5302084acfc42e7df">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["360ONE","AARTIPHARM","ACL","AERONEU","AKI","ASHOKAMET","ASMS","ATALREAL","ATAM","AVALON","AVG","AVONMORE","BAIDFIN","BILVYAPAR","BLAL","BLUEDART","BTML","CIEINDIA","CLEAN","DIVGIITTS","EMAMILTD","FINEORG","GHCLTEXTIL","GILLETTE","GSLSU","HLEGLAS","HNDFDS","IKIO","JTLIND","KAMOPAINTS","KIRLPNU","KPIL","LAL","LALPATHLAB","LATTEYS","LEXUS","MANOMAY","MKPL","NAM-INDIA","NDLVENTURE","NINSYS","NRL","NSLNISP","OSWALGREEN","OSWALSEEDS","PAVNAIND","PIGL","POCL","PPLPHARMA","PTCIL","PVRINOX","RACE","RADIANTCMS","RHL","SADHNANIQ","SAHYADRI","SBGLP","SIGMA","SINDHUTRAD","SKYGOLD","STYRENIX","SUDARCOLOR","SVLL","TECILCHEM","TITAGARH","TRIDENT","TRU","TTML","USK","VIRINCHI","WEL","WESTLIFE"],["ANDHRACEMT","BALLARPUR","BDL","BINDALAGRO","CARBORUNIV","CCCL","CLNINDIA","DFMFOODS","EQUITAS","FACT","GSCLCEMENT","IIFL","IIFLWAM","INEOSSTYRO","INOXLEISUR","JIKIND","JINDCOT","JMCPROJECT","JPINFRATEC","JSL","JSLHISAR","KALPATPOWR","MAHABANK","MAHINDCIE","MERCATOR","MOHOTAIND","NATNLSTEEL","NIACL","NXTDIGITAL","PIONDIST","PSB","PVR","RVNL","SATHAISPAT","SINTEX","SUBCAPCITY","TWL","WFL","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":77,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,50,77,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-5" class="section level3">
+<h3>2022-12-31</h3>
+<div id="htmlwidget-ebba219d985cf2d732cd" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-ebba219d985cf2d732cd">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["ABB","BOSCHLTD","LTIM","PAGEIND","PIIND","TATAELXSI","TRENT","VBL"],["BANDHANBNK","GLAND","LTI","MINDTREE","MPHASIS","MUTHOOTFIN","PAYTM","PEL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":13,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,13,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-0b47d031655bf2686fb5" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-0b47d031655bf2686fb5">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["APOLLOTYRE","BANDHANBNK","BLUEDART","FINEORG","GLAND","KPITTECH","METROBRAND","MPHASIS","MUTHOOTFIN","PATANJALI","PAYTM","PEL","PPLPHARMA","SHRIRAMFIN","TIMKEN","UCOBANK","UNOMINDA","ZFCVINDIA"],["AAVAS","ABB","BOSCHLTD","CHAMBLFERT","GODREJIND","IEX","ISEC","MINDAIND","NATIONALUM","NIACL","PAGEIND","PIIND","RUCHI","SRTRANSFIN","TANLA","TATAELXSI","TRENT","VBL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":23,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,23,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-9eb4a5c5134cab2a1741" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-9eb4a5c5134cab2a1741">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["4THDIM","AAATECH","AAVAS","ACEINTEG","ACI","AEROENTER","AFSL","BBTCL","BIKAJI","BOHRAIND","CARYSIL","CHAMBLFERT","COSMOFIRST","CSLFINANCE","DBOL","DCI","DCXINDIA","DHARMAJ","DJML","DMCC","DREAMFOLKS","DYCL","ELIN","EMIL","FAZE3Q","FIVESTAR","FUSION","GODREJIND","GOYALALUM","GRMOVER","GVKPIL","HARSHA","HEADSUP","HPIL","HYBRIDFIN","IEL","IEX","INOXGREEN","ISEC","KAYNES","KFINTECH","KRITINUT","KSHITIJPOL","KSOLVES","LANDMARK","LOYALTEX","MANORAMA","MEDANTA","MODISONLTD","NARMADA","NATIONALUM","NAVA","NGLFINE","NIACL","OSIAHYPER","PARASPETRO","RADHIKAJWE","RAMAPHO","RAMRAT","RUSTOMJEE","SARVESHWAR","SCPL","SECURCRED","SINTEX","SPORTKING","SUKHJITS","SULA","SYNCOMF","SYRMA","TANLA","TIPSFILMS","TMB","TRACXN","UNIPARTS","UNIVAFOODS","VINNY","ZIMLAB","ZUARIIND"],["ACRYSIL","ANSALHSG","APOLLOTYRE","BARTRONICS","BHAGYAPROP","BLUEDART","BRFL","CANDC","COSMOFILMS","DHARAMSI","DIAPOWER","EASUNREYRL","FINEORG","HOTELRUGBY","JAINSTUDIO","KPITTECH","MCDHOLDING","METROBRAND","MODISNME","NBVENTURES","PBAINFRA","PUNJLLOYD","SHRIRAMCIT","SICAL","SORILINFRA","TCIDEVELOP","TIMKEN","TMRVL","UCOBANK","UTTAMSTL","ZFCVINDIA","ZUARIGLOB","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":83,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,50,83,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-6" class="section level3">
+<h3>2022-06-30</h3>
+<div id="htmlwidget-e5cfb6f8cb61dbd1bd2b" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-e5cfb6f8cb61dbd1bd2b">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["ADANIPOWER","AWL","BANDHANBNK","BANKBARODA","CHOLAFIN","HAL","LICI","MOTHERSON"],["CADILAHC","GODREJPROP","HDFCAMC","IDBI","JUBLFOOD","MOTHERSUMI","POLICYBZR","SAIL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":13,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,13,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-3b1f8a26c9d73369fba9" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-3b1f8a26c9d73369fba9">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["CHAMBLFERT","DELHIVERY","GODREJPROP","HDFCAMC","IDBI","JUBLFOOD","KPRMILL","MANYAVAR","MSUMI","PHOENIXLTD","POLICYBZR","POONAWALLA","SAIL","SKFINDIA","TANLA","TTML","ZYDUSLIFE"],["ABSLAMC","ADANIPOWER","AJANTPHARM","ALKYLAMINE","APTUS","BANDHANBNK","BANKBARODA","CHOLAFIN","GRINFRA","GSPL","HAL","HAPPSTMNDS","INDIAMART","NATCOPHARM","NUVOCO","SANOFI","UCOBANK"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":22,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,22,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-7a0b43b3c9aeeb442b73" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-7a0b43b3c9aeeb442b73">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["ABSLAMC","AETHER","AGI","AGSTRA","AJANTPHARM","AKSHAR","ALKYLAMINE","APTUS","AVROIND","AXITA","BCONCEPTS","CAMPUS","CHEVIOT","CHOICEIN","CROWN","DEVIT","DIL","E2E","ELDEHSG","EMUDHRA","ESSENTIA","ETHOSLTD","FIBERWEB","GATEWAY","GMRP&amp;UI","GRINFRA","GRWRHITECH","GSPL","HAPPSTMNDS","HARDWYN","HARIOMPIPE","HINDWAREAP","INDIAMART","INDOAMIN","INDOBORAX","IONEXCHANG","JWL","KEEPLEARN","KOHINOOR","KPIGREEN","KRITIKA","MALLCOM","MEDICO","MEGASTAR","MHLXMIRU","MITCON","MONARCH","NATCOPHARM","NUVOCO","OBCL","PARADEEP","PCBL","PDSL","PIXTRANS","PRITI","PRUDENT","RAINBOW","RAJRILTD","RBA","RELCHEMQ","RITCO","ROTO","SANOFI","SEPC","SHAILY","SILVERTUC","SOFTTECH","SONAMCLOCK","SPLPETRO","STARTECK","UCOBANK","UMAEXPORTS","UNIINFO","VCL","VENUSPIPES","VERANDA","WEWIN","WFL","ZFCVINDIA"],["AHLWEST","ARIHANT","ATLASCYCLE","ATNINTER","BILENERGY","BURGERKING","CEBBCO","CHAMBLFERT","COX&amp;KINGS","DALALSTCOM","GALLISPAT","GDL","GTNTEX","GVKPIL","HSIL","INTEGRA","JMTAUTOLTD","KPIGLOBAL","KPRMILL","MANGTIMBER","MUKANDENGG","NEUEON","NITINFIRE","OISL","OPTOCIRCUI","PAEL","PATSPINLTD","PDSMFL","PHILIPCARB","PHOENIXLTD","POONAWALLA","ROHITFERRO","SHIL","SHRIRAMEPC","SINTEX","SKFINDIA","SRIPIPES","SUPPETRO","TANLA","TECHNOFAB","TTML","WAAREEINDO","WABCOINDIA","ZICOM","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":84,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,50,84,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-7" class="section level3">
+<h3>2021-12-31</h3>
+<div id="htmlwidget-a16e49b42e48f3159482" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-a16e49b42e48f3159482">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["BEL","ETERNAL","GODREJPROP","IRCTC","JSWENERGY","LODHA","MINDTREE","MPHASIS","NYKAA","PAYTM","POLICYBZR","SRF","TATAPOWER"],["AUROPHARMA","BANDHANBNK","BANKBARODA","BIOCON","BOSCHLTD","CHOLAFIN","COLPAL","HONAUT","LUPIN","NMDC","PGHH","PNB","YESBANK"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":18,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,18,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-788c9d97bffa75664b0a" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-788c9d97bffa75664b0a">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["ABSLAMC","APTUS","AUROPHARMA","BANDHANBNK","BANKBARODA","BIOCON","BOSCHLTD","CENTRALBK","CGPOWER","CHOLAFIN","CLEAN","COLPAL","DEVYANI","FLUOROCHEM","GRINDWELL","GRINFRA","HAPPSTMNDS","HONAUT","IEX","LUPIN","NATIONALUM","NMDC","NUVOCO","PGHH","PNB","PRESTIGE","STARHEALTH","TRIDENT","YESBANK"],["AFFLE","AMARAJABAT","APLLTD","APOLLOTYRE","BEL","BLUEDART","CASTROLIND","COHANCE","CUB","DHANI","EXIDEIND","GLENMARK","GODREJPROP","INDIGOPNTS","IRCTC","JSWENERGY","JUBLPHARMA","LODHA","MAHABANK","MANAPPURAM","MINDTREE","MPHASIS","PHOENIXLTD","RBLBANK","SRF","TATAPOWER","VAIBHAVGBL","WABCOINDIA","ZYDUSWELL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":34,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,34,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-abb4c84d64ddfa0f61f3" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-abb4c84d64ddfa0f61f3">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["3IINFOLTD","AAREYDRUGS","ABMINTLLTD","ACUTAAS","AFFLE","AIROLAM","AJRINFRA","ALIVUS","AMARAJABAT","ANANDRATHI","ANGELONE","APLLTD","APOLLOTYRE","ARTNIRMAN","ASIANENE","AURUM","BAJAJHCARE","BBOX","BHAGCHEM","BLUEDART","CARTRADE","CASTROLIND","CHEMPLASTS","CMSINFO","COASTCORP","COHANCE","CUB","DATAPATTNS","DCMSRIND","DELPHIFX","DHANI","DHARAMSI","DHARAN","DHRUV","DIGJAMLMTD","EIFFL","EQUIPPP","EXIDEIND","EXXARO","FINOPB","FOCUS","FOODSIN","GANESHBE","GANGAFORGE","GLENMARK","GOCOLORS","HECPROJECT","HINDCON","HPAL","IBULLSLTD","ICDSLTD","INDIGOPNTS","INTLCONV","IPL","IRIS","JAIPURKURT","JETFREIGHT","JUBLPHARMA","KPIGLOBAL","KRITI","KRSNAA","LAGNAM","LATENTVIEW","LAXMICOT","LINC","MAHABANK","MANAPPURAM","MANORG","MAPMYINDIA","MARSHALL","MEDICAMEQ","MEDPLUS","METROBRAND","MFL","MICEL","MOL","NGIL","PANSARI","PAR","PARAS","PASUPTAC","PHOENIXLTD","POONAWALLA","PRITIKAUTO","PVP","RATEGAIN","RBLBANK","RHIM","ROLEXRINGS","RPPL","SANSERA","SAPPHIRE","SBC","SEJALLTD","SELMC","SERVOTECH","SGIL","SHANTI","SHIVALIK","SHRIRAMPPS","SIGACHI","SIKKO","SJS","SMLT","STEELCAS","STYLAMIND","SUPRIYA","SVPGLOB","TARSONS","TATVA","TEGA","UGROCAP","UNITEDPOLY","VAIBHAVGBL","VALIANTORG","VIJAYA","WABCOINDIA","WINDLAS","YUKEN","ZODIAC","ZYDUSWELL"],["3IINFOTECH","ABMINTLTD","AGCNET","ALCHEM","ANGELBRKG","ARCOTECH","AUTOLITIND","BSELINFRA","CASTEXTECH","CENTRALBK","CGPOWER","CHROMATIC","CKFSL","DQE","EBIXFOREX","EMCO","EUROMULTI","FLUOROCHEM","GAMMNINFRA","GRINDWELL","HAPPSTMNDS","IEX","KARDA","LINCPEN","MAGMA","MAJESCO","NATIONALUM","ORIENTREF","PRADIP","PRESTIGE","PROINDIA","RAJRAYON","RAMSARUP","SHIRPUR-G","SICAGEN","TALWALKARS","TALWGYM","TATASTLBSL","TRIDENT","YAARII","ZODJRDMKJ","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":126,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,50,100,126]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-8" class="section level3">
+<h3>2021-06-30</h3>
+<div id="htmlwidget-1df8689575ed60c88fe1" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-1df8689575ed60c88fe1">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["APOLLOHOSP","ATGL","BAJAJ-AUTO","BANKBARODA","CHOLAFIN","HONAUT","NMDC","SAIL","UNITDSPR"],["ALKEM","BAJAJAUTO","HAL","HINDPETRO","IGL","MCDOWELLN","PETRONET","PIIND",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":14,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,14,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-b43c71fc15a4e014c7c2" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-b43c71fc15a4e014c7c2">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["AFFLE","ALKEM","ALKYLAMINE","APLAPOLLO","APOLLOTYRE","BLUEDART","HAL","HINDPETRO","IGL","INDIANB","INDIGOPNTS","IRFC","JUBLPHARMA","KAJARIACER","LINDEINDIA","LODHA","MAHABANK","NAM-INDIA","PETRONET","PIIND","SONACOMS","TATAELXSI","VAIBHAVGBL",""],["ADANIGAS","AKZOINDIA","APOLLOHOSP","ASTRAZEN","BANKBARODA","BBTC","CENTRALBK","CHOLAFIN","CREDITACC","GODREJAGRO","GRANULES","HONAUT","IIFLWAM","ITI","JUBILANT","METROPOLIS","MGL","MOTILALOFS","NAMINDIA","NMDC","PGHL","PRESTIGE","SAIL","SJVN"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":29,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,29,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-2b368508291de9a4be4d" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-2b368508291de9a4be4d">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["ACRYSIL","AHLADA","AJOONI","AKG","AKZOINDIA","AMBICAAGAR","ANMOL","ANTGRAPHIC","ANURAS","ARIHANTCAP","ARVEE","ASTRAZEN","AWHCL","BBTC","BCLIND","BGLOBAL","CAMS","CENTRALBK","CLSEL","CRAFTSMAN","CREDITACC","DALALSTCOM","DEEPINDS","DODLA","DRCSYSTEMS","EASEMYTRIP","GANGOTRI","GENCON","GODREJAGRO","GRANULES","HCL-INSYS","HERANBA","HOMEFIRST","IIFLWAM","INCREDIBLE","IRISDOREME","ISGEC","ITI","IWEL","JINDCOT","JUBLINGREA","KALYANKJIL","KANPRPLA","KAVDEFENCE","KHAITANLTD","KIMS","LCCINFOTEC","LXCHEM","METROPOLIS","MGL","MODISNME","MOKSH","MOTILALOFS","MTARTECH","NAZARA","NITIRAJ","NURECA","OMINFRAL","ORTINGLOBE","PBAINFRA","PDPL","PGHL","PRESTIGE","PROINDIA","QUINTEGRA","RAILTEL","RAJMET","RAJVIR","REGENCERAM","RPSGVENT","RTNINDIA","SBCL","SECURKLOUD","SHIRPUR-G","SHYAMMETL","SILGO","SJVN","SMCGLOBAL","STOVEKRAFT","SURYODAY","SUVIDHAA","TARAPUR","TEMBO","UFBL","UMIYA-MRO","VIKASLIFE","VINEETLAB","VISESHINFO","WEALTH"],["8KMILES","ADHUNIKIND","AFFLE","ALKYLAMINE","APLAPOLLO","APOLLOTYRE","BLUEDART","CESCVENT","CNOVAPETRO","DHFL","DIGJAMLTD","EUROCERA","GARDENSILK","GBGLOBAL","GLOBOFFS","GTNIND","HARITASEAT","HCLINSYS","INDIANB","JAIHINDPRO","KAJARIACER","KGL","KOHINOOR","KSERASERA","KSK","KWALITY","LINDEINDIA","MAHABANK","MEGH","METKORE","MIC","MROTEK","OMMETALS","ORTINLABSS","PARABDRUGS","PRABHAT","PROSEED","RTNINFRA","SANGHVIFOR","SELMCL","SEZAL","SHIRPURG","SMPL","STINDIA","SUJANAUNI","SYNCOM","TATAELXSI","THIRUSUGAR","UNIPLY","UNITY","VAIBHAVGBL","VIDEOIND","VIKASMCORP","WINSOME","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":94,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,50,94,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-9" class="section level3">
+<h3>2020-12-31</h3>
+<div id="htmlwidget-49564fb325c74e92a0be" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-49564fb325c74e92a0be">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["ADANIENT","BAJAJAUTO","GLAND","HAL","INDUSTOWER","JUBLFOOD","MCDOWELLN","PIIND","YESBANK"],["BAJAJ-AUTO","BANKBARODA","CONCOR","GICRE","INFRATEL","MRF","NMDC","UBL","UNITDSPR"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":14,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,14,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-406a224d3ee02e523af2" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-406a224d3ee02e523af2">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["ASTRAZEN","BANKBARODA","BBTC","COFORGE","COHANCE","CONCOR","DEEPAKNTR","DHANI","DIXON","GICRE","GRANULES","INDIAMART","LAURUSLABS","MAXHEALTH","MRF","NAMINDIA","NAVINFLUOR","NMDC","PERSISTENT","PGHL","UBL"],["ADANIENT","APOLLOTYRE","CESC","CHOLAHLDNG","FRETAIL","HAL","HEXAWARE","IBVENTURES","JMFINANCIL","JUBLFOOD","KAJARIACER","NAM-INDIA","NIITTECH","PIIND","PVR","SAMMAANCAP","SKFINDIA","SYMPHONY","TTKPRESTIG","VGUARD","YESBANK"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":26,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,26,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-b411848ffa04bb64a67f" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-b411848ffa04bb64a67f">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["AAKASH","AARON","AARTISURF","ACCURACY","ADL","ANGELBRKG","APOLLOTYRE","AURIGROW","BANKA","BECTORFOOD","BOROLTD","BSHSL","BURGERKING","CESC","CHEMCON","CHOLAHLDNG","DANGEE","DEEPENR","DPABHUSHAN","EPL","EQUITASBNK","FAIRCHEMOR","FRETAIL","GLOBAL","GLOBE","HAPPSTMNDS","HCLINSYS","HEMIPROP","HUHTAMAKI","ICEMAKE","JMFINANCIL","JSWISPL","KAJARIACER","KEERTI","KHAICHEM","LIKHITHA","MACPOWER","MARINE","MAXIND","MAZDOCK","MCL","MGEL","MROTEK","NDRAUTO","NIRAJ","ORCHPHARMA","PRIVISCL","PVR","REPL","RKEC","ROML","ROSSARI","ROUTE","RVHL","SAMMAANCAP","SHAREINDIA","SHIRPURG","SHRADHA","SILLYMONKS","SINTERCOM","SKFINDIA","SRPL","STLTECH","SUBEXLTD","SUPREMEENG","SUULD","SYMPHONY","TARC","TIRUPATIFL","TOTAL","TTKPRESTIG","UNIDT","UTIAMC","VGUARD","WORTHPERI","YAARII","ZENITHSTL"],["AIFL","AIONJSW","ANTGRAPHIC","ASTRAZEN","BBTC","BGLOBAL","BILVYAPAR","BLUEBLENDS","CELESTIAL","CIMMCO","COHANCE","CURATECH","DEEPAKNTR","DEEPIND","DIXON","DOLPHINOFF","EDL","EON","ESSDEE","ESSELPACK","FAIRCHEM","GANGOTRI","GRANULES","HCL-INSYS","HIGHGROUND","HINDSYNTEX","IBULISL","ICSA","INDIAMART","JINDCOT","JVLAGRO","KAVDEFENCE","KHAITANLTD","LAKSHVILAS","LAURUSLABS","MANPASAND","MVL","NAVINFLUOR","PAPERPROD","PDPL","PERSISTENT","PGHL","PSL","QUINTEGRA","RAINBOWPAP","RAJVIR","REGENCERAM","SHIRPUR-G","SITASHREE","STRTECH","SUBEX","TARAPUR","UMIYA-MRO","UVSL","VISESHINFO","XLENERGY","ZENITHBIR","","","","","","","","","","","","","","","","","","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":82,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,50,82,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-10" class="section level3">
+<h3>2020-06-30</h3>
+<div id="htmlwidget-6adea3869a6ef9ea5a21" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-6adea3869a6ef9ea5a21">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["ADANIGREEN","ALKEM","CADILAHC","IGL","MRF","SBICARD","TATACONSUM",""],["ABB","ACC","GSKCONS","KANSAINER","OFSS","PFC","RECLTD","ZEEL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":13,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,13,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-6f39a4be75023ec4dac1" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-6f39a4be75023ec4dac1">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["ABB","ACC","CENTRALBK","ESCORTS","ITI","JMFINANCIL","JUBILANT","KANSAINER","METROPOLIS","NAM-INDIA","OFSS","PFC","RECLTD","RUCHI","SUMICHEM","TIINDIA","TTKPRESTIG","ZEEL"],["ADANIGREEN","ALBK","ALKEM","CADILAHC","CORPBANK","EDELWEISS","EIHOTEL","FLFL","IGL","MRF","MRPL","ORIENTBANK","PNBHOUSING","RNAM","SHRIRAMCIT","TATAGLOBAL","UJJIVANSFB",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":23,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,23,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d1b8a8a6ea0bdb613a46" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-d1b8a8a6ea0bdb613a46">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["AARVI","ALOKINDS","ANDHRAPAP","ARTEMISMED","ASALCBR","BAFNAPH","BIRLATYRE","BORORENEW","CCCL","COHANCE","DPWIRES","EBIXFOREX","EDELWEISS","EIHOTEL","FLFL","GEEKAYWIRE","HLVLTD","IMAGICAA","KAPSTON","MAHEPC","MITTAL","MMP","MRPL","PANACHE","PNBHOUSING","POWERINDIA","RAJRATAN","S&amp;SPOWER","SHREDIGCEM","SHRIRAMCIT","TOUCHWOOD","UJJIVANSFB","UNIVASTU","UNIVPHOTO","VAISHALI","VERTOZ"],["ADLABS","ALOKTEXT","ANDHRABANK","ARROWTEX","BOROSIL","CENTRALBK","ESCORTS","HOTELEELA","IPAPPM","ITI","JMFINANCIL","JUBILANT","LEEL","MAXINDIA","METROPOLIS","NOESISIND","PETRONENGG","SYNDIBANK","TIINDIA","TTKPRESTIG","UNITEDBNK","VIMALOIL","WEIZFOREX","","","","","","","","","","","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":41,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,41,50,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-11" class="section level3">
+<h3>2019-12-31</h3>
+<div id="htmlwidget-8f9458c996f1c37d235a" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-8f9458c996f1c37d235a">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["ADANITRANS","KANSAINER","MUTHOOTFIN","NAUKRI","RECLTD"],["CADILAHC","IDEA","NIACL","SAMMAANCAP","YESBANK"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":10,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-a21ad60f5e2e3bfae867" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-a21ad60f5e2e3bfae867">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["ADANIGREEN","AKZOINDIA","CADILAHC","CREDITACC","FLFL","IDEA","IIFLWAM","IRCTC","ISEC","JKCEMENT","LALPATHLAB","MINDAIND","NIACL","NIITTECH","PVR","SAMMAANCAP","SCHAEFFLER","UJJIVANSFB","YESBANK","ZYDUSWELL"],["ABREL","ADANITRANS","BHARATFIN","CENTRALBK","GRAPHITE","GRUH","GUJFLUORO","IIFL","INDIANB","JUBILANT","KANSAINER","MUTHOOTFIN","NATIONALUM","NAUKRI","NBCC","NLCINDIA","QUESS","RECLTD","STRTECH","TTKPRESTIG"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":25,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-211096da92801acbd2ca" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-211096da92801acbd2ca">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["ABREL","AFFLE","AKASH","APOLLOPIPE","CENTRALBK","CHEMBOND","CNL","CSBBANK","DCMNVL","DIGISPICE","FLUOROCHEM","GBGLOBAL","GFLLIMITED","GFSTEELS","GRAPHITE","GREENPANEL","IIFL","IIFLCAPS","INDIAMART","INDIANB","INFOBEAN","JASH","JUBILANT","KRISHANA","KUANTUM","LIBAS","MBAPL","NATIONALUM","NBCC","NLCINDIA","NXTDIGITAL","OAL","PRINCEPIPE","QUESS","SAFARI","SANGINITA","SATIA","SETUINFRA","SEYAIND","SHIL","SHRENIK","SIRCA","SPANDANA","STRTECH","SUMIT","SWSOLAR","TATASTLLP","TTKPRESTIG","VISHWARAJ","ZOTA",""],["ADANIGREEN","ADHUNIK","AGLSL","AKZOINDIA","ASSAMCO","BAFNAPHARM","CCCL","CREDITACC","ELAND","EXCELCROP","FEDDERELEC","FLFL","HINDUJAVEN","ISEC","IVRCLINFRA","JKCEMENT","KESARENT","KHAITANELE","KTIL","LAKSHMIEFL","LALPATHLAB","MIL","MINDAIND","MONSANTO","NAGAROIL","NIITTECH","NITESHEST","NUTEK","ORCHIDPHAR","PBAINFRA","PIRPHYTO","POCHIRAJU","PRAKASHCON","PRATIBHA","PROVOGE","PVP","PVR","RAMGOPOLY","RUCHISOYA","SCHAEFFLER","SGFL","SIMPLEX","SPICEMOBI","SRSLTD","SUNILHITEC","TARAJEWELS","TATASPONGE","TULSI","VIJSHAN","ZYDUSWELL","ZYLOG"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":56,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,50,56,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-12" class="section level3">
+<h3>2019-06-30</h3>
+<div id="htmlwidget-57208cc2a7c343fc6846" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-57208cc2a7c343fc6846">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["ABB","ACC","IDBI","PFC","PNB","TORNTPHARM"],["ASHOKLEY","IBVENTURES","LTF","MRF","PAGEIND","SAIL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":11,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-99ccddd1316ec04c0335" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-99ccddd1316ec04c0335">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["AAVAS","ALBK","ASHOKLEY","CHOLAHLDNG","CORPBANK","DALBHARAT","FORTIS","IBVENTURES","IDFCFIRSTB","IOB","KAJARIACER","LTF","MANAPPURAM","MGL","MRF","ORIENTBANK","PAGEIND","POLYCAB","PRESTIGE","SAIL","SYMPHONY","TTKPRESTIG","UCOBANK","VGUARD","VINATIORGA"],["ABB","ACC","BBTC","DHFL","DISHTV","ERIS","ESCORTS","FCONSUMER","HEG","HUDCO","IDBI","IDFCBANK","ISEC","KIOCL","MAHINDCIE","MINDAIND","PFC","PNB","RELINFRA","RPOWER","SCHAEFFLER","THOMASCOOK","TIFIN","TORNTPHARM","VARROC"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":30,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-e29f4193a6e06751825d" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-e29f4193a6e06751825d">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["AGROPHOS","AIRAN","ANUP","ARVINDFASN","BAJAJCON","BBTC","BSOFT","CESCVENT","CHALET","CKFSL","CONFIPET","DGCONTENT","DHFL","DISHTV","DVL","EMAMIPAP","ERIS","ESCORTS","EXPLEOSOL","FCONSUMER","HEG","HUDCO","ISEC","KALYANI","KEYFINSERV","KIOCL","KPITTECH","MAHESHWARI","MAHINDCIE","METROPOLIS","MIL","MINDAIND","MSTCLTD","NEOGEN","NIRAJISPAT","ONEPOINT","PGHL","PPL","RELINFRA","RGL","RPOWER","RVNL","SAGARDEEP","SAKAR","SCHAEFFLER","SOUTHWEST","SPENCERS","STEELCITY","SUBCAPCITY","THOMASCOOK","VARROC","VIKASMCORP","XELPMOC"],["AAVAS","ABGSHIP","ALBK","AMTEKAUTO","ANGIND","BAJAJCORP","BHARATIDIL","BILPOWER","CORPBANK","DENABANK","DPL","ECEIND","FIRSTWIN","FORTIS","GEMINI","GITANJALI","IOB","KAJARIACER","KEYCORPSER","KPIT","MANAPPURAM","MANDHANA","MERCK","MGL","NAKODA","OCLINDIA","ORIENTBANK","PANORAMUNI","PENPEBS","PINCON","PRESTIGE","RJL","SALORAINTL","SHARONBIO","SHILPI","SQSBFSI","SURANACORP","SYMPHONY","TODAYS","TTKPRESTIG","UCOBANK","USHERAGRO","VGUARD","VIJAYABANK","VINATIORGA","","","","","","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":58,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,50,58,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-13" class="section level3">
+<h3>2018-12-31</h3>
+<div id="htmlwidget-8261d9ebfbb380aeccde" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-8261d9ebfbb380aeccde">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["BERGEPAINT","DIVISLAB","GSKCONS","HDFCAMC","IBVENTURES","LTI","PAGEIND","UBL"],["ABCAPITAL","BEL","BHARATFORG","BHEL","HAL","SRTRANSFIN","SUNTV","TVSMOTOR"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":13,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,13,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-a9ed75ccd748367a0051" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-a9ed75ccd748367a0051">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["AARTIIND","ABCAPITAL","ADANIGAS","APLLTD","ATUL","BATAINDIA","BEL","BHARATFORG","BHEL","GUJFLUORO","HAL","IPCALAB","MAHINDCIE","PHOENIXLTD","RELAXO","SCHAEFFLER","SKFINDIA","SOLARINDS","SRTRANSFIN","SUNTV","THOMASCOOK","TVSMOTOR","VARROC"],["ARVIND","AVANTIFEED","BERGEPAINT","DALMIABHA","DBL","DIVISLAB","ENGINERSIN","FINCABLES","GSKCONS","IBVENTURES","JMFINANCIL","KRBL","LTI","PAGEIND","PCJEWELLER","PRESTIGE","RAIN","RELCAPITAL","SPARC","SYMPHONY","TV18BRDCST","UBL","VAKRANGEE"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":28,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,28,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-4a6d554a3a65a0b8fb1a" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-4a6d554a3a65a0b8fb1a">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["AAVAS","AIONJSW","ARVIND","AVANTIFEED","BCG","CREDITACC","DBL","EMAMIREAL","ENGINERSIN","FINCABLES","FINEORG","GARFIBRES","GRSE","HBSL","INSPIRISYS","IRCON","JMFINANCIL","KRBL","KSB","NILASPACES","OCLINDIA","OLECTRA","PCJEWELLER","PRESTIGE","PROSEED","RAIN","RELCAPITAL","RITES","SIGIND","SPARC","SPCENET","SYMPHONY","TATASTLBSL","TCNSBRANDS","TECHNOE","THEINVEST","TREJHARA","TV18BRDCST","VAKRANGEE"],["AARTIIND","AFL","AICHAMP","APLLTD","ATUL","BATAINDIA","BHUSANSTL","CAPF","ELECTROSL","EMAMIINFRA","FORTUNEFIN","GARWALLROP","GOLDINFRA","GREENFIRE","GUJFLUORO","HANUNG","HINDDORROL","INFINITE","IPCALAB","KSBPUMPS","LITL","LYCOS","MAHINDCIE","MONNETISPA","MOSERBAER","OCL","PHOENIXLTD","POLARIS","RASOYPR","RELAXO","SAMTEL","SCHAEFFLER","SIGNET","SKFINDIA","SOLARINDS","SUPREMETEX","SURANAIND","TECHNO","THOMASCOOK"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":44,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,44,50,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="section-14" class="section level3">
+<h3>2018-06-30</h3>
+<div id="htmlwidget-bcb933d6eeb29a605471" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-bcb933d6eeb29a605471">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">LARGE CAP<\/caption>","data":[["BANDHANBNK","BIOCON","COLPAL","HAL","MRF","PGHH","SAIL","SRTRANSFIN"],["ABB","ACC","LICHSGFIN","NHPC","PFC","PNB","RECLTD","VAKRANGEE"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":13,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,13,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-c375479de4e9df737c39" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-c375479de4e9df737c39">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">MID CAP<\/caption>","data":[["ABB","ACC","DISHTV","EIHOTEL","ESCORTS","GRAPHITE","HEG","HEXAWARE","ISEC","LICHSGFIN","LTTS","MINDAIND","MINDTREE","NHPC","PFC","PFIZER","PNB","RAIN","RECLTD","TV18BRDCST","VAKRANGEE"],["AKZOINDIA","APLLTD","BATAINDIA","BIOCON","BLUEDART","COLPAL","EMBDL","GUJFLUORO","GVT&amp;D","IDFC","KAJARIACER","MAHINDCIE","MANAPPURAM","MGL","MRF","PGHH","SAIL","SOLARINDS","SRTRANSFIN","SUNCLAYLTD","THOMASCOOK"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":26,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,26,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-b8501e7d612a2a1d64a2" class="datatables html-widget html-fill-item" style="width:100%;height:auto;">
+
+</div>
+<script type="application/json" data-for="htmlwidget-b8501e7d612a2a1d64a2">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"font-weight: bold; color:black\">SMALL CAP<\/caption>","data":[["21STCENMGM","3PLAND","ADANIGREEN","ADROITINFO","AKZOINDIA","AMBER","AMJLAND","ANKITMETAL","APLLTD","APOLLO","ASTERDM","ATNINTER","BATAINDIA","BDL","BLUECHIP","BLUEDART","BOROSIL","CENTRUM","CHEMFAB","DCMFINSERV","ELECTROSL","EMBDL","FCSSOFT","FIRSTWIN","GALAXYSURF","GALLANTT","GALLISPAT","GANGOTRI","GAYAHWS","GEMINI","GLFL","GMMPFAUDLR","GOLDENTOBC","GREENFIRE","GUJFLUORO","GVT&amp;D","HAVISHA","HGINFRA","HITECH","IBULISL","IDFC","IMPEXFERRO","INDOSTAR","INFOMEDIA","JIKIND","JTEKTINDIA","KAJARIACER","KARDA","KAUSHALYA","KHAITANELE","LEMONTREE","LGBFORGE","MAHAPEXLTD","MAHINDCIE","MANAPPURAM","MGL","MIDHANI","MODIRUBBER","MVL","NEWGEN","NOESISIND","ORIENTELEC","OSWALAGRO","PAISALO","PIRPHYTO","PITTIENG","PRAKASHSTL","PRAXIS","PRSMJOHNSN","RAMGOPOLY","RASOYPR","ROHITFERRO","SANDHAR","SHIVAMILLS","SOLARA","SOLARINDS","SUNCLAYLTD","TALWGYM","THOMASCOOK","TSFINV","UMIYA-MRO","VIMALOIL","VISESHINFO","ZENITHBIR"],["BSLIMITED","DISHTV","DSKULKARNI","EIHOTEL","ESCORTS","ESL","GAMMONIND","GRAPHITE","GUJNRECOKE","HBSTOCK","HEG","HEXAWARE","JENSONICOL","KALYANI","LCCINFOTEC","LML","LTTS","MINDAIND","MINDTREE","NIRAJISPAT","PDUMJEIND","PDUMJEPULP","PFIZER","PITTILAM","PRISMCEM","RAIN","RAJOIL","SEINV","SERVALL","SONASTEER","SORILHOLD","SPHEREGSL","STERLINBIO","TV18BRDCST","VALUEIND","ZANDUREALT","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":89,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,50,89,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Iron &amp; Steel</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Iron &amp; Steel</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/IronSteel.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/IronSteel.fan.CAP_WT.png" /></p>
+<p><img src="plots/IronSteel.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/IronSteel.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/IronSteel.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/IronSteel.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/IronSteel.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-0313c493e0a4de4ea3d4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0313c493e0a4de4ea3d4">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-0.48%","1.52%"],["1.38%","7.16%"],["0.77%","9.75%"],["2.26%","16.17%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/IronSteel.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/IronSteel.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-163bb68b0062a90714c1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-163bb68b0062a90714c1">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.JSWSTEEL.html\" target=\"_blank\">JSWSTEEL<\/a>","<a href=\"/reports02/eq-in/risk/in.TATASTEEL.html\" target=\"_blank\">TATASTEEL<\/a>","<a href=\"/reports02/eq-in/risk/in.JINDALSTEL.html\" target=\"_blank\">JINDALSTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.SAIL.html\" target=\"_blank\">SAIL<\/a>","<a href=\"/reports02/eq-in/risk/in.JSL.html\" target=\"_blank\">JSL<\/a>","<a href=\"/reports02/eq-in/risk/in.SARDAEN.html\" target=\"_blank\">SARDAEN<\/a>","<a href=\"/reports02/eq-in/risk/in.NSLNISP.html\" target=\"_blank\">NSLNISP<\/a>","<a href=\"/reports02/eq-in/risk/in.JAIBALAJI.html\" target=\"_blank\">JAIBALAJI<\/a>","<a href=\"/reports02/eq-in/risk/in.PRAKASH.html\" target=\"_blank\">PRAKASH<\/a>","<a href=\"/reports02/eq-in/risk/in.MUKANDLTD.html\" target=\"_blank\">MUKANDLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.MANAKSTEEL.html\" target=\"_blank\">MANAKSTEEL<\/a>"],[0.2951719451327758,0.4372152641851398,0.1155029984770051,0.0583064768472023,0.06084079161403829,0.01197227525722502,0.01168631310135232,0.004413550126843699,0.00344361870952475,0.001197009777626933,0.0002497567712660794],[0.3538681121522204,0.3045320666392318,0.1452208355407111,0.07673860779209311,0.07217721828611745,0.02114790786278623,0.01367673996461618,0.007103829452039209,0.002866906031682991,0.002201300624858503,0.0004664756536429754]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":11,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-29f7a2c74d61df792901" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-29f7a2c74d61df792901">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.JSWSTEEL.html\" target=\"_blank\">JSWSTEEL<\/a>","<a href=\"/reports02/eq-in/risk/in.TATASTEEL.html\" target=\"_blank\">TATASTEEL<\/a>","<a href=\"/reports02/eq-in/risk/in.JINDALSTEL.html\" target=\"_blank\">JINDALSTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.SAIL.html\" target=\"_blank\">SAIL<\/a>","<a href=\"/reports02/eq-in/risk/in.JSL.html\" target=\"_blank\">JSL<\/a>","<a href=\"/reports02/eq-in/risk/in.SARDAEN.html\" target=\"_blank\">SARDAEN<\/a>","<a href=\"/reports02/eq-in/risk/in.NSLNISP.html\" target=\"_blank\">NSLNISP<\/a>","<a href=\"/reports02/eq-in/risk/in.JAIBALAJI.html\" target=\"_blank\">JAIBALAJI<\/a>","<a href=\"/reports02/eq-in/risk/in.PRAKASH.html\" target=\"_blank\">PRAKASH<\/a>","<a href=\"/reports02/eq-in/risk/in.MUKANDLTD.html\" target=\"_blank\">MUKANDLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.MANAKSTEEL.html\" target=\"_blank\">MANAKSTEEL<\/a>"],[0.4924825135990741,41.51938557122892,21.54507551319837,16.06437390219757,10.48439736265891,8.754319871402574,-4.158211802078387,1.259292198033761,0.02172612610640736,0.3800525681794234,0.0824172490536064],[0.3230391496707162,54.96751091749442,15.08746275397211,8.847881578022985,10.07598180453927,6.20460440138144,-2.828817752180544,0.6612833902084381,0.00874939098128279,0.2216749627139609,0.06892652012353385],[0.2593558038714603,63.30506035899553,12.55901941507302,7.930942585807715,10.34382639422355,7.412124291185376,-2.866223030793783,0.6867434428303539,null,0.2733584567954132,0.08704289103007735]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":11,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-cb2d856ecacf0c108056" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-cb2d856ecacf0c108056">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.JSWSTEEL.html\" target=\"_blank\">JSWSTEEL<\/a>","<a href=\"/reports02/eq-in/risk/in.TATASTEEL.html\" target=\"_blank\">TATASTEEL<\/a>","<a href=\"/reports02/eq-in/risk/in.JINDALSTEL.html\" target=\"_blank\">JINDALSTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.SAIL.html\" target=\"_blank\">SAIL<\/a>","<a href=\"/reports02/eq-in/risk/in.JSL.html\" target=\"_blank\">JSL<\/a>","<a href=\"/reports02/eq-in/risk/in.SARDAEN.html\" target=\"_blank\">SARDAEN<\/a>","<a href=\"/reports02/eq-in/risk/in.NSLNISP.html\" target=\"_blank\">NSLNISP<\/a>","<a href=\"/reports02/eq-in/risk/in.JAIBALAJI.html\" target=\"_blank\">JAIBALAJI<\/a>","<a href=\"/reports02/eq-in/risk/in.PRAKASH.html\" target=\"_blank\">PRAKASH<\/a>","<a href=\"/reports02/eq-in/risk/in.MUKANDLTD.html\" target=\"_blank\">MUKANDLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.MANAKSTEEL.html\" target=\"_blank\">MANAKSTEEL<\/a>"],[0.4936459332229132,58.01829689791636,7.506598371319598,16.27320544890151,5.410027107931128,1.521322960586264,1.82206732413497,0.7817744049701938,0.01020062210363656,0.5936844413587868,0.1114143472065199],[0.3398485017996282,62.82184125555857,7.115822210385526,15.3097953832149,6.114942338840999,1.528898280877713,1.222678269321085,0.7474713286129849,0.006062278279610204,0.5905128679396536,0.08373422059740239],[0.307522197438762,59.67648616067904,8.617420672392319,18.76864069058514,7.179585408012891,1.94899182782231,1.639718335689325,0.9664107700728266,null,0.8117130720831531,0.07744858694462839]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":11,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="indian-iron-steel-sector-analysis-based-on-provided-documents" class="section level9">
+<p class="heading">Indian Iron &amp; Steel Sector Analysis (Based on Provided Documents)</p>
+<p>The documents from key players (Tata Steel, JSW Steel, Jindal Steel &amp; Stainless, SAIL, Sarda Energy &amp; Minerals, Jai Balaji) highlight a resilient sector amid cyclical pressures. India remains a bright spot with robust demand (8-12% YoY growth in H1 FY26), but faces global headwinds. Below is a structured summary:</p>
+<div id="headwinds" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Pricing Pressure &amp; Oversupply</strong>: Domestic HRC prices down Rs 1,500-2,300/ton QoQ (Tata Steel guidance); spot prices weak (longs flat, flats down Rs 1,200-1,300 in Oct). New capacities (JSW, JSPL, Tata expansions) outpacing demand; secondary producers expanding amid infra delays.</li>
+<li><strong>Imports &amp; Policy Gaps</strong>: Surge in cheap Chinese/substandard imports (up 7% YoY in UK); QCO suspension till Dec (Jindal Stainless); safeguard duty delays (Tata). UK/EU vulnerable to diversions from US/EU protections.</li>
+<li><strong>Global/Regional Challenges</strong>: Chinese exports &gt;100mt (impacting prices worldwide); UK EBITDA losses widening (Tata: -£66mn in Q2); EU CBAM uncertainties delaying restocking; weak UK/EU demand (UK flats down 33% since 2018).</li>
+<li><strong>Input Costs</strong>: Coking coal up $6-10/ton QoQ (rupee depreciation); imported coal at Rs 17,400/ton (SAIL).</li>
+<li><strong>Seasonal/Operational</strong>: Monsoon rains hit construction; capex/maintenance shutdowns (e.g., Tata UK, Sarda thermal).</li>
+</ul>
+</div>
+<div id="tailwinds" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Demand Strength</strong>: Double-digit steel consumption growth (JPC data); infra boom (metro 1,000km expansion, Vande Bharat, bridges); value-add segments up (Tata Tiscon +27% QoQ, Jindal pipes/tubes/elevators).</li>
+<li><strong>Volume Momentum</strong>: Tata sales +17% H1 YoY; Jindal Stainless deliveries +15% YoY/+3% QoQ; SAIL sales +17% H1 YoY to 9.46mt.</li>
+<li><strong>Cost Discipline</strong>: Tata’s global cost transformation (Rs 5,450cr H1, 94% on-plan); scrap/by-product sales boosted realizations (SAIL Rs 1,140cr in Q2); debt reductions (SAIL -Rs 3,384cr; Jindal Stainless net debt/EBITDA 0.73x).</li>
+<li><strong>Policy Supports</strong>: EU quota cuts/tariffs aiding Netherlands (Tata); Indian PLI schemes (Delhi for stainless flats/longs); renewables boost (Jindal 42% utilization).</li>
+<li><strong>Diversification</strong>: Power/mining strength (Sarda hydropower +32% YoY, IPP PLF 85%); downstream focus (coated, fabrication).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity/Volume Expansion</strong>: Tata: Neelachal (1→6mt longs, FID soon), Kalinganagar (8→13mt), Ludhiana EAF (0.8mt); Jindal Stainless: NPI (90% util.), Chromeni (70%), HRAP/SMS by FY27-end; SAIL debottlenecking (5-7% growth FY27); JSW/Jindal Steel meetings signal ramps.</li>
+<li><strong>Downstream/Value-Add</strong>: Pipes to 4mt (Tata), stainless rebar/wire rod (Jindal), fabrication units; richer mix (cold rolling, galvanising).</li>
+<li><strong>Power/Mining Synergies</strong>: Sarda: 75mw hydro +50mw solar by FY26; coal mines (Gare Palma to 3mt, Shahpur 0.6mt FY27); IPP expansion (600mw).</li>
+<li><strong>Exports/Decarb</strong>: Post-CBAM clarity (EU protections from Jun’26); green initiatives (Tata EAFs, hydrogen; Jindal scrap/green H2).</li>
+<li><strong>EBITDA Guidance</strong>: Tata India EBITDA/ton +Rs1,000 QoQ; Jindal Stainless on-track; sector FY26 volumes 9-12% growth.</li>
+</ul>
+<table style="width:100%;">
+<colgroup>
+<col width="34%" />
+<col width="29%" />
+<col width="16%" />
+<col width="5%" />
+<col width="13%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Key Metrics (H1 FY26 Aggregated)</strong></th>
+<th>Tata Steel (India Standalone)</th>
+<th>Jindal Stainless</th>
+<th>SAIL</th>
+<th>Sarda Energy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Sales/Volumes Growth (YoY)</strong></td>
+<td>+20% deliveries</td>
+<td>+12-15%</td>
+<td>+17%</td>
+<td>Power +32% hydro</td>
+</tr>
+<tr class="even">
+<td><strong>EBITDA Growth (YoY)</strong></td>
+<td>+3% (15% margin)</td>
+<td>+12%</td>
+<td>+3%</td>
+<td>Strong (70% from power)</td>
+</tr>
+<tr class="odd">
+<td><strong>Net Debt/EBITDA</strong></td>
+<td>3x</td>
+<td>0.73x</td>
+<td>Improving</td>
+<td>&lt;1x</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Prolonged Oversupply/Prices</strong>: If infra delays persist; new capacities (7.5mt Tata pipeline) strain balances.</li>
+<li><strong>Imports/Policy Delays</strong>: QCO/safeguard extensions; UK quota inaction (Tata EBITDA breakeven at risk).</li>
+<li><strong>RM Volatility</strong>: Coal $6-8/ton up (rupee); iron ore linkages (Tata engaging OMC/NMDC).</li>
+<li><strong>Execution/Regulatory</strong>: Expansions delayed by EC/land (Tata Neelachal); Netherlands decarbon FID (phased, €2bn support); Sarda approvals (forest clearance).</li>
+<li><strong>Geopolitical/CBAM</strong>: Trade wars, EU melt-pour rules; carbon credits phasing (Netherlands 1.6t CO2/ton).</li>
+<li><strong>Macro</strong>: Rupee depreciation; China exports to 120mt; weak UK/EU (Tata UK losses).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Sector poised for 10%+ volume growth FY26 driven by infra/demand, but margins compressed (11-15% EBITDA) until Q4 pickup. Integrated players (Tata, SAIL) with cost levers/debt reduction resilient; focus on value-add/power/mining diversification key. Risks tilted to policy/pricing, but tailwinds from domestic capex cycle strong.</p>
+</div>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3><strong>Financial</strong></h3>
+<p><em>asof: 2025-12-02 </em></p>
+</div>
+<div id="indian-iron-steel-sector-analysis-q3-9m-fy25-ended-dec-2024" class="section level3">
+<h3>Indian Iron &amp; Steel Sector Analysis: Q3 &amp; 9M FY25 (Ended Dec 2024)</h3>
+<p>Based on the Q3 FY25 financial results of major players (JSW Steel, Tata Steel, Jindal Stainless, SAIL, NMDC Steel, Mukand, Manaksia Steels, etc.), the sector shows <strong>resilient volumes amid pricing pressures</strong>. Crude steel production grew (e.g., JSW hit record 7.03 MT in Q3), but revenues/PAT dipped YoY due to weak realizations. EBITDA margins held at 10-17% (JSW 13.5%, Tata 11.5%). Imports surged (India net importer per JSW), eroding margins. Overall, <strong>mixed performance</strong>: integrated players like JSW/Tata stable; smaller ones variable. Debt levels manageable (D/E 0.3-1.1x), but Europe ops (Tata) and new plants (NMDC Steel) drag.</p>
+<div id="headwinds-challenges" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>Weak Realizations &amp; Revenue Pressure</strong>: QoQ/YoY declines (JSW rev -5% YoY standalone; Tata flat; SAIL -1%). Global slowdown, China exports, excess capacity hit prices.</li>
+<li><strong>High Operating Costs</strong>: Raw materials (coking coal/iron ore up), power/fuel (JSW power 4k Cr Q3), employee costs elevated. Inventory build-ups (SAIL sub-grade fines ~4k Cr non-current).</li>
+<li><strong>Imports Surge</strong>: Q3 imports 2.83 MT (-11% QoQ but +17% 9M YoY per JSW); probes ongoing but hurting domestic players.</li>
+<li><strong>Exceptional Losses</strong>: Provisions/impairments (JSW ₹445 Cr coal/mine; Tata Europe restructuring; SAIL ₹283 Cr disputes).</li>
+<li><strong>Qualified Audits/Legal Issues</strong>: SAIL/Tata face entry tax (₹100+ Cr disputes), power tariff recoveries (₹588 Cr advance at risk). Europe decarbonization costs (Tata provisions ₹2.5k Cr).</li>
+</ul>
+</div>
+<div id="tailwinds-positives" class="section level6">
+<h6><strong>Tailwinds (Positives)</strong></h6>
+<ul>
+<li><strong>Volume Resilience</strong>: Production/sales up (JSW +12% sales YoY; Tata India +3%; Jindal +7%). Domestic demand from infra/auto (IMF India GDP 6.4%).</li>
+<li><strong>Cost Controls</strong>: Coking coal fall aided EBITDA (JSW +3% QoQ). Efficiency gains (JSW EBITDA/tonne ₹8.5k).</li>
+<li><strong>Provisional Price Upsides</strong>: Rail price revisions (SAIL/JSW ₹1.6k+ Cr gains).</li>
+<li><strong>Margins Holding</strong>: Operating EBITDA 11-17% (Jindal 12%; SAIL 11%). Debt service ratios &gt;2x mostly.</li>
+<li><strong>Govt Support</strong>: Capex revival, anti-dumping probes.</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Capacity Expansions</strong>: JSW Vijayanagar 5MTPA ramp-up (Q4 FY25); Jindal Indonesia SMS (3→4.2MTPA); Tata mergers adding scale.</li>
+<li><strong>Infra/Rural Demand</strong>: Govt capex, Kharif harvest (JSW: 10% FY25 steel growth). Auto/exports recovery.</li>
+<li><strong>Green Transition</strong>: JSW/Tata EAF plans, renewables (JSW 100% RE by 2030). PLI incentives (Jindal accruals).</li>
+<li><strong>M&amp;A</strong>: Jindal acquisitions (Chromeni, Glory Metal); Tata schemes.</li>
+<li><strong>Outlook</strong>: IMF global steel steady; India 6.4% GDP, steel demand +10% FY25 (JSW).</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<table>
+<colgroup>
+<col width="38%" />
+<col width="23%" />
+<col width="38%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Impacted Cos.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Imports/Competition</strong></td>
+<td>8.2MT 9M FY25 (+17% YoY); safeguard probes ongoing.</td>
+<td>All (JSW/Tata explicit)</td>
+</tr>
+<tr class="even">
+<td><strong>Commodity Volatility</strong></td>
+<td>Coal/iron ore price swings; forex (imports).</td>
+<td>JSW/SAIL/NMDC Steel</td>
+</tr>
+<tr class="odd">
+<td><strong>Debt/Leverage</strong></td>
+<td>D/E 0.4-1.1x; high interest cover risks (NMDC Steel negative).</td>
+<td>NMDC Steel (losses), SAIL</td>
+</tr>
+<tr class="even">
+<td><strong>Regulatory/Legal</strong></td>
+<td>Tax disputes (entry/Green Cess ₹389 Cr Tata); mine closures (JSW ₹445 Cr). Auditor qualifications (SAIL).</td>
+<td>Tata/SAIL</td>
+</tr>
+<tr class="odd">
+<td><strong>Operational</strong></td>
+<td>Europe losses (Tata ₹2.9k Cr Q3); ramp-up delays (NMDC Steel losses ₹1.9k Cr 9M). Sub-grade inventory realizability (SAIL ₹4k Cr).</td>
+<td>Tata/NMDC/SAIL</td>
+</tr>
+<tr class="even">
+<td><strong>Geopolitical/Macro</strong></td>
+<td>Global slowdown (EU/China); inflation, tariffs (US).</td>
+<td>Exports-heavy (JSW +44% QoQ)</td>
+</tr>
+<tr class="odd">
+<td><strong>ESG/Decarb</strong></td>
+<td>EU/Netherlands orders (Tata); high capex needs.</td>
+<td>Tata/JSW</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Summary</strong>: Sector resilient on volumes/govt push but pressured by imports/pricing (headwinds dominate Q3). Tailwinds from costs/infra; growth via expansions (JSW/Tata lead). <strong>Risks high</strong> (imports/legal); monitor probes/debt. FY25 outlook: Modest recovery if imports curbed (EPS ~₹30-40 for leaders). Investors: Favor low-debt, integrated players (JSW/Jindal).</p>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="summary-analysis-indian-iron-steel-sector-based-on-provided-announcements" class="section level9">
+<p class="heading">Summary Analysis: Indian Iron &amp; Steel Sector (Based on Provided Announcements)</p>
+<p>The provided filings from key players (JSW Steel, Tata Steel, Jindal Steel &amp; Stainless, Sarda Energy, NMDC Steel, Jai Balaji, Mukand, Manaksia Steels) offer snapshots of Q2/H1 FY26 performance, strategic moves, and disclosures as of Oct-Nov 2025. Overall, the sector shows <strong>resilient growth amid seasonal softness</strong>, driven by volume expansion, cost efficiencies from falling raw material prices, and infra/auto demand. However, regulatory hurdles and price volatility pose challenges. Below is a structured analysis of <strong>headwinds, tailwinds, growth prospects, and key risks</strong>.</p>
+<div id="tailwinds-supportive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Supportive Factors)</strong></p>
+<ul>
+<li><strong>Strong Volume &amp; Financial Performance</strong>: Jindal Stainless reported robust Q2/H1 FY26 consolidated results (Revenue +11% YoY to ₹10,893 Cr; EBITDA +17% to ₹1,388 Cr; PAT +33% to ₹808 Cr). Sales volume up 12-15% YoY; EBITDA margins stable at ~12-13%. Manaksia Steels saw standalone total income +134% YoY to ₹245 Cr in Q2, sales volume +184% YoY, driven by galvanized/pre-painted steel growth (+56-150% YoY).</li>
+<li><strong>Declining Raw Material Costs</strong>: Nickel prices fell from ~₹22,300/MT (Q1 FY24) to ~₹15,000/MT (Q2 FY26); Ferrochrome from ~₹116,700/MT to ~₹106,000/MT (Jindal Stainless charts). Boosts margins amid steady steel demand.</li>
+<li><strong>Demand Momentum</strong>: Festive uplift, GST cuts aiding autos; infra (flyovers, metros, coastal projects), railways (Vande Bharat shift to austenitic SS), pipes/tubes, and process industries (oil/gas/power) strong (Jindal Stainless). Manaksia notes roofing/cladding resilience.</li>
+<li><strong>Raw Material Security</strong>: JSW Steel increased effective interest in Illawarra Metallurgical Coal to 30% (from 20%) via US$60 Mn investment, enhancing coking coal offtake rights.</li>
+<li><strong>Sustainability Push</strong>: Sarda’s “RHINO” green rock wool launch (zero fossil fuels, 45-50% energy savings, 65% lower CO2) aligns with green building trends (IGBC Congress).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Regulatory &amp; Mining Issues</strong>: Tata Steel faces ₹2,411 Cr demand for chrome ore dispatch shortfall (Sukinda mine); plans legal challenge (similar prior demand stayed by Orissa HC). Highlights production/dispatch compliance risks.</li>
+<li><strong>Price &amp; Seasonal Pressure</strong>: Steel prices softened in Q2 (monsoon slowdown in construction/infra), impacting Manaksia EBITDA margins (standalone 4.95% vs. 5.24% YoY). Consolidated EBITDA negative in some metrics due to subsidiary dynamics.</li>
+<li><strong>Margin Compression</strong>: Jindal Stainless EBITDA margins dipped QoQ (6%); Manaksia PAT margins down slightly YoY due to pricing.</li>
+<li><strong>Non-Core Distractions</strong>: Jai Balaji closing dormant Ugandan WOS (no material impact); routine filings (NMDC NCD payment, Jindal earnings audio, Mukand AGM notice) indicate compliance focus but no major positives.</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Expansion &amp; Value-Addition</strong>: Manaksia advancing ₹40 Cr colour-coating line (Q4 FY26 commissioning, +200% capacity); Aluzinc line at 75% utilization. Jindal Stainless targeting 4.2 MnT melt capacity by FY27 (from current ramp-up). Shift to coated/value-added products (galvanized, pre-painted, aluzinc) for higher margins.</li>
+<li><strong>Sector Demand Drivers</strong>: Infra/urbanization (elevators, ROBs/FOBs); autos/railways (special grades, Vande Bharat); exports (~9% of sales, stable). Jindal Stainless outlook positive for Q3 FY26.</li>
+<li><strong>International &amp; Diversification</strong>: JSW’s Australian coal stake for supply security; Manaksia Nigeria subsidiary revenue +150% YoY (Naira stabilization aids). Sarda’s insulation entry taps green construction (37% global CO2 from buildings).</li>
+<li><strong>Financial Health</strong>: Low net debt (Jindal Stainless: 0.7x Net Debt/EBITDA, AA/Stable ratings); cash buffers support capex. H1 FY26 PAT growth: Jindal +21%, Manaksia +120% consolidated.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Regulatory/Legal Exposure</strong>: Mining shortfalls/demands (e.g., Tata’s ₹2,411 Cr + prior ₹1,903 Cr) could escalate; dependency on govt. approvals/mine development plans.</li>
+<li><strong>Commodity Price Volatility</strong>: Steel/raw material fluctuations (e.g., recent softening); forex (Naira/USD for Manaksia exports).</li>
+<li><strong>Demand Cyclicality</strong>: Seasonal monsoon/infra slowdowns; over-reliance on autos/infra (sensitive to elections/GST/economic cycles).</li>
+<li><strong>Execution Risks</strong>: Capex delays (Manaksia lines); integration of acquisitions (JSW coal). High debt in some peers (though low here).</li>
+<li><strong>Macro/External</strong>: Global CO2 regulations favoring green steel but raising costs; competition from imports/Chinese dumping.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: <strong>Positive with cautious optimism</strong>. Tailwinds from volumes, cost relief, and infra capex outweigh headwinds. Sector poised for 10-15% growth in FY26 (aligned with Jindal/Manaksia trends), but monitor regulatory resolutions (Tata) and Q3 steel prices. Steel majors like JSW/Jindal Stainless demonstrate strategic resilience via M&amp;A/diversification. Investors should watch Dec’25 quarterly results for sustained momentum.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="summary-analysis-indian-iron-steel-sector-based-on-q2h1-fy26-earnings-announcements" class="section level9">
+<p class="heading">Summary Analysis: Indian Iron &amp; Steel Sector (Based on Q2/H1 FY26 Earnings &amp; Announcements)</p>
+<p>The Indian iron &amp; steel sector exhibits resilience amid global headwinds, driven by robust domestic demand and cost discipline. Key companies (Tata Steel, JSW Steel, Jindal Stainless/Steel, SAIL, Sarda Energy) reported strong volume growth (7-17% YoY) despite price softness, with EBITDA margins holding at 11-25%. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="headwinds-challenges-pressuring-margins-sentiment" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges Pressuring Margins &amp; Sentiment)</strong></p>
+<ul>
+<li><strong>Global Oversupply &amp; Trade Disruptions</strong>: Chinese exports at 100-120 MT (Tata, JSW) flooding markets; tariffs/geopolitics depressing global prices (US $100+ premium over Europe/India).</li>
+<li><strong>Domestic Price Pressure</strong>: HRC realizations down Rs1,500-2,300/t QoQ (JSW, Tata); rebar/HR softer by Rs4,500-6,000/t (SAIL); seasonal rains, extended monsoons delaying infra demand.</li>
+<li><strong>Imports &amp; Policy Gaps</strong>: Subsidized Chinese imports rising; QCO suspension till Dec’25 (Jindal Stainless); UK/EU quotas not tightened enough, leading to losses (Tata UK EBITDA -£66 Mn).</li>
+<li><strong>Cost Inflation</strong>: Coking coal up $6-10/t QoQ (Tata/JSW); rupee depreciation adding ~Rs700/t; higher material costs in Europe (Tata NL).</li>
+<li><strong>Operational Hiccups</strong>: Plant relinings/maintenance (JSW Kalinganagar, SAIL Bokaro), delays in restructuring (Tata NL people costs).</li>
+</ul>
+</div>
+<div id="tailwinds-supportive-factors-boosting-volumes-efficiency" class="section level12">
+<p class="heading"><strong>Tailwinds (Supportive Factors Boosting Volumes &amp; Efficiency)</strong></p>
+<ul>
+<li><strong>Strong Domestic Demand</strong>: Steel consumption +8-12% YoY (SAIL); infra/metro (1,000 km expansion), autos/white goods, Vande Bharat driving 15-27% segment growth (Jindal Stainless, Tata).</li>
+<li><strong>Volume Ramp-Up</strong>: Production/sales up 7-20% QoQ/YoY across firms (Tata India 5.65 MnT crude steel, JSW Steel group meetings); inventory drawdown aiding realizations.</li>
+<li><strong>Cost Transformation</strong>: Tata Rs5,450 Cr savings in H1 (94% plan compliance); SAIL scrap/by-products +Rs250 Cr QoQ; lean coal mix, scrap usage (18-20% in Tata NL).</li>
+<li><strong>Policy Wins</strong>: EU Steel Plan 2.0 (50% quota cut + tariffs) aiding Tata NL (Q4 uplift); potential India safeguards; PLI schemes (Delhi for stainless).</li>
+<li><strong>Diversification</strong>: Power/hydro growth (Sarda +32% hydro, 85% IPP PLF); value-added (57% mix at SAIL, Tata Tiscon +27%).</li>
+</ul>
+</div>
+<div id="growth-prospects-medium-term-visibility-fy26-28" class="section level12">
+<p class="heading"><strong>Growth Prospects (Medium-Term Visibility: FY26-28)</strong></p>
+<ul>
+<li><strong>Capacity Expansion Pipeline</strong>: Tata (Neelachal 6-10 MnT longs, Kalinganagar 13-16 MnT, Ludhiana 0.8 MnT EAF, Meramandali); SAIL (IISCO 4.5 MnT @ Rs36,000 Cr, debottlenecking); Jindal Stainless (NPI 90% util., SMS Indonesia, HRAP/Cold Rolling FY27); JSW Steel group events signal ramps.</li>
+<li><strong>Downstream/High-Margin</strong>: Pipes (Tata 4 MnT ambition), stainless rebar/wire rod (Jindal), colored steel (Tata BlueScope acquisition); ferrochrome optimization (Tata divestment).</li>
+<li><strong>Power &amp; Mines</strong>: Sarda (75 MW hydro, 50 MW solar FY26; coal to 3-5.2 MnT); captive iron ore/coal ramps reducing import reliance.</li>
+<li><strong>EBITDA/Volume Guidance</strong>: Tata India EBITDA/ton up; SAIL 18.5 MnT sales FY26 (+5-7% FY27); Jindal Stainless 2.65 MnT FY26 (9-10% growth); sector volumes to 40-45 MnT (Tata).</li>
+<li><strong>Sustainability</strong>: Decarbonization (EAFs, green H2, scrap); CBAM readiness (Tata NL 1.6 tCO2/t steel).</li>
+</ul>
+</div>
+<div id="key-risks-potential-downside-catalysts" class="section level12">
+<p class="heading"><strong>Key Risks (Potential Downside Catalysts)</strong></p>
+<ul>
+<li><strong>Import Surge/Policy Delays</strong>: No QCO/safeguards revival (India); UK inaction (Tata EBITDA breakeven at risk); CBAM clarity by Dec’25 (export drag for Jindal Stainless).</li>
+<li><strong>Price/Commodity Volatility</strong>: Steel spreads unsustainable (UK/India); coking coal $6-8/t up in Q3 (Tata/SAIL); iron ore/coal index spikes.</li>
+<li><strong>Execution Delays</strong>: Env./forest clearances (Tata Neelachal, Sarda coal/hydro); land acquisition (JSW Steel implied); NCLT/approvals (Sarda expansions).</li>
+<li><strong>Geopolitical/External</strong>: China exports, EU/UK policy shifts; rupee weakness inflating imports.</li>
+<li><strong>Leverage/Capex</strong>: Rising debt for expansions (SAIL net debt/EBITDA 3x target); wage revisions (SAIL 2027).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Sector poised for 8-10% volume growth FY26 amid infra tailwinds, but Q3 margins may compress 80-150 bps on prices/coal before Q4 recovery. Focus on cost discipline, policy support, and diversification to counter cyclicality; diversified players (Tata, Sarda) better positioned. Risks tilted toward trade/policy; monitor Dec’25 CBAM/QCO updates.</p>
+</div>
+</div>
+</div>
+<div id="meeting" class="section level3">
+<h3><strong>Meeting</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="indian-iron-steel-sector-analysis-based-on-q2h1-fy26-results-from-key-players-jsw-steel-tata-steel-jindal-steel-jindal-stainless-sail-sarda-energy-jai-balaji-mukand-etc." class="section level9">
+<p class="heading">Indian Iron &amp; Steel Sector Analysis (Based on Q2/H1 FY26 Results from Key Players: JSW Steel, Tata Steel, Jindal Steel, Jindal Stainless, SAIL, Sarda Energy, Jai Balaji, Mukand, etc.)</p>
+<div id="tailwinds-positive-drivers" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Volume Resilience &amp; Capacity Ramp-Up</strong>: Steady crude steel production (e.g., SAIL ~9.5 MT in H1 FY26, Jindal Steel 4.09 MT, Tata Steel India strong). Expansions underway: Jindal Steel commissioned 4.6 MTPA BF &amp; 3 MTPA BOF at Angul (total capacity to 12 MTPA by FY26); JSW Steel increasing coal stake to secure raw materials; Tata Steel targeting 15.6 MTPA.</li>
+<li><strong>Revenue &amp; Profitability Growth</strong>: Consolidated revenues up (e.g., Tata Steel ~₹53k Cr H1, Jindal Steel ~₹28k Cr, Sarda Energy strong power/steel mix). EBITDA margins solid (Tata Steel 12-14%, Jindal Steel ~18% adjusted); PAT growth (SAIL +32% YoY H1).</li>
+<li><strong>Cost Optimization &amp; Debt Discipline</strong>: Raw material security via coal acquisitions (JSW 30% stake in Illawarra Coal); debt reduction (Jindal Steel net debt down to ₹14k Cr, net debt/EBITDA ~1.5x); forex gains aiding (Jindal Steel ₹227 Cr H1).</li>
+<li><strong>Diversification</strong>: Renewables/power push (Tata Steel 26% in TPAL solar; Sarda hydro/ferro alloys); value-added steel (Tata 73% VAS sales).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Margin Pressure</strong>: High finance costs (Tata Steel ₹1.85 Cr Q1, SAIL ₹484 Cr Q2); exceptional losses/provisions (SAIL ₹338 Cr gratuity hike; Tata impairments).</li>
+<li><strong>Regulatory/Legal Disputes</strong>: Auditor qualifications across firms (SAIL: ₹1,146 Cr water charges, ₹448 Cr DVC advances, entry tax; Tata: UK/EU decarbonization funding uncertainties).</li>
+<li><strong>Inventory/Asset Concerns</strong>: Sub-grade ore fines valuation risks (SAIL ₹3.8k Cr); discontinued ops (Mukand Industrial Machinery).</li>
+<li><strong>Provisional Pricing</strong>: Heavy reliance on govt sales (SAIL ₹4.8k Cr H1 provisional).</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Expansion</strong>: Near-term to 15-20 MTPA+ (Jindal Steel 15.6 MTPA, Tata Steel Angul 12 MTPA); long-term via acquisitions/JVs (JSW Australian coal, Tata renewables).</li>
+<li><strong>Export &amp; VAS Focus</strong>: Rising exports (Jindal Steel 10% Q2); premium products driving margins.</li>
+<li><strong>Raw Material Security</strong>: Coal stakes (JSW 30% Illawarra, Sarda coal mines); power self-sufficiency.</li>
+<li><strong>Sustainability</strong>: Decarbonization (Tata Steel UK/EU plans); sector EBITDA could rise 15-20% with volumes.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Commodity Volatility</strong>: Steel prices soft; raw material costs (coking coal).</li>
+<li><strong>Regulatory Uncertainty</strong>: Tax disputes (entry tax, water/power tariffs); mining clearances (SAIL sub-grade fines dispatch delays).</li>
+<li><strong>High Leverage</strong>: Debt/EBITDA 1.5-2x (Tata Steel 0.91x); forex exposure.</li>
+<li><strong>Auditor Flags</strong>: Provisions needed for advances/taxes (SAIL ₹1.2k+ Cr); inventory recoverability.</li>
+<li><strong>Execution Delays</strong>: Capex slippages (SAIL ₹4k Cr H1); geopolitical impacts on imports/exports.</li>
+<li><strong>Geopolitical/Macro</strong>: Global steel oversupply; US/EU duties; domestic demand slowdown.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Sector resilient amid expansions (tailwinds dominate), but regulatory overhang &amp; costs cap upside. PAT growth ~20-30% YoY possible; monitor debt &amp; disputes. (Data from Q2/H1 FY26 filings; sector capex ~₹50k Cr supports 8-10% volume growth.)</p>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="indian-iron-steel-sector-analysis" class="section level9">
+<p class="heading">Indian Iron &amp; Steel Sector Analysis</p>
+<p><strong>Based on recent announcements from key players (JSW Steel, Tata Steel, Jindal Steel, Jindal Stainless, Sarda Energy &amp; Minerals, Jai Balaji Industries, Prakash Industries) covering production updates, financial results (Q2/H1 FY26, Q3/9MFY25), expansions, and initiatives as of Oct-Dec 2025/Feb 2025.</strong></p>
+<div id="tailwinds-positive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Robust Production &amp; Volume Growth</strong>: JSW Steel reported 24.95 LT consolidated crude steel (+9% YoY), Indian ops at 24.12 LT (+10% YoY); Tata Steel India production up 8% QoQ to 5.65 MnT, deliveries +17% QoQ; Sarda stable/growing volumes in pellets, sponge iron, ferro alloys; Prakash H1 sales ₹1,760 Cr.</li>
+<li><strong>Capacity Expansions &amp; Utilisation Resilience</strong>: JSW targeting 43.4 MTPA in 3 years (Vijayanagar BF3 upgrade to resume Feb’26, excl. BF3 util. ~92%); Jindal Steel commissioned 3 MTPA BOF at Angul (total 9 MTPA, eyeing 12 MTPA in FY); Jai Balaji ₹1,000 Cr capex on track for value-added products.</li>
+<li><strong>Strong Financial Performance</strong>: Tata EBITDA +27% YoY H1 (₹16,585 Cr, 15% margin), India +16%; Sarda revenue +52% YoY H1, PAT +90%; Prakash H1 PAT ₹153 Cr (EPS ₹8.54); Jai Balaji 9M revenue +4.23%, EBITDA +10.28%.</li>
+<li><strong>Downstream &amp; Value-Addition Focus</strong>: Tata growing retail (Tiscon +27% QoQ), e-commerce (₹1,980 Cr GMV); Jai Balaji emphasis on DI Pipes/Ferro Alloys; Jindal Stainless loyalty program (‘JSL Saathi Pragati’) for P&amp;T segment (30k+ retailers onboarded).</li>
+<li><strong>Cost Discipline &amp; Diversification</strong>: Tata cost savings ₹5,450 Cr H1; Sarda energy segment 47-72% of revenue/EBIT; Prakash captive coal (1.97 lac MT Q2).</li>
+<li><strong>Sustainability Momentum</strong>: JSW/Tata multiple awards (ResponsibleSteel, CDP, worldsteel); decarbonisation projects (Tata NL LoI, JSW net-zero by 2050).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-3" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Operational Disruptions</strong>: JSW util. 83% due to BF3 shutdown; Prakash impacted by extended monsoon (lower coal extraction); Jai Balaji Q3 revenue -3.42% YoY/-4.51% QoQ due to lower production/sales realisations.</li>
+<li><strong>Pricing &amp; Realisation Pressure</strong>: Jai Balaji noted declines in finished steel; Sarda “lower realisations” despite volume stability; Tata UK EBITDA loss £107 Mn H1 (halved YoY but subdued demand/quotas).</li>
+<li><strong>Global/Macro Pressures</strong>: Tata: “persistent overhang of tariffs, geopolitical tensions, elevated steel exports”; Jai Balaji: China’s macroeconomic trends impacting commodities.</li>
+<li><strong>Overseas Weakness</strong>: Tata NL improved (EBITDA doubled YoY) but UK losses persist; JSW USA flat.</li>
+</ul>
+</div>
+<div id="growth-prospects-4" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Domestic Demand Revival</strong>: Infra/construction boost post-monsoon/GST reforms (Prakash); Tata/Jai Balaji downstream expansion (auto, engineering, retail); JSW Vijayanagar (17.5 MTPA single-site).</li>
+<li><strong>Capex-Driven Scale-Up</strong>: JSW/Jindal expansions to add 10+ MTPA short-term; Tata capex ₹7,079 Cr H1; Prakash &gt;1 MnT coal FY target.</li>
+<li><strong>Digital &amp; Ecosystem Plays</strong>: Jindal Stainless QR/app for authenticity/rewards; Tata e-platforms tripling YoY.</li>
+<li><strong>Energy/Minerals Synergies</strong>: Sarda power (thermal/hydro/coal) as 70% EBIT driver; Prakash captive coal for steel-making.</li>
+<li><strong>Export/Specialty Shift</strong>: JSW/Jindal focus on high-value/special steel; Tata NINL lever for long products.</li>
+<li><strong>Sustainability Edge</strong>: Green steel (renewables by 2030), certifications aiding premium pricing/export access.</li>
+</ul>
+</div>
+<div id="key-risks-4" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Demand/Price Volatility</strong>: Subdued infra/auto demand, China exports, safeguard quotas (Tata UK); monsoon/geopolitical impacts.</li>
+<li><strong>Execution Delays</strong>: Shutdowns (JSW BF3), capex overruns (all firms note in disclaimers).</li>
+<li><strong>Cost Inflation</strong>: Wage hikes, raw material fluctuations, FX on overseas debt (Tata net debt ₹87,040 Cr).</li>
+<li><strong>Competition &amp; Policy</strong>: Intense rivalry, import tariffs, govt. incentives withdrawal (forward-looking statements).</li>
+<li><strong>Debt &amp; Liquidity</strong>: Tata gross debt ₹95,643 Cr (reduced QoQ); high capex amid EBITDA pressures.</li>
+<li><strong>External Shocks</strong>: Political instability, economic slowdowns, counterfeit issues (Jindal Stainless).</li>
+</ul>
+<p><strong>Overall Summary</strong>: The sector shows resilience with YoY production/financial growth (9-52% across metrics) driven by expansions and cost controls, but faces near-term headwinds from shutdowns, pricing weakness, and global tensions. Tailwinds from infra demand and downstream focus support <strong>moderate growth (8-15% YoY volumes/EBITDA)</strong> in FY26, with risks tilted toward execution/macro factors. Leaders like JSW/Tata poised for outperformance via scale/sustainability.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

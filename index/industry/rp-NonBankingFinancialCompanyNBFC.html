@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Non Banking Financial Company (NBFC)</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Non Banking Financial Company (NBFC)</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/NonBankingFinancialCompanyNBFC.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/NonBankingFinancialCompanyNBFC.fan.CAP_WT.png" /></p>
+<p><img src="plots/NonBankingFinancialCompanyNBFC.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/NonBankingFinancialCompanyNBFC.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/NonBankingFinancialCompanyNBFC.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/NonBankingFinancialCompanyNBFC.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/NonBankingFinancialCompanyNBFC.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4be484ce1b0fbab4e655" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4be484ce1b0fbab4e655">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-0.59%","2.36%"],["-4.27%","2.47%"],["-5.41%","4.53%"],["-5.64%","11.67%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/NonBankingFinancialCompanyNBFC.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/NonBankingFinancialCompanyNBFC.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d805bfa30e8ad2770cfd" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d805bfa30e8ad2770cfd">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJFINANCE.html\" target=\"_blank\">BAJFINANCE<\/a>","<a href=\"/reports02/eq-in/risk/in.SHRIRAMFIN.html\" target=\"_blank\">SHRIRAMFIN<\/a>","TATACAP","<a href=\"/reports02/eq-in/risk/in.CHOLAFIN.html\" target=\"_blank\">CHOLAFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.MUTHOOTFIN.html\" target=\"_blank\">MUTHOOTFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.SBICARD.html\" target=\"_blank\">SBICARD<\/a>","HDBFS","<a href=\"/reports02/eq-in/risk/in.SUNDARMFIN.html\" target=\"_blank\">SUNDARMFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.MMFIN.html\" target=\"_blank\">M&MFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.AIIL.html\" target=\"_blank\">AIIL<\/a>","<a href=\"/reports02/eq-in/risk/in.PIRAMALFIN.html\" target=\"_blank\">PIRAMALFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.POONAWALLA.html\" target=\"_blank\">POONAWALLA<\/a>","<a href=\"/reports02/eq-in/risk/in.MANAPPURAM.html\" target=\"_blank\">MANAPPURAM<\/a>","<a href=\"/reports02/eq-in/risk/in.IIFL.html\" target=\"_blank\">IIFL<\/a>","<a href=\"/reports02/eq-in/risk/in.CGCL.html\" target=\"_blank\">CGCL<\/a>","<a href=\"/reports02/eq-in/risk/in.FIVESTAR.html\" target=\"_blank\">FIVESTAR<\/a>","<a href=\"/reports02/eq-in/risk/in.SBFC.html\" target=\"_blank\">SBFC<\/a>","<a href=\"/reports02/eq-in/risk/in.MASFIN.html\" target=\"_blank\">MASFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.FEDFINA.html\" target=\"_blank\">FEDFINA<\/a>","<a href=\"/reports02/eq-in/risk/in.NORTHARC.html\" target=\"_blank\">NORTHARC<\/a>","<a href=\"/reports02/eq-in/risk/in.INDOSTAR.html\" target=\"_blank\">INDOSTAR<\/a>","AYE","<a href=\"/reports02/eq-in/risk/in.PAISALO.html\" target=\"_blank\">PAISALO<\/a>","<a href=\"/reports02/eq-in/risk/in.SGFIN.html\" target=\"_blank\">SGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.MUFIN.html\" target=\"_blank\">MUFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.PFS.html\" target=\"_blank\">PFS<\/a>","<a href=\"/reports02/eq-in/risk/in.UGROCAP.html\" target=\"_blank\">UGROCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.ARMANFIN.html\" target=\"_blank\">ARMANFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.CIFL.html\" target=\"_blank\">CIFL<\/a>","<a href=\"/reports02/eq-in/risk/in.FINKURVE.html\" target=\"_blank\">FINKURVE<\/a>","<a href=\"/reports02/eq-in/risk/in.CREST.html\" target=\"_blank\">CREST<\/a>","<a href=\"/reports02/eq-in/risk/in.MANBA.html\" target=\"_blank\">MANBA<\/a>","<a href=\"/reports02/eq-in/risk/in.DHUNINV.html\" target=\"_blank\">DHUNINV<\/a>","<a href=\"/reports02/eq-in/risk/in.CSLFINANCE.html\" target=\"_blank\">CSLFINANCE<\/a>","<a href=\"/reports02/eq-in/risk/in.NBIFIN.html\" target=\"_blank\">NBIFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.LAXMIINDIA.html\" target=\"_blank\">LAXMIINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.AVONMORE.html\" target=\"_blank\">AVONMORE<\/a>","<a href=\"/reports02/eq-in/risk/in.MONEYBOXX.html\" target=\"_blank\">MONEYBOXX<\/a>","<a href=\"/reports02/eq-in/risk/in.MUTHOOTCAP.html\" target=\"_blank\">MUTHOOTCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.MANCREDIT.html\" target=\"_blank\">MANCREDIT<\/a>","<a href=\"/reports02/eq-in/risk/in.UYFINCORP.html\" target=\"_blank\">UYFINCORP<\/a>","<a href=\"/reports02/eq-in/risk/in.STARTECK.html\" target=\"_blank\">STARTECK<\/a>","<a href=\"/reports02/eq-in/risk/in.AFIL.html\" target=\"_blank\">AFIL<\/a>","<a href=\"/reports02/eq-in/risk/in.TEAMGTY.html\" target=\"_blank\">TEAMGTY<\/a>","<a href=\"/reports02/eq-in/risk/in.CPCAP.html\" target=\"_blank\">CPCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.BAIDFIN.html\" target=\"_blank\">BAIDFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.TRU.html\" target=\"_blank\">TRU<\/a>","<a href=\"/reports02/eq-in/risk/in.TFL.html\" target=\"_blank\">TFL<\/a>","<a href=\"/reports02/eq-in/risk/in.CAPTRUST.html\" target=\"_blank\">CAPTRUST<\/a>","<a href=\"/reports02/eq-in/risk/in.HBSL.html\" target=\"_blank\">HBSL<\/a>","<a href=\"/reports02/eq-in/risk/in.VIJIFIN.html\" target=\"_blank\">VIJIFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.TCIFINANCE.html\" target=\"_blank\">TCIFINANCE<\/a>"],[0.359240361977901,0.1991644750209567,0.017246110723154,0.09641952018113906,0.04909307266367306,0.03120965789971689,0.01744433875462279,0.04757476500876674,0.03339957628123547,0.01789500154389447,0.02793951346260722,0.01845522289792981,0.0224841069983258,0.01538548782280376,0.009027109266346062,0.01116467194826498,0.004989883771926876,0.002715509263372098,0.002062317398896579,0.002756101144384511,0.001166410608128833,0.0008073125361018759,0.002362240744544499,0.00154785329792277,0.0008133342673476808,0.0009756093064879659,0.0009249676157400018,0.001532416894163225,0.00044800072216244,0.0005165338274542505,0.0003945904838290406,0.0002065884823830372,0.000169249293640306,0.0003726550247507991,0.0001404755670514204,0.000187047154114232,0.0002317929522501164,0.0003040549016620424,0.0001681845261694295,0.0002122593649030408,0.0001047081209825461,9.613815206128492e-05,0.0001801985771600303,7.576909755630841e-05,8.474331957016518e-05,0.0001177242614474172,6.814664250414399e-05,4.12398577459809e-05,2.305353681058681e-05,2.229375496572298e-05,1.812286562206051e-05,1.948021284885795e-05],[0.3581799182083771,0.113847321226031,0.08474404325929465,0.08199197964410565,0.07824880087550221,0.04216698057614898,0.03404766469064432,0.03268361912433745,0.02990643528743102,0.02442245285785859,0.02252557928910485,0.02222846185235667,0.01476850796930694,0.0119853027423197,0.009574242037876319,0.007249974158907638,0.005968933313517588,0.00346093105571681,0.002890759126994102,0.002334931110604749,0.002163086856974481,0.001841086661779673,0.001707767996891809,0.001272311243244721,0.001192161735464808,0.001183833559324867,0.001025191132773189,0.0009976227778116444,0.0007004431483020656,0.0006366333751076457,0.0005742483815379814,0.0003505692882261221,0.0003406919469386286,0.00033387901262184,0.0003247706000207226,0.0003020193571238285,0.0002381982761546089,0.0002329853919719706,0.000215345263284518,0.0002104376890214703,0.0001557476362029673,0.0001527171525566613,0.0001314981131451197,0.0001282584356650202,9.925964719132005e-05,9.682282172199565e-05,4.529329195999459e-05,4.091718311253037e-05,2.635276917058229e-05,2.50184517442237e-05,1.700123941127247e-05,1.099115710525895e-05]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":52,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,50,52,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8586def8679a5e088c87" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8586def8679a5e088c87">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJFINANCE.html\" target=\"_blank\">BAJFINANCE<\/a>","<a href=\"/reports02/eq-in/risk/in.SHRIRAMFIN.html\" target=\"_blank\">SHRIRAMFIN<\/a>","TATACAP","<a href=\"/reports02/eq-in/risk/in.CHOLAFIN.html\" target=\"_blank\">CHOLAFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.MUTHOOTFIN.html\" target=\"_blank\">MUTHOOTFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.SBICARD.html\" target=\"_blank\">SBICARD<\/a>","HDBFS","<a href=\"/reports02/eq-in/risk/in.SUNDARMFIN.html\" target=\"_blank\">SUNDARMFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.AIIL.html\" target=\"_blank\">AIIL<\/a>","<a href=\"/reports02/eq-in/risk/in.PIRAMALFIN.html\" target=\"_blank\">PIRAMALFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.POONAWALLA.html\" target=\"_blank\">POONAWALLA<\/a>","<a href=\"/reports02/eq-in/risk/in.MANAPPURAM.html\" target=\"_blank\">MANAPPURAM<\/a>","<a href=\"/reports02/eq-in/risk/in.IIFL.html\" target=\"_blank\">IIFL<\/a>","<a href=\"/reports02/eq-in/risk/in.CGCL.html\" target=\"_blank\">CGCL<\/a>","<a href=\"/reports02/eq-in/risk/in.FIVESTAR.html\" target=\"_blank\">FIVESTAR<\/a>","<a href=\"/reports02/eq-in/risk/in.SBFC.html\" target=\"_blank\">SBFC<\/a>","<a href=\"/reports02/eq-in/risk/in.MASFIN.html\" target=\"_blank\">MASFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.FEDFINA.html\" target=\"_blank\">FEDFINA<\/a>","<a href=\"/reports02/eq-in/risk/in.NORTHARC.html\" target=\"_blank\">NORTHARC<\/a>","<a href=\"/reports02/eq-in/risk/in.INDOSTAR.html\" target=\"_blank\">INDOSTAR<\/a>","<a href=\"/reports02/eq-in/risk/in.PAISALO.html\" target=\"_blank\">PAISALO<\/a>","<a href=\"/reports02/eq-in/risk/in.SGFIN.html\" target=\"_blank\">SGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.MUFIN.html\" target=\"_blank\">MUFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.PFS.html\" target=\"_blank\">PFS<\/a>","<a href=\"/reports02/eq-in/risk/in.UGROCAP.html\" target=\"_blank\">UGROCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.ARMANFIN.html\" target=\"_blank\">ARMANFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.CIFL.html\" target=\"_blank\">CIFL<\/a>","<a href=\"/reports02/eq-in/risk/in.FINKURVE.html\" target=\"_blank\">FINKURVE<\/a>","<a href=\"/reports02/eq-in/risk/in.CREST.html\" target=\"_blank\">CREST<\/a>","<a href=\"/reports02/eq-in/risk/in.MANBA.html\" target=\"_blank\">MANBA<\/a>","<a href=\"/reports02/eq-in/risk/in.DHUNINV.html\" target=\"_blank\">DHUNINV<\/a>","<a href=\"/reports02/eq-in/risk/in.CSLFINANCE.html\" target=\"_blank\">CSLFINANCE<\/a>","<a href=\"/reports02/eq-in/risk/in.NBIFIN.html\" target=\"_blank\">NBIFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.LAXMIINDIA.html\" target=\"_blank\">LAXMIINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.AVONMORE.html\" target=\"_blank\">AVONMORE<\/a>","<a href=\"/reports02/eq-in/risk/in.MONEYBOXX.html\" target=\"_blank\">MONEYBOXX<\/a>","<a href=\"/reports02/eq-in/risk/in.MUTHOOTCAP.html\" target=\"_blank\">MUTHOOTCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.MANCREDIT.html\" target=\"_blank\">MANCREDIT<\/a>","<a href=\"/reports02/eq-in/risk/in.UYFINCORP.html\" target=\"_blank\">UYFINCORP<\/a>","<a href=\"/reports02/eq-in/risk/in.STARTECK.html\" target=\"_blank\">STARTECK<\/a>","<a href=\"/reports02/eq-in/risk/in.AFIL.html\" target=\"_blank\">AFIL<\/a>","<a href=\"/reports02/eq-in/risk/in.TEAMGTY.html\" target=\"_blank\">TEAMGTY<\/a>","<a href=\"/reports02/eq-in/risk/in.CPCAP.html\" target=\"_blank\">CPCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.BAIDFIN.html\" target=\"_blank\">BAIDFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.TRU.html\" target=\"_blank\">TRU<\/a>","<a href=\"/reports02/eq-in/risk/in.TFL.html\" target=\"_blank\">TFL<\/a>","<a href=\"/reports02/eq-in/risk/in.CAPTRUST.html\" target=\"_blank\">CAPTRUST<\/a>","<a href=\"/reports02/eq-in/risk/in.HBSL.html\" target=\"_blank\">HBSL<\/a>","<a href=\"/reports02/eq-in/risk/in.VIJIFIN.html\" target=\"_blank\">VIJIFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.TCIFINANCE.html\" target=\"_blank\">TCIFINANCE<\/a>"],[27.05448864572138,15.44651741049264,null,7.710473815507016,10.32234767069434,4.058458887564462,null,3.199821117592864,5.37566630899713,null,0.4545218421728732,-0.3310399391284258,1.808483563387716,1.262244386216171,3.951045305854072,0.6244487163553517,0.5447081397030731,0.008953319492243711,0.3837281484829081,-0.01157414479441925,0.2454844225939444,null,0.01920805717887004,0.6121556908147483,0.1178238493277497,-0.02176452794335695,-0.007586507295407341,null,0.1157261604062686,0.05291162156121478,-0.1091296389496992,0.1183433893191229,0.02374907233483017,null,0.0007256503828969881,null,0.003467538217819516,0.01024181164204482,0.04864960358760304,0.00941885042641614,0.0464821988802021,0.0003418869634916304,null,0.01269012477515353,-0.2057913986252072,-0.003859008736246182,-0.04964486857255543,0.004525017355980264,-0.0006253032609434549,-0.001014354170181296],[28.48512003437067,16.34589887316978,0.5573585124353517,7.733326447234357,6.431543128124766,3.331919354889678,3.116742766948175,3.046057428606223,4.073504127920938,null,0.5051132650777884,-0.2051727098524908,2.267765931951478,1.256516246758265,3.575334671919881,0.6570522416042411,0.5659884196681801,0.006371725707584105,0.426011393083229,-0.006059818469243781,0.2986922662593974,null,0.02239286057244911,0.629936942757401,0.1530733499797856,0.01104762114292233,-0.01221699344530548,null,0.07959887135891966,0.06236213318096121,-0.07569010746300757,0.07716576721900542,0.02975342657347491,0.03897588700300427,0.0002343767756727769,null,0.008714397652608145,0.01202947122209486,0.0645002156238369,0.0193674879268336,0.05808417139301093,0.001343736141880262,0.05515691704478065,0.008689441294757922,-0.1910927134638383,-0.005909670327261597,-0.03528133143994837,-0.01166799427861094,-0.0006963250036794712,-0.001042352571571947],[31.91044405255314,15.95853066658577,4.958155057632444,8.572516357304474,11.08280933189497,3.696972271201668,4.388152483602978,3.59659705229765,4.213907930938623,0.758991583309809,0.6075819005889274,0.2251844839009572,2.475453779906149,1.470370257027265,3.006209052515517,0.5556113016369619,0.4779803589536672,0.005576897054502394,0.5224563624242994,-0.005778435263812622,0.3735528434423845,0.2139857868163275,0.03343039664792823,0.453900810036732,0.1443492806325053,0.04797357764510467,-0.0194088516804518,0.04553503096007612,0.09330050563335232,0.07320169741223261,-0.1366478951318473,0.1062275733937864,0.03573462829183342,0.04042528240637228,0.0003375600886883335,0.001227610590912454,0.01948972955467662,0.0120112833891384,0.1142210908265064,0.02834979563980542,0.06840324989714411,0.001841415886368681,0.07072008588508434,0.01662171610570426,-0.2498490844535186,-0.007966985288526247,null,-0.02198040045410007,0.0009897035972511311,-0.002418852397473811]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":50,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-72a9b263de0bec708959" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-72a9b263de0bec708959">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJFINANCE.html\" target=\"_blank\">BAJFINANCE<\/a>","<a href=\"/reports02/eq-in/risk/in.SHRIRAMFIN.html\" target=\"_blank\">SHRIRAMFIN<\/a>","TATACAP","<a href=\"/reports02/eq-in/risk/in.CHOLAFIN.html\" target=\"_blank\">CHOLAFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.MUTHOOTFIN.html\" target=\"_blank\">MUTHOOTFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.SBICARD.html\" target=\"_blank\">SBICARD<\/a>","HDBFS","<a href=\"/reports02/eq-in/risk/in.SUNDARMFIN.html\" target=\"_blank\">SUNDARMFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.AIIL.html\" target=\"_blank\">AIIL<\/a>","<a href=\"/reports02/eq-in/risk/in.PIRAMALFIN.html\" target=\"_blank\">PIRAMALFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.POONAWALLA.html\" target=\"_blank\">POONAWALLA<\/a>","<a href=\"/reports02/eq-in/risk/in.MANAPPURAM.html\" target=\"_blank\">MANAPPURAM<\/a>","<a href=\"/reports02/eq-in/risk/in.IIFL.html\" target=\"_blank\">IIFL<\/a>","<a href=\"/reports02/eq-in/risk/in.CGCL.html\" target=\"_blank\">CGCL<\/a>","<a href=\"/reports02/eq-in/risk/in.FIVESTAR.html\" target=\"_blank\">FIVESTAR<\/a>","<a href=\"/reports02/eq-in/risk/in.SBFC.html\" target=\"_blank\">SBFC<\/a>","<a href=\"/reports02/eq-in/risk/in.MASFIN.html\" target=\"_blank\">MASFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.FEDFINA.html\" target=\"_blank\">FEDFINA<\/a>","<a href=\"/reports02/eq-in/risk/in.NORTHARC.html\" target=\"_blank\">NORTHARC<\/a>","<a href=\"/reports02/eq-in/risk/in.INDOSTAR.html\" target=\"_blank\">INDOSTAR<\/a>","<a href=\"/reports02/eq-in/risk/in.PAISALO.html\" target=\"_blank\">PAISALO<\/a>","<a href=\"/reports02/eq-in/risk/in.SGFIN.html\" target=\"_blank\">SGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.MUFIN.html\" target=\"_blank\">MUFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.PFS.html\" target=\"_blank\">PFS<\/a>","<a href=\"/reports02/eq-in/risk/in.UGROCAP.html\" target=\"_blank\">UGROCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.ARMANFIN.html\" target=\"_blank\">ARMANFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.CIFL.html\" target=\"_blank\">CIFL<\/a>","<a href=\"/reports02/eq-in/risk/in.FINKURVE.html\" target=\"_blank\">FINKURVE<\/a>","<a href=\"/reports02/eq-in/risk/in.CREST.html\" target=\"_blank\">CREST<\/a>","<a href=\"/reports02/eq-in/risk/in.MANBA.html\" target=\"_blank\">MANBA<\/a>","<a href=\"/reports02/eq-in/risk/in.DHUNINV.html\" target=\"_blank\">DHUNINV<\/a>","<a href=\"/reports02/eq-in/risk/in.CSLFINANCE.html\" target=\"_blank\">CSLFINANCE<\/a>","<a href=\"/reports02/eq-in/risk/in.NBIFIN.html\" target=\"_blank\">NBIFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.LAXMIINDIA.html\" target=\"_blank\">LAXMIINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.AVONMORE.html\" target=\"_blank\">AVONMORE<\/a>","<a href=\"/reports02/eq-in/risk/in.MONEYBOXX.html\" target=\"_blank\">MONEYBOXX<\/a>","<a href=\"/reports02/eq-in/risk/in.MUTHOOTCAP.html\" target=\"_blank\">MUTHOOTCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.MANCREDIT.html\" target=\"_blank\">MANCREDIT<\/a>","<a href=\"/reports02/eq-in/risk/in.UYFINCORP.html\" target=\"_blank\">UYFINCORP<\/a>","<a href=\"/reports02/eq-in/risk/in.STARTECK.html\" target=\"_blank\">STARTECK<\/a>","<a href=\"/reports02/eq-in/risk/in.AFIL.html\" target=\"_blank\">AFIL<\/a>","<a href=\"/reports02/eq-in/risk/in.TEAMGTY.html\" target=\"_blank\">TEAMGTY<\/a>","<a href=\"/reports02/eq-in/risk/in.CPCAP.html\" target=\"_blank\">CPCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.BAIDFIN.html\" target=\"_blank\">BAIDFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.TRU.html\" target=\"_blank\">TRU<\/a>","<a href=\"/reports02/eq-in/risk/in.TFL.html\" target=\"_blank\">TFL<\/a>","<a href=\"/reports02/eq-in/risk/in.CAPTRUST.html\" target=\"_blank\">CAPTRUST<\/a>","<a href=\"/reports02/eq-in/risk/in.HBSL.html\" target=\"_blank\">HBSL<\/a>","<a href=\"/reports02/eq-in/risk/in.VIJIFIN.html\" target=\"_blank\">VIJIFIN<\/a>"],[20.68091445605922,16.80767409527077,null,4.537134917334509,6.567625845505042,7.250389056374499,null,2.670290908448385,1.444792127026986,null,2.035755457485832,3.38643106153449,4.053115376073051,1.432254410352612,2.250704865652075,0.4337706339478638,0.5233810137918836,0.01700569209036995,0.8835971813192652,0.01039168617740892,0.2124358172508194,null,0.05367802728254194,0.2224499187284542,0.4732223242367292,0.1908917676247486,0.150586060781424,null,0.06013527867623205,0.07352215161835496,0.1237913523439624,0.06314871880611764,0.007447407511190158,null,0.0009787452460192532,null,0.2319944322127354,0.01515034085251022,0.02765566865517768,0.008895869007611013,0.03136076064713037,0.001148526448825855,null,0.02498364289569002,0.03590115631103267,0.004388293142678116,0.01417547260518888,0.01117608807926631,0.0006715514390907275],[15.1550467898931,16.87517873245894,7.458805810119672,6.249542282706198,6.710258687956597,5.934466463396151,5.012523241174461,2.646174800530815,1.131333105903497,null,1.347395233154525,2.825438559973862,4.277177026113501,1.259897649045684,1.912377305359439,0.4741383750647976,0.5657814615165241,0.01075536126792903,0.7505347585723812,0.004999352978782565,0.2408464659768234,null,0.05273263408609663,0.2053416875538139,0.4413063473267109,0.1767626839410683,0.1417509942805283,null,0.04863147139512635,0.0869292739717196,0.1060667468520705,0.06229844071494044,0.009105021200586384,0.1005164374094872,0.0005672053550779763,null,0.2108491389347565,0.01513907571711263,0.03837562131776193,0.009749687018610636,0.03624684812283615,0.001249105552579444,0.01507914260847997,0.02418672863613372,0.03069624443491087,0.005071952774669905,0.01438099404052442,0.007431993844789504,0.0008860223985557651],[20.46206887217907,15.73577549052864,10.50480408669333,7.742521345496075,9.206807981508213,6.56494597931535,6.413795622014277,3.178182893448799,1.251464440546513,1.950639472453569,1.488508506843412,3.094997514531291,4.103825397765071,1.438337210275315,2.108265152137648,0.5299525382169255,0.6319849127090692,0.007131779875946371,0.8545989816404008,0.004743455275777912,0.2930113296298629,0.1076342921814158,0.06951279136327777,0.1825732706585311,0.5620785075878031,0.2238446175223348,0.1861840208651429,0.06686272614951715,0.05865302956528307,0.1010778736644923,0.1253372171940856,0.062194015702857,0.0106461908171211,0.1498792940710304,0.0006105609587817108,0.07328095364516489,0.1976457526464796,0.02071371091113953,0.06210686911541961,0.008951595840691858,0.04529616871544317,0.001660465070110261,0.02019404046683509,0.0315443235628951,0.03455096439928504,0.006970343079103205,null,0.008140634501516151,0.001111812619166696]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":49,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,49,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-of-indian-nbfc-sector-based-on-provided-disclosures" class="section level9">
+<p class="heading">Summary Analysis of Indian NBFC Sector (Based on Provided Disclosures)</p>
+<p>The documents cover disclosures from leading NBFCs (e.g., Bajaj Finance, Muthoot Finance, Shriram Finance, Cholamandalam, Piramal Finance, Manappuram, etc.) primarily focused on Q2 FY26 earnings, analyst meetings, and investor presentations. These reveal a <strong>resilient sector</strong> amid regulatory tailwinds and gold loan boom, but with pockets of stress in unsecured/microfinance segments. Overall, <strong>AUM growth is robust (20-40% YoY across peers)</strong>, driven by secured lending, with improving profitability (e.g., Muthoot PAT +87% YoY, Chola +20% YoY). Below is a structured analysis of <strong>headwinds, tailwinds, growth prospects, and key risks</strong>.</p>
+<div id="tailwinds-positive-drivers" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Gold Loan Surge</strong>: High gold prices, RBI regulatory clarifications (e.g., higher LTV up to 85% for loans &lt;₹2.5L from Apr 2026), and tighter norms on unsecured credit boosting demand. Muthoot AUM +47% YoY (₹1.32L Cr), upgrading FY26 guidance to 30-35%; Bajaj/Shriram also active in meetings.</li>
+<li><strong>Declining Cost of Funds</strong>: Repo rate cuts transmitting via lower MCLR/NCD yields (e.g., Muthoot CoF 8.78%, down 10bps QoQ; Chola expects 15-20bps further drop). ECB/bond diversification aiding (Piramal 16% ECB mix).</li>
+<li><strong>Digital &amp; Branch Expansion</strong>: Productivity gains via AI (Piramal.ai boosting sales/credit productivity 30-67%), cross-sell (25-30% unsecured disb. via existing customers), and branch maturity (Piramal 518 branches, Manappuram strong network).</li>
+<li><strong>Asset Quality Stabilization</strong>: Retail 90+ DPD stable ~0.8% (Piramal/Muthoot); ECL rebalancing, vintage analysis showing controlled new originations.</li>
+<li><strong>Macro Support</strong>: GST cuts, festive demand aiding vehicle/home loans (Chola Oct strong); developer consolidation in RE (Piramal Wholesale 2.0 +43% YoY).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Competition Intensity</strong>: Gold loans seeing entry from AAA NBFCs/banks/SFBs (yields 18-20%, but pricing wars; Muthoot/Chola note no knee-jerk reactions but monitoring). Poaching of employees, tech investments by new entrants.</li>
+<li><strong>Segmental Stress</strong>: Microfinance losses narrowing but persistent (Belstar ₹160 Cr H1 loss); unsecured business loans delinquencies (Chola CSEL peaked, tightening underwriting); CV stress from extended monsoons (Chola/Muthoot capacity utilization lag).</li>
+<li><strong>Disbursement Volatility</strong>: Procedural delays (Chola home loans negative due to registrations); partnership pullbacks (Chola CSEL degrowth).</li>
+<li><strong>Opex &amp; Yield Pressures</strong>: Retail opex-to-AUM 3.9% (Piramal target lowered to 3.25-3.75%); yields steady ~13-18% but competition may compress.</li>
+<li><strong>Legacy Runoff</strong>: Piramal legacy AUM ₹5.4k Cr (6% total, targeting &lt;₹3.5k Cr by FY26 end).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High Single-Digit to Mid-Twenties AUM Growth</strong>: Peers guide 20-25% FY26 (Chola 20%+ safe, Piramal 25%, Muthoot gold 30-35%). Secured products lead (housing/LAP/used cars +20-36% YoY).</li>
+<li><strong>Product Diversification</strong>: Non-gold ~12-15% mix expanding (vehicle, home/LAP +28-33% YoY Chola); Wholesale 2.0 granular (Piramal avg. ticket ₹71 Cr, RE/CMML).</li>
+<li><strong>Geographic/Channel Expansion</strong>: Tier-2/3 focus (81% Piramal customers outside Tier-1); digital/DA/co-lending ramp-up (Chola DA ramping).</li>
+<li><strong>FY28 Outlook</strong>: Piramal targets ₹1.5L Cr AUM; Muthoot/Chola H2 acceleration via GST/monsoon normalization.</li>
+<li><strong>Profitability Leverage</strong>: RoAUM 1.7% (Piramal growth biz), NIM expansion 10-15bps (Chola); AIF gains (Piramal ₹926 Cr FY25).</li>
+</ul>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Asset Quality</strong></td>
+<td>Stage 3 up in CV/unsecured (Chola 2.5%, Muthoot ~2.3%); vintage risk in new books.</td>
+<td>Tight underwriting, ECL models, collections focus; PCR 29-53%.</td>
+</tr>
+<tr class="even">
+<td><strong>Competition/Yield Compression</strong></td>
+<td>Banks/NBFCs entering gold (yields drop risk); employee poaching.</td>
+<td>High-touch model, branch productivity, no pricing wars (Muthoot yields 18-18.5%).</td>
+</tr>
+<tr class="odd">
+<td><strong>Regulatory/Macro</strong></td>
+<td>RBI gold LTV changes (Apr 2026), monsoon delays, GST transition.</td>
+<td>Diversification, liquidity buffers (Piramal LCR high).</td>
+</tr>
+<tr class="even">
+<td><strong>Liquidity/Funding</strong></td>
+<td>CoF volatility, debt/equity 2.6x (Piramal).</td>
+<td>Strong CAD 20.7%, ₹7.2k Cr liquids (8% assets); ECB/MF diversification.</td>
+</tr>
+<tr class="odd">
+<td><strong>Execution</strong></td>
+<td>Branch ramp, digital scale-up; legacy runoff.</td>
+<td>Proven mgmt (ex-Axis/ICICI), AI productivity gains.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: <strong>Bullish with cautious optimism</strong>. Sector poised for 25%+ growth FY26 on gold/secured tailwinds, but monitor unsecured/microfinance stress and competition. Peers like Muthoot/Piramal/Chola demonstrate resilience via diversification and tech. Investors actively engaging (multiple Dec 4-5 meetings), signaling confidence. Risks manageable with strong balance sheets (avg. CAD &gt;20%). Recommend focus on gold-heavy players for near-term alpha.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-for-indian-nbfc-sector" class="section level9">
+<p class="heading">Summary Analysis for Indian NBFC Sector</p>
+<p>Using the provided regulatory filings from key NBFCs (e.g., Bajaj Finance, Shriram Finance, Muthoot Finance, Cholamandalam, SBI Cards, HDB Financial, Mahindra Finance, Authum Investment, Poonawalla Fincorp, Manappuram Finance, IIFL Finance, Capri Global Capital), the analysis highlights sector-wide trends as of late 2025. The sector shows resilience amid regulatory tightening, with growth drivers intact but compliance pressures mounting. Below is a structured breakdown of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-supportive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Supportive Factors)</strong></p>
+<ul>
+<li><strong>Strong Financial Health &amp; Shareholder Returns</strong>: Dividend payouts (e.g., Shriram Finance’s ₹4.80/share interim dividend paid Nov 2025) and bonus issues (Authum’s 4:1 ratio using ₹8,880 Cr reserves) signal robust profitability and free cash generation. Poonawalla Fincorp reported 67.7% YoY AUM growth to ₹47,625 Cr (15.4% QoQ) with ₹6,200 Cr liquidity.</li>
+<li><strong>ESG Momentum</strong>: Upgrades like SBI Cards’ ‘AA’ (from ‘A’) and Mahindra Finance’s “Excellent” (83/100) score enhance investor appeal, aligning with SEBI’s ESG focus.</li>
+<li><strong>Regulatory Approvals &amp; Flexibility</strong>: RBI nods for management changes (Manappuram) and electronic payment mandates (Muthoot) enable smoother operations and modernization.</li>
+<li><strong>Capital Management</strong>: Efficient liability management (IIFL’s NCD call option exercise) and capital augmentation (Authum’s authorized capital hike to ₹128 Cr) support scalability.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Regulatory Compliance Burden</strong>: RBI penalty on HDB Financial (₹4.2L for KYC lapses in FY24) highlights scrutiny on KYC/AML. SEBI’s electronic-only payments for dividends/interest (Muthoot) adds operational costs for legacy systems.</li>
+<li><strong>Equity Dilution for Compliance</strong>: Bajaj Finance sold 1.9994% stake (166.6M shares) in BHFL for ₹1,588 Cr to meet minimum public shareholding (now 86.7% holding), pressuring promoter control and valuations.</li>
+<li><strong>Promoter Reclassifications</strong>: Chola’s shift of promoter group entities to ‘public’ category reflects ongoing SEBI-mandated dilution trends.</li>
+<li><strong>Administrative Overheads</strong>: Frequent disclosures (e.g., postal ballots for Authum’s bonuses) and new mandates increase governance costs.</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Diversification &amp; Expansion</strong>: Capri Global’s new insurance broking subsidiary (CIN: U66220MH2025PTC461727) taps adjacent high-margin areas (life, health, motor). Manappuram’s preferential issue (₹4,385 Cr equity/warrants) and open offer post-RBI approval signal M&amp;A/investment inflows.</li>
+<li><strong>AUM &amp; Balance Sheet Scaling</strong>: Poonawalla’s hyper-growth (67% YoY) amid diversified assets points to sector AUM expansion (BHFL contributes 13.7% to Bajaj’s turnover). Bonus issues and capital hikes (Authum) to fund lending growth.</li>
+<li><strong>Digital/Tech Leverage</strong>: Emphasis on electronic payments and risk-managed growth (Poonawalla’s “risk-first” approach) supports scalable models.</li>
+<li><strong>Outlook</strong>: Sector poised for 15-20% AUM CAGR (inferred from peers), driven by retail/microfinance recovery, with ESG aiding institutional funding.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="31%" />
+<col width="19%" />
+<col width="48%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Examples from Filings</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory/Compliance</strong></td>
+<td>High</td>
+<td>RBI penalties (HDB KYC), SEBI public shareholding norms (Bajaj), prior approvals for deals (Manappuram). Potential for escalated fines.</td>
+</tr>
+<tr class="even">
+<td><strong>Financial/ Liquidity</strong></td>
+<td>Medium</td>
+<td>NCD redemptions (IIFL ₹100K/NCD + interest); dependency on open-market bulk deals exposes to volatility.</td>
+</tr>
+<tr class="odd">
+<td><strong>Operational</strong></td>
+<td>Medium</td>
+<td>KYC failures (HDB FY24); transition to electronic payments (Muthoot) risks disruptions.</td>
+</tr>
+<tr class="even">
+<td><strong>Market/Equity</strong></td>
+<td>Medium</td>
+<td>Promoter dilution/reclassification (Bajaj, Chola); bonus issues dilute EPS short-term.</td>
+</tr>
+<tr class="odd">
+<td><strong>Execution</strong></td>
+<td>Low-Medium</td>
+<td>New ventures (Capri insurance) unproven; open offers subject to conditions (Manappuram).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Sector Snapshot</strong>: Tailwinds from profitability and diversification outweigh headwinds, with growth prospects strong (AUM-led expansion). However, regulatory risks dominate—NBFCs must prioritize compliance (e.g., KYC, digital infra) to sustain 15%+ growth. Provisional figures (e.g., Poonawalla) underscore need for audited validation. Positive sentiment from dividends/ESG could drive re-ratings, but vigilance on RBI/SEBI actions is critical.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-12-01 </em></p>
+<div id="summary-analysis-of-indian-nbfc-sector-based-on-provided-documents" class="section level9">
+<p class="heading">Summary Analysis of Indian NBFC Sector (Based on Provided Documents)</p>
+<p>The documents primarily cover announcements of analyst/investor meetings, earnings transcripts (e.g., Muthoot Finance Q2 FY26, Cholamandalam Q2 FY26), and investor presentations (e.g., Piramal Finance, Bajaj Finance, Shriram Finance) from leading NBFCs. They highlight a resilient sector amid regulatory tailwinds, competitive pressures, and macro recovery. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong> for Indian NBFCs (gold loan-focused, diversified retail/wholesale players).</p>
+<div id="tailwinds-positive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Regulatory Support for Gold Loans</strong>: RBI clarifications (e.g., higher LTV up to 85% for loans &lt;₹2.5L from Apr 2026) and tighter norms on unsecured lending boost demand. Muthoot upgraded FY26 gold loan growth to 30-35%; peers like Bajaj Finance and Manappuram actively scheduling investor meets.</li>
+<li><strong>Declining Funding Costs</strong>: Repo rate cuts and falling MCLR (8.65-8.8%) leading to 15-40 bps CoF reduction (Muthoot: 8.78%; Chola expects NIM +10-15 bps in H2 FY26). ECB/mutual funds/securitization diversification aids liquidity (Piramal: 48% code AI-written for efficiency).</li>
+<li><strong>Strong Demand Momentum</strong>: AUM growth 20-37% YoY (Muthoot: 47% standalone; Piramal: 22% consol.; Chola: 21%). Gold prices, GST cuts, and rural recovery drive vehicle/home loans/LAP. Cross-sell (25-30% of disbursals in Piramal) and digital (Chola CSEL partnerships) enhance traction.</li>
+<li><strong>Digital &amp; AI Transformation</strong>: Piramal.ai boosts productivity (sales +30%, credit files +12%); Muthoot/Chola emphasize tech for underwriting/collections. Branch maturity (Piramal: 518 branches) improves opex efficiency (down 80 bps YoY).</li>
+<li><strong>Macro Backdrop</strong>: Festive/rabi harvest boost; capacity utilization improving (Chola CVs up post-monsoon).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Intensifying Competition</strong>: Banks/SFBs/NBFCs entering gold loans (yields 18-20%; Muthoot/Chola note pricing pressure). New AAA players/tech-focused rivals (Piramal/Chola) challenge market share; employee poaching noted.</li>
+<li><strong>Asset Quality Stress</strong>: Microfinance losses narrowing but persistent (Muthoot Belstar: ₹160 Cr H1 loss); CSEL/unsecured loans delinquencies peaked (Chola tightened underwriting). Extended monsoons delay CV/rural recovery; Stage-3 up in some segments (Chola: 2.5%).</li>
+<li><strong>Opex &amp; Yield Pressures</strong>: Retail opex-AUM 3.9% (Piramal target revised lower); competition caps yields (Muthoot: 18-18.5%). Partnership exits (Chola CSEL degrowth) impact disbursals.</li>
+<li><strong>Regulatory/Execution Risks</strong>: New LTV norms delayed; e-Khata/SRO delays in South (Chola home loans). Legacy runoff (Piramal: 6% AUM, target &lt;5% by FY26 end).</li>
+<li><strong>Environmental Factors</strong>: Monsoon delays harvest (Chola/Muthoot concern); GST transition wait-and-watch in Q2.</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Robust AUM Trajectory</strong>: 25-35% FY26 guidance (Muthoot gold: 30-35%; Piramal total: 25%; Chola: 20%+). Retail dominant (Piramal: 82%; secured MSME/home loans key drivers).</li>
+<li><strong>Product Diversification</strong>: Gold (47% Muthoot growth), LAP/home (33-28% Chola), used cars/business loans scaling. Wholesale 2.0 (Piramal: 43% YoY) taps RE mid-market (underpenetrated Tier 2/3).</li>
+<li><strong>Geographic/Channel Expansion</strong>: 500+ branches (Piramal/Muthoot); partnerships/digital (Chola consumer loans). Cross-sell to 5.2 Mn customers (Piramal +23% YoY).</li>
+<li><strong>Profitability Leverage</strong>: RoAUM 1.7% (Piramal growth biz); PPOP-AUM 3%+ targets. H2 acceleration expected (GST/monsoon normalization).</li>
+<li><strong>Sector-Wide</strong>: NBFC conferences (DAM Capital Mega, Elara) signal investor optimism; AUM-to-equity 4.5-5x (Piramal).</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Asset Quality</strong></td>
+<td>Delinquencies in unsecured/microfinance/CV (Chola CSEL peaked; Muthoot Belstar Stage-3 4.58%). GNPA 2.6% (Piramal).</td>
+<td>Tight underwriting, AI vintage analysis (Piramal risk 0.6-0.8%); ECL provisioning (PCR 29-53%).</td>
+</tr>
+<tr class="even">
+<td><strong>Competition/Yields</strong></td>
+<td>Banks/NBFCs eroding share; yield compression (18.5% Muthoot steady-state).</td>
+<td>Focus on high-touch tech (Piramal ARYA AI); granular portfolios (avg. ticket ₹71 Cr wholesale).</td>
+</tr>
+<tr class="odd">
+<td><strong>Liquidity/Funding</strong></td>
+<td>Rising debt (2.6x D/E Piramal); CoF volatility.</td>
+<td>Strong CAD 20.7%; ₹7.2k Cr liquids (7% assets); ALM positive gaps.</td>
+</tr>
+<tr class="even">
+<td><strong>Regulatory/Macro</strong></td>
+<td>Gold LTV changes, monsoon/rural slowdown.</td>
+<td>Diversification (non-gold 12-15% Muthoot); legacy runoff to ₹3-3.5k Cr.</td>
+</tr>
+<tr class="odd">
+<td><strong>Execution</strong></td>
+<td>Branch productivity, digital scaling.</td>
+<td>Opex discipline (3.25-3.75% Piramal); cross-sell focus.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: Sector poised for 20-30% AUM growth FY26, led by gold/retail tailwinds, but vigilant on competition/asset quality. Profitability improving (PAT +75-101% YoY in samples); focus on tech/ESG enhances resilience. Investors optimistic (multiple conferences).</p>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-12-02 </em></p>
+<div id="summary-analysis-of-indian-nbfc-sector-based-on-q2h1-fy26-results-from-key-players" class="section level9">
+<p class="heading">Summary Analysis of Indian NBFC Sector (Based on Q2/H1 FY26 Results from Key Players)</p>
+<p>The Indian NBFC sector, as reflected in reports from Shriram Finance, Muthoot Finance, HDBFS, Sundaram Finance, Mahindra Finance, IIFL Finance, Five-Star Business Finance, and others, demonstrates resilience amid macroeconomic headwinds. AUM growth averaged 15-40% YoY, driven by gold loans and secured retail/MSME lending, with PAT growth of 10-88% YoY in most cases. However, asset quality pressures and moderated disbursements highlight challenges. Below is a structured analysis:</p>
+<div id="tailwinds-positive-drivers-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Robust AUM &amp; Disbursement Growth</strong>: Sector-wide AUM expanded 13-47% YoY (e.g., Shriram +15%, Muthoot +42%, Mahindra +13%, IIFL +35%). Gold loans surged (Muthoot +45%, Shriram strong yields, IIFL +220% YoY), fueled by high gold prices and RBI easing.</li>
+<li><strong>Profitability Momentum</strong>: PAT rose 10-88% YoY (e.g., Muthoot +74%, Mahindra +25%, Shriram +10-11%). NIM stable/improving (7-8% range), aided by fee income and cost efficiencies.</li>
+<li><strong>Digital &amp; Phygital Expansion</strong>: AI-led transformations (Poonawalla’s 45 AI projects, IIFL’s risk/governance AI) enhanced underwriting/collections. Branch networks grew (Shriram 3,225, Muthoot 7,524).</li>
+<li><strong>Funding Access</strong>: Low incremental CoF (8-9%), strong ratings (e.g., Fitch upgrades for Muthoot/IIFL), and bank partnerships boosted liquidity (buffers ₹2k-8k Cr).</li>
+<li><strong>ESG &amp; Diversification</strong>: Improving ESG scores (Capri 71/100), secured lending focus (MSME, housing), and rural recovery post-monsoon.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-3" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Asset Quality Stress</strong>: GS3 rose in several (Shriram 4.57%, Mahindra 3.9%, HDB 2.81%, IIFL 2.1%, Five-Star 2.64%). Microfinance/unsecured segments hit hardest (IIFL Samasta -23% AUM).</li>
+<li><strong>Moderated Disbursements</strong>: Flat/slow YoY growth in some (Five-Star -3-4%, Mahindra +2-3%), due to cautious underwriting amid rural slowdown.</li>
+<li><strong>Higher Credit Costs</strong>: Provisions up 7-54% YoY (Mahindra 23%, IIFL 54%), reflecting macro pressures (e.g., monsoon delays, inflation).</li>
+<li><strong>Funding Cost Pressures</strong>: CoF rose slightly (9-10%), with reliance on ECBs/deposits amid rate hikes.</li>
+<li><strong>Macro Sluggishness</strong>: Rural/semi-urban demand weak pre-festivals; unsecured segments deprioritized.</li>
+</ul>
+</div>
+<div id="growth-prospects-outlook" class="section level12">
+<p class="heading"><strong>Growth Prospects (Outlook)</strong></p>
+<ul>
+<li><strong>High Potential Segments</strong>: Gold/home/MSME secured lending (60-70% mix) to drive 20-35% AUM growth (Mahindra upgraded FY26 guidance to 30-35%). Rural revival post-GST 2.0/rating upgrades.</li>
+<li><strong>Diversification &amp; Scale</strong>: Shift to secured (IIFL 98% core secured), phygital models, and subsidiaries (e.g., Muthoot Money +182% AUM). Partnerships/co-lending to PSL/MSME demand.</li>
+<li><strong>Digital Tailwinds</strong>: AI/EWS for risk (Poonawalla, IIFL), boosting efficiency/ROA (1.5-3%).</li>
+<li><strong>FY26 Guidance</strong>: 15-30% AUM growth, stable NIMs, improving ROA/ROE (target 2-3%/15-20%).</li>
+<li><strong>M&amp;A/Investments</strong>: Bain Capital in Manappuram signals PE interest; strong balance sheets support inorganic growth.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Asset Quality Deterioration</strong>: Rising GS2+3 (9-10% in some), microfinance exposure; macro shocks (e.g., agri distress) could spike credit costs &gt;2%.</li>
+<li><strong>Regulatory/Compliance</strong>: RBI SBR norms, gold loan curbs (past embargo impact), KYC/fraud risks.</li>
+<li><strong>Funding &amp; Liquidity</strong>: Rate hikes, over-reliance on gold (40-50% AUM in some), ECB volatility.</li>
+<li><strong>Concentration &amp; Competition</strong>: Rural/MSME focus vulnerable to monsoons/economy; bank competition in secured loans.</li>
+<li><strong>Operational/Cyber</strong>: Digital push increases fraud/cyber risks; talent retention in competitive talent market.</li>
+</ul>
+<p><strong>Overall Sector Outlook</strong>: <strong>Positive with Caution</strong>. Tailwinds from gold/rural recovery and digital efficiency outweigh headwinds, supporting 15-25% AUM/PAT growth in FY26. Focus on secured lending and risk mgmt. critical to sustain ROE &gt;15%. Monitor NPAs and macros closely.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

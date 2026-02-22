@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Index Metrics</title>
+
+<script src="risk/rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="risk/rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="risk/rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="risk/rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="risk/rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="risk/rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="risk/rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="risk/rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="risk/rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="risk/rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="risk/rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="risk/rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="risk/rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="risk/rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="risk/rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="risk/rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="risk/rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="risk/rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="risk/rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Index Metrics</h1>
+<h3 class="subtitle">StockViz</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#risk">Risk</a></li>
+<li><a href="#returns">Returns</a></li>
+<li><a href="#information-ratio">Information Ratio</a></li>
+<li><a href="#simple-moving-average-stats">Simple Moving Average Stats</a></li>
+</ul>
+</div>
+
+<div id="risk" class="section level3">
+<h3>Risk</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-89eae4ff3554b5475eae" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-89eae4ff3554b5475eae">{"x":{"filter":"none","vertical":false,"data":[["NIFTY100 LOW VOLATILITY 30 TR","NIFTY200 QUALITY 30 TR","NIFTY ALPHA QUALITY LOW-VOLATILITY 30 TR","NIFTY ALPHA LOW-VOLATILITY 30 TR","NIFTY500 LOW VOLATILITY 50 TR","NIFTY LOW VOLATILITY 50 TR","NIFTY FMCG TR","NIFTY ALPHA QUALITY VALUE LOW-VOLATILITY 30 TR","NIFTY MIDSMALL HEALTHCARE TR","NIFTY100 QUALITY 30 TR","NIFTY500 HEALTHCARE TR","NIFTY50 VALUE 20 TR","NIFTY500 MULTIFACTOR MQVLV 50 TR","NIFTY MNC TR","NIFTY CHEMICALS TR","NIFTY MIDCAP150 QUALITY 50 TR","NIFTY500 QUALITY 50 TR","NIFTY500 FLEXICAP QUALITY 30 TR","NIFTY CONSUMER DURABLES TR","NIFTY500 SHARIAH TR","NIFTY TOP 10 EQUAL WEIGHT TR","NIFTY500 MULTICAP MOMENTUM QUALITY 50 TR","NIFTY TOTAL MARKET MOMENTUM QUALITY 50 TR","NIFTY INDIA CORPORATE GROUP INDEX - TATA GROUP TR","NIFTY TOP 15 EQUAL WEIGHT TR","NIFTY MIDCAP150 MOMENTUM 50 TR","NIFTY 50 TR","NIFTY200 MOMENTUM 30 TR","NIFTY RURAL TR","NIFTY100 ALPHA 30 TR","NIFTY 100 TR","NIFTY PHARMA TR","NIFTY TOP 20 EQUAL WEIGHT TR","NIFTY500 MULTICAP INDIA MANUFACTURING 50:30:20 TR","NIFTY 200 TR","NIFTY AUTO TR","NIFTY 500 TR","NIFTY TOTAL MARKET TR","NIFTY LARGEMIDCAP 250 TR","NIFTY50 EQUAL WEIGHT TR","NIFTY SERVICES SECTOR TR","NIFTY SME EMERGE TR","NIFTY500 MOMENTUM 50 TR","NIFTY MIDCAP 150 TR","NIFTY SHARIAH 25 TR","NIFTY100 EQUAL WEIGHT TR","NIFTY200 ALPHA 30 TR","NIFTY500 MULTICAP 50:25:25 TR","NIFTY IT TR","NIFTY PRIVATE BANK TR","NIFTY500 LARGEMIDSMALL EQUAL-CAP WEIGHTED TR","NIFTY MOBILITY TR","NIFTY SMALLCAP250 MOMENTUM QUALITY 100 TR","NIFTY FINANCIAL SERVICES TR","NIFTY MIDSMALL INDIA CONSUMPTION TR","NIFTY CORE HOUSING TR","NIFTY ALPHA 50 TR","NIFTY INDIA DIGITAL TR","NIFTY INDIA MANUFACTURING TR","NIFTY CONGLOMERATE 50 TR","NIFTY MIDCAP 100 TR","NIFTY FINANCIAL SERVICES 25/50 TR","NIFTY QUALITY LOW-VOLATILITY 30 TR","NIFTY CEMENT TR","NIFTY100 ESG TR","NIFTY MIDSMALLCAP 400 TR","NIFTY MIDSMALL FINANCIAL SERVICES TR","NIFTY BANK TR","NIFTY DIVIDEND OPPORTUNITIES 50 TR","NIFTY50 SHARIAH TR","NIFTY MIDSMALLCAP400 50:50 TR","NIFTY PSU BANK TR","NIFTY NEXT 50 TR","NIFTY NON-CYCLICAL CONSUMER TR","NIFTY ENERGY TR","NIFTY FINANCIAL SERVICES EX-BANK TR","NIFTY SMALLCAP250 QUALITY 50 TR","NIFTY INDIA SELECT 5 CORPORATE GROUPS (MAATR) TR","NIFTY500 EQUAL WEIGHT TR","NIFTY500 MULTICAP INFRASTRUCTURE 50:30:20 TR","NIFTY CPSE TR","NIFTY OIL &amp; GAS TR","NIFTY HOUSING TR","NIFTY MIDCAP SELECT TR","NIFTY INFRASTRUCTURE TR","NIFTY GROWTH SECTORS 15 TR","NIFTY INDIA NEW AGE CONSUMPTION TR","NIFTY MIDSMALL IT &amp; TELECOM TR","NIFTY COMMODITIES TR","NIFTY100 ESG SECTOR LEADERS TR","NIFTY INDIA INFRASTRUCTURE &amp; LOGISTICS TR","NIFTY SMALLCAP 500 TR","NIFTY MICROCAP 250 TR","NIFTY200 VALUE 30 TR","NIFTY MIDCAP LIQUID 15 TR","NIFTY REITS &amp; INVITS TR","NIFTY SMALLCAP 250 TR","NIFTY INDIA TOURISM TR","NIFTY METAL TR","NIFTY MIDCAP 50 TR","NIFTY PSE TR","NIFTY500 VALUE 50 TR","NIFTY WAVES TR","NIFTY100 LIQUID 15 TR","NIFTY SMALLCAP 100 TR","NIFTY MEDIA TR","NIFTY REALTY TR","NIFTY SMALLCAP 50 TR","NIFTY HIGH BETA 50 TR"],[81,79,74,71,73,83,82,86,62,76,78,75,58,77,44,94,63,51,66,70,65,40,46,72,68,23,67,38,53,34,59,80,85,84,54,69,48,47,37,61,49,105,5,26,104,52,8,109,57,55,28,97,19,39,96,87,12,64,91,27,24,18,102,60,107,17,95,50,88,108,22,101,98,99,89,3,16,93,36,33,35,100,42,11,56,90,92,32,43,106,31,21,15,25,14,103,20,41,29,6,10,13,45,1,9,30,4,7,2],[103,99,108,109,105,104,89,98,106,93,94,83,107,92,95,90,96,97,82,91,71,101,100,61,64,102,67,86,74,81,69,58,55,68,70,56,73,75,84,62,59,23,87,88,31,65,79,27,46,42,80,20,85,48,25,4,78,44,28,54,72,50,21,34,18,77,17,38,22,19,76,7,2,8,16,52,49,9,60,51,35,14,36,53,29,10,5,47,33,1,45,63,66,37,40,6,57,26,24,43,32,41,11,15,39,3,12,30,13],[108,105,107,103,102,101,92,109,100,95,80,93,106,88,104,90,94,96,87,79,84,97,98,78,81,99,76,86,82,89,75,33,62,50,71,49,70,72,74,66,73,77,91,63,48,61,85,42,53,67,57,69,68,65,56,17,83,27,43,55,54,64,39,38,31,46,40,52,45,16,41,8,59,44,35,60,58,37,30,28,23,15,34,51,11,26,29,20,18,2,24,25,21,32,47,1,22,12,9,36,13,19,6,5,14,3,4,10,7],[98,94,103,106,101,99,83,100,109,81,88,82,107,84,102,86,91,96,95,75,68,105,104,72,60,108,56,92,73,85,61,55,48,69,63,71,65,67,79,52,53,50,97,87,29,59,89,31,45,51,77,23,93,54,32,11,90,34,30,49,74,62,24,37,19,78,20,40,25,14,76,9,8,17,13,66,39,15,58,41,35,12,33,64,21,16,10,47,28,3,38,70,80,42,43,1,57,22,18,44,27,46,5,4,36,2,7,26,6],[88,96,75,76,67,55,106,44,80,90,95,104,52,84,94,26,60,59,97,73,103,43,40,107,92,39,82,58,61,63,68,108,56,47,62,102,53,49,38,70,77,2,37,34,21,48,41,14,100,93,31,16,29,91,11,109,32,98,18,71,36,78,4,105,9,25,17,83,13,15,24,46,6,3,20,65,45,7,30,54,99,5,66,51,89,8,12,69,85,10,57,23,27,72,64,1,22,81,101,42,74,50,79,19,28,86,87,33,35],[83,78,80,79,81,84,72,85,62,77,71,68,74,76,43,93,73,70,40,75,58,59,55,41,61,48,67,46,60,51,66,54,82,69,65,36,64,63,57,56,52,104,32,47,103,50,30,109,28,19,49,96,27,23,95,86,17,44,90,39,35,21,101,16,106,45,94,18,87,108,38,100,97,98,88,15,53,92,37,42,20,99,33,14,34,89,91,24,29,105,31,22,13,7,6,102,26,10,3,11,25,4,9,107,12,5,1,8,2],[561,551,547,544,529,526,524,522,519,512,506,505,504,501,482,479,477,469,467,463,449,445,443,431,426,419,415,406,403,403,398,388,388,387,385,383,373,373,369,367,363,361,349,345,336,335,332,332,329,327,322,321,321,320,315,314,312,311,300,295,295,293,291,290,290,288,283,281,280,280,277,271,270,269,261,261,260,253,251,249,247,245,244,244,240,239,239,239,236,227,226,224,222,215,214,214,204,192,184,182,181,173,155,151,138,129,115,114,65],["<a href=\"/reports01/index/risk/rp-NIFTY100LOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200QUALITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHAQUALITYLOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHALOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500LOWVOLATILITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYLOWVOLATILITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFMCGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHAQUALITYVALUELOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLHEALTHCARETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100QUALITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500HEALTHCARETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50VALUE20TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTIFACTORMQVLV50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMNCTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCHEMICALSTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP150QUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500QUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500FLEXICAPQUALITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCONSUMERDURABLESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500SHARIAHTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOP10EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAPMOMENTUMQUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOTALMARKETMOMENTUMQUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIACORPORATEGROUPINDEXTATAGROUPTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOP15EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP150MOMENTUM50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200MOMENTUM30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYRURALTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100ALPHA30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPHARMATR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOP20EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAPINDIAMANUFACTURING503020TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYAUTOTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOTALMARKETTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYLARGEMIDCAP250TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSERVICESSECTORTR.html\" target=\"_blank\">>>><\/a>","","<a href=\"/reports01/index/risk/rp-NIFTY500MOMENTUM50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP150TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSHARIAH25TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200ALPHA30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAP502525TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYITTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPRIVATEBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500LARGEMIDSMALLEQUALCAPWEIGHTEDTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMOBILITYTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP250MOMENTUMQUALITY100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFINANCIALSERVICESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLINDIACONSUMPTIONTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCOREHOUSINGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHA50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIADIGITALTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIAMANUFACTURINGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCONGLOMERATE50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFINANCIALSERVICES2550TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYQUALITYLOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCEMENTTR.html\" target=\"_blank\">>>><\/a>","","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLCAP400TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLFINANCIALSERVICESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYDIVIDENDOPPORTUNITIES50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50SHARIAHTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLCAP4005050TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPSUBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYNEXT50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYNONCYCLICALCONSUMERTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYENERGYTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFINANCIALSERVICESEXBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP250QUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIASELECT5CORPORATEGROUPSMAATRTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAPINFRASTRUCTURE503020TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCPSETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYOILGASTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYHOUSINGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAPSELECTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINFRASTRUCTURETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYGROWTHSECTORS15TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIANEWAGECONSUMPTIONTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLITTELECOMTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCOMMODITIESTR.html\" target=\"_blank\">>>><\/a>","","<a href=\"/reports01/index/risk/rp-NIFTYINDIAINFRASTRUCTURELOGISTICSTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP500TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMICROCAP250TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200VALUE30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAPLIQUID15TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYREITSINVITSTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP250TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIATOURISMTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMETALTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPSETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500VALUE50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYWAVESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100LIQUID15TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMEDIATR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYREALTYTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYHIGHBETA50TR.html\" target=\"_blank\">>>><\/a>"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>CVaR<\/th>\n      <th>KR<\/th>\n      <th>MR<\/th>\n      <th>SHARPE<\/th>\n      <th>UPR<\/th>\n      <th>VaR<\/th>\n      <th>SCORE<\/th>\n      <th>more<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":109,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7]},{"name":"INDEX_NAME","targets":0},{"name":"CVaR","targets":1},{"name":"KR","targets":2},{"name":"MR","targets":3},{"name":"SHARPE","targets":4},{"name":"UPR","targets":5},{"name":"VaR","targets":6},{"name":"SCORE","targets":7},{"name":"more","targets":8}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,50,100,109]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="returns" class="section level3">
+<h3>Returns</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-024468cc54aea0ff94f3" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-024468cc54aea0ff94f3">{"x":{"filter":"none","vertical":false,"data":[["NIFTY 100 TR","NIFTY 200 TR","NIFTY 50 TR","NIFTY 500 TR","NIFTY ALPHA 50 TR","NIFTY ALPHA LOW-VOLATILITY 30 TR","NIFTY ALPHA QUALITY LOW-VOLATILITY 30 TR","NIFTY ALPHA QUALITY VALUE LOW-VOLATILITY 30 TR","NIFTY AUTO TR","NIFTY BANK TR","NIFTY CEMENT TR","NIFTY CHEMICALS TR","NIFTY COMMODITIES TR","NIFTY CONGLOMERATE 50 TR","NIFTY CONSUMER DURABLES TR","NIFTY CORE HOUSING TR","NIFTY CPSE TR","NIFTY DIVIDEND OPPORTUNITIES 50 TR","NIFTY ENERGY TR","NIFTY FINANCIAL SERVICES 25/50 TR","NIFTY FINANCIAL SERVICES EX-BANK TR","NIFTY FINANCIAL SERVICES TR","NIFTY FMCG TR","NIFTY GROWTH SECTORS 15 TR","NIFTY HIGH BETA 50 TR","NIFTY HOUSING TR","NIFTY INDIA CORPORATE GROUP INDEX - TATA GROUP TR","NIFTY INDIA DIGITAL TR","NIFTY INDIA INFRASTRUCTURE &amp; LOGISTICS TR","NIFTY INDIA MANUFACTURING TR","NIFTY INDIA NEW AGE CONSUMPTION TR","NIFTY INDIA SELECT 5 CORPORATE GROUPS (MAATR) TR","NIFTY INDIA TOURISM TR","NIFTY INFRASTRUCTURE TR","NIFTY IT TR","NIFTY LARGEMIDCAP 250 TR","NIFTY LOW VOLATILITY 50 TR","NIFTY MEDIA TR","NIFTY METAL TR","NIFTY MICROCAP 250 TR","NIFTY MIDCAP 100 TR","NIFTY MIDCAP 150 TR","NIFTY MIDCAP 50 TR","NIFTY MIDCAP LIQUID 15 TR","NIFTY MIDCAP SELECT TR","NIFTY MIDCAP150 MOMENTUM 50 TR","NIFTY MIDCAP150 QUALITY 50 TR","NIFTY MIDSMALL FINANCIAL SERVICES TR","NIFTY MIDSMALL HEALTHCARE TR","NIFTY MIDSMALL INDIA CONSUMPTION TR","NIFTY MIDSMALL IT &amp; TELECOM TR","NIFTY MIDSMALLCAP 400 TR","NIFTY MIDSMALLCAP400 50:50 TR","NIFTY MNC TR","NIFTY MOBILITY TR","NIFTY NEXT 50 TR","NIFTY NON-CYCLICAL CONSUMER TR","NIFTY OIL &amp; GAS TR","NIFTY PHARMA TR","NIFTY PRIVATE BANK TR","NIFTY PSE TR","NIFTY PSU BANK TR","NIFTY QUALITY LOW-VOLATILITY 30 TR","NIFTY REALTY TR","NIFTY REITS &amp; INVITS TR","NIFTY RURAL TR","NIFTY SERVICES SECTOR TR","NIFTY SHARIAH 25 TR","NIFTY SMALLCAP 100 TR","NIFTY SMALLCAP 250 TR","NIFTY SMALLCAP 50 TR","NIFTY SMALLCAP 500 TR","NIFTY SMALLCAP250 MOMENTUM QUALITY 100 TR","NIFTY SMALLCAP250 QUALITY 50 TR","NIFTY SME EMERGE TR","NIFTY TOP 10 EQUAL WEIGHT TR","NIFTY TOP 15 EQUAL WEIGHT TR","NIFTY TOP 20 EQUAL WEIGHT TR","NIFTY TOTAL MARKET MOMENTUM QUALITY 50 TR","NIFTY TOTAL MARKET TR","NIFTY WAVES TR","NIFTY100 ALPHA 30 TR","NIFTY100 EQUAL WEIGHT TR","NIFTY100 ESG SECTOR LEADERS TR","NIFTY100 ESG TR","NIFTY100 LIQUID 15 TR","NIFTY100 LOW VOLATILITY 30 TR","NIFTY100 QUALITY 30 TR","NIFTY200 ALPHA 30 TR","NIFTY200 MOMENTUM 30 TR","NIFTY200 QUALITY 30 TR","NIFTY200 VALUE 30 TR","NIFTY50 EQUAL WEIGHT TR","NIFTY50 SHARIAH TR","NIFTY50 VALUE 20 TR","NIFTY500 EQUAL WEIGHT TR","NIFTY500 FLEXICAP QUALITY 30 TR","NIFTY500 HEALTHCARE TR","NIFTY500 LARGEMIDSMALL EQUAL-CAP WEIGHTED TR","NIFTY500 LOW VOLATILITY 50 TR","NIFTY500 MOMENTUM 50 TR","NIFTY500 MULTICAP 50:25:25 TR","NIFTY500 MULTICAP INDIA MANUFACTURING 50:30:20 TR","NIFTY500 MULTICAP INFRASTRUCTURE 50:30:20 TR","NIFTY500 MULTICAP MOMENTUM QUALITY 50 TR","NIFTY500 MULTIFACTOR MQVLV 50 TR","NIFTY500 QUALITY 50 TR","NIFTY500 SHARIAH TR","NIFTY500 VALUE 50 TR"],[0.01,-0.05,-0.05,-0.05,0.77,0.36,0.29,-0.21,-1.77,0.92,-0.63,0.15,0.09,-0.39,-0.42,-0.45,1.83,0.67,1.26,-0.4,-0.8,-0.2,1.14,-0.9,-0.64,0.37,-0.4,-1.63,0.25,-0.27,-1.86,-0.96,-1.09,0.18,-1.11,-0.14,0.23,-2.19,-0.26,-0.87,-0.32,-0.3,-0.66,-1.72,-1.36,-0.04,0.24,-0.51,1.04,-0.95,-0.88,-0.2,-0.15,0.19,-1.49,0.33,-0.75,0.59,1.09,0.24,0.95,3.7,-0.1,-0.7,-0.28,0.02,-0.34,-0.31,-0.07000000000000001,0.01,0.2,-0.24,-0.15,-0.09,-0.36,0.45,-0.16,-0.37,-0.31,-0.08,-2.8,-0.43,0.2,-0.47,-0.3,-0.8,0.18,-0.12,0.07000000000000001,-0.34,0.11,1.35,-0.01,-0.17,0.13,0.02,-0.46,1.08,-0.1,0.3,-0.33,-0.07000000000000001,-0.29,0.12,-0.85,0.83,-0.45,-0.26,1.16],[-0.76,-0.6899999999999999,-0.91,-0.54,1.82,1.96,0.51,-1.39,0.9,1.03,-1.54,0.44,-0.89,-0.99,2.8,0.32,0.5600000000000001,-1.1,-0.71,0.37,0.26,0.9399999999999999,-0.76,-3.75,-0.42,0.67,-2.73,-5.51,0.2,0.82,-0.51,-2.62,-1.27,0.24,-9.24,-0.59,-0.09,2.94,-0.84,0.2,-0.36,-0.42,-0.93,-1.95,-1.35,-0.16,-1.13,0.05,3.08,0.22,-5.21,-0.01,0.18,-0.38,0.24,0,-1.12,-1.3,2.18,-0.63,-0.5600000000000001,7.09,-1.32,-0.85,0.8100000000000001,1.11,-1.39,-3.17,0.52,0.8100000000000001,0.85,0.65,-0.06,-0.34,-0.45,-2.09,-0.92,-1.09,0.62,-0.52,0.14,0.3,-0.17,-2.12,-1.21,1.33,-0.28,-1.61,1.31,1.44,-2.44,1.12,-0.13,-4.21,-1.16,0.22,-3.16,2.92,-0.13,0.58,0.78,-0.29,0.61,0.57,-0.27,0.88,-1.61,-2.02,1.07],[2.09,2.4,1.67,2.68,6.39,3.83,2.22,-0.29,3.6,3.88,0.92,4.23,5.14,2.95,9.67,4.32,8.82,0.02,9.42,4.11,3.88,4.67,-0.25,-5.33,4.28,6.33,-3.56,-7.61,7.98,5.13,4.06,1.26,4.05,7.19,-15.45,3.03,1.47,5.92,3.23,5.83,3.8,3.97,3.19,1.68,3.06,4.92,2.34,2.65,2.68,4.85,-6.87,4.14,4.22,2.91,5.7,4.28,1.19,6.57,3.45,2.71,7.17,8.26,-1,8.140000000000001,2.26,3.9,0.7,-3.41,4.17,4.46,4.46,5.28,3.46,2.65,1.91,-0.62,0.6,0.85,4.38,2.79,2.94,4.03,3.85,0.39,1.25,5.62,0.5600000000000001,-2.87,5.51,3.74,-2.83,6.79,2.9,-6.74,-0.58,4.19,-4.14,4.19,3.49,2.41,3.59,3.14,4.52,6.82,2.63,3.9,1.96,-0.76,6.76],[-0.53,-0.34,-1.07,-0.36,2.48,1.73,-0.35,-2.42,1.5,3.02,3.45,0.84,8.390000000000001,0.24,4.22,0.18,11.98,1.94,4.57,2.26,0.91,2.45,-5.46,-6.01,1.38,4.47,-2.72,-11.52,3.35,3.98,-2.44,-1.14,-5.24,1.72,-14.06,0.05,-0.49,1.49,16.63,-2.19,0.52,0.63,-0.29,-3.32,-0.5,1.28,-0.87,2.52,-0.97,-2.97,-10.24,0.06,-0.2,3.84,1.17,2.26,-3.36,2.11,-0.39,1,8.59,16.08,-3.56,-5.62,2.15,1.9,-1.41,-3.97,-0.31,-1.04,-0.15,-1.47,-2.18,-2.81,-9.720000000000001,-5.06,-2.51,-2.08,1.15,-0.43,-1.37,1.38,1.95,-1.99,-0.49,3.73,-1.2,-2.95,2.55,1.09,-3.09,13.47,1.88,-4.77,-0.67,-0.37,-5.35,-0.97,-0.32,0.47,-0.6,-0.38,1.38,0.78,-0.52,1.9,-1.13,-2.17,12.05],[3.43,3.77,3.51,2.82,2.82,5.16,2.11,1,4.87,11.68,-4.17,-0.57,10.49,4.09,-0.1,-3.04,9.02,8.24,4.16,8.699999999999999,8.68,8.09,-5.84,-0.05,4.07,4.85,1.3,-4.03,1.43,5.43,-4.42,3.31,-9.93,5.96,-2.9,3.86,2.79,-8.84,19.89,-6.19,5.31,4.29,6.2,4.65,7.26,5.35,-1.23,16.5,-1.06,-4.91,-1.46,1.33,0.11,3.77,2.4,3,-4.85,8.34,4.51,8.58,7.15,30.99,-0.35,-5.66,6.04,5.01,3.62,0.01,-2.91,-4.02,-1.04,-4.62,-5.28,-5.7,-13.86,1.55,2.91,3.64,-0.73,2.47,-8.25,0.79,3.62,2.22,4.47,7.22,3.05,0.82,5.33,5.02,0.35,21.42,5.38,0.63,4.59,-1.76,-2.18,0.22,1.21,4.16,3.33,1.77,2.44,2.82,0.31,3.93,-1.73,-0.53,16.64],[5.92,6.56,5.4,6.5,7.06,4.95,5.78,6.62,21.19,12.11,1.81,-3.06,16.53,8.94,2.34,0.16,14.38,9.44,7.24,10.12,15.44,8.27,-7.71,3.68,12.45,10.38,-4.56,-0.45,7.99,14.96,3.88,7.55,-10.76,9.17,-8.02,7.98,3.8,-5.56,38.49,4.09,9.76,10.03,9.98,10.07,10.66,7.4,2.34,27.8,4.38,-3.86,-1.77,8.140000000000001,7.33,15.1,15.58,8.42,-2.83,7.69,5.23,6.39,9.800000000000001,53.12,1.73,-5.16,24.24,12.08,3.22,0.75,4.31,4.63,5.92,4.46,0.66,1.46,-1.61,-0.48,6.38,5.33,5.85,6.41,0.78,5.51,9.68,4.03,8.289999999999999,12.9,7.09,5.55,8.029999999999999,6.62,3.91,27.59,10.7,-2.34,4.58,6.81,-1.93,3.44,6.93,10.64,4.42,6.7,10.28,6.29,4.17,7.43,4,1.82,23.66],["<a href=\"/reports01/index/risk/rp-NIFTY100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHA50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHALOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHAQUALITYLOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHAQUALITYVALUELOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYAUTOTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCEMENTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCHEMICALSTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCOMMODITIESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCONGLOMERATE50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCONSUMERDURABLESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCOREHOUSINGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCPSETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYDIVIDENDOPPORTUNITIES50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYENERGYTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFINANCIALSERVICES2550TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFINANCIALSERVICESEXBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFINANCIALSERVICESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFMCGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYGROWTHSECTORS15TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYHIGHBETA50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYHOUSINGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIACORPORATEGROUPINDEXTATAGROUPTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIADIGITALTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIAINFRASTRUCTURELOGISTICSTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIAMANUFACTURINGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIANEWAGECONSUMPTIONTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIASELECT5CORPORATEGROUPSMAATRTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIATOURISMTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINFRASTRUCTURETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYITTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYLARGEMIDCAP250TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYLOWVOLATILITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMEDIATR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMETALTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMICROCAP250TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP150TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAPLIQUID15TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAPSELECTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP150MOMENTUM50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP150QUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLFINANCIALSERVICESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLHEALTHCARETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLINDIACONSUMPTIONTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLITTELECOMTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLCAP400TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLCAP4005050TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMNCTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMOBILITYTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYNEXT50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYNONCYCLICALCONSUMERTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYOILGASTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPHARMATR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPRIVATEBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPSETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPSUBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYQUALITYLOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYREALTYTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYREITSINVITSTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYRURALTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSERVICESSECTORTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSHARIAH25TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP250TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP500TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP250MOMENTUMQUALITY100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP250QUALITY50TR.html\" target=\"_blank\">>>><\/a>","","<a href=\"/reports01/index/risk/rp-NIFTYTOP10EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOP15EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOP20EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOTALMARKETMOMENTUMQUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOTALMARKETTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYWAVESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100ALPHA30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","","","<a href=\"/reports01/index/risk/rp-NIFTY100LIQUID15TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100LOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100QUALITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200ALPHA30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200MOMENTUM30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200QUALITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200VALUE30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50SHARIAHTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50VALUE20TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500FLEXICAPQUALITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500HEALTHCARETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500LARGEMIDSMALLEQUALCAPWEIGHTEDTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500LOWVOLATILITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MOMENTUM50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAP502525TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAPINDIAMANUFACTURING503020TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAPINFRASTRUCTURE503020TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAPMOMENTUMQUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTIFACTORMQVLV50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500QUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500SHARIAHTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500VALUE50TR.html\" target=\"_blank\">>>><\/a>"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>D5<\/th>\n      <th>D10<\/th>\n      <th>D20<\/th>\n      <th>D50<\/th>\n      <th>D100<\/th>\n      <th>D200<\/th>\n      <th>more<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":109,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6]},{"name":"INDEX_NAME","targets":0},{"name":"D5","targets":1},{"name":"D10","targets":2},{"name":"D20","targets":3},{"name":"D50","targets":4},{"name":"D100","targets":5},{"name":"D200","targets":6},{"name":"more","targets":7}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,50,100,109]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="information-ratio" class="section level3">
+<h3>Information Ratio</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-592b5ca3dc2fdf209563" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-592b5ca3dc2fdf209563">{"x":{"filter":"none","vertical":false,"data":[["NIFTY TOTAL MARKET TR","NIFTY 200 TR","NIFTY 500 TR","NIFTY AUTO TR","NIFTY BANK TR","NIFTY COMMODITIES TR","NIFTY CPSE TR","NIFTY FINANCIAL SERVICES 25/50 TR","NIFTY FINANCIAL SERVICES EX-BANK TR","NIFTY HOUSING TR","NIFTY INDIA MANUFACTURING TR","NIFTY METAL TR","NIFTY MIDCAP 100 TR","NIFTY MIDCAP 150 TR","NIFTY MIDCAP 50 TR","NIFTY MIDCAP150 MOMENTUM 50 TR","NIFTY MIDSMALL FINANCIAL SERVICES TR","NIFTY MNC TR","NIFTY NEXT 50 TR","NIFTY PSU BANK TR","NIFTY REITS &amp; INVITS TR","NIFTY RURAL TR","NIFTY200 VALUE 30 TR","NIFTY500 LOW VOLATILITY 50 TR","NIFTY500 VALUE 50 TR","NIFTY FINANCIAL SERVICES TR","NIFTY100 LIQUID 15 TR","NIFTY50 EQUAL WEIGHT TR","NIFTY LARGEMIDCAP 250 TR","NIFTY100 EQUAL WEIGHT TR","NIFTY INFRASTRUCTURE TR","NIFTY OIL &amp; GAS TR","NIFTY INDIA INFRASTRUCTURE &amp; LOGISTICS TR","NIFTY MIDCAP SELECT TR","NIFTY MOBILITY TR","NIFTY PHARMA TR","NIFTY100 ESG TR","NIFTY500 MULTICAP INDIA MANUFACTURING 50:30:20 TR","NIFTY ALPHA 50 TR","NIFTY CONGLOMERATE 50 TR","NIFTY DIVIDEND OPPORTUNITIES 50 TR","NIFTY ENERGY TR","NIFTY HIGH BETA 50 TR","NIFTY PSE TR","NIFTY200 ALPHA 30 TR","NIFTY200 MOMENTUM 30 TR","NIFTY500 MULTIFACTOR MQVLV 50 TR","NIFTY MIDCAP LIQUID 15 TR","NIFTY PRIVATE BANK TR","NIFTY100 LOW VOLATILITY 30 TR","NIFTY500 MULTICAP 50:25:25 TR","NIFTY MIDSMALLCAP 400 TR","NIFTY500 EQUAL WEIGHT TR","NIFTY INDIA SELECT 5 CORPORATE GROUPS (MAATR) TR","NIFTY ALPHA LOW-VOLATILITY 30 TR","NIFTY 100 TR","NIFTY 50 TR","NIFTY CHEMICALS TR","NIFTY TOP 15 EQUAL WEIGHT TR","NIFTY TOP 20 EQUAL WEIGHT TR","NIFTY MIDSMALLCAP400 50:50 TR","NIFTY500 LARGEMIDSMALL EQUAL-CAP WEIGHTED TR","NIFTY500 MULTICAP INFRASTRUCTURE 50:30:20 TR","NIFTY SERVICES SECTOR TR","NIFTY CONSUMER DURABLES TR","NIFTY SMALLCAP 100 TR","NIFTY INDIA NEW AGE CONSUMPTION TR","NIFTY500 HEALTHCARE TR","NIFTY ALPHA QUALITY LOW-VOLATILITY 30 TR","NIFTY ALPHA QUALITY VALUE LOW-VOLATILITY 30 TR","NIFTY CEMENT TR","NIFTY CORE HOUSING TR","NIFTY LOW VOLATILITY 50 TR","NIFTY MEDIA TR","NIFTY SMALLCAP 50 TR","NIFTY TOTAL MARKET MOMENTUM QUALITY 50 TR","NIFTY100 ALPHA 30 TR","NIFTY50 VALUE 20 TR","NIFTY500 MOMENTUM 50 TR","NIFTY MIDSMALL HEALTHCARE TR","NIFTY100 ESG SECTOR LEADERS TR","NIFTY MIDCAP150 QUALITY 50 TR","NIFTY GROWTH SECTORS 15 TR","NIFTY SMALLCAP250 QUALITY 50 TR","NIFTY FMCG TR","NIFTY INDIA CORPORATE GROUP INDEX - TATA GROUP TR","NIFTY INDIA DIGITAL TR","NIFTY INDIA TOURISM TR","NIFTY IT TR","NIFTY MICROCAP 250 TR","NIFTY MIDSMALL INDIA CONSUMPTION TR","NIFTY MIDSMALL IT &amp; TELECOM TR","NIFTY NON-CYCLICAL CONSUMER TR","NIFTY QUALITY LOW-VOLATILITY 30 TR","NIFTY REALTY TR","NIFTY SHARIAH 25 TR","NIFTY SMALLCAP 250 TR","NIFTY SMALLCAP 500 TR","NIFTY SMALLCAP250 MOMENTUM QUALITY 100 TR","NIFTY SME EMERGE TR","NIFTY TOP 10 EQUAL WEIGHT TR","NIFTY WAVES TR","NIFTY100 QUALITY 30 TR","NIFTY200 QUALITY 30 TR","NIFTY50 SHARIAH TR","NIFTY500 FLEXICAP QUALITY 30 TR","NIFTY500 MULTICAP MOMENTUM QUALITY 50 TR","NIFTY500 QUALITY 50 TR","NIFTY500 SHARIAH TR"],[109,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,23.5,77.5,77.5,23.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,77.5,23.5,77.5,23.5,77.5,77.5,77.5,23.5,77.5,23.5,23.5,77.5,23.5,23.5,77.5,77.5,77.5,23.5,77.5,77.5,23.5,23.5,77.5,23.5,77.5,77.5,23.5,77.5,77.5,77.5,77.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5,23.5],[109,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,26,80,26,80,80,26,80,80,80,80,80,80,80,80,80,80,80,80,26,26,26,80,80,80,80,26,80,80,26,26,80,80,26,26,26,26,26,26,26,26,80,26,26,26,26,80,80,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26],[109,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,27.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,81.5,27.5,81.5,81.5,81.5,81.5,81.5,27.5,27.5,27.5,27.5,27.5,27.5,81.5,81.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,81.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5,27.5],[109,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,71,67,66,64,63,61,51,90,90,90,90,90,90,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,70,68,59,58,57,55,53,52,90,90,90,90,90,24.5,24.5,24.5,65,62,54,90,90,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,69,60,56,50,49,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5,24.5],[436,329,329,329,329,329,329,329,329,329,329,329,329,329,329,329,329,329,329,329,329,329,329,329,329,310,306,305,303,302,300,290,275,275,275,275,275,275,263.5,263.5,263.5,263.5,263.5,263.5,263.5,263.5,263.5,255,253,244,243,242,240,238,237,221,221,221,221,221,209.5,209.5,209.5,196,193,185,167,167,155.5,155.5,155.5,155.5,155.5,155.5,155.5,155.5,155.5,155.5,155.5,146,137,133,127,126,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5,101.5],["<a href=\"/reports01/index/risk/rp-NIFTYTOTALMARKETTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYAUTOTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCOMMODITIESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCPSETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFINANCIALSERVICES2550TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFINANCIALSERVICESEXBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYHOUSINGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIAMANUFACTURINGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMETALTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP150TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP150MOMENTUM50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLFINANCIALSERVICESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMNCTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYNEXT50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPSUBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYREITSINVITSTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYRURALTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200VALUE30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500LOWVOLATILITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500VALUE50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFINANCIALSERVICESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100LIQUID15TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYLARGEMIDCAP250TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINFRASTRUCTURETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYOILGASTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIAINFRASTRUCTURELOGISTICSTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAPSELECTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMOBILITYTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPHARMATR.html\" target=\"_blank\">>>><\/a>","","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAPINDIAMANUFACTURING503020TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHA50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCONGLOMERATE50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYDIVIDENDOPPORTUNITIES50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYENERGYTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYHIGHBETA50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPSETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200ALPHA30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200MOMENTUM30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTIFACTORMQVLV50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAPLIQUID15TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPRIVATEBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100LOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAP502525TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLCAP400TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIASELECT5CORPORATEGROUPSMAATRTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHALOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCHEMICALSTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOP15EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOP20EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLCAP4005050TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500LARGEMIDSMALLEQUALCAPWEIGHTEDTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAPINFRASTRUCTURE503020TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSERVICESSECTORTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCONSUMERDURABLESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIANEWAGECONSUMPTIONTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500HEALTHCARETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHAQUALITYLOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHAQUALITYVALUELOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCEMENTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCOREHOUSINGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYLOWVOLATILITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMEDIATR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOTALMARKETMOMENTUMQUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100ALPHA30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50VALUE20TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MOMENTUM50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLHEALTHCARETR.html\" target=\"_blank\">>>><\/a>","","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP150QUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYGROWTHSECTORS15TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP250QUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFMCGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIACORPORATEGROUPINDEXTATAGROUPTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIADIGITALTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIATOURISMTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYITTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMICROCAP250TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLINDIACONSUMPTIONTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLITTELECOMTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYNONCYCLICALCONSUMERTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYQUALITYLOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYREALTYTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSHARIAH25TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP250TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP500TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP250MOMENTUMQUALITY100TR.html\" target=\"_blank\">>>><\/a>","","<a href=\"/reports01/index/risk/rp-NIFTYTOP10EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYWAVESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100QUALITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200QUALITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50SHARIAHTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500FLEXICAPQUALITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAPMOMENTUMQUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500QUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500SHARIAHTR.html\" target=\"_blank\">>>><\/a>"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>D50<\/th>\n      <th>D100<\/th>\n      <th>D200<\/th>\n      <th>D500<\/th>\n      <th>SCORE<\/th>\n      <th>more<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":109,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5]},{"name":"INDEX_NAME","targets":0},{"name":"D50","targets":1},{"name":"D100","targets":2},{"name":"D200","targets":3},{"name":"D500","targets":4},{"name":"SCORE","targets":5},{"name":"more","targets":6}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,50,100,109]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="simple-moving-average-stats" class="section level3">
+<h3>Simple Moving Average Stats</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5aa0ed6802ece462a44a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5aa0ed6802ece462a44a">{"x":{"filter":"none","vertical":false,"data":[["NIFTY TOP 10 EQUAL WEIGHT TR","NIFTY INDIA CORPORATE GROUP INDEX - TATA GROUP TR","NIFTY CEMENT TR","NIFTY INDIA DIGITAL TR","NIFTY FMCG TR","NIFTY PRIVATE BANK TR","NIFTY AUTO TR","NIFTY FINANCIAL SERVICES TR","NIFTY50 VALUE 20 TR","NIFTY TOP 15 EQUAL WEIGHT TR","NIFTY PHARMA TR","NIFTY100 LOW VOLATILITY 30 TR","NIFTY200 QUALITY 30 TR","NIFTY CONSUMER DURABLES TR","NIFTY BANK TR","NIFTY IT TR","NIFTY REALTY TR","NIFTY100 QUALITY 30 TR","NIFTY FINANCIAL SERVICES 25/50 TR","NIFTY SERVICES SECTOR TR","NIFTY ALPHA LOW-VOLATILITY 30 TR","NIFTY METAL TR","NIFTY CPSE TR","NIFTY 50 TR","NIFTY FINANCIAL SERVICES EX-BANK TR","NIFTY MNC TR","NIFTY CORE HOUSING TR","NIFTY CHEMICALS TR","NIFTY CONGLOMERATE 50 TR","NIFTY ALPHA QUALITY LOW-VOLATILITY 30 TR","NIFTY MEDIA TR","NIFTY500 HEALTHCARE TR","NIFTY INFRASTRUCTURE TR","NIFTY50 EQUAL WEIGHT TR","NIFTY ALPHA QUALITY VALUE LOW-VOLATILITY 30 TR","NIFTY INDIA TOURISM TR","NIFTY500 LOW VOLATILITY 50 TR","NIFTY500 SHARIAH TR","NIFTY MIDSMALL HEALTHCARE TR","NIFTY MIDSMALL IT &amp; TELECOM TR","NIFTY COMMODITIES TR","NIFTY 100 TR","NIFTY WAVES TR","NIFTY 200 TR","NIFTY HOUSING TR","NIFTY500 FLEXICAP QUALITY 30 TR","NIFTY RURAL TR","NIFTY 500 TR","NIFTY500 QUALITY 50 TR","NIFTY SMALLCAP250 QUALITY 50 TR","NIFTY TOTAL MARKET TR","NIFTY PSE TR","NIFTY MIDCAP LIQUID 15 TR","NIFTY200 VALUE 30 TR","NIFTY500 MULTICAP INFRASTRUCTURE 50:30:20 TR","NIFTY200 MOMENTUM 30 TR","NIFTY100 ALPHA 30 TR","NIFTY TOTAL MARKET MOMENTUM QUALITY 50 TR","NIFTY LOW VOLATILITY 50 TR","NIFTY INDIA INFRASTRUCTURE &amp; LOGISTICS TR","NIFTY MIDSMALL FINANCIAL SERVICES TR","NIFTY TOP 20 EQUAL WEIGHT TR","NIFTY500 MULTIFACTOR MQVLV 50 TR","NIFTY REITS &amp; INVITS TR","NIFTY LARGEMIDCAP 250 TR","NIFTY MIDCAP150 MOMENTUM 50 TR","NIFTY100 EQUAL WEIGHT TR","NIFTY SMALLCAP 50 TR","NIFTY500 MULTICAP MOMENTUM QUALITY 50 TR","NIFTY500 MOMENTUM 50 TR","NIFTY MIDCAP SELECT TR","NIFTY MIDCAP 150 TR","NIFTY500 VALUE 50 TR","NIFTY ENERGY TR","NIFTY MIDCAP 50 TR","NIFTY SMALLCAP 100 TR","NIFTY200 ALPHA 30 TR","NIFTY MIDCAP 100 TR","NIFTY500 LARGEMIDSMALL EQUAL-CAP WEIGHTED TR","NIFTY SMALLCAP250 MOMENTUM QUALITY 100 TR","NIFTY500 EQUAL WEIGHT TR","NIFTY HIGH BETA 50 TR","NIFTY500 MULTICAP INDIA MANUFACTURING 50:30:20 TR","NIFTY ALPHA 50 TR","NIFTY MIDSMALLCAP400 50:50 TR","NIFTY MIDSMALLCAP 400 TR","NIFTY SMALLCAP 250 TR","NIFTY MICROCAP 250 TR","NIFTY SMALLCAP 500 TR","NIFTY PSU BANK TR","NIFTY MIDCAP150 QUALITY 50 TR","NIFTY SHARIAH 25 TR","NIFTY INDIA MANUFACTURING TR","NIFTY100 LIQUID 15 TR","NIFTY50 SHARIAH TR","NIFTY500 MULTICAP 50:25:25 TR","NIFTY GROWTH SECTORS 15 TR","NIFTY MIDSMALL INDIA CONSUMPTION TR","NIFTY OIL &amp; GAS TR","NIFTY DIVIDEND OPPORTUNITIES 50 TR","NIFTY NON-CYCLICAL CONSUMER TR","NIFTY MOBILITY TR","NIFTY QUALITY LOW-VOLATILITY 30 TR","NIFTY INDIA SELECT 5 CORPORATE GROUPS (MAATR) TR","NIFTY INDIA NEW AGE CONSUMPTION TR","NIFTY NEXT 50 TR"],[104,103,106,105,101,96,95,85,100,89,93,102,91,90,80,98,99,88,74,68,72,86,87,65,73,97,83,92,69,70,84,82,76,64,62,77,67,78,75,79,59,58,71,54,60,57,61,53,46,50,51,55,56,48,49,44,40,63,41,43,66,52,34,81,36,32,37,47,35,45,28,39,30,94,26,38,20,29,33,42,31,21,18,19,27,22,24,23,25,16,17,15,12,14,13,9,11,8,5,6,7,10,3,2,4,1],[105,103,106,100,98,102,101,104,93,97,89,86,88,96,94,91,90,87,99,92,85,84,80,82,95,69,79,76,78,83,73,75,74,77,64,72,60,61,66,71,62,68,54,70,57,67,63,65,53,59,58,55,52,49,48,46,43,42,50,45,56,37,47,81,41,51,39,44,40,31,36,35,33,13,38,34,30,32,29,27,26,28,23,25,24,21,22,20,19,18,17,16,15,14,12,11,10,9,7,8,5,6,3,4,2,1],[105,106,104,101,103,100,97,102,99,92,94,95,98,89,96,83,85,93,91,88,87,70,75,90,80,72,82,71,84,81,86,78,74,76,77,66,79,65,59,58,69,68,62,64,67,63,60,57,61,73,55,49,50,54,53,48,56,44,47,52,51,45,46,2,42,41,43,38,40,35,39,34,37,15,33,29,36,31,32,25,26,28,30,27,24,23,21,22,20,19,18,17,16,14,13,12,9,11,10,8,7,5,6,4,3,1],[106,105,96,98,101,102,100,99,97,104,103,93,94,91,95,90,82,88,89,92,85,87,83,86,74,84,75,73,80,76,66,72,81,77,79,62,68,70,71,61,78,69,65,63,67,64,58,54,60,37,53,55,51,56,50,59,57,44,52,48,11,49,47,2,46,40,45,30,39,36,42,35,41,15,38,28,43,33,31,26,27,32,34,29,24,25,22,23,19,21,20,18,17,16,14,13,10,12,9,6,8,5,7,4,3,1],[420,417,412,404,403,400,393,390,389,382,379,376,371,366,365,362,356,356,353,340,329,327,325,323,322,322,319,312,311,310,309,307,305,294,282,277,274,274,271,269,268,263,252,251,251,251,242,229,220,219,217,214,209,207,200,197,196,193,190,188,184,183,174,166,165,164,164,159,154,147,145,143,141,137,135,129,129,125,125,120,110,109,105,100,99,91,89,88,83,74,72,66,60,58,52,45,40,40,31,28,27,26,19,14,12,4],["<a href=\"/reports01/index/risk/rp-NIFTYTOP10EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIACORPORATEGROUPINDEXTATAGROUPTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCEMENTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIADIGITALTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFMCGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPRIVATEBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYAUTOTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFINANCIALSERVICESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50VALUE20TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOP15EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPHARMATR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100LOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200QUALITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCONSUMERDURABLESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYITTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYREALTYTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100QUALITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFINANCIALSERVICES2550TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSERVICESSECTORTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHALOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMETALTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCPSETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYFINANCIALSERVICESEXBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMNCTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCOREHOUSINGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCHEMICALSTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCONGLOMERATE50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHAQUALITYLOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMEDIATR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500HEALTHCARETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINFRASTRUCTURETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHAQUALITYVALUELOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIATOURISMTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500LOWVOLATILITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500SHARIAHTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLHEALTHCARETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLITTELECOMTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYCOMMODITIESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYWAVESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYHOUSINGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500FLEXICAPQUALITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYRURALTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500QUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP250QUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOTALMARKETTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPSETR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAPLIQUID15TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200VALUE30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAPINFRASTRUCTURE503020TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200MOMENTUM30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100ALPHA30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOTALMARKETMOMENTUMQUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYLOWVOLATILITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIAINFRASTRUCTURELOGISTICSTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLFINANCIALSERVICESTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYTOP20EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTIFACTORMQVLV50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYREITSINVITSTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYLARGEMIDCAP250TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP150MOMENTUM50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAPMOMENTUMQUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MOMENTUM50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAPSELECTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP150TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500VALUE50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYENERGYTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY200ALPHA30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500LARGEMIDSMALLEQUALCAPWEIGHTEDTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP250MOMENTUMQUALITY100TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500EQUALWEIGHTTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYHIGHBETA50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAPINDIAMANUFACTURING503020TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYALPHA50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLCAP4005050TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLCAP400TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP250TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMICROCAP250TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSMALLCAP500TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYPSUBANKTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDCAP150QUALITY50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYSHARIAH25TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIAMANUFACTURINGTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY100LIQUID15TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY50SHARIAHTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTY500MULTICAP502525TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYGROWTHSECTORS15TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMIDSMALLINDIACONSUMPTIONTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYOILGASTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYDIVIDENDOPPORTUNITIES50TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYNONCYCLICALCONSUMERTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYMOBILITYTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYQUALITYLOWVOLATILITY30TR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIASELECT5CORPORATEGROUPSMAATRTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYINDIANEWAGECONSUMPTIONTR.html\" target=\"_blank\">>>><\/a>","<a href=\"/reports01/index/risk/rp-NIFTYNEXT50TR.html\" target=\"_blank\">>>><\/a>"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n      <th>SCORE<\/th>\n      <th>more<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":106,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5]},{"name":"INDEX_NAME","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4},{"name":"SCORE","targets":5},{"name":"more","targets":6}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,50,100,106]}},"evals":[],"jsHooks":[]}</script>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

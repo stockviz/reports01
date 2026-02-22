@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Packaged Foods</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Packaged Foods</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/PackagedFoods.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/PackagedFoods.fan.CAP_WT.png" /></p>
+<p><img src="plots/PackagedFoods.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/PackagedFoods.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/PackagedFoods.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/PackagedFoods.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/PackagedFoods.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-c0bdc104b6c997e92782" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c0bdc104b6c997e92782">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["0.32%","0.59%"],["-2.46%","0.75%"],["-5.21%","2.16%"],["-8.14%","5.4%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/PackagedFoods.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/PackagedFoods.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e6314374ed75310df785" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e6314374ed75310df785">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.NESTLEIND.html\" target=\"_blank\">NESTLEIND<\/a>","<a href=\"/reports02/eq-in/risk/in.BRITANNIA.html\" target=\"_blank\">BRITANNIA<\/a>","<a href=\"/reports02/eq-in/risk/in.BIKAJI.html\" target=\"_blank\">BIKAJI<\/a>","<a href=\"/reports02/eq-in/risk/in.ZYDUSWELL.html\" target=\"_blank\">ZYDUSWELL<\/a>","<a href=\"/reports02/eq-in/risk/in.BBTC.html\" target=\"_blank\">BBTC<\/a>","<a href=\"/reports02/eq-in/risk/in.BECTORFOOD.html\" target=\"_blank\">BECTORFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.GOPAL.html\" target=\"_blank\">GOPAL<\/a>","<a href=\"/reports02/eq-in/risk/in.DIAMONDYD.html\" target=\"_blank\">DIAMONDYD<\/a>","<a href=\"/reports02/eq-in/risk/in.ADFFOODS.html\" target=\"_blank\">ADFFOODS<\/a>","<a href=\"/reports02/eq-in/risk/in.TASTYBITE.html\" target=\"_blank\">TASTYBITE<\/a>","<a href=\"/reports02/eq-in/risk/in.GANESHCP.html\" target=\"_blank\">GANESHCP<\/a>","<a href=\"/reports02/eq-in/risk/in.EIFFL.html\" target=\"_blank\">EIFFL<\/a>","<a href=\"/reports02/eq-in/risk/in.FOODSIN.html\" target=\"_blank\">FOODSIN<\/a>","<a href=\"/reports02/eq-in/risk/in.PALASHSECU.html\" target=\"_blank\">PALASHSECU<\/a>","<a href=\"/reports02/eq-in/risk/in.DANGEE.html\" target=\"_blank\">DANGEE<\/a>","<a href=\"/reports02/eq-in/risk/in.NGIL.html\" target=\"_blank\">NGIL<\/a>"],[0.5043348709757772,0.3948593113675612,0.02270738008217708,0.02098586310755577,0.01710815705123358,0.01879177433801599,0.003540631570483361,0.00633719293724279,0.004762340605695749,0.002617702570916972,0.0009165177818344022,0.0008616101134593913,0.001791598379462015,0.0001514368488877074,0.0001248252248520107,0.0001087870448447008],[0.5436346118948477,0.3231597768823926,0.03486453170182541,0.02774685249603916,0.0275727593725168,0.01471997833469007,0.008414333691898111,0.005672787010536551,0.005535873318331666,0.004308232060657108,0.001663364992070025,0.001299469126158778,0.000975523693781738,0.0002175345834713471,0.0001125419640466608,0.0001018288767362865]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":16,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,16,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f727b9a1aa2f6ffc9640" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f727b9a1aa2f6ffc9640">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.NESTLEIND.html\" target=\"_blank\">NESTLEIND<\/a>","<a href=\"/reports02/eq-in/risk/in.BRITANNIA.html\" target=\"_blank\">BRITANNIA<\/a>","<a href=\"/reports02/eq-in/risk/in.BIKAJI.html\" target=\"_blank\">BIKAJI<\/a>","<a href=\"/reports02/eq-in/risk/in.ZYDUSWELL.html\" target=\"_blank\">ZYDUSWELL<\/a>","<a href=\"/reports02/eq-in/risk/in.BBTC.html\" target=\"_blank\">BBTC<\/a>","<a href=\"/reports02/eq-in/risk/in.BECTORFOOD.html\" target=\"_blank\">BECTORFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.GOPAL.html\" target=\"_blank\">GOPAL<\/a>","<a href=\"/reports02/eq-in/risk/in.DIAMONDYD.html\" target=\"_blank\">DIAMONDYD<\/a>","<a href=\"/reports02/eq-in/risk/in.ADFFOODS.html\" target=\"_blank\">ADFFOODS<\/a>","<a href=\"/reports02/eq-in/risk/in.TASTYBITE.html\" target=\"_blank\">TASTYBITE<\/a>","<a href=\"/reports02/eq-in/risk/in.GANESHCP.html\" target=\"_blank\">GANESHCP<\/a>","<a href=\"/reports02/eq-in/risk/in.EIFFL.html\" target=\"_blank\">EIFFL<\/a>","<a href=\"/reports02/eq-in/risk/in.FOODSIN.html\" target=\"_blank\">FOODSIN<\/a>","<a href=\"/reports02/eq-in/risk/in.PALASHSECU.html\" target=\"_blank\">PALASHSECU<\/a>","<a href=\"/reports02/eq-in/risk/in.DANGEE.html\" target=\"_blank\">DANGEE<\/a>","<a href=\"/reports02/eq-in/risk/in.NGIL.html\" target=\"_blank\">NGIL<\/a>"],[6.696961963909511,41.90084911061249,3.635612595423829,0.1965944000853136,36.76674786104063,2.362728814978309,0.01291445970236999,-0.2885304723781816,1.207004421835733,0.5076551019199113,null,0.001513424566451849,1.078260421336316,-0.3423060115472334,-0.02186976936866046,-0.08288628434817369],[6.771489942936778,31.13116228311523,5.151507091420767,0.1265559393427883,46.03733273374476,2.713254411917631,0.2866050558349543,-0.07653393461113397,1.57841817308482,0.4711928667069369,1.12344323119727,0.00104639588703409,0.7980114775023198,-0.2739583649496575,-0.02222606769160594,-0.05436857359647834],[6.79277864729718,40.52768211316192,5.352504774744834,0.08764939115959849,39.12076024341619,3.046570245562192,0.2256463757452042,0.03147216264842502,1.825310043332037,0.7752251030740779,1.441193306143229,0.0006621232989618138,0.6751232049206382,0.1482074503096951,-0.01386853305894769,-0.03691665175523478]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":16,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,16,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2a373ba2a2bc54b68122" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2a373ba2a2bc54b68122">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.NESTLEIND.html\" target=\"_blank\">NESTLEIND<\/a>","<a href=\"/reports02/eq-in/risk/in.BRITANNIA.html\" target=\"_blank\">BRITANNIA<\/a>","<a href=\"/reports02/eq-in/risk/in.BIKAJI.html\" target=\"_blank\">BIKAJI<\/a>","<a href=\"/reports02/eq-in/risk/in.ZYDUSWELL.html\" target=\"_blank\">ZYDUSWELL<\/a>","<a href=\"/reports02/eq-in/risk/in.BBTC.html\" target=\"_blank\">BBTC<\/a>","<a href=\"/reports02/eq-in/risk/in.BECTORFOOD.html\" target=\"_blank\">BECTORFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.GOPAL.html\" target=\"_blank\">GOPAL<\/a>","<a href=\"/reports02/eq-in/risk/in.DIAMONDYD.html\" target=\"_blank\">DIAMONDYD<\/a>","<a href=\"/reports02/eq-in/risk/in.ADFFOODS.html\" target=\"_blank\">ADFFOODS<\/a>","<a href=\"/reports02/eq-in/risk/in.TASTYBITE.html\" target=\"_blank\">TASTYBITE<\/a>","<a href=\"/reports02/eq-in/risk/in.GANESHCP.html\" target=\"_blank\">GANESHCP<\/a>","<a href=\"/reports02/eq-in/risk/in.EIFFL.html\" target=\"_blank\">EIFFL<\/a>","<a href=\"/reports02/eq-in/risk/in.FOODSIN.html\" target=\"_blank\">FOODSIN<\/a>","<a href=\"/reports02/eq-in/risk/in.PALASHSECU.html\" target=\"_blank\">PALASHSECU<\/a>","<a href=\"/reports02/eq-in/risk/in.DANGEE.html\" target=\"_blank\">DANGEE<\/a>","<a href=\"/reports02/eq-in/risk/in.NGIL.html\" target=\"_blank\">NGIL<\/a>"],[4.763655132541496,30.57228488607668,3.538868865770801,0.1824107192800876,24.59191565392373,2.566917717262587,0.8352271571583415,2.742176462498443,0.9861219776659549,0.7135044302796582,null,0.003425204463934552,1.760417080640671,0.07666465233940183,0.02986834522124818,0.05839580189402019],[15.75391846828715,30.54934573624929,4.908914506673071,0.1295685046624163,31.1617059680275,3.23303887440047,0.9128357217005107,2.800912517437045,1.023566966805826,0.853533806450907,1.982382858969536,0.003208116389943543,1.814178664611144,0.1161703253619188,0.04322140722959535,0.07850509522865523],[12.87730667871873,33.41375454070214,5.112797586873151,0.1200672357390999,34.07724008451432,3.549119686273601,1.395771873775342,3.020016882705949,1.143451077352725,1.00020782570817,2.314489208610029,0.002249445173019662,1.729526659259615,0.1116520082103332,0.05029228041870464,0.0820569259650826]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":16,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,16,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="indian-packaged-foods-sector-analysis-based-on-q2h1-fy26-transcripts-filings" class="section level9">
+<p class="heading">Indian Packaged Foods Sector Analysis (Based on Q2/H1 FY26 Transcripts &amp; Filings)</p>
+<p>The sector exhibits resilience amid macroeconomic headwinds, with organized players (Nestlé, Britannia, Bikaji, ADF Foods, etc.) gaining from GST reforms and premiumization. Growth is volume-led post-GST, but challenged by inflation and competition. Key insights from Nestlé (strategic overview), Britannia/Bikaji (GST tailwinds), ADF/Foods &amp; Inns (exports), Zydus/Nakoda (innovation/acquisitions), and others.</p>
+<div id="tailwinds" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>GST 2.0 Rationalization (5% Rate)</strong>: Major boost for biscuits/snacks (85%+ portfolio for many); improves affordability, compliance, and shifts share to organized players (Britannia: +6-7% pricing via grammage hikes; Bikaji/Nestlé: high-teens growth expected Q3/Q4; unorganized loses edge).</li>
+<li><strong>Commodity Stability/Declines</strong>: Benign trends in flour, palm oil, sugar (Britannia); Totapuri mango prices down (Foods &amp; Inns), aiding competitiveness vs. Mexico.</li>
+<li><strong>Channel Shifts</strong>: Quick commerce/e-commerce surge (Nestlé: 8.5% sales, 33% growth; ADF: Costco listings); rural/RUrban expansion (Nestlé: +200k villages).</li>
+<li><strong>Government Support</strong>: Budget consumption push (₹1L Cr spend); PLI incentives (Nestlé/Bikaji).</li>
+<li><strong>Consumer Trends</strong>: Premiumization (Nestlé: ₹7,500 Cr opportunity), health focus (millets, protein bars), out-of-home doubling by 2030.</li>
+</ul>
+</div>
+<div id="headwinds" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Demand Slowdown</strong>: Urban tepid (unemployment, wage stagnation); rural recovery slow despite rains (Nestlé/Britannia); seasonal disruptions (prolonged monsoons hit Glucon-D/Nycil - Zydus).</li>
+<li><strong>Commodity Inflation</strong>: Coffee (+75% YoY), cocoa (+40-50%), wheat up (Nestlé); selective agri pressures.</li>
+<li><strong>GST Transition Disruptions</strong>: Destocking/deferred purchases (Bikaji: 3-5% ethnic snacks hit; Britannia: 2-2.5% top-line loss).</li>
+<li><strong>Competition/Channel Conflicts</strong>: Regional/unorganized aggressive (Nestlé Maggi); quick commerce discounting erodes GT (75-80% sales - Nestlé).</li>
+<li><strong>External Pressures</strong>: US tariffs (ADF: absorbed but monitored); forex MTM losses (Foods &amp; Inns: ₹5.5 Cr).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Double-Digit Volume-Led Recovery</strong>: High-teens ethnic snacks (Bikaji), 9-15% overall (Nestlé/Britannia); H2 acceleration post-GST (Britannia: 15%+ top-line).</li>
+<li><strong>Innovation &amp; Premium</strong>: New launches (Nakoda energy drinks, Zydus millet bars, Nestlé Nespresso/PetCare); 6-10% sales from NPDs.</li>
+<li><strong>Exports/International</strong>: Strong (ADF: Costco 75 stores; Foods &amp; Inns: +39% frozen volumes; Bikaji: +77% H1).</li>
+<li><strong>Capex &amp; Capacity</strong>: Greenfield expansions (Nestlé Odisha, ADF Surat); PLI-driven (Foods &amp; Inns spray-dried).</li>
+<li><strong>Long-Term Targets</strong>: Nestlé: 11-15% CAGR sustained; Britannia: double-digits; ADF: ₹1,000 Cr by FY27; sector per capita uplift (3-4x peers like Philippines).</li>
+</ul>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Details</strong></th>
+<th><strong>Mitigants</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Commodity/Inflation</strong></td>
+<td>Volatility in coffee/cocoa/wheat; food inflation squeezes budgets.</td>
+<td>Hedging, Project Shark efficiencies (Nestlé: 1-2% sales savings); cost-plus models (Foods &amp; Inns).</td>
+</tr>
+<tr class="even">
+<td><strong>Competition</strong></td>
+<td>Regional players in noodles/snacks; quick commerce discounting.</td>
+<td>Premiumization, RUrban (Nestlé); GST compliance edge.</td>
+</tr>
+<tr class="odd">
+<td><strong>Demand/Macro</strong></td>
+<td>Urban slowdown, rural lag; monsoon disruptions.</td>
+<td>Diversification (premium/health); govt. spending.</td>
+</tr>
+<tr class="even">
+<td><strong>Regulatory/External</strong></td>
+<td>Tariffs (US/UK FTA delays - ADF); PLI delays; forex MTM.</td>
+<td>Pass-through pricing; debt reduction (Nakoda).</td>
+</tr>
+<tr class="odd">
+<td><strong>Execution</strong></td>
+<td>New launches (Nakoda beverages); capacity ramp-up; channel balance.</td>
+<td>Distribution expansion; innovation (2-6% NPD sales).</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="summary" class="section level12">
+<p class="heading"><strong>Summary</strong></p>
+<p><strong>Bullish Outlook</strong>: GST reforms catalyze organized share gains, enabling 10-15%+ volume growth in H2 FY26 (high-teens for snacks/beverages). Tailwinds from premiumization, digital channels, exports outweigh headwinds like inflation (mitigated by efficiencies). Prospects strong in diversified portfolios (health/FMCG/out-of-home), targeting ₹1,000 Cr+ revenues for mid-caps. <strong>Risk-Adjusted View</strong>: Moderate-high growth (12-15% sector CAGR) with volatility from commodities/competition; focus on organized players (Nestlé/Britannia margins 20%+). Monitor Q3 GST normalization for confirmation.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="analysis-of-indian-packaged-foods-sector-based-on-provided-filings" class="section level9">
+<p class="heading">Analysis of Indian Packaged Foods Sector (Based on Provided Filings)</p>
+<p>The filings from companies like Nestlé India, Britannia, Bikaji Foods, Zydus Wellness, Gopal Snacks, Prataap Snacks, ADF Foods, Ganesh Consumer Products, Euro India Fresh Foods, Foods &amp; Inns, Mrs. Bectors, and Bombay Burmah reveal a mix of operational expansions, governance updates, and regulatory challenges. Below is a structured summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong> for the sector.</p>
+<div id="tailwinds-positive-catalysts" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Catalysts)</strong></p>
+<ul>
+<li><strong>Strong Governance &amp; Investor Engagement</strong>: Routine disclosures (e.g., Nestlé’s investor meets, auditor re-appointments at Bombay Burmah &amp; Euro India) signal robust compliance and transparency, boosting investor confidence.</li>
+<li><strong>ESG Momentum</strong>: Britannia’s ‘77’ ESG rating from CFC Finlease highlights improving sustainability focus, aiding access to global capital.</li>
+<li><strong>Government Incentives</strong>: Foods &amp; Inns received ₹8.39 Cr total capital subsidy for cold chain infrastructure, supporting value addition and export competitiveness.</li>
+<li><strong>Shareholder &amp; Talent Retention</strong>: Initiatives like ADF Foods’ IEPF awareness campaign and Prataap Snacks’ ESAR allotments (26,587 shares) enhance liquidity and employee incentives.</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Regulatory Scrutiny &amp; Delays</strong>: SEBI warning to Mrs. Bectors for delayed QIP monitoring report; routine compliance lapses could escalate to penalties.</li>
+<li><strong>Supply Chain Disruptions</strong>: Gopal Snacks recovering from a prior fire incident, which hampered growth via fragmented production.</li>
+<li><strong>Tax &amp; Legal Pressures</strong>: Zydus Wellness faces ₹56.33 Cr GST demand (pre-acquisition, indemnified); adds short-term uncertainty despite appeals.</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Expansion &amp; Regional Penetration</strong>: Gopal Snacks’ new Modasa facility (63,085 MT capacity for namkeen/gathiya) targets Gujarat, Rajasthan, MP, and Maharashtra, resolving supply chain issues and boosting order frequency/value.</li>
+<li><strong>Infrastructure Boost</strong>: Cold chain subsidies (e.g., Foods &amp; Inns) align with “Viksit Bharat” goals, enabling perishable product scaling.</li>
+<li><strong>Market Listing &amp; Capital Access</strong>: Ganesh Consumer’s CIN update to listed status facilitates deeper equity markets.</li>
+<li><strong>Sector Tailwinds</strong>: Urbanization, rising convenience demand, and premiumization (snacks, beverages) support 10-15% CAGR; new facilities position players for volume growth.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="20%" />
+<col width="12%" />
+<col width="28%" />
+<col width="39%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Impacted Companies</th>
+<th>Potential Sector Implication</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory/Legal</strong></td>
+<td>PMLA summons (Bikaji: MD appearance required); GST orders (Zydus: ₹56 Cr demand); SEBI warnings (Bectors: disclosure delays).</td>
+<td>Bikaji, Zydus, Bectors</td>
+<td>Escalation to fines/probes; erodes investor trust; higher compliance costs.</td>
+</tr>
+<tr class="even">
+<td><strong>Operational</strong></td>
+<td>Fire/supply disruptions; pre-acquisition liabilities.</td>
+<td>Gopal, Zydus</td>
+<td>Margin pressure; capacity underutilization.</td>
+</tr>
+<tr class="odd">
+<td><strong>Financial</strong></td>
+<td>Indemnified demands/tax litigations; subsidy dependencies.</td>
+<td>Zydus, Foods &amp; Inns</td>
+<td>Cash flow volatility; contingent liabilities (~₹56 Cr+).</td>
+</tr>
+<tr class="even">
+<td><strong>Governance</strong></td>
+<td>Auditor/CSR delays; KYC non-compliance.</td>
+<td>Multiple</td>
+<td>Stock volatility; delisting risks if unaddressed.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: Tailwinds from expansions and incentives outweigh near-term headwinds, with growth prospects strong (supply chain fixes, infra support). However, regulatory risks (PMLA/GST/SEBI) pose material threats—companies emphasize “no material impact,” but cumulative scrutiny could pressure valuations. Monitor Q3FY26 earnings for litigation updates. Sector remains resilient amid 8-10% India FMCG growth.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+</div>
+<div id="analysis-of-indian-packaged-foods-sector-based-on-q2h1-fy26-earnings-transcripts-presentations" class="section level3">
+<h3>Analysis of Indian Packaged Foods Sector (Based on Q2/H1 FY26 Earnings Transcripts &amp; Presentations)</h3>
+<p>The Indian packaged foods sector (FMCG/snacks, beverages, nutrition, etc.) remains resilient amid macroeconomic challenges, with companies like Nestlé India, Britannia, Bikaji Foods, Zydus Wellness, Prataap Snacks (Yellow Diamond), ADF Foods, Foods &amp; Inns, and others reporting mixed results. Revenue growth was muted (flat to low-single digit YoY for many) due to transitory factors, but profitability improved via cost controls, GST benefits, and mix shifts. Key insights from transcripts (Nov 2025) highlight a sector poised for recovery in H2 FY26, driven by structural tailwinds, though headwinds persist.</p>
+<div id="headwinds-challenges-1" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>Commodity Inflation &amp; Cost Pressures</strong>: Sharp rises in key inputs—coffee (+75% YoY, Nestlé), cocoa (+40-50%), palm oil (+2-9% QoQ, Britannia/Prataap), wheat/edible oils. Forced pricing (Nestlé: pricing last resort post-efficiencies) and grammage tweaks, denting volumes (Nestlé: 9.5% historical volume CAGR now pressured).</li>
+<li><strong>Demand Slowdown</strong>: Urban deceleration (Nestlé: tepid wages/unemployment), rural mixed but resilient (Britannia: rural &gt; urban). Prolonged monsoons hurt seasonal items (Zydus: Glucon-D/Nycil; Britannia dairy). Food inflation squeezes budgets (“buying expensive, consuming less”—Nestlé).</li>
+<li><strong>GST 2.0 Transition Disruptions</strong>: Rate cuts (12%→5% for snacks/ethnic) caused 2-2.5% revenue loss via de-stocking (Britannia/Bikaji/Prataap/Zydus). Short-term compliance shifts favored organized players long-term but hit Q2 pipelines.</li>
+<li><strong>Intense Competition</strong>: Regional/unorganized players gaining in noodles (Nestlé MAGGI), biscuits/snacks (Britannia/Prataap/Bikaji). Channel discounting wars (quick commerce vs. GT).</li>
+<li><strong>Execution/Weather Risks</strong>: Heavy rains (Britannia rural), tariffs (ADF Foods US exposure).</li>
+</ul>
+</div>
+<div id="tailwinds-positives" class="section level6">
+<h6><strong>Tailwinds (Positives)</strong></h6>
+<ul>
+<li><strong>GST Rationalization Benefits</strong>: Organized players gain from compliance edge (Britannia: market share shift; Bikaji: high-teens ethnic snacks growth expected). Affordability boost (Nestlé: premiumization universal).</li>
+<li><strong>Policy Support</strong>: Budget consumption spend (INR 100k Cr, Nestlé), lower taxes/inflation moderation aiding mid-market (Nestlé/Prataap).</li>
+<li><strong>Digital/Channel Shifts</strong>: Quick commerce boom (Nestlé: 8.5% rev, +33% growth; Prataap scaling to 5%). E-comm/D2C strong (Zydus RiteBite).</li>
+<li><strong>Margin Levers</strong>: Efficiencies (Nestlé Project Shark: 1-2% sales savings), premiumization (Nestlé: 16% CAGR), automation (Prataap new Indore plant).</li>
+<li><strong>Commodity Easing</strong>: Palm oil/Potato/Corn dips (Britannia/Prataap); Totapuri mango competitive (Foods &amp; Inns).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Large Underpenetrated Market</strong>: INR 508 Bn savoury snacks (Prataap); overall packaged foods 3-4x below peers (Nestlé). RUrban/volumes key (Nestlé: 5.3 Mn outlets, +5% YoY).</li>
+<li><strong>Premium/Health/Out-of-Home</strong>: Premium +16% CAGR (Nestlé); nutrition/pet care/RTD (Zydus RiteBite/Comfort Click; ADF frozen). OOH doubles by 2030 (Nestlé).</li>
+<li><strong>Innovation/Diversification</strong>: New categories (Nestlé NESPRESSO/pet; Nakoda energy drinks; Prataap pellets/namkeen). Exports strong (ADF: +12% standalone; Foods &amp; Inns mango/tomato).</li>
+<li><strong>Capacity/Expansion</strong>: Nestlé 10th factory; Prataap 16 facilities; ADF Surat greenfield. Distribution ramps (Bikaji: 3.5L outlets; Nestlé RUrban).</li>
+<li><strong>H2 FY26 Outlook</strong>: Double-digit recovery (Britannia/Nestlé); 15-20% vol growth targeted (Foods &amp; Inns).</li>
+</ul>
+<p><strong>Projected Metrics (Aggregated Guidance)</strong>: | Metric | FY26 Outlook | |——–|————-| | Revenue Growth | Mid-teens (post-GST normalization) | | EBITDA Margin | 10-18% (margin focus; Nestlé 17-18%, Prataap &gt;10%) | | Volume Growth | 15-20% (Nestlé penetration-led) |</p>
+</div>
+<div id="key-risks-2" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<ul>
+<li><strong>Prolonged Macro Weakness</strong>: Consumption slowdown persists (urban/rural split; inflation).</li>
+<li><strong>Commodity Volatility</strong>: Coffee/cocoa/palm oil spikes erode margins (Nestlé exposure).</li>
+<li><strong>Competition/Channel Shifts</strong>: Unorganized/quick commerce disrupts GT (Nestlé MAGGI/Britannia biscuits).</li>
+<li><strong>Regulatory/External</strong>: US tariffs (ADF), PLI delays (Foods &amp; Inns), weather/crop failures.</li>
+<li><strong>Execution</strong>: New launches (Nakoda beverages; Prataap efficiency), acquisitions (Zydus Comfort Click integration).</li>
+<li><strong>Forex/Debt</strong>: Currency fluctuations (ADF MTM losses); working capital cycles.</li>
+</ul>
+</div>
+<div id="summary-1" class="section level6">
+<h6><strong>Summary</strong></h6>
+<p><strong>Bullish Long-Term</strong>: Sector benefits from underpenetration, GST tailwinds, premiumization/digital shift (15%+ CAGR potential). Organized players (Nestlé/Britannia) gaining share via scale/efficiencies; innovations (health/OOH) unlock adjacencies.</p>
+<p><strong>Near-Term Cautious</strong>: Q2 headwinds (GST/inflation) cap growth (flat YoY), but H2 rebound via demand recovery/margins (10-18% EBITDA). Risks tilted to macros/commodities, but resilient balance sheets (Nestlé ROE leader) mitigate.</p>
+<p><strong>Investment Thesis</strong>: Buy for volume-led recovery (RUrban/digital); watch H2 execution. Target: 12-15% sector EPS CAGR FY26-28. (Sources: Aggregated from 10+ transcripts; Nielsen data cited.)</p>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+</div>
+<div id="indian-packaged-foods-sector-analysis-q2-h1-fy26-insights" class="section level3">
+<h3>Indian Packaged Foods Sector Analysis: Q2 &amp; H1 FY26 Insights</h3>
+<p>The Indian Packaged Foods sector demonstrated <strong>resilient performance</strong> in Q2 &amp; H1 FY26, with most listed players (Nestlé India, Bikaji Foods, Mrs. Bectors, Ganesh Consumer Products, etc.) reporting <strong>double-digit revenue growth</strong> (avg. 10-15% YoY), driven by volume-led expansion, festive demand, and channel diversification. EBITDA margins improved modestly (e.g., Nestlé at 22%, Bikaji at 15.4%), aided by cost optimizations, though pressured by input costs. Standalone PAT growth was strong (e.g., Nestlé +39% YoY in some metrics, ADF Foods +39%). Key themes include GST transition disruptions offset by reforms, e-commerce surge, and innovation. Below is a structured summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong> based on the filings.</p>
+<div id="headwinds-challenges-observed" class="section level6">
+<h6><strong>Headwinds (Challenges Observed)</strong></h6>
+<ul>
+<li><strong>GST Transition Disruptions</strong>: Widespread destocking in Sep’25 ahead of GST rate cuts (e.g., 18% to 5% for biscuits) led to short-term sales dips (Bikaji: salty snacks muted; Mrs. Bectors/Prataap: modest YoY decline; Gopal: supply chain issues).</li>
+<li><strong>Input Cost Inflation</strong>: Rising raw material prices (palm oil custom duties - Gopal; milk/coffee/cocoa softening post-festive but volatile - Nestlé; edible oils firm - sector-wide).</li>
+<li><strong>Demand Softness in Segments</strong>: Muted growth in Milk/Nutrition (Nestlé), Western Snacks de-growth (Bikaji -5.2%), seasonal weakness (Ganesh Sattu due to short summer).</li>
+<li><strong>Operational Disruptions</strong>: Fire at facilities (Gopal), capacity constraints, and forex gains/losses (ADF Foods US tariffs uncertainty).</li>
+<li><strong>Margin Pressure</strong>: Gross margins contracted in some (Mrs. Bectors 44.2% vs. 47.3%; Gopal EBITDA 6.4% vs. 11.6%), due to deleveraging and ad spends.</li>
+</ul>
+</div>
+<div id="tailwinds-positive-catalysts-1" class="section level6">
+<h6><strong>Tailwinds (Positive Catalysts)</strong></h6>
+<ul>
+<li><strong>GST Rationalization (GST 2.0)</strong>: Lower rates hailed as “game-changer” for affordability/consumption (Nestlé, Bikaji, Mrs. Bectors); expected festive/post-GST demand uptick already visible.</li>
+<li><strong>Volume &amp; Channel Growth</strong>: Strong underlying volumes (Nestlé 10-11%, Bikaji 10.8%); e-com/quick commerce surged 97% YoY (Ganesh), with OOH/modern trade acceleration (Nestlé, Mrs. Bectors).</li>
+<li><strong>Festive &amp; Rural Momentum</strong>: Double-digit domestic sales (Nestlé INR 54bn highest-ever Q); rural penetration via quick commerce/numeric expansion (Bikaji +3k outlets).</li>
+<li><strong>Exports &amp; Premiumization</strong>: High double-digit export growth (Nestlé, ADF); new launches (e.g., KitKat variants, Maggi innovations, healthy bars - Zydus).</li>
+<li><strong>Cost Efficiencies</strong>: Margin expansion via mix optimization, sourcing, solar PPAs (Ganesh debt reduction post-IPO).</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Robust Topline Trajectory</strong>: Sector avg. 10-15% YoY revenue growth sustainable into H2FY26 via GST recovery, festive tailwinds, and 20-30% e-com contribution.</li>
+<li><strong>Category Diversification</strong>: Beverages/pet food/OOH high-growth (Nestlé Pet Food/Purina; Nakoda “NO CTRL” launch); ethnic snacks/packaged sweets strong (Bikaji +32% sweets).</li>
+<li><strong>Capacity &amp; Distribution Expansion</strong>: New lines/facilities (Nestlé Sanand, ADF Surat); 850+ distributors (Gopal), pan-India reach (Prataap 27 states).</li>
+<li><strong>Innovation &amp; Premium Plays</strong>: Healthy/RTD variants, millet bars (Zydus), rural premiumization; acquisitions (Zydus Comfort Click for VMS).</li>
+<li><strong>Macro Tailwinds</strong>: Improving consumption (stable inflation, flush milk season), exports to 25+ countries; leadership targets $5tn economy boost FMCG.</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Company Highlights (Q2 Revenue Growth YoY)</th>
+<th>Growth Driver</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Nestlé: +10.9%</td>
+<td>Volumes, exports, confectionery/beverages</td>
+</tr>
+<tr class="even">
+<td>Bikaji: +15.2%</td>
+<td>Sweets +32%, exports +77%</td>
+</tr>
+<tr class="odd">
+<td>Mrs. Bectors: +11.1%</td>
+<td>Bakery +16%, biscuits +10%</td>
+</tr>
+<tr class="even">
+<td>Ganesh: +7.2%</td>
+<td>Spices +23%, B2C staples +15% (ex-Sattu)</td>
+</tr>
+<tr class="odd">
+<td>ADF: +11.5% (standalone)</td>
+<td>Ethnic foods, Costco listings</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Outlook</strong>: H2FY26 poised for 12-18% growth, with EBITDA margins stabilizing at 12-22%.</p>
+</div>
+<div id="key-risks-3" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<ul>
+<li><strong>Commodity Volatility</strong>: Milk softening post-festive but cocoa/oils firm; potential reflation (Nestlé outlook).</li>
+<li><strong>Regulatory/Policy Shifts</strong>: GST implementation hiccups, US tariffs (ADF), custom duties (Gopal palm oil).</li>
+<li><strong>Competition</strong>: Regional/unorganized players (Britannia levers), intense rivalry in snacks (Prataap softness in rings/chips).</li>
+<li><strong>Demand/Macro Risks</strong>: Prolonged softness if rural recovery delays; forex/interest rate fluctuations.</li>
+<li><strong>Execution Risks</strong>: Supply chain (fires, third-party reliance - Gopal), capex delays (new facilities).</li>
+<li><strong>Financial</strong>: High ad spends/debt (some reduced post-IPO), exceptional items volatility (Nestlé divestitures).</li>
+</ul>
+<p><strong>Overall Verdict</strong>: Sector in <strong>recovery mode</strong> with GST reforms as pivotal tailwind; focus on volumes, innovation, and efficiency positions leaders (Nestlé, Bikaji) for outperformance. Investors should monitor H2 demand normalization and commodity trends. Positive EBITDA/PAT turnarounds (e.g., Nakoda, Gopal) signal broad-based resilience.</p>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

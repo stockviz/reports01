@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Restaurants</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Restaurants</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Restaurants.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Restaurants.fan.CAP_WT.png" /></p>
+<p><img src="plots/Restaurants.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Restaurants.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Restaurants.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Restaurants.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Restaurants.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-92053528d095559e23b7" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-92053528d095559e23b7">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["3.16%","2.68%"],["1.47%","-0.58%"],["-4.17%","-6.22%"],["-10.74%","-13.73%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Restaurants.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Restaurants.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-80853f5352aecdd40cc8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-80853f5352aecdd40cc8">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.JUBLFOOD.html\" target=\"_blank\">JUBLFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.DEVYANI.html\" target=\"_blank\">DEVYANI<\/a>","<a href=\"/reports02/eq-in/risk/in.TRAVELFOOD.html\" target=\"_blank\">TRAVELFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.WESTLIFE.html\" target=\"_blank\">WESTLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.SAPPHIRE.html\" target=\"_blank\">SAPPHIRE<\/a>","<a href=\"/reports02/eq-in/risk/in.RBA.html\" target=\"_blank\">RBA<\/a>","<a href=\"/reports02/eq-in/risk/in.UFBL.html\" target=\"_blank\">UFBL<\/a>","<a href=\"/reports02/eq-in/risk/in.COFFEEDAY.html\" target=\"_blank\">COFFEEDAY<\/a>","<a href=\"/reports02/eq-in/risk/in.SPECIALITY.html\" target=\"_blank\">SPECIALITY<\/a>"],[0.5038288445955618,0.129551502068962,0.04589374354548273,0.08381477397483857,0.1272130477932948,0.0744976312802275,0.0136666429690589,0.01549670847231814,0.006037105300255654],[0.3953270400672241,0.1850616829201602,0.1814108078937579,0.09014350654853194,0.08049204532368366,0.04273061894253506,0.0113628267618917,0.007827338827161688,0.005644132715053693]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":9,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-26e3358e825d3529e875" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-26e3358e825d3529e875">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.JUBLFOOD.html\" target=\"_blank\">JUBLFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.DEVYANI.html\" target=\"_blank\">DEVYANI<\/a>","<a href=\"/reports02/eq-in/risk/in.TRAVELFOOD.html\" target=\"_blank\">TRAVELFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.WESTLIFE.html\" target=\"_blank\">WESTLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.SAPPHIRE.html\" target=\"_blank\">SAPPHIRE<\/a>","<a href=\"/reports02/eq-in/risk/in.RBA.html\" target=\"_blank\">RBA<\/a>","<a href=\"/reports02/eq-in/risk/in.UFBL.html\" target=\"_blank\">UFBL<\/a>","<a href=\"/reports02/eq-in/risk/in.COFFEEDAY.html\" target=\"_blank\">COFFEEDAY<\/a>","<a href=\"/reports02/eq-in/risk/in.SPECIALITY.html\" target=\"_blank\">SPECIALITY<\/a>"],[97.5453721300603,0.2051238076872283,61.81459645091297,0.6900843338911415,-0.2242031889155434,-13.04505282483783,-4.653206292815905,-5.657376999533517,0.2084350308605402],[73.08002230828038,-4.248590898301258,81.0863914879998,-2.120205949597617,-2.951396236483221,-21.35916510015645,-6.762730522183982,-8.902187146591613,1.099661247840579],[60.4444141541592,-1.602104919906141,65.64109121614811,-0.09765805392583606,-1.450194265975902,-14.67688030342993,-4.739511185086136,-5.344285970582979,1.825129328599614]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":9,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-155d1085835ea99e3718" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-155d1085835ea99e3718">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.JUBLFOOD.html\" target=\"_blank\">JUBLFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.DEVYANI.html\" target=\"_blank\">DEVYANI<\/a>","<a href=\"/reports02/eq-in/risk/in.TRAVELFOOD.html\" target=\"_blank\">TRAVELFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.WESTLIFE.html\" target=\"_blank\">WESTLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.SAPPHIRE.html\" target=\"_blank\">SAPPHIRE<\/a>","<a href=\"/reports02/eq-in/risk/in.RBA.html\" target=\"_blank\">RBA<\/a>","<a href=\"/reports02/eq-in/risk/in.UFBL.html\" target=\"_blank\">UFBL<\/a>","<a href=\"/reports02/eq-in/risk/in.COFFEEDAY.html\" target=\"_blank\">COFFEEDAY<\/a>","<a href=\"/reports02/eq-in/risk/in.SPECIALITY.html\" target=\"_blank\">SPECIALITY<\/a>"],[28.07029311079274,17.42796811990949,4.441534847175989,8.553680937980902,11.16768984089295,9.463528931967257,3.529611113328934,2.477265463626399,0.6637853661518395],[35.84973451224593,17.54733067932287,3.138278940157784,8.461390174036772,9.919525958697296,9.041622942675158,4.04595544457729,3.132157797176851,0.4688709929036446],[43.96193496625935,16.66273286290793,5.362130735758839,7.959410568453769,9.416493130298127,8.500699903643202,3.931464405901244,3.41243428612009,0.7926991406574501]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":9,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="indian-restaurantqsr-sector-analysis-based-on-q2h1-fy26-earnings-transcripts" class="section level9">
+<p class="heading">Indian Restaurant/QSR Sector Analysis (Based on Q2/H1 FY26 Earnings Transcripts)</p>
+<p>The analysis draws from transcripts of key players: <strong>Devyani International (DIL - KFC/Pizza Hut)</strong>, <strong>Jubilant Foodworks (JFL - Domino’s/Popeyes)</strong>, <strong>Westlife Foodworld (McDonald’s)</strong>, <strong>Speciality Restaurants</strong>, <strong>Travel Food Services (TFS - Airport F&amp;B)</strong>, and others (e.g., Sapphire Foods, Restaurant Brands Asia). Sector shows resilience amid demand weakness, with organized players gaining share via expansion/innovation, but facing short-term headwinds.</p>
+<div id="headwinds-short-term-pressures" class="section level12">
+<p class="heading"><strong>Headwinds (Short-term Pressures)</strong></p>
+<ul>
+<li><strong>Weak Demand &amp; SSSG</strong>: Broad softness in discretionary/out-of-home spending (Aug-Sep dip 4-6% in consumption frequency). SSSG negative/flat: McD (-2.8%), KFC (-4% adj.), Pizza Hut (flat/-4%), vs. JFL (+9.1% LFL). Regional drag (South/Bangalore weak for McD/DIL/JFL).</li>
+<li><strong>Festive/Weather Disruptions</strong>: Shraavan/Navratri overlap, unseasonal rains (East India hit DIL), early Navratri (JFL adjusted).</li>
+<li><strong>Margin Squeeze</strong>: High promotions/discounted sales (e.g., DIL KFC value burgers), aggregator costs (delivery saliency up, unpredictable performance). DIL brand contribution down to 11.7%; McD off-premise flat.</li>
+<li><strong>External/Macro</strong>: Limited GST 2.0 benefits (output GST unchanged, no ITC; minor input savings passed on). Input inflation (cheese/milk post-elections).</li>
+<li><strong>Operational</strong>: New store ramp-up (12-18 months), acquisitions (DIL SkyGate losses), aggregator volatility (McD flat delivery despite peers’ mid-teens growth).</li>
+</ul>
+</div>
+<div id="tailwinds-positive-drivers" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Cost Discipline &amp; Margins</strong>: Gross margins at ATH (McD 72.4%, DIL 67.8%, Speciality 70.4%, TFS 80-82%). Supply chain efficiencies, procurement tweaks (McD/DIL). EBITDA resilient (JFL +19.5%, TFS PAT +15.3%).</li>
+<li><strong>Digital/Convenience Shift</strong>: 75% digital sales (McD), app growth (JFL 40M loyalty, 15M MAU), free delivery (JFL +20% delivery). McD piloting 20-min delivery/AI kitchens.</li>
+<li><strong>Innovation Traction</strong>: New products driving trials (JFL sourdough/Big Big Pizza, McD Protein Plus/Big Yummy, DIL Chana Burger/grilled chicken). JFL Popeyes double-digit SSG.</li>
+<li><strong>Airport Resilience</strong>: TFS +18.4% system sales despite -3.5% traffic (new contracts: Cochin/Delhi T2).</li>
+<li><strong>International Strength</strong>: DIL +14% (Thailand resilient).</li>
+</ul>
+</div>
+<div id="growth-prospects-medium-long-term" class="section level12">
+<p class="heading"><strong>Growth Prospects (Medium-Long Term)</strong></p>
+<ul>
+<li><strong>Network Expansion</strong>: Aggressive (DIL 100-110 KFC FY26; JFL 900 stores/3yrs to 3500+; McD Vision 2027: 580-630 stores, potential 1000+; Speciality 8-10 stores/yr; TFS 500+ outlets). Tech-aided (McD AI location intelligence).</li>
+<li><strong>SSSG/LFL Targets</strong>: JFL 5-7% LFL (India Domino’s 15% topline); McD 3-5% incremental from McDelivery (double sales in 2yrs). Recovery expected H2FY26 (festives, GST boost).</li>
+<li><strong>Category Tailwinds</strong>: Organized QSR gaining (market share 65-70% pizza for JFL); aviation CAGR 8-9% (TFS in 14/15 top airports); highways/railways pilots (TFS).</li>
+<li><strong>Structural</strong>: Urbanization/middle-class growth; digital/loyalty (McD 47M app downloads); premiumization (sourdough/protein items in Tier-2/3).</li>
+<li><strong>Outlook</strong>: H2FY26 strong (JFL/DIL optimistic); FY26 revenue growth 10-15%+ for leaders; PAT accretion via leverage (JFL +200bps EBITDA/3yrs).</li>
+</ul>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Demand Prolongation</strong>: Muted recovery (e.g., IT slowdown, value-conscious consumers); October green shoots fragile (depends on Dec festives).</li>
+<li><strong>Execution</strong>: New store maturity (DIL Tealive test, McD South trials); JV ramp-up (TFS); aggregator dependency (McD flat off-premise).</li>
+<li><strong>Financial</strong>: High capex (Rs.200-250cr/yr McD; DIL Rs.50cr franchise/own brands); debt/acquisition integration (DIL SkyGate breakeven FY26).</li>
+<li><strong>Competition</strong>: Unorganized/cloud kitchens (Speciality); intra-QSR (JFL gaining vs. peers); pricing wars.</li>
+<li><strong>Macro/Regulatory</strong>: Inflation spikes, GST ITC denial, aviation shocks (TFS traffic -1% Q2 due to conflicts/crash).</li>
+<li><strong>Other</strong>: Manpower shortages (Speciality), royalty changes (McD renegotiated lower from FY27).</li>
+</ul>
+<p><strong>Overall Summary</strong>: Sector resilient (topline +4-20% YoY despite SSSG weakness) via expansion (store adds 30-93/quarter) and efficiencies (gross margins peak). Short-term headwinds from demand/festives (~Q3 recovery expected); long-term tailwinds intact (8-9% aviation/QSR CAGR, digital/innovation). Leaders (JFL/TFS outperforming) eye 15%+ growth; risks tilted to demand execution. Organized share to rise; monitor H2 festives for inflection.</p>
+</div>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3><strong>Financial</strong></h3>
+<p><em>asof: 2025-12-01 </em></p>
+<div id="summary-analysis-of-indian-restaurants-sector-q3-9m-fy25" class="section level9">
+<p class="heading">Summary Analysis of Indian Restaurants Sector (Q3 &amp; 9M FY25)</p>
+<p>Based on the Q3 &amp; 9M FY25 financial results of key players—<strong>Jubilant FoodWorks (Dominos)</strong>, <strong>Westlife Foodworld (McDonald’s India)</strong>, <strong>Restaurant Brands Asia (Burger King India)</strong>, <strong>Coffee Day Enterprises</strong>, <strong>Barbeque-Nation Hospitality</strong>, and <strong>Speciality Restaurants</strong>—the sector shows resilient revenue growth amid profitability pressures. Overall, consolidated revenue grew ~20-30% YoY on average (driven by expansions/acquisitions), but EBITDA margins contracted 200-500 bps due to costs. Jubilant &amp; Speciality shone; Coffee Day faces existential risks.</p>
+<div id="headwinds-key-challenges" class="section level12">
+<p class="heading"><strong>Headwinds (Key Challenges)</strong></p>
+<ul>
+<li><strong>Cost Inflation &amp; Operating Leverage</strong>: Raw material costs up 15-30% YoY (e.g., Jubilant: ₹4,268 Cr Q3; Westlife: ₹19,562 Cr). Employee expenses rose 10-20% (Barbeque: ₹767 Cr Q3). High depn/amort (15-20% of rev, new stores).</li>
+<li><strong>Debt Burden</strong>: Finance costs surged 50-100% YoY (Jubilant: ₹1,334 Cr Q3; Speciality: ₹370 Cr). Debt covenants breached (Coffee Day multiple lenders recall loans).</li>
+<li><strong>Profitability Squeeze</strong>: Losses in RBA (₹547 Cr Q3 loss), Barbeque (₹107 Cr 9M loss), Westlife Q3 profit down 60%. Coffee Day EBITDA down 66% YoY.</li>
+<li><strong>Macro/Regulatory</strong>: Auditor disclaimers (Coffee Day: MACEL dues ₹3,373 Cr unprovisioned; NCLT/CIRP risks). Discontinued ops losses (Jubilant: ₹64 Cr Q3).</li>
+</ul>
+</div>
+<div id="tailwinds-positives" class="section level12">
+<p class="heading"><strong>Tailwinds (Positives)</strong></p>
+<ul>
+<li><strong>Revenue Momentum</strong>: Strong YoY growth—Jubilant +56% Q3 (₹21,508 Cr, DP Eurasia boost), Westlife +9% (₹65,372 Cr), Speciality +15% (₹12,575 Cr consolidated). SSSG positive (Coffee Day: 1.9% Q3).</li>
+<li><strong>Expansion Scale</strong>: Store adds (Coffee Day: 439 cafes; Jubilant intl subs). Other income supportive (Speciality: lease gains ₹373 Cr 9M; tax refunds).</li>
+<li><strong>Margin Resilience</strong>: EBITDA margins held 15-25% (Jubilant 3.6%, Speciality ~10%). Jubilant PAT +32% 9M YoY post-impairments.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High</strong>: QSR/casual dining tailwinds (urbanization, premiumization). Jubilant (DP Eurasia consolidation) eyes Turkey/MENA; Barbeque Lanka entry. Speciality PAT +25% 9M YoY (₹1,933 Cr owners). Overall 9M rev +10-50% YoY.</li>
+<li><strong>Projections</strong>: FY25 rev growth 15-25%; intl 10-15% of mix (Jubilant/Westlife). Digital/delivery (implied in rev surge) + new formats (commissaries).</li>
+<li><strong>Opportunities</strong>: Cost optimization (lease mods), M&amp;A (Barbeque WGPL 51% stake), tier-2/3 cities.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="42%" />
+<col width="27%" />
+<col width="29%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Details</strong></th>
+<th><strong>Exposure</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Financial</strong></td>
+<td>High debt (Coffee Day ₹1,273 Cr borrowings; covenant defaults/NCLT stay till Feb’25). Unprovisioned dues (Coffee Day MACEL ₹3,373 Cr).</td>
+<td>High (Coffee Day existential; others moderate).</td>
+</tr>
+<tr class="even">
+<td><strong>Operational</strong></td>
+<td>Input inflation, competition (QSR wars). Store closures (Coffee Day 15 cafes).</td>
+<td>Medium.</td>
+</tr>
+<tr class="odd">
+<td><strong>Regulatory/Legal</strong></td>
+<td>Auditor disclaimers (Coffee Day going concern, interest non-accrual ₹43 Cr). SEBI penalties stayed; arbitration pending. Forex (intl ops 10-20% rev).</td>
+<td>High (Coffee Day); Low others.</td>
+</tr>
+<tr class="even">
+<td><strong>Execution</strong></td>
+<td>Expansion capex delays; intl ramp-up (RBA Indonesia losses).</td>
+<td>Medium.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: Sector poised for 15-20% FY25 growth (rev/EBITDA), led by leaders (Jubilant/Speciality). Coffee Day outlier (avoid); monitor debt resolution. Tailwinds &gt; headwinds for scaled players; risks skewed to leveraged firms. Investors: Favor low-debt, high-SSSG names.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-of-indian-restaurant-sector-qsrcasual-dining-based-on-provided-filings" class="section level9">
+<p class="heading">Summary Analysis of Indian Restaurant Sector (QSR/Casual Dining) Based on Provided Filings</p>
+<p>The filings from key players (Jubilant FoodWorks, Devyani International, Westlife Foodworld, Sapphire Foods, Restaurant Brands Asia, Coffee Day Enterprises, Barbeque-Nation Hospitality, Speciality Restaurants) highlight a resilient sector focused on expansion, governance, and sustainability amid mixed operational performance. Below is a structured analysis of <strong>tailwinds</strong>, <strong>headwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Network Expansion &amp; Strategic Acquisitions</strong>: Aggressive store additions (Barbeque-Nation: 230 stores, targeting 300+ by FY27; Devyani: Increased stake to 86.13% in Sky Gate via ₹103.25 Cr investment; Speciality: New UAE franchise for Asia Kitchen by Mainland China).</li>
+<li><strong>Employee &amp; Governance Incentives</strong>: ESOP grants (Jubilant: 10.23 lakh options vesting from 2028); Auditor appointments (Restaurant Brands Asia); Director reappointments (Coffee Day).</li>
+<li><strong>Sustainability &amp; ESG Leadership</strong>: Sapphire Foods tops India QSRs with DJSI score of 73 (98th percentile globally), emphasizing GRI/SASB/BRSR reporting.</li>
+<li><strong>Cost Structures &amp; Tech/Guest Focus</strong>: Stable royalty (Westlife: 5% for FY26 tied to growth); Barbeque-Nation’s tech stack (reservations, ERP, feedback tools), strong unit economics (ROIC 34-60%, payback 2.5-4 yrs), and guest-centric initiatives (festivals, menu upgrades).</li>
+<li><strong>Macro Support</strong> (per Barbeque): GDP growth (6.2% FY26), food services market to $80 Bn by 2028, rising incomes/urbanization.</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Soft Demand &amp; SSSG Pressure</strong>: Negative same-store sales growth (Barbeque: -3.8% consolidated FY25, -4.4% India; flat YoY revenue at ₹12,330 Mn despite +13 stores).</li>
+<li><strong>Cost Pressures</strong>: Royalty fees (Westlife: 5%, growth-contingent); flat margins amid expansion (Barbeque: Restaurant Op. Margin 13.9%, down from peaks).</li>
+<li><strong>Execution in New Markets</strong>: Ramp-up delays in Tier II/III (50/230 stores for Barbeque); international dependencies (e.g., UAE franchise for Speciality).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Diversified &amp; Scalable Portfolios</strong>: Multi-brand focus (Barbeque: BBQ Nation, Toscano, Salt, delivery brands; Devyani/Sapphire QSRs). Premium CDR growth (Barbeque: 30 stores, 13% revenue share, +30% YoY).</li>
+<li><strong>International &amp; Franchise Expansion</strong>: UAE/Dubai entry (Speciality, Barbeque in 5 countries); acquisitions/franchising for faster scale.</li>
+<li><strong>High-Return Expansion</strong>: Strong economics (Barbeque: ₹55-122 Mn revenue/store; 10-yr network CAGR 18%). Delivery/tech synergies (90% own channels).</li>
+<li><strong>Sustainability Edge</strong>: ESG differentiation (Sapphire #1 India QSR) to attract investors/talent; employee programs (Barbeque: Diversity to 12% women).</li>
+<li><strong>Target</strong>: 300-325 stores by FY27 (Barbeque), leveraging urbanization/eating-out frequency (90-95x/year by 2030).</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Demand Volatility</strong>: Persistent negative SSSG signals weak consumer spending/competition; forward-looking risks (Barbeque disclaimer: macro, regulatory, forex).</li>
+<li><strong>Execution &amp; Integration</strong>: Acquisition/franchise risks (Devyani/Sky Gate; lock-ins in Jubilant ESOPs); new store ramp-up (Barbeque international SSSG volatile).</li>
+<li><strong>Cost &amp; Dependency</strong>: Royalty hikes (Westlife growth-tied); supply chain/inflation (inferred from margins).</li>
+<li><strong>Governance/Regulatory</strong>: Compliance-heavy (all Reg 30 filings); debarment checks (Coffee Day).</li>
+<li><strong>External</strong>: Economic slowdown, competition in QSR/casual dining; currency/interest rate fluctuations (Barbeque).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Sector shows proactive expansion and professionalization (ESG, tech, incentives), but near-term headwinds from soft sales require demand recovery. Growth hinges on execution in Tier II/III and international markets, with Barbeque’s playbook (diversification, 18% CAGR) as a positive template. Positive macro tailwinds support mid-term upside to $80 Bn market.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="indian-restaurants-sector-analysis-qsr-casual-dining-airport-fb" class="section level9">
+<p class="heading">Indian Restaurants Sector Analysis (QSR, Casual Dining &amp; Airport F&amp;B)</p>
+<p><strong>Based on Q2/H1 FY26 Earnings Transcripts (DIL, Jubilant FoodWorks, TFS, Westlife Foodworld, Speciality Restaurants) – Dated Nov 2025</strong></p>
+<div id="headwinds-key-challenges-1" class="section level12">
+<p class="heading"><strong>Headwinds (Key Challenges)</strong></p>
+<ul>
+<li><strong>Weak Consumer Demand &amp; SSSG Pressure</strong>: Persistent softness in out-of-home eating (4-6% decline in consumption frequency per Westlife brand track). SSSG muted/negative: DIL KFC (-5.3%), Pizza Hut (-4%); Westlife (-2.8%); industry-wide contraction in Aug-Sep due to Navratri, Shraavana, unseasonal rains (East India), and festive shifts. Bangalore (DIL, Jubilant, Westlife) highlighted as a drag.</li>
+<li><strong>Delivery/Aggregator Costs</strong>: Off-premise (40-50% mix) growth flat/slow (DIL KFC delivery-led drag); aggregator spends ~5% of sales (Speciality), unpredictable performance (Westlife). High delivery salience erodes margins.</li>
+<li><strong>Macro/External Factors</strong>: Muted discretionary spend, value-conscious consumers; minimal GST 2.0 benefit (input savings passed on, no ITC/output relief). Regional weakness (South India soft).</li>
+<li><strong>Operational</strong>: Manpower shortages, startup costs for new brands (DIL Tealive, BBK losses), runway closures/traffic dips (TFS Delhi -8%).</li>
+</ul>
+</div>
+<div id="tailwinds-positive-drivers-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Margin Resilience &amp; Cost Discipline</strong>: Gross margins at ATH (DIL 67.8%, Westlife 72.4%, Jubilant stable); EBITDA margins steady/improving (TFS 38%, Jubilant pre-IndAS up). Supply chain efficiencies, lower input costs (GST cuts), prudent promotions.</li>
+<li><strong>Digital &amp; Loyalty Momentum</strong>: 75% digital sales (Westlife); apps at 47M downloads (3M MAU); ad monetization (Jubilant). Own platforms scaling (McDelivery double in 2 yrs per Westlife).</li>
+<li><strong>Innovation &amp; Value Focus</strong>: Protein Plus (Westlife), Chana Burger (DIL), Sourdough (Jubilant), quick menus (TFS 5-min delivery). Value combos (Rs.69 McSaver, Rs.99 Domino’s).</li>
+<li><strong>Airport Sector Strength</strong>: TFS resilient (18.4% system sales growth despite -1% traffic); 500+ outlets, new contracts (Cochin, Delhi T2).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Aggressive Expansion</strong>: 100-150 net stores/year/company (DIL 100-110 KFC; Jubilant 149 Domino’s YTD; Westlife 450→580-630 by 2027; TFS 50 QSR+4 lounges). Tier 2/3 entry (Jubilant 500 cities), highways/international lounges (TFS).</li>
+<li><strong>Channel Mix Shift</strong>: Delivery &gt;20% growth (Jubilant); drive-thru (Westlife 1-in-4 stores); premiumization (sourdough, gourmet).</li>
+<li><strong>Sector Tailwinds</strong>: Aviation CAGR 8-9% (TFS); QSR urbanization/middle-class rise (1,000+ McD stores long-term per Westlife). JV profitability up (DIL SkyGate breakeven FY26; Jubilant Turkey PAT 10.4%).</li>
+<li><strong>Incremental Levers</strong>: McDelivery +3-5% SSSG (Westlife); AI location tech; 200bps EBITDA expansion over 3yrs (Jubilant).</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Demand Recovery Delay</strong>: Prolonged macro weakness could extend negative SSSG/leverage erosion; festive OND critical.</li>
+<li><strong>Aggregator/Competition</strong>: Dependency (yo-yo sales), discounting wars; unorganized/local brands (Speciality concern).</li>
+<li><strong>Execution</strong>: New store ramp-up (12-18 months, TFS/DIL); capex intensity (Rs.200-250cr/yr Westlife); manpower for 8-10 stores/Q (Speciality).</li>
+<li><strong>Contract/JV</strong>: Renewals (TFS Delhi T3), Adani exposure (~120 outlets, JV mitigates); BBK/SkyGate losses (DIL).</li>
+<li><strong>Regulatory/External</strong>: GST evolution, inflation spikes, aviation disruptions (crashes, geopolitics impacted H1 traffic -3.5%).</li>
+</ul>
+<p><strong>Overall Summary</strong>: Sector resilient amid demand trough (weak Q2 SSSG, traffic dips) via cost controls (gross margins 67-72%) &amp; expansion (450-3,500 stores/company). Tailwinds from digital/innovation/airports offset headwinds; prospects strong (double-digit revenue growth via 100+ stores/yr, delivery). Risks center on macro revival &amp; execution; optimistic H2 (festives, GST boost) but Vision 2027 targets (e.g., Westlife margins/stores) key watchpoints. FY26 revenue/EBITDA growth ~10-20% feasible if SSSG turns positive.</p>
+</div>
+</div>
+</div>
+<div id="meeting" class="section level3">
+<h3><strong>Meeting</strong></h3>
+<p><em>asof: 2025-12-01 </em></p>
+<div id="summary-analysis-of-indian-restaurant-industry-q2h1-fy26-insights-from-listed-players" class="section level9">
+<p class="heading">Summary Analysis of Indian Restaurant Industry (Q2/H1 FY26 Insights from Listed Players)</p>
+<p>The provided documents cover Q2/H1 FY26 (Apr-Sep 2025) financial results and announcements from key listed players: <strong>Jubilant FoodWorks (Domino’s India/SL/B’desh/Turkey)</strong>, <strong>Devyani International (KFC/Pizza Hut India/Intl)</strong>, <strong>Sapphire Foods (KFC/Pizza Hut India/SL)</strong>, <strong>Restaurant Brands Asia (Burger King India/Indonesia)</strong>, <strong>United Foodbrands (Barbeque-Nation)</strong>, <strong>Speciality Restaurants</strong>, <strong>Coffee Day Enterprises</strong>, and others. These represent QSR (Quick Service Restaurants), casual dining, and airport F&amp;B segments. Overall, <strong>revenue grew modestly (5-20% YoY)</strong> driven by store expansions, but <strong>losses widened</strong> due to high costs/debt. India ops resilient; intl ops (e.g., Turkey, Indonesia, Russia exit) drag performance. EBITDA margins ~6-15% (positive for most), but PAT negative amid expansions.</p>
+<div id="headwinds-key-challenges-observed" class="section level12">
+<p class="heading"><strong>Headwinds (Key Challenges Observed)</strong></p>
+<ul>
+<li><strong>Persistent Losses &amp; Margin Pressure</strong>: Most firms reported widening losses (e.g., Devyani PAT -₹316 Mn Q2; Sapphire -₹128 Mn Q2; RBA -₹633 Mn Q2; United -₹226 Mn Q2). High food costs (25-30% of rev), employee expenses (15-20%), depreciation (15-20% due to capex), and finance costs (8-12%) eroded profits. EBITDA dipped YoY for some (Sapphire -ve; Devyani flat).</li>
+<li><strong>Intl Ops Drag</strong>: Forex losses, hyperinflation (Turkey), impairments (Sapphire/United goodwill/stores), discontinued ops (JFL Russia exit +₹847 Mn gain but prior losses). Indonesia (RBA) deep losses (-₹423 Mn Q2).</li>
+<li><strong>Cost Inflation</strong>: Raw material/employee costs up 10-15% YoY; high lease/debt from expansions (JFL finance ₹1,057 Mn Q2).</li>
+<li><strong>Macro</strong>: No explicit mention, but implied weak consumer spending amid high outlet-level costs.</li>
+</ul>
+</div>
+<div id="tailwinds-positive-factors-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Revenue Momentum</strong>: Strong YoY growth (JFL +20% Q2 to ₹23.4 Bn; Devyani +13% to ₹13.8 Bn; Sapphire flat but stable; United +ve EBITDA ₹938 Mn H1). India core (Domino’s/KFC) resilient; delivery/outlet expansions aided.</li>
+<li><strong>Operational Efficiency</strong>: JFL standout (PAT ₹1,946 Mn Q2 incl. Russia gain; EBITDA margins ~7%). Cash from ops strong (JFL ₹9.1 Bn H1; Sapphire ₹2.1 Bn H1).</li>
+<li><strong>Intl Diversification</strong>: Minor positives (JFL Bangladesh/Lanka growth); acquisitions (United Willow Gourmet ice-cream).</li>
+<li><strong>Capital Access</strong>: QIP/fundraises (RBA ₹5 Bn prior yr); dividend declarations (Speciality ₹1/share).</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Store Expansion</strong>: Aggressive capex (Sapphire ₹1.2 Bn H1; RBA ₹1.8 Bn; United ₹567 Mn) signals 10-20% outlet growth FY26. India QSR boom (urbanization, youth demographics).</li>
+<li><strong>Brand Leverage &amp; Diversification</strong>: Franchise strength (Domino’s/KFC 1,000+ stores); new segments (ice-cream via Willow; airport F&amp;B via Travel Foods). Digital/delivery tailwinds.</li>
+<li><strong>Intl Upside</strong>: Stabilizing Turkey/B’desh; potential Bangladesh/Lanka scaling (JFL).</li>
+<li><strong>Outlook</strong>: FY26 rev growth 15-25% possible if costs stabilize; EBITDA margins to 12-15% with scale. JFL/Devyani lead pack.</li>
+</ul>
+</div>
+<div id="key-risks-4" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Debt &amp; Liquidity</strong>: High leverage (finance costs 8-12% rev); negative cash in financing (RBA -₹2.3 Bn H1 outflows).</li>
+<li><strong>Intl Exposure</strong>: Geopolitical (Russia exit); forex/hyperinflation (20-30% OCI losses).</li>
+<li><strong>Execution/Impairments</strong>: Store closures/goodwill hits (Sapphire/United); continuous losses erode equity (RBA other equity -ve).</li>
+<li><strong>Macro/Competition</strong>: Inflation, slowdown could hit discretionary spend; intense rivalry (Zomato/Swiggy delivery).</li>
+<li><strong>Regulatory</strong>: NCLT approvals pending (subsidiary mergers); AGM resolutions passed but low public participation (~20% polled).</li>
+</ul>
+<p><strong>Overall</strong>: Industry in <strong>expansion mode</strong> but <strong>profitability challenged</strong> (avg PAT margins -2-5%). JFL resilient leader; others need cost control. Growth intact via outlets/digital, but debt/costs pose near-term risks. Positive: Strong cash ops fund expansions. Monitor intl recovery &amp; festive Q3.</p>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="summary-analysis-of-indian-qsrrestaurant-sector-based-on-q2-fy26-results-from-devyani-international-restaurant-brands-asia-sapphire-foods-speciality-restaurants-travel-food-services-and-westlife-foodworld" class="section level9">
+<p class="heading">Summary Analysis of Indian QSR/Restaurant Sector (Based on Q2 FY26 Results from Devyani International, Restaurant Brands Asia, Sapphire Foods, Speciality Restaurants, Travel Food Services, and Westlife Foodworld)</p>
+<p>The Q2 FY26 results reflect a resilient yet challenged Indian QSR sector amid subdued out-of-home consumption. Revenue growth was muted (4-13% YoY consolidated), driven by expansions but offset by weak SSSG (-3% to +2.8%). EBITDA margins contracted (e.g., Sapphire 14.3% ↓230bps; Devyani 14.1%) due to deleverage and higher delivery mix, though gross margins improved via supply chain efficiencies. PAT was mixed, with TFS showing strong growth (15.3% YoY adjusted). Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="headwinds-challenges-pressuring-performance" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges Pressuring Performance)</strong></p>
+<ul>
+<li><strong>Weak Consumer Demand &amp; SSSG Pressure</strong>: SSSG largely negative/flat (Sapphire KFC -3%, Pizza Hut -8%; Westlife -2.8%; Devyani impacted by Shraavana/Navratri). Out-of-home consumption down 4-6% YoY due to festivals, unseasonal rains (esp. East India), and post-accident flight reductions (TFS passenger traffic -1% YoY).</li>
+<li><strong>Margin Compression</strong>: EBITDA margins declined (Sapphire 6.1% ↓240bps; Devyani mentions operating deleverage). Higher delivery mix (35-45% sales), marketing spends (Pizza Hut), and lower gross margins in some brands (KFC 67.2% ↓110bps).</li>
+<li><strong>Macro Slowdown</strong>: Subdued sentiment from GST transition (minimal QSR impact but early stages), benign inflation yet weak frequency/spend.</li>
+</ul>
+</div>
+<div id="tailwinds-positive-drivers-2" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Store Expansions &amp; Network Growth</strong>: Aggressive additions (Devyani +39 net/2,184 stores; Sapphire +23/997; RBA +14/533; Westlife +8/450; TFS &gt;500 system-wide). Gross margins expanded (Westlife 72.4% ↑270bps YoY; RBA 68.3% ↑80bps).</li>
+<li><strong>Menu Innovation &amp; Value Focus</strong>: New LTOs/value platforms (Devyani Chana Chatpata Burger ₹69; Sapphire EPIC Savers/KFC Feastival; RBA value offerings; Westlife Protein Plus Slice). Digital/omni-channel strength (75% sales for Westlife; TFS app growth).</li>
+<li><strong>International &amp; Diversification</strong>: Sapphire Sri Lanka +18% LKR; Devyani Thailand/Tealive test; TFS airport wins (Cochin/Delhi T2).</li>
+<li><strong>Policy Boost</strong>: GST 2.0 positive for consumption (Devyani/RBA); benign input costs passed to consumers.</li>
+</ul>
+</div>
+<div id="growth-prospects-medium-term-opportunities" class="section level12">
+<p class="heading"><strong>Growth Prospects (Medium-Term Opportunities)</strong></p>
+<ul>
+<li><strong>Expansion Pipeline</strong>: Continued capex for 60-80 stores/year (Sapphire KFC); Westlife Vision 2027 (580-630 stores); TFS 14/15 top airports + highways/lounges (464 QSRs/37 lounges system-wide).</li>
+<li><strong>Revenue Levers</strong>: SSSG recovery via promotions/digital (47M app downloads Westlife; TFS LFL +9.2%); new formats (drive-thrus 108, McCafé 436); brand extensions (Devyani Skygate break-even by Mar’26; RBA Indonesia).</li>
+<li><strong>Airport/Travel Boom</strong>: TFS system sales +18.4% YoY despite traffic dip; new contracts (Noida/Navi Mumbai).</li>
+<li><strong>Profitability</strong>: Margin levers from supply chain (gross ↑ across most), own delivery, and festive H2 pickup. Strong balance sheets (TFS ₹7.5B cash, no debt).</li>
+</ul>
+</div>
+<div id="key-risks-potential-threats" class="section level12">
+<p class="heading"><strong>Key Risks (Potential Threats)</strong></p>
+<ul>
+<li><strong>Demand Volatility</strong>: Festival shifts, weather, aviation disruptions (post-Ahmedabad accident); persistent weak sentiment if inflation rises.</li>
+<li><strong>Operational/Execution</strong>: Deleveraging from expansions; delivery dependency (higher mix erodes margins); marketing costs (Pizza Hut negative EBITDA ex-marketing).</li>
+<li><strong>Competition &amp; Execution</strong>: Intense QSR rivalry; contract expiries (TFS net gains flat H1); integration risks (Devyani Skygate).</li>
+<li><strong>Macro/Regulatory</strong>: Economic slowdown, GST changes, forex (international ops), litigation/tax (all safe harbor notes). Currency fluctuations (Sapphire LKR/INR).</li>
+</ul>
+<p><strong>Overall Sector Outlook</strong>: Moderately positive with structural tailwinds from urbanization/airport growth outweighing cyclical headwinds. H2 festive recovery + expansions could drive 10-15% system sales growth FY26, but SSSG rebound critical for margins. Focus on value/digital positions leaders (Devyani/Sapphire/TFS) for outperformance; monitor consumption revival.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

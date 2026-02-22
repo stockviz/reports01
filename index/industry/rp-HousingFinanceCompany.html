@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Housing Finance Company</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Housing Finance Company</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/HousingFinanceCompany.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/HousingFinanceCompany.fan.CAP_WT.png" /></p>
+<p><img src="plots/HousingFinanceCompany.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/HousingFinanceCompany.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/HousingFinanceCompany.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/HousingFinanceCompany.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/HousingFinanceCompany.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a9efd49f43003b38c892" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a9efd49f43003b38c892">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-1.91%","-1.06%"],["-3.63%","-2.85%"],["-6.05%","-4.93%"],["-8.05%","-5.39%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/HousingFinanceCompany.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/HousingFinanceCompany.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ba27c3cd6aea185d3c24" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ba27c3cd6aea185d3c24">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJAJHFL.html\" target=\"_blank\">BAJAJHFL<\/a>","<a href=\"/reports02/eq-in/risk/in.LICHSGFIN.html\" target=\"_blank\">LICHSGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.PNBHOUSING.html\" target=\"_blank\">PNBHOUSING<\/a>","<a href=\"/reports02/eq-in/risk/in.AADHARHFC.html\" target=\"_blank\">AADHARHFC<\/a>","<a href=\"/reports02/eq-in/risk/in.SAMMAANCAP.html\" target=\"_blank\">SAMMAANCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.APTUS.html\" target=\"_blank\">APTUS<\/a>","<a href=\"/reports02/eq-in/risk/in.HOMEFIRST.html\" target=\"_blank\">HOMEFIRST<\/a>","<a href=\"/reports02/eq-in/risk/in.CANFINHOME.html\" target=\"_blank\">CANFINHOME<\/a>","<a href=\"/reports02/eq-in/risk/in.AAVAS.html\" target=\"_blank\">AAVAS<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIASHLTR.html\" target=\"_blank\">INDIASHLTR<\/a>","<a href=\"/reports02/eq-in/risk/in.REPCOHOME.html\" target=\"_blank\">REPCOHOME<\/a>","<a href=\"/reports02/eq-in/risk/in.GICHSGFIN.html\" target=\"_blank\">GICHSGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.SRGHFL.html\" target=\"_blank\">SRGHFL<\/a>"],[0.08823654232918915,0.1674361044186035,0.1693939569673205,0.05375790732421296,0.1230326632853069,0.09287630200262097,0.1121096475467629,0.08038868177873976,0.0547385971538057,0.03469783295841219,0.01670938543112905,0.005207150294724017,0.001415228509172427],[0.3414614661048617,0.1330987723861434,0.1023214492801643,0.09540344298839022,0.05736232372263916,0.05710162374896226,0.05617244578452974,0.0552501707320216,0.04741315676605019,0.03700075839992342,0.01152045378822602,0.003952699406717729,0.001941236891370256]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":13,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,13,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f6d78bf69ba949a37973" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f6d78bf69ba949a37973">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJAJHFL.html\" target=\"_blank\">BAJAJHFL<\/a>","<a href=\"/reports02/eq-in/risk/in.LICHSGFIN.html\" target=\"_blank\">LICHSGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.PNBHOUSING.html\" target=\"_blank\">PNBHOUSING<\/a>","<a href=\"/reports02/eq-in/risk/in.AADHARHFC.html\" target=\"_blank\">AADHARHFC<\/a>","<a href=\"/reports02/eq-in/risk/in.SAMMAANCAP.html\" target=\"_blank\">SAMMAANCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.APTUS.html\" target=\"_blank\">APTUS<\/a>","<a href=\"/reports02/eq-in/risk/in.HOMEFIRST.html\" target=\"_blank\">HOMEFIRST<\/a>","<a href=\"/reports02/eq-in/risk/in.CANFINHOME.html\" target=\"_blank\">CANFINHOME<\/a>","<a href=\"/reports02/eq-in/risk/in.AAVAS.html\" target=\"_blank\">AAVAS<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIASHLTR.html\" target=\"_blank\">INDIASHLTR<\/a>","<a href=\"/reports02/eq-in/risk/in.REPCOHOME.html\" target=\"_blank\">REPCOHOME<\/a>","<a href=\"/reports02/eq-in/risk/in.GICHSGFIN.html\" target=\"_blank\">GICHSGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.SRGHFL.html\" target=\"_blank\">SRGHFL<\/a>"],[null,null,null,null,null,null,null,null,null,null,null,null,null],[21.41075751959818,30.88288603847406,12.38182362071917,0.08768610622902467,7.811802235468057,4.924626189199859,2.131924277101458,5.078987293758329,2.364567823198425,1.030885089537787,1.907184975104364,0.009589367336252742,0.05299697609875979],[23.33238420835059,28.74601996235968,12.78781561797736,0.07020058389182715,6.8104276254796,4.296985743685233,2.76984724280243,5.26332362684758,2.948499584495486,1.340455531133125,2.218635498317125,0.007410032179697092,0.09491581207576424],[28.23598571272572,30.78765489849496,12.52405235703386,0.05933709519888262,7.82839100220721,3.903332235341545,2.881421108479346,5.447526658801036,3.556724819329378,2.034054484281287,2.605048606081935,0.007286623109738933,0.1291843989151016]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-03-31<\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":13,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4]},{"name":"SYMBOL","targets":0},{"name":"2025-03-31","targets":1},{"name":"2025-06-30","targets":2},{"name":"2025-09-30","targets":3},{"name":"2025-12-31","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,13,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-43063f2bc3812f819bf8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-43063f2bc3812f819bf8">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJAJHFL.html\" target=\"_blank\">BAJAJHFL<\/a>","<a href=\"/reports02/eq-in/risk/in.LICHSGFIN.html\" target=\"_blank\">LICHSGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.PNBHOUSING.html\" target=\"_blank\">PNBHOUSING<\/a>","<a href=\"/reports02/eq-in/risk/in.AADHARHFC.html\" target=\"_blank\">AADHARHFC<\/a>","<a href=\"/reports02/eq-in/risk/in.SAMMAANCAP.html\" target=\"_blank\">SAMMAANCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.APTUS.html\" target=\"_blank\">APTUS<\/a>","<a href=\"/reports02/eq-in/risk/in.HOMEFIRST.html\" target=\"_blank\">HOMEFIRST<\/a>","<a href=\"/reports02/eq-in/risk/in.CANFINHOME.html\" target=\"_blank\">CANFINHOME<\/a>","<a href=\"/reports02/eq-in/risk/in.AAVAS.html\" target=\"_blank\">AAVAS<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIASHLTR.html\" target=\"_blank\">INDIASHLTR<\/a>","<a href=\"/reports02/eq-in/risk/in.REPCOHOME.html\" target=\"_blank\">REPCOHOME<\/a>","<a href=\"/reports02/eq-in/risk/in.GICHSGFIN.html\" target=\"_blank\">GICHSGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.SRGHFL.html\" target=\"_blank\">SRGHFL<\/a>"],[null,null,null,null,null,null,null,null,null,null,null,null,null],[20.24880479584276,35.76329864384751,10.06568642028319,0.06347340483450882,11.07802084575284,2.46524476375384,1.714873655008122,5.089388129375277,1.234090930035295,1.359198008584829,1.527682167661577,0.01879081914737818,0.1467829068820708],[22.95688975493628,35.33496677174389,10.75459126907594,0.05469882820813381,6.903304979526644,2.255364617980874,1.584404385766939,5.30083576410067,1.981337946446494,1.352209282914161,1.898755052383792,0.01373976797435825,0.1926915729765745],[27.43164845023163,36.87961382124665,10.63281065235246,0.04485908917006396,8.779544389891639,2.697272015328146,1.781626884579662,5.276615808590826,2.589634181347947,1.397372674999475,2.242400191119549,0.01377641138394923,0.2328254297580009]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-03-31<\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":13,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4]},{"name":"SYMBOL","targets":0},{"name":"2025-03-31","targets":1},{"name":"2025-06-30","targets":2},{"name":"2025-09-30","targets":3},{"name":"2025-12-31","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,13,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-indian-housing-finance-sector-based-on-q2-fy26-disclosures-and-earnings-calls" class="section level9">
+<p class="heading">Summary Analysis: Indian Housing Finance Sector (Based on Q2 FY26 Disclosures and Earnings Calls)</p>
+<p>The Indian housing finance sector (HFCs/NBFCs) shows resilience amid competition but faces margin pressures. Insights from companies like LIC Housing Finance (LICHFL), Repco Home Finance, Sammaan Capital (ex-Indiabulls), SRG Housing Finance, Bajaj Housing, PNB Housing, and others highlight a mix of stabilizing macro conditions and execution challenges. Below is a structured summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="headwinds" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Aggressive Bank Competition</strong>: PSU banks (e.g., SBI) offering home loans at 7.35-7.5% (vs. HFCs’ 7.5-8%), driving high balance transfers (BTs). LICHFL reported ₹4,000 Cr BTs in Q2 (2x run-rate), eroding 5-6% AUM growth.</li>
+<li><strong>NIM Compression</strong>: Spreads down to 2.6-2.8% (LICHFL: 2.62%; Repco: 5.5% but yields falling). PLR resets (e.g., LICHFL cut 25 bps) and repo-linked bank borrowings transmit rate cuts, squeezing yields (incremental: 8.78-9.24%).</li>
+<li><strong>Slow/Flat Growth</strong>: AUM growth muted at 6-8% YoY (LICHFL: 6%; industry peers similar), hit by BTs, project loan caution (down to 3% mix), and seasonal Q3 weakness (inauspicious periods in South India).</li>
+<li><strong>Elevated Costs</strong>: Employee/other expenses up (Repco: incentives, promotions, silver jubilee; SRG: expansion phase), pushing cost-to-income to 28-62%.</li>
+<li><strong>Legacy Stress</strong>: Stage-3 NPAs 2.5-3.16% (improving but sticky); credit costs 5-22 bps, with management overlays.</li>
+</ul>
+</div>
+<div id="tailwinds" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Macro Stability</strong>: RBI repo at 5.5% (neutral stance), CPI at multi-year lows, supporting credit growth. Resilient housing demand (Q2 &gt; Q1), especially salaried/self-employed segments.</li>
+<li><strong>Asset Quality Improvement</strong>: GNPA down (LICHFL: 2.51%; Repco: 3.16%; SRG: 1.88%), PCR &gt;50% (LICHFL: 53%). Recoveries from write-offs (LICHFL: ₹83 Cr; Repco: ₹6 Cr) and resolutions (e.g., SARFAESI, NCLT).</li>
+<li><strong>Funding Tailwinds</strong>: CoF down 8-24 bps QoQ (LICHFL: 7.42%; incremental 6.73%). NCDs/bonds cheaper post-investments (Sammaan: $450M bond at -150 bps); NHB refinance (Repco: ₹150 Cr); co-lending rules eased (min. retention 10%).</li>
+<li><strong>Strategic Wins</strong>: IHC’s ₹8,850 Cr investment in Sammaan (41% stake); branch expansions (Repco: +10; SRG: 93 branches); digital tools (SRG’s Srajan app).</li>
+<li><strong>Regulatory Support</strong>: Co-lending expanded (no PS restriction); willful defaulter norms for recoveries.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>AUM/Disbursement Guidance</strong>: 10-15% FY26 AUM growth (LICHFL: 10%; Repco: ₹16,200 Cr; SRG: ₹970 Cr). Disbursements up 24-85% YoY (Repco: record ₹1,069 Cr; SRG: 85%). H2 strong (Q3/Q4 traditional peaks; Repco: ₹1,100-1,400 Cr/quarter).</li>
+<li><strong>Diversification</strong>: Non-housing/LAP rising (Repco: 29%; SRG: 70:30 HL:LAP per NHB). Co-lending/DA/securitization (Sammaan: asset-light ramp-up to ₹35,000 Cr annualized). Inorganic buys (Repco exploring).</li>
+<li><strong>Expansion</strong>: Branches to 500+ (Sammaan); new states (SRG: Maharashtra/Karnataka/AP adding ₹72 Cr). Ticket sizes up (Repco: ₹21-24 lakhs incremental).</li>
+<li><strong>Profitability</strong>: ROA 2.9-3% (Repco); PAT growth 2-25% QoQ. ROE to 13-18% with NIM stabilization (2.6-5.5%) and CTI &lt;30% (Repco/SRG).</li>
+<li><strong>Long-Term</strong>: ₹25,000 Cr AUM by FY28 (Repco); sustainable 20-23% growth post-scale (Sammaan).</li>
+</ul>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Competition/Margin Erosion</strong>: Banks’ aggression could sustain BTs (LICHFL: rewriting at 8% vs. banks’ 7.5%), forcing further PLR cuts; yields vulnerable if repo falls more.</li>
+<li><strong>Asset Quality Slip</strong>: Legacy NPAs (LICHFL: 85% individual HL); microfinance/rural stress spillover (SRG rural focus); DPD up mildly (SRG: 0-30 DPD 4.65%).</li>
+<li><strong>Funding/ Liquidity</strong>: ₹6,000 Cr repricing (Repco) dependent on bank/NHB rates; over-reliance on banks (45-92% mix).</li>
+<li><strong>Execution</strong>: Branch ramp-up costs; seasonal dips (Q3); inorganic integration (portfolio quality).</li>
+<li><strong>Macro/Regulatory</strong>: Housing slowdown (e.g., US tariffs on TN exports); NHB guidelines (70:30 mix); rating upgrades delayed (SRG: BBB+ to A at ₹1,000 Cr AUM).</li>
+<li><strong>Company-Specific</strong>: Turnaround risks (Sammaan legacy rundown); high gearing potential post-equity (Sammaan: 2x to 4.5x).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Sector poised for 10-15% growth in FY26, driven by demand and funding ease, but margins/competition cap ROEs at 13-18%. Quality focus (PCR&gt;50%) mitigates downside; monitor BTs and Q3 disbursements. Bullish on affordable/rural players like Repco/SRG with 20-30% disbursement ramps.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-indian-housing-finance-sector-based-on-provided-announcements" class="section level9">
+<p class="heading">Summary Analysis: Indian Housing Finance Sector (Based on Provided Announcements)</p>
+<p>The provided documents from key players (e.g., Bajaj Housing Finance, LIC Housing Finance, PNB Housing, Aadhar Housing Finance, Aptus Value Housing, Aavas Financiers, Sammaan Capital, Can Fin Homes, Home First Finance, India Shelter Finance, Repco Home Finance, GIC Housing Finance) highlight regulatory compliances, capital raises, ESG developments, and minor litigations. These reflect a maturing sector focused on governance, inclusion, and growth amid India’s housing demand boom. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-factors-supporting-momentum" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors Supporting Momentum)</strong></p>
+<ul>
+<li><strong>Regulatory Compliance and Float Expansion</strong>: Bajaj Housing Finance’s promoter (Bajaj Finance, 88.7% stake) plans to divest up to 2% (166.6M shares) by Feb 2026 to meet minimum public shareholding (MPS) norms under SEBI rules. Similar efforts signal improved liquidity and investor access.</li>
+<li><strong>Major Capital Inflows</strong>: Sammaan Capital’s USD 1bn (~INR 8,850Cr) investment from IHC (41.2% stake via preferential shares/warrants + open offer) positions IHC as promoter, boosting tech/AI capabilities, governance, and scale (220 branches, 4,430 employees).</li>
+<li><strong>ESG Momentum</strong>: Voluntary strong ratings (Aavas: 67/100 “Strong”; Repco: 64; Home First: CSA 46/100) enhance funding access, investor appeal, and sustainable finance branding amid rising ESG mandates.</li>
+<li><strong>Talent Retention</strong>: Can Fin Homes granted 176K ESOPs under 2024 scheme, aligning employee incentives with growth.</li>
+<li><strong>Governance Stability</strong>: PNB Housing’s postal ballot approved nominee director (99% favor), ensuring board continuity.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-slowing-progress" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges Slowing Progress)</strong></p>
+<ul>
+<li><strong>Regulatory/Compliance Burdens</strong>: LIC Housing faces GST demand (Rs 88L tax + Rs 60L interest + Rs 9L penalty) under Rajasthan GST; Aadhar Housing levied Rs 15L EPF damages for Aadhaar seeding delays. These are appealable/minor but highlight administrative hurdles.</li>
+<li><strong>High Promoter Dependence</strong>: Dilution pressures (e.g., Bajaj at 88.7%) could pressure valuations short-term; undertakings prevent promoter buybacks during sales.</li>
+<li><strong>Subsidiary Cleanup</strong>: India Shelter’s voluntary liquidation of non-material WOS (0.09% turnover) indicates operational streamlining but diverts minor management focus.</li>
+</ul>
+</div>
+<div id="growth-prospects-opportunities-ahead" class="section level12">
+<p class="heading"><strong>Growth Prospects (Opportunities Ahead)</strong></p>
+<ul>
+<li><strong>Capital and Scale Boost</strong>: IHC’s investment in Sammaan validates foreign interest in NBFC housing finance, enabling pan-India expansion (150+ towns), AI-driven lending, and mid-market mortgages (USD 19Bn home loans to 680K families).</li>
+<li><strong>Financial Inclusion Tailwind</strong>: Sector’s role in affordable housing/mortgages for underserved segments (middle-income, small businesses) aligns with India’s urbanization and RBI oversight.</li>
+<li><strong>ESG and Tech Edge</strong>: Rising ratings and tech focus (Sammaan + IHC) position firms for cheaper liabilities, diversified funding, and premium listings.</li>
+<li><strong>MPS Compliance as Catalyst</strong>: Promoter dilutions (e.g., Bajaj, Aptus reclassification of WestBridge) improve free float, attracting institutional investors.</li>
+<li><strong>Outlook</strong>: Strong (20-30% AUM growth potential via demand, low NPAs in filings), fueled by INR 10Tn+ housing credit gap.</li>
+</ul>
+</div>
+<div id="key-risks-critical-vulnerabilities" class="section level12">
+<p class="heading"><strong>Key Risks (Critical Vulnerabilities)</strong></p>
+<ul>
+<li><strong>Litigation/Regulatory Exposure</strong>: Tax (GST) and labor (EPF) issues could escalate (e.g., appeals pending); non-compliance risks fines/operations halts.</li>
+<li><strong>Promoter Dilution Volatility</strong>: Sales may cause share price dips; failure to meet MPS deadlines invites penalties.</li>
+<li><strong>ESG Gaps</strong>: Lower scores (e.g., Home First 46/100) could raise funding costs amid global sustainability mandates.</li>
+<li><strong>Execution Risks</strong>: Tech integration (Sammaan), ESOP dilutions, and subsidiary wind-downs may strain resources if not managed.</li>
+<li><strong>Macro Risks</strong>: Implicit from docs—interest rate sensitivity, credit demand slowdown, or regulatory tightening (RBI/SEBI).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: <strong>Moderately Positive</strong>. Tailwinds from capital/tech/ESG outweigh headwinds, with Sammaan’s deal as a sector bellwether. Growth hinges on compliance and execution; risks are manageable (minor financial impacts). Sector poised for 15-25% CAGR, driven by India’s housing push, but monitor regulatory filings for litigation updates.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+</div>
+<div id="analysis-of-the-indian-housing-finance-company-hfc-sector" class="section level3">
+<h3>Analysis of the Indian Housing Finance Company (HFC) Sector</h3>
+<p>The provided documents primarily consist of Q2 FY26 earnings conference call transcripts (e.g., LIC Housing Finance, Sammaan Capital, Repco Home Finance, SRG Housing Finance), regulatory filings for analyst/investor meetings (e.g., Bajaj HFL, PNB Housing, Aadhar HFC, Aptus, AAVAS, Can Fin Homes, Home First, India Shelter), and disclosures on transcripts/post-earnings updates. These reflect a competitive, resilient sector focused on retail housing loans amid stable macro conditions (RBI repo at 5.5%, moderating CPI inflation). Key players show mixed growth (5-33% YoY AUM), improving asset quality, but face rate pressures. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>, derived directly from the filings.</p>
+<div id="headwinds-1" class="section level6">
+<h6>Headwinds</h6>
+<ul>
+<li><strong>Intense Competition from PSU Banks</strong>: Banks offering aggressive rates (7.35-7.5%) drive high balance transfers (BT out) – e.g., LIC HFL reported Rs.4,000 cr BT out in Q2 (double normal run-rate), impacting 5-6% YoY growth. Repco noted similar pressures despite record Rs.1,069 cr disbursals.</li>
+<li><strong>NIM Compression</strong>: Spreads squeezed to 2.62% (LIC) and 5.5% (Repco/Sammaan) due to PLR cuts (e.g., LIC reduced rewriting rates to ~8%), legacy resets, and sticky funding costs (7.42% blended CoF at LIC).</li>
+<li><strong>Muted YoY Growth and Legacy Drag</strong>: AUM growth subdued (LIC: 6%; Repco: 8%) due to legacy rundown (Sammaan: Rs.9,000 cr decline YoY) and seasonal Q3 weakness (inauspicious days in South India per Repco).</li>
+<li><strong>Rising Operating Costs</strong>: Employee expenses up (Repco: incentives/promotions/silver jubilee; SRG: expansion phase), pushing cost-to-income to 28.4% (Repco) and ~62% (SRG).</li>
+<li><strong>Regulatory Constraints</strong>: NHB guidelines forcing reclassification (e.g., Repco’s multi-kitchen loans from HL to non-HL, capping LAP at 30% for SRG), tightening NHB liquidity.</li>
+</ul>
+</div>
+<div id="tailwinds-1" class="section level6">
+<h6>Tailwinds</h6>
+<ul>
+<li><strong>Improving Asset Quality</strong>: GNPA declining (LIC: 2.51% from 3.06%; Repco: 3.16% targeting 2.5%; SRG: 1.88% from 1.96%). PCR &gt;50% (LIC: 53%; Repco: 52.5%). Recoveries/write-offs aiding (LIC: Rs.83 cr recoveries).</li>
+<li><strong>Declining Funding Costs</strong>: Incremental CoF down (LIC: 6.73%; Repco: 8.3% expecting 10-15 bps cut). NCD issuance success (Repco: Rs.150 cr CP; SRG: Rs.50 cr from MFs). Refinance from NHB (Repco: Rs.150 cr utilized).</li>
+<li><strong>Equity Infusions &amp; Investor Interest</strong>: Sammaan securing Rs.8,850 cr from IHC (41% stake), unlocking tech/branch expansion. Active investor meets (e.g., DAM Capital conference across multiple HFCs) signal confidence.</li>
+<li><strong>Macro Support</strong>: Resilient housing demand (Q2 better than Q1 per LIC), stable repo, low inflation. Digital tools (geotagging, Srajan app at SRG) aiding efficiency.</li>
+<li><strong>Higher Yields in Select Segments</strong>: Non-HL/LAP yields 13-13.55% (Repco/SRG), supporting spreads (SRG: 9%).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level6">
+<h6>Growth Prospects</h6>
+<ul>
+<li><strong>Disbursal Ramp-Up</strong>: Strong Q-o-Q momentum (LIC: 24%; Repco: record Rs.1,069 cr). Guidance: Repco (AUM Rs.16,200 cr FY26, Rs.25,000 cr FY28); SRG (AUM Rs.970 cr FY26, Rs.1,500 cr by 2028); Sammaan (Rs.35,000 cr annualized FY27 via co-lending/DA).</li>
+<li><strong>Geographic/Product Expansion</strong>: Branch additions (Repco: 10-15 more; SRG: 5-10). Shift to self-employed/affordable (LIC), co-lending (Sammaan: new RBI rules accretive), higher ticket sizes (Repco: Rs.23-24 lk incremental).</li>
+<li><strong>Structural Levers</strong>: Incentives/recruitment boosting sales/recoveries (Repco). Tech/AI integration (Sammaan via IHC). Rating upgrades (Sammaan: Moody’s review; SRG: BBB+ to A at Rs.1,000 cr AUM).</li>
+<li><strong>H2 Strength</strong>: Q3/Q4 traditionally robust (LIC/Repco). Pipeline conversions (Repco: Rs.150 cr sanctions pending).</li>
+<li><strong>Overall Sector Outlook</strong>: 10-15% AUM growth feasible (LIC guidance), driven by underserved semi-urban/rural (SRG: 33% growth).</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level6">
+<h6>Key Risks</h6>
+<ul>
+<li><strong>BT Out &amp; Pricing Pressure</strong>: Persistent if PLR not cut further (LIC: rewriting at 8% vs. banks’ 7.5%). Could cap growth to single-digits.</li>
+<li><strong>Asset Quality Deterioration</strong>: Legacy NPAs (LIC: 2.51%; Repco: targeting 2.5%), rising 30+ DPD (SRG: 7.32%). Stress in affordable/rural (Aditya query in SRG call).</li>
+<li><strong>Funding Dependence</strong>: High bank exposure (45% at SRG), CoF sensitivity to repo/microfinance stress. Liquidity buffers critical (Sammaan ALM strength).</li>
+<li><strong>Execution Risks</strong>: Branch ramp-up costs (SRG CTI high), inorganic buys diluting organic growth (Repco exploring).</li>
+<li><strong>Regulatory/External</strong>: NHB/RBI tightening (LAP caps), US tariffs/export stress (Repco Tamil Nadu exposure), inauspicious periods.</li>
+</ul>
+</div>
+<div id="summary" class="section level6">
+<h6>Summary</h6>
+<p>The Indian HFC sector exhibits <strong>resilience amid competition</strong>, with tailwinds from improving asset quality (GNPA &lt;3%), falling CoF (6.7-8.3%), and equity/tech boosts outweighing headwinds like BT out and NIM squeeze. <strong>Growth prospects are robust</strong> (10-33% AUM FY26 guidance across peers), fueled by H2 disbursal ramps, expansions, and co-lending, targeting Rs.15-35k cr annualized runs. However, <strong>key risks</strong> center on pricing wars, legacy NPAs, and funding volatility, necessitating disciplined underwriting (e.g., 50% LTV at SRG). Overall, <strong>positive outlook</strong> for 12-15% sector growth FY26-28, with leaders like Repco/SRG (rural focus) and LIC (scale) poised to gain share via restructuring/digitalization. Investors should monitor BT trends and Q3 execution.</p>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+</div>
+<div id="analysis-of-indian-housing-finance-sector-based-on-q2h1-fy26-results-from-key-players" class="section level3">
+<h3>Analysis of Indian Housing Finance Sector (Based on Q2/H1 FY26 Results from Key Players)</h3>
+<p>The provided documents cover unaudited Q2/H1 FY26 financial results and press releases from 10 prominent Housing Finance Companies (HFCs): LIC Housing Finance, PNB Housing, Aadhar Housing, Aptus Value Housing, Aavas Financiers, Can Fin Homes, Home First Finance, India Shelter, Repco Home Finance, and SRG Housing Finance. These represent a mix of large (e.g., LIC, PNB), mid-sized (e.g., Aadhar, Aptus), and smaller players (e.g., SRG), focusing on affordable housing for EWS/LIG segments in semi-urban/rural/Tier 2-5 markets.</p>
+<p><strong>Overall Sector Snapshot</strong>: - <strong>AUM Growth</strong>: 7-34% YoY (avg. ~20%), driven by disbursements (flat to +85% YoY). - <strong>PAT Growth</strong>: 2-43% YoY (avg. ~20-25%), with RoA/RoE at 2-6%/13-20%. - <strong>Asset Quality</strong>: GNPA stable/improving (1.2-3.2%; avg. ~1.8%), but some upticks noted. - Themes: Affordable housing focus, digital/tech adoption, PMAY 2.0 tailwinds, but NIM pressure and macro caution.</p>
+<p>Below is a structured summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-supportive-factors" class="section level6">
+<h6><strong>Tailwinds (Supportive Factors)</strong></h6>
+<ul>
+<li><strong>Robust Demand &amp; AUM Expansion</strong>: Strong YoY AUM growth (e.g., India Shelter 34%, Home First 26%, Aptus/Aadhar 21-22%) fueled by disbursements in individual home loans (70-83% of portfolio). EWS/LIG focus benefits from govt. schemes like PMAY 2.0, ISS subsidies (Aavas: 2,300+ customers benefited ₹75 Cr), GST rationalization, and lower rates improving affordability.</li>
+<li><strong>Profitability Resilience</strong>: PAT up 11-43% YoY; healthy spreads (3-6.4%; e.g., India Shelter/Home First 5.3-6.4%) and NIM (2.6-7.8%). RoA/RoE strong (e.g., Aptus 7.9%/20%, Aadhar 5.8%/17%). Cost efficiencies via digital (e.g., Home First: 96% app-registered customers; Aavas: TAT reduced to 6 days).</li>
+<li><strong>Asset Quality Stability</strong>: GNPA mostly flat/declining (e.g., LIC 2.51% vs. 3.06%, Repco 3.16% vs. 3.96%, Aavas 1.24%). PCR 34-53%; low credit costs (16-40 bps). PCR improvements via ECL provisioning.</li>
+<li><strong>Funding &amp; Ratings</strong>: Cost of funds down (e.g., Home First -30 bps QoQ); rating upgrades (PNB AAA, Aptus AA). Diverse mix (banks 45%, NHB/FIs, NCDs). High CRAR (36-48%).</li>
+<li><strong>Distribution &amp; Tech</strong>: Branch additions (e.g., Aadhar +9 to 299; Aptus to 321); digital adoption (&gt;80-95% e-agreements/NACH).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>NIM/Spread Pressure</strong>: Compression in some (LIC NIM 2.62% vs. 2.71%; Can Fin spread up but modest growth). High opex/AUM (2.7-4.4%; Aadhar opex flat).</li>
+<li><strong>Disbursement Moderation</strong>: Flat/slow in large players (LIC ~flat; Can Fin 7-8%); impacted by monsoons/tariffs (Home First). Project loans down sharply (LIC -73%).</li>
+<li><strong>Asset Quality Stress</strong>: Marginal GNPA rises (Home First 1.9% +20 bps YoY; Repco NNPA up QoQ). 1+/30+ DPD upticks (e.g., Home First 5.5%/3.7%; Aavas 3.99%).</li>
+<li><strong>Macro/Operational</strong>: Subdued demand in H1 due to monsoons/inflation; high competition; granularization efforts ongoing but concentration risks noted (PNB).</li>
+<li><strong>Funding Costs</strong>: Rising in some despite declines; dependency on banks/NHB (40-50%).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>High Potential in Affordable Housing</strong>: Sector poised for 20-30% AUM growth (e.g., Aptus targets ₹25,000 Cr; Home First/SRG eyeing ₹1,000+ Cr milestones). Tailwinds from PMAY 2.0, rate cuts, macro recovery (festive boost expected).</li>
+<li><strong>Geographic/Product Expansion</strong>: Contiguous growth in Tier 2-5 (e.g., Aavas Tamil Nadu focus; SRG 93 branches in 6 states/1 UT). Product diversification (LAP 25-30%; MSME loans).</li>
+<li><strong>Efficiency Gains</strong>: Tech-led (AI workflows, account aggregators); digital collections &gt;95%. Branch networks scaling (total 200-400+).</li>
+<li><strong>Capital Strength</strong>: High CRAR (36-48%) supports leverage; internal accruals + equity raises (e.g., Home First pre-money RoE 16.7%).</li>
+<li><strong>Guidance</strong>: 15-25%+ growth sustainable; yields improving (Aavas +10 bps YoY).</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="20%" />
+<col width="46%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Mitigation/Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Credit/Asset Quality</strong></td>
+<td>NPA slippage (e.g., Stage 3 1.2-3.2%); credit costs 16-50 bps; delinquency upticks.</td>
+<td>Strong PCR (34-53%), ECL provisioning, low LTV (46%), granular retail focus.</td>
+</tr>
+<tr class="even">
+<td><strong>Interest Rate/Funding</strong></td>
+<td>NIM squeeze from rising deposit/borrowing costs; refinancing risks.</td>
+<td>Diverse funding (NCDs, NHB); cost declines QoQ; high LCR (217-327%).</td>
+</tr>
+<tr class="odd">
+<td><strong>Regulatory/Compliance</strong></td>
+<td>NHB/RBI norms (ECL, LCR); cap on project loans.</td>
+<td>High CRAR; tech for compliance (e.g., Aadhar assignments/co-lending).</td>
+</tr>
+<tr class="even">
+<td><strong>Macro/Economic</strong></td>
+<td>Monsoons, inflation, elections; slowdown in semi-urban demand.</td>
+<td>Govt. schemes (PMAY); rural focus resilient.</td>
+</tr>
+<tr class="odd">
+<td><strong>Operational/Competition</strong></td>
+<td>High opex (32-64% cost-income); branch scaling costs; competition from banks/NBFCs.</td>
+<td>Digital efficiencies; focused geographies.</td>
+</tr>
+<tr class="even">
+<td><strong>Liquidity/Capital</strong></td>
+<td>Funding concentration (banks/FIs 40-50%); equity dilution post-raises.</td>
+<td>Liquidity buffers (e.g., ₹2-4k Cr); undrawn lines.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Summary Outlook</strong>: The sector exhibits resilience with 15-30% AUM/PAT growth, supported by policy tailwinds and tech efficiencies, but faces NIM/quality headwinds amid macro caution. Growth prospects remain strong (20%+ CAGR feasible) in underserved segments, with risks manageable via strong balance sheets (CRAR &gt;35%). Investors should monitor Q3 festive demand and NPA trends for sustained momentum. Overall, <strong>positive</strong> with <strong>cautious optimism</strong>.</p>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

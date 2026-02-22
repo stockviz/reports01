@@ -1,0 +1,239 @@
+---
+params:
+  index_name: ""
+  fName: ""
+subtitle: Industry Metrics
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: rmdlib
+    toc: true
+    toc_depth: 2
+    includes:
+        in_header: ../header.html
+        after_body: ../../footer.html
+---
+
+```{r, init_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+idPath <- "../../"
+
+#source("/mnt/hollandC/StockViz/R/config.r")
+#industrySummDb <- "/mnt/data/recoll/INDUSTRY.db"
+
+source("/mnt/hollandr/config.r")
+industrySummDb <- "/srv/stockviz-dashboard/INDUSTRY.db"
+
+library('RODBC')
+library('DBI')
+library('RSQLite')
+library('DT')
+library('tidyverse')
+
+options(stringsAsFactors = FALSE)
+options("scipen"=100)
+
+iName <- params$index_name
+fName <- params$fName
+
+lcon <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, ldbname, ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+
+fanPlotName <- paste0("plots/", fName, ".fan.png")
+cumPlotName <- paste0("plots/", fName, ".cumret.png")
+smaCumPlotName <- paste0("plots/", fName, ".sma.cumret.png")
+annPlotName <- paste0("plots/", fName, ".annret.png")
+rollPlotName  <- paste0("plots/", fName, ".roll.png")
+
+#iName <- 'Abrasives & Bearings'
+symbols <- sqlQuery(lcon, sprintf("select a.symbol from nse_industry a 
+                    join (select b.symbol, max(b.time_stamp) mt from nse_industry b group by symbol) t 
+                    on a.symbol=t.symbol 
+                    and a.time_stamp = t.mt
+                    and basic_industry = '%s'", iName))[,1]
+
+bhavDt <- sqlQuery(lcon, "select max(time_stamp) from px_history")[[1]]
+
+mktCapDf <- sqlQuery(lcon, sprintf("select SYMBOL, FF_MKT_CAP_CR, MKT_CAP_CR from equity_misc_info
+                                   where time_stamp = '%s'
+                                   and symbol in ('%s')", bhavDt, paste(symbols, collapse="','")))
+
+mktCapPct <- mktCapDf %>% mutate(FF_PCT = FF_MKT_CAP_CR/sum(FF_MKT_CAP_CR), CAP_PCT = MKT_CAP_CR/sum(MKT_CAP_CR)) %>%
+  select(SYMBOL, FF_PCT, CAP_PCT) %>%
+  arrange(desc(CAP_PCT)) %>%
+  mutate(SYMBOL_LINK = if_else(file.exists(sprintf("../../../reports02/eq-in/risk/in.%s.html", gsub("[^[:alnum:] ]| ", "", SYMBOL))), 
+							sprintf('<a href="/reports02/eq-in/risk/in.%s.html" target="_blank">%s</a>', gsub("[^[:alnum:] ]| ", "", SYMBOL), SYMBOL), 
+							SYMBOL))
+
+indusStats <- sqlQuery(lcon, sprintf("select * from INDUSTRY_STATS where industry = '%s'", iName))
+maxIndusDt <- indusStats %>% group_by(PERIOD_END, SYMBOL) %>% summarise(MDT = max(UPDATE_DT))
+
+indusEbit <- indusStats %>% filter(FIN == 'EBIT' & ITEM_KEY == 'SHARE_PCT') %>% 
+  inner_join(maxIndusDt, join_by(PERIOD_END, UPDATE_DT == MDT, SYMBOL)) %>%
+  select(PERIOD_END, SYMBOL, VAL) %>%
+  pivot_wider(id_cols = SYMBOL, names_from = PERIOD_END, values_from = VAL) %>%
+  inner_join(mktCapPct |> select(-SYMBOL_LINK), join_by(SYMBOL)) %>%
+  arrange(desc(CAP_PCT)) %>%
+  select(-c(FF_PCT, CAP_PCT)) %>%
+  mutate(SYMBOL = if_else(file.exists(sprintf("../../../reports02/eq-in/risk/in.%s.html", gsub("[^[:alnum:] ]| ", "", SYMBOL))), 
+							sprintf('<a href="/reports02/eq-in/risk/in.%s.html" target="_blank">%s</a>', gsub("[^[:alnum:] ]| ", "", SYMBOL), SYMBOL), 
+							SYMBOL))
+
+indusRev <- indusStats %>% filter(FIN == 'RevenueFromOperations' & ITEM_KEY == 'SHARE_PCT') %>% 
+  inner_join(maxIndusDt, join_by(PERIOD_END, UPDATE_DT == MDT, SYMBOL)) %>%
+  select(PERIOD_END, SYMBOL, VAL) %>%
+  pivot_wider(id_cols = SYMBOL, names_from = PERIOD_END, values_from = VAL) %>%
+  inner_join(mktCapPct |> select(-SYMBOL_LINK), join_by(SYMBOL)) %>%
+  arrange(desc(CAP_PCT)) %>%
+  select(-c(FF_PCT, CAP_PCT)) %>%
+  mutate(SYMBOL = if_else(file.exists(sprintf("../../../reports02/eq-in/risk/in.%s.html", gsub("[^[:alnum:] ]| ", "", SYMBOL))), 
+							sprintf('<a href="/reports02/eq-in/risk/in.%s.html" target="_blank">%s</a>', gsub("[^[:alnum:] ]| ", "", SYMBOL), SYMBOL), 
+							SYMBOL))
+
+
+mydb <- dbConnect(RSQLite::SQLite(), dbname = industrySummDb, flags = RSQLite::SQLITE_RO)
+aiSummaries <- dbGetQuery(mydb, "SELECT * FROM INDUSTRY_SUMMARY WHERE INDUSTRY = $1", params=list(iName))
+dbDisconnect(mydb)
+
+latestDt <- aiSummaries |> mutate(ANN_TYPE = str_to_title(ANN_TYPE)) |>
+  select(-INDUSTRY) |>
+  group_by(ANN_TYPE) |>
+  summarise(MAX_AS_OF = max(AS_OF))
+
+aiTp <- aiSummaries |> select(-INDUSTRY) |>
+  inner_join(latestDt, by = join_by(ANN_TYPE == ANN_TYPE, AS_OF == MAX_AS_OF)) |>
+  select(ANN_TYPE, AS_OF, SUMMARY) |>
+  arrange(ANN_TYPE)
+
+
+
+
+```
+
+---
+title: `r iName`
+date: `r createdDate`
+---
+
+## Annual Returns
+
+![](`r paste0("plots/", fName, ".fan.EQUAL_WT.png")`)
+
+![](`r paste0("plots/", fName, ".fan.CAP_WT.png")`)
+
+![](`r paste0("plots/", fName, ".annret.EQUAL_WT.png")`)
+
+![](`r paste0("plots/", fName, ".annret.CAP_WT.png")`)
+
+## Cumulative Returns and Drawdowns
+
+![](`r cumPlotName`)
+
+\
+
+## SMA Scenarios
+
+![](`r paste0("plots/", fName, ".sma.cumret.EQUAL_WT.png")`)
+
+![](`r paste0("plots/", fName, ".sma.cumret.CAP_WT.png")`)
+
+\
+
+### Current Distance from SMA
+
+```{r, dist_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE, fig.height=12, fig.width=12}
+
+load("../smaDist-industry.Rdata")
+
+indexDist <- smaDist[smaDist$INDEX_NAME == iName, -1]
+indexDistDT <- datatable(indexDist, rownames = F, class = 'cell-border stripe', filter='none', options = list(dom = 't', pageLength = 30, ordering=F))
+htmltools::tagList(print(indexDistDT))
+
+```
+
+\
+
+## Rolling Returns
+
+![](`r paste0("plots/", fName, ".roll.EQUAL_WT.png")`)
+
+![](`r paste0("plots/", fName, ".roll.CAP_WT.png")`)
+
+\
+\
+
+## Constituent Shares
+
+\
+
+## Market Cap
+
+```{r, mkt_cap_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE, fig.height=12, fig.width=12}
+
+mkt2Print <- mktCapPct |> select(-SYMBOL) |> relocate(SYMBOL_LINK, .before = FF_PCT)
+mktCapDT <- datatable(mkt2Print, 
+                      rownames = F, colnames = c('', 'free-float', 'full-float'),
+                      class = 'cell-border stripe', filter='none', 
+                      escape = c(F, rep(T, ncol(mkt2Print) - 1)),
+                      options = list(dom = 't', pageLength = nrow(mkt2Print))) %>%
+            formatPercentage(c('FF_PCT', 'CAP_PCT'), 2)
+
+htmltools::tagList(print(mktCapDT))
+
+```
+
+## EBIT (% of Industry Total)
+
+```{r, ebit_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE, fig.height=12, fig.width=12}
+
+colNames <- names(indusEbit)
+colNames[1] <- ''
+ebitDT <- datatable(indusEbit, 
+                      rownames = F, colnames = colNames,
+                      class = 'cell-border stripe', filter='none', 
+                      escape = c(F, rep(T, ncol(indusEbit) - 1)),
+                      options = list(dom = 't', pageLength = nrow(indusEbit))) %>%
+            formatRound(names(indusEbit)[sapply(indusEbit, is.numeric)], 2)
+
+htmltools::tagList(print(ebitDT))
+
+```
+
+## Revenue (% of Industry Total)
+
+```{r, revenue_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE, fig.height=12, fig.width=12}
+
+colNames <- names(indusRev)
+colNames[1] <- ''
+revDT <- datatable(indusRev, 
+                      rownames = F, colnames = colNames,
+                      class = 'cell-border stripe', filter='none', 
+                      escape = c(F, rep(T, ncol(indusRev) - 1)),
+                      options = list(dom = 't', pageLength = nrow(indusRev))) %>%
+            formatRound(names(indusRev)[sapply(indusRev, is.numeric)], 2)
+
+htmltools::tagList(print(revDT))
+
+```
+
+\
+
+```{r, ai_summary_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE, fig.height=12, fig.width=12}
+if(nrow(aiTp) > 0){
+  cat("## AI Summaries", "\n\n")
+  for(i in 1:nrow(aiTp)){
+    cat("### ", paste0("**", aiTp$ANN_TYPE[i], "**"), "\n\n")
+    cat("*asof: ", aiTp$AS_OF[i], " *", "\n\n")
+    summ <- str_replace_all(aiTp$SUMMARY[i], "#### ", "###### ")
+    summ <- str_replace_all(summ, "### ", "##### ")
+    summ <- str_replace_all(summ, "## ", "#### ")
+    summ <- str_replace_all(summ, "# ", "### ")
+    
+    cat(summ, "\n\n")
+  }
+}
+
+```

@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Public Sector Bank</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Public Sector Bank</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/PublicSectorBank.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/PublicSectorBank.fan.CAP_WT.png" /></p>
+<p><img src="plots/PublicSectorBank.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/PublicSectorBank.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/PublicSectorBank.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/PublicSectorBank.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/PublicSectorBank.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2718d6deefbe02eb7f51" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2718d6deefbe02eb7f51">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["3.11%","6.37%"],["5.54%","11.91%"],["7.29%","17.65%"],["14.01%","29.44%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/PublicSectorBank.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/PublicSectorBank.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ddd2c6b0193b62de7279" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ddd2c6b0193b62de7279">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.SBIN.html\" target=\"_blank\">SBIN<\/a>","<a href=\"/reports02/eq-in/risk/in.BANKBARODA.html\" target=\"_blank\">BANKBARODA<\/a>","<a href=\"/reports02/eq-in/risk/in.UNIONBANK.html\" target=\"_blank\">UNIONBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.PNB.html\" target=\"_blank\">PNB<\/a>","<a href=\"/reports02/eq-in/risk/in.CANBK.html\" target=\"_blank\">CANBK<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIANB.html\" target=\"_blank\">INDIANB<\/a>","<a href=\"/reports02/eq-in/risk/in.BANKINDIA.html\" target=\"_blank\">BANKINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.IOB.html\" target=\"_blank\">IOB<\/a>","<a href=\"/reports02/eq-in/risk/in.MAHABANK.html\" target=\"_blank\">MAHABANK<\/a>","<a href=\"/reports02/eq-in/risk/in.UCOBANK.html\" target=\"_blank\">UCOBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.CENTRALBK.html\" target=\"_blank\">CENTRALBK<\/a>","<a href=\"/reports02/eq-in/risk/in.PSB.html\" target=\"_blank\">PSB<\/a>"],[0.6500393416014963,0.07306041050957016,0.04802845647685417,0.05672338271173095,0.06614591680584474,0.04314003484347745,0.0271604280462156,0.006847523329749635,0.01813078317772557,0.004295467025817117,0.004853226911804875,0.001575028559713383],[0.5258375356128693,0.07420823902461775,0.06905286836114664,0.06880125930202398,0.06471431939815353,0.05971567762426565,0.03704821109138411,0.03283162404165761,0.02488900671030863,0.01721556535590463,0.0164113814889443,0.009274311988723912]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":12,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-58df63c8c01a1bf89d90" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-58df63c8c01a1bf89d90">{"x":{"filter":"none","vertical":false,"data":[[]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":0,"columnDefs":[{"name":"SYMBOL","targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[0,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-886d146ca0182c0a5fb1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-886d146ca0182c0a5fb1">{"x":{"filter":"none","vertical":false,"data":[[]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":0,"columnDefs":[{"name":"SYMBOL","targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[0,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-of-indian-public-sector-banks-psbs---q2-fy26-insights" class="section level9">
+<p class="heading">Summary Analysis of Indian Public Sector Banks (PSBs) - Q2 FY26 Insights</p>
+<p>Based on the provided documents (earnings call transcripts and disclosures from 11 PSBs including SBI, PNB, Canara Bank, Indian Bank, Union Bank, IOB, Bank of India, Bank of Maharashtra, UCO Bank, Central Bank of India, and Punjab &amp; Sind Bank), here’s a synthesized analysis. PSBs demonstrate consistent improvement in core metrics amid macroeconomic headwinds like repo rate cuts. Overall sector trends show robust RAM-led growth, asset quality gains, and digital acceleration, but with NIM pressures and regulatory transitions as key challenges.</p>
+<div id="tailwinds-positive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Asset Quality Strength</strong>: GNPA declined to 2.5-3.5% (e.g., PNB 3.45%, SBI implied low via disclosures), NNPA &lt;0.5-1% (e.g., IOB 0.28%, BoM 0.18%), PCR &gt;96% across most (e.g., PNB 96.91%, CBI 97.48%). Slippages contained &lt;1% annualized (e.g., PNB 0.71%, PSB 0.17%).</li>
+<li><strong>Profitability Momentum</strong>: Net profits up 15-58% YoY (e.g., PNB ₹4,904 Cr +14%, IOB ₹1,226 Cr +58%), ROA &gt;1% (e.g., PNB 1.05%, CBI 1.01%), ROE 15-20% (e.g., IOB 19.95%). Operating profits grew 5-21% (e.g., PNB +5.46%).</li>
+<li><strong>Digital &amp; Efficiency Gains</strong>: 95-98% digital transactions (e.g., PNB, IOB), new journeys (e.g., MSME e-loans, tab banking), AI/ML for performance/HR (e.g., PNB UDAAN). Cost-income ratios improving (e.g., PNB 51.2%, IOB 45.76%).</li>
+<li><strong>Capital Buffer</strong>: CRAR 17-18% (well above 11.5% regulatory), enabling growth (e.g., PNB 17.19%, BoM 18.13%).</li>
+<li><strong>RAM Dominance</strong>: 55-71% of advances, growing 13-25% YoY (e.g., PNB Retail 18%, IOB 20.78%).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>NIM Compression</strong>: Global NIM 2.6-3.85% (down QoQ due to repo cuts/RLLR-linked loans ~49%; e.g., PNB 2.60% -10bps QoQ, CBI 2.89% -52bps YoY). Deposit repricing lag (e.g., PNB 60-70% term deposits to reprice).</li>
+<li><strong>CASA Pressure</strong>: Ratios 37-46% (slipping; e.g., PNB 37.29%, PSB ~30-31%), shift to term deposits amid rate environment.</li>
+<li><strong>Opex &amp; Efficiency</strong>: High cost-income (e.g., CBI 62.72% +553bps YoY), staff/productivity initiatives ongoing (e.g., PSB Navjyoti project).</li>
+<li><strong>Corporate Growth Mute</strong>: De-growth in some (e.g., UCO -₹4,000 Cr QoQ), focus shifting to RAM (target 60-65%).</li>
+<li><strong>Slippage Volatility</strong>: Agri/MSME stress (e.g., floods in Punjab/Haryana; PNB Agri slippages ₹238 Cr).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Credit Expansion</strong>: 10-21% YoY (RAM-led; pipelines ₹10,000-178,000 Cr, e.g., PNB ₹178,000 Cr sanctioned). Targets 11-18% FY26 (e.g., IOB 17-18%, PSB 15-16%).</li>
+<li><strong>Digital/Branch Scale</strong>: 27-100+ digital journeys (e.g., PNB 100+ planned), 200-1,000 branches (e.g., BoM Project 321, CBI 250). GIFT City SBUs (multiple approvals).</li>
+<li><strong>Fee/Non-Interest Income</strong>: Treasury rebound expected (e.g., PNB ₹1,500-1,800 Cr/qtr), recoveries ₹2,000-16,000 Cr FY26 (e.g., PNB ₹16,000 Cr), 3rd-party (co-branded cards, bancassurance, M&amp;A finance).</li>
+<li><strong>Sector Focus</strong>: Green/ESG (e.g., renewables, Surya Ghar), supply chain, co-lending (e.g., PSB ₹2,100 Cr), IPO/share financing.</li>
+<li><strong>Capital Infusion</strong>: ₹3,000-7,500 Cr equity raises planned (e.g., PSB ₹3,000 Cr, BoM ₹5,000 Cr).</li>
+</ul>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>ECL Transition (Apr 2027)</strong>: 75-100bps CRAR hit (e.g., PNB 75-80bps, IOB ₹2,700-2,800 Cr), Stage 2 provisioning elevated; glide path (5 yrs) mitigates but P&amp;L impact possible.</li>
+<li><strong>NIM/Rates Volatility</strong>: Further repo cuts (25-50bps expected), MCLR repricing (27% book linked).</li>
+<li><strong>Slippage/Recovery Uncertainty</strong>: Agri/MSME (e.g., floods), TWO recoveries lumpy (₹24,000-35,000 Cr books).</li>
+<li><strong>CASA/Cost Pressures</strong>: Systemic decline; opex rise from expansions/digital spends (₹1,000-3,500 Cr FY26).</li>
+<li><strong>Regulatory/External</strong>: Co-lending changes, PSB mergers rumors, cyber/mule risks (mitigated via I4C/RBI integrations).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: PSBs are resilient with strong balance sheets (asset quality/profitability tailwinds) and digital/expansion momentum, poised for 12-18% credit growth FY26. Headwinds (NIM, CASA) are sector-wide but manageable via RAM focus and fee diversification. ECL is the top risk but buffered by high PCR/CRAR. Sector ROA/ROE targets: 1.1%+ / 15-20% FY26-27. Positive trajectory, monitor Q3 treasury/recoveries.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-of-indian-public-sector-banks-psbs-sector" class="section level9">
+<p class="heading">Summary Analysis of Indian Public Sector Banks (PSBs) Sector</p>
+<p>Using the provided announcements from PSBs (e.g., SBI, Bank of Baroda, PNB, Canara Bank, Indian Bank, Union Bank, Indian Overseas Bank (IOB), Bank of India, Bank of Maharashtra, UCO Bank, Central Bank of India, Punjab &amp; Sind Bank), the analysis covers <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>. The sector shows resilience amid regulatory scrutiny, with improving fundamentals highlighted in detailed disclosures like IOB’s corporate presentation and UCO Bank’s business update. Overall, PSBs are navigating a stable macro environment with steady credit growth but face operational and compliance challenges.</p>
+<div id="tailwinds-positive-factors-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Improving Asset Quality and Financial Performance</strong>: IOB reports GNPA at 1.83% (down from 7.4% in FY23), NNPA at 0.28%, PCR at 97.48%, ROA at 1.20%, and ROE at 19.95% (Sep’25). UCO Bank shows Q-o-Q advance growth of 2.27% and YoY 16.58%, with total business at ₹5.24 lakh crore.</li>
+<li><strong>Stable Lending Rates</strong>: PNB and Indian Bank maintain/ slightly revise MCLR/TBLR (e.g., Indian Bank cuts 1-year MCLR to 8.80%), supporting margins amid steady repo rates.</li>
+<li><strong>Digital and Operational Momentum</strong>: IOB emphasizes digital initiatives (e.g., WhatsApp Banking, UPI growth, 115 lakh mobile users), awards for tech excellence, and customer acquisition (e.g., new SB accounts surging). CASA ratios stable (UCO at 36.90%).</li>
+<li><strong>Strategic Expansions</strong>: Central Bank wins bid for ~2% stakes in Generali insurance entities, boosting non-banking revenue. IOB partners in non-life insurance (18% stake).</li>
+<li><strong>Capital Strength</strong>: IOB’s CRAR robust; bond redemptions (Bank of India, PSB) managed without stress.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Regulatory Penalties and Compliance Burden</strong>: RBI fines Canara Bank (₹4.36 lakh for note shortages/mutilated notes) and Union Bank (₹8.43 lakh for soiled notes/ATM issues), signaling operational lapses in currency management.</li>
+<li><strong>Legacy Physical Shares Issue</strong>: Bank of Baroda’s multi-language newspaper ads highlight SEBI-mandated re-lodgement window (Jul’25-Jan’26), reflecting ongoing demat transition challenges and KYC updates.</li>
+<li><strong>Modest Rate Revisions</strong>: Minor tweaks (e.g., Indian Bank’s TBLR cut) indicate pressure on NIMs from competitive lending.</li>
+<li><strong>Branch/Employee Productivity</strong>: IOB notes need for efficiency amid 3,373 branches; staff costs remain a drag.</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Retail/MSME/Agri Focus</strong>: IOB’s advances at ₹2.78 lakh crore (CAGR 12%), with retail (28%), agri (30%), MSME (17%) driving mix; CD ratio ~75-80% (UCO at 75.48%).</li>
+<li><strong>Digital/Non-Interest Income</strong>: Explosive digital adoption (IOB: UPI users CAGR 31%, mobile banking 27%); fee income up (IOB ₹2,418 Cr in FY25, +26% YoY).</li>
+<li><strong>Deposit Mobilization</strong>: UCO deposits +11.57% YoY; IOB global business ₹6.17 lakh crore (CAGR 9.45%).</li>
+<li><strong>Network Expansion</strong>: Bank of Maharashtra plans investor meets; PSBs targeting underserved segments via 11,000+ BCs (IOB).</li>
+<li><strong>Diversification</strong>: Insurance tie-ups (IOB, Central Bank) and ESG initiatives (IOB’s green deposits, low-carbon banking) position for fee-based growth.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Asset Quality Deterioration</strong>: Potential slippages (IOB slippage ratio low at 0.15% but monitored); NCLT/NARCL accounts (₹15,847 Cr for IOB) vulnerable to resolution delays.</li>
+<li><strong>Regulatory/Operational Risks</strong>: Frequent RBI penalties; compliance costs from SEBI LODR (e.g., KMP changes at SBI, bond disclosures).</li>
+<li><strong>Interest Rate/ Liquidity Risks</strong>: Stable MCLR but dependent on RBI policy; CD ratios rising (UCO 75.48%) could strain liquidity.</li>
+<li><strong>Cyber/Digital Risks</strong>: Heavy digital push (e.g., IOB’s API banking) exposes to breaches; competition from fintechs.</li>
+<li><strong>Macro Risks</strong>: Slowing economy could hit retail/MSME; overseas NPAs high (IOB 7.89%).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: PSBs exhibit strong tailwinds from asset quality cleanup and digital transformation, supporting 10-15% business growth. Headwinds are operational/regulatory, but manageable. Growth hinges on sustained retail credit and fee income; risks center on execution in a high-compliance environment. Sector ROE/ROA trajectory (IOB-like) suggests undervaluation potential. Investors should monitor Q3FY26 results for sustained momentum.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-of-indian-public-sector-banks-psbs---q2-fy26-insights-1" class="section level9">
+<p class="heading">Summary Analysis of Indian Public Sector Banks (PSBs) - Q2 FY26 Insights</p>
+<p>Based on the provided documents (earnings call transcripts and disclosures from 11 PSBs: SBI, PNB, Canara Bank, Indian Bank, Union Bank, IOB, Bank of India, Bank of Maharashtra, UCO Bank, Central Bank of India, Punjab &amp; Sind Bank), here’s a synthesized analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>. PSBs show consistent improvement in asset quality and profitability amid macro headwinds like rate cuts, but face execution challenges in margins and deposits. Overall, the sector is resilient with RAM-led growth, though ECL norms loom large.</p>
+<div id="tailwinds-positive-drivers" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Robust Asset Quality &amp; Profitability</strong>: GNPA 2.5-4.5% (down 50-150 bps YoY), NNPA &lt;0.5-1% (PCR 91-98%). Recoveries (₹3k-4k Cr/Q) &gt; slippages (0.7-1% ann.), negative credit cost in several (e.g., PNB). ROA 1-1.2%, ROE 15-20%, OP growth 5-15% YoY.</li>
+<li><strong>RAM-Led Credit Growth</strong>: 15-25% YoY (Retail 17-30%, MSME 18-24%, Agri 13-17%); RAM share 56-71%. Organic focus with digital journeys (e.g., 60-70% vehicle loans digital in PSB).</li>
+<li><strong>Strong Capital &amp; Efficiency</strong>: CRAR 15-18% (CET1 12-15%). Cost-income 45-62% (improving via digital/opex control). NII growth 8-20%.</li>
+<li><strong>Digital Momentum</strong>: 95-98% digital txns; new apps, tab banking, WhatsApp (15-83L users), CBDC. EASE topper (PSB #1 improver).</li>
+<li><strong>Treasury Support</strong>: ₹150-180 Cr/Q gains; AFS reserves low (₹39-800 Cr).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>NIM Pressure</strong>: 2.6-3.85% (down 10-50 bps QoQ) from repo cuts (49-60% RLLR loans repricing fast; deposits lag). CoF up 5-20 bps.</li>
+<li><strong>CASA Slip</strong>: 37-47% (down QoQ; growth 4-15% but volumes shifting to term deposits).</li>
+<li><strong>Opex &amp; Fee Volatility</strong>: Cost-income high (51-63%); non-interest income down (treasury/recovery dependent; TWO recovery muted).</li>
+<li><strong>Slippage Containment</strong>: Agri/MSME stress (0.7-1% ann.; floods in Punjab/Haryana). SMA 5-6% (0: 3-4%, 1+2: 2-3%).</li>
+<li><strong>ECL Prep</strong>: 75-100 bps CRAR hit; ₹2.5-2.8k Cr extra provisions (Stage 2 key; glide path 4-5 yrs).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Credit Expansion</strong>: 11-18% FY26 (RAM 60-65% mix; corporate revival via infra/renewables/data centers). Pipeline ₹10k-18k Cr/bank; co-lending (₹2-10k Cr), M&amp;A finance, IPO/share financing.</li>
+<li><strong>Fee &amp; Non-Fund Income</strong>: Partnerships (SBI Cards, mutual funds, bancassurance); supply chain, CC/CMS. Target ₹16k Cr recoveries FY26.</li>
+<li><strong>Network/Digital Scale</strong>: 200-321 branches/Q (non-home states); GIFT City SBUs (5 banks); digital journeys (27-100+; 5-10 new).</li>
+<li><strong>NIM Recovery</strong>: +5-15 bps/Q from deposit repricing/CRR cuts; treasury upside (₹1.5k Cr/Q min.).</li>
+<li><strong>ROA/ROE Upside</strong>: 1.1-1.2% FY26 (from 1%); cost-income &lt;50-55%.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>ECL Transition (Apr 2027)</strong>: ₹2.5-3k Cr provisions (75-100 bps CRAR); P&amp;L hit if not buffered (₹250-1k Cr excess held).</li>
+<li><strong>Margin Squeeze</strong>: Further repo cuts (25-50 bps expected); CASA &lt;37%; high RLLR (49-60%).</li>
+<li><strong>Sectoral Stress</strong>: Agri/MSME slippages (floods, GST lag); unsecured retail.</li>
+<li><strong>Execution/Regulatory</strong>: Digital adoption, cyber/mule risks; branch expansion costs; PSB merger rumors.</li>
+<li><strong>Macro</strong>: Slow corporate capex; deposit competition; TWO recovery volatility (₹24-35k Cr book).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: PSBs are on a strong recovery trajectory (asset quality/profitability peaks), with RAM/digital as growth engines (15%+ advances). FY26 ROA &gt;1.1%, NIM stabilization key. ECL is the biggest wildcard (manageable via buffers/glide path). Sector tailwinds from govt. schemes/infra outweigh headwinds; sustained execution could drive 15-20% earnings CAGR. Risks tilted toward macros/regulations, but capital buffers provide cushion. <strong>Recommendation</strong>: Positive; monitor Q3 NIM/ECL updates.</p>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="summary-analysis-of-indian-public-sector-banks-psbs-sector-1" class="section level9">
+<p class="heading">Summary Analysis of Indian Public Sector Banks (PSBs) Sector</p>
+<p>Based on the provided press releases from 12 major PSBs (SBI, PNB, Canara Bank, Indian Bank, Union Bank, IOB, Bank of India, Bank of Maharashtra, UCO Bank, Central Bank of India, Punjab &amp; Sind Bank, and others) for Q1/Q2 FY26 (as of Sep 2025), the sector demonstrates robust recovery and resilience. Key metrics show YoY business growth of 10-15%, deposit/advance expansion, sharp asset quality improvements (GNPA down 100-200 bps), and profit growth of 10-60%. However, QoQ variations and macro pressures persist. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-drivers-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Strong Business Momentum</strong>: Global business grew 11-14% YoY across banks (e.g., PNB: ₹27.2L Cr, Canara: ₹26.8L Cr). Deposits up 9-13% (e.g., Indian Bank: 12%), advances 10-21% (e.g., IOB: 21%). RAM (Retail, Agri, MSME) advances surged 15-30% (e.g., BoM: Retail +37%, PSB: MSME +25%), driven by housing/vehicle loans.</li>
+<li><strong>Asset Quality Turnaround</strong>: GNPA ratios improved 100-200 bps YoY (e.g., Central Bank: 4.59%→3.01%, PSB: 4.21%→2.92%). NNPA down 20-100 bps (e.g., IOB: 0.47%→0.28%). PCR &gt;93-98% (e.g., BoM: 98.34%). Lower slippages/credit costs (0.1-0.5%).</li>
+<li><strong>Profitability Surge</strong>: Net profit up 10-58% YoY (e.g., IOB: +58% to ₹1,226 Cr, BoM: +23% to ₹1,633 Cr). Operating profit +12-25%, NII +5-20%. ROA 1-1.8%, ROE 15-23%. NIM stable/improving (2.7-3.85%).</li>
+<li><strong>Capital Strength &amp; Efficiency</strong>: CRAR 16-18% (Tier-1 &gt;14%). Cost-income ratios improving (37-62%). Digital growth (e.g., PNB: 32% txn rise, UPI users +24% at Indian Bank).</li>
+<li><strong>Policy Support</strong>: Financial inclusion (PMJDY/APY enrollments up), awards (EASE 7.0, digital payments), and SBI’s SBIFML IPO signal value unlocking.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-3" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Margin/NII Pressure</strong>: QoQ NII dips in some (e.g., Union Bank: -3%, BoI: -2.6%). NIM compression (e.g., Union: 2.97%→2.71%). Deposit costs up (5-5.5%), CASA shares volatile (32-50%, some down QoQ).</li>
+<li><strong>Operational Costs</strong>: Cost-income ratios high (50-62% in Union/Central/PSB). Operating profit QoQ flat/declining in places (e.g., Central: down due to NII drop).</li>
+<li><strong>Liquidity &amp; Growth Imbalance</strong>: CD ratios rising (71-82%), indicating advance-led growth straining deposits (e.g., BoM: 82%).</li>
+<li><strong>Uneven Performance</strong>: Smaller banks (UCO/PSB) lag in scale/profitability vs. leaders (SBI/BoM/IOB). Global advances slower in overseas ops.</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Credit Demand in RAM/Green Segments</strong>: 15-30% YoY RAM growth positions PSBs for retail/MSME boom. Green loans (e.g., Union: ₹32k Cr renewable), women schemes (Union Nari Shakti), and housing (+15-25%) offer 15-20% CAGR potential.</li>
+<li><strong>Subsidiary Monetization &amp; Listings</strong>: SBI’s SBIFML IPO (10% stake, ₹12L Cr AUM) unlocks value; others may follow (e.g., SBI Cards/Life precedent).</li>
+<li><strong>Digital &amp; Inclusion Expansion</strong>: 20-100% YoY digital txn/user growth (e.g., PNB WhatsApp +105%). Network growth (10k+ branches, BCs/ATMs). Priority sector targets exceeded (40-44%).</li>
+<li><strong>Macro Tailwinds</strong>: India’s FY26 growth (projected 7%+ GDP), capex cycle, and govt. schemes (PMJDY +5-10%) support 12-15% business CAGR. ROA/ROE could hit 1.5-2%/20%+.</li>
+<li><strong>M&amp;A/Consolidation</strong>: PSB mergers (history like PNB-OBC) could boost scale/efficiency.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Asset Quality Reversal</strong>: Slippages (0.1-0.8%) could rise with slowdowns; credit costs (0.2-0.5%) sensitive to corporate/MSME stress. PCR buffers exist but untested.</li>
+<li><strong>Interest Rate/Yield Curve</strong>: Rising deposit costs eroding NIM (already compressed 10-50 bps QoQ). RBI policy shifts (repo cuts?) critical.</li>
+<li><strong>Liquidity &amp; Funding</strong>: High CD ratios + CASA erosion risk MCLR hikes, squeezing margins.</li>
+<li><strong>Competition &amp; Execution</strong>: Private banks gaining retail share; PSBs’ high CIR/digital lag could erode market (15% share in mutual funds via SBIFML).</li>
+<li><strong>Macro/Regulatory</strong>: Inflation, global slowdown, elections, or Basel III tweaks. Geopolitical risks (e.g., oil prices) hit trade finance.</li>
+<li><strong>Operational</strong>: Cyber/fraud risks (despite awards); staff productivity varies (business/employee ₹24-27 Cr).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: PSBs are in a <strong>strong upcycle</strong> (asset quality + profitability peak), with tailwinds outweighing headwinds. Growth prospects are <strong>high (12-15% business CAGR)</strong> if macro holds, but risks center on <strong>margins and NPAs</strong>. Sector PE could rerate to 8-10x on sustained ROA&gt;1.2%. Leaders (SBI, BoM, IOB) outperform; laggards need efficiency push. Investors should monitor Q3 NIM/CD ratios.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

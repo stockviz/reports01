@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Breweries &amp; Distilleries</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Breweries &amp; Distilleries</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/BreweriesDistilleries.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/BreweriesDistilleries.fan.CAP_WT.png" /></p>
+<p><img src="plots/BreweriesDistilleries.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/BreweriesDistilleries.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/BreweriesDistilleries.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/BreweriesDistilleries.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/BreweriesDistilleries.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-b5258d9ac5e695524275" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b5258d9ac5e695524275">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-0.18%","1.03%"],["-4.82%","-1.48%"],["-9.48%","-4.21%"],["-8.2%","-3.6%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/BreweriesDistilleries.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/BreweriesDistilleries.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e990148e58e78cdaffdd" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e990148e58e78cdaffdd">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.UNITDSPR.html\" target=\"_blank\">UNITDSPR<\/a>","<a href=\"/reports02/eq-in/risk/in.UBL.html\" target=\"_blank\">UBL<\/a>","<a href=\"/reports02/eq-in/risk/in.RADICO.html\" target=\"_blank\">RADICO<\/a>","<a href=\"/reports02/eq-in/risk/in.ABDL.html\" target=\"_blank\">ABDL<\/a>","<a href=\"/reports02/eq-in/risk/in.TI.html\" target=\"_blank\">TI<\/a>","INDIAGLYCO","<a href=\"/reports02/eq-in/risk/in.PICCADIL.html\" target=\"_blank\">PICCADIL<\/a>","<a href=\"/reports02/eq-in/risk/in.GLOBUSSPR.html\" target=\"_blank\">GLOBUSSPR<\/a>","<a href=\"/reports02/eq-in/risk/in.GMBREW.html\" target=\"_blank\">GMBREW<\/a>","<a href=\"/reports02/eq-in/risk/in.SDBL.html\" target=\"_blank\">SDBL<\/a>","<a href=\"/reports02/eq-in/risk/in.ASALCBR.html\" target=\"_blank\">ASALCBR<\/a>","<a href=\"/reports02/eq-in/risk/in.SULA.html\" target=\"_blank\">SULA<\/a>","<a href=\"/reports02/eq-in/risk/in.IFBAGRO.html\" target=\"_blank\">IFBAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.BCLIND.html\" target=\"_blank\">BCLIND<\/a>","<a href=\"/reports02/eq-in/risk/in.RKDL.html\" target=\"_blank\">RKDL<\/a>"],[0.456338101596286,0.1268433845917106,0.2373742131507008,0.02994732053330888,0.04899755478913796,0.0232422776998633,0.01729433503672282,0.01562297203335146,0.00643426586582283,0.01186385223858375,0.006669662342621859,0.01252681319698684,0.002680705876062224,0.003767572150976205,0.0003969688978643875],[0.4424195957420999,0.1827077859553257,0.1598160413576537,0.061602340273604,0.04766966018681385,0.02735936578130428,0.0265808167729947,0.01248185553907486,0.01026618079258038,0.007671677961148453,0.007052517617185993,0.006616094222996631,0.003850743974591551,0.003701349410279173,0.000203974412346918]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":15,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,15,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4484cc2d9b797d0b1072" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4484cc2d9b797d0b1072">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.UNITDSPR.html\" target=\"_blank\">UNITDSPR<\/a>","<a href=\"/reports02/eq-in/risk/in.UBL.html\" target=\"_blank\">UBL<\/a>","<a href=\"/reports02/eq-in/risk/in.RADICO.html\" target=\"_blank\">RADICO<\/a>","<a href=\"/reports02/eq-in/risk/in.ABDL.html\" target=\"_blank\">ABDL<\/a>","<a href=\"/reports02/eq-in/risk/in.TI.html\" target=\"_blank\">TI<\/a>","INDIAGLYCO","<a href=\"/reports02/eq-in/risk/in.PICCADIL.html\" target=\"_blank\">PICCADIL<\/a>","<a href=\"/reports02/eq-in/risk/in.GLOBUSSPR.html\" target=\"_blank\">GLOBUSSPR<\/a>","<a href=\"/reports02/eq-in/risk/in.GMBREW.html\" target=\"_blank\">GMBREW<\/a>","<a href=\"/reports02/eq-in/risk/in.SDBL.html\" target=\"_blank\">SDBL<\/a>","<a href=\"/reports02/eq-in/risk/in.ASALCBR.html\" target=\"_blank\">ASALCBR<\/a>","<a href=\"/reports02/eq-in/risk/in.SULA.html\" target=\"_blank\">SULA<\/a>","<a href=\"/reports02/eq-in/risk/in.IFBAGRO.html\" target=\"_blank\">IFBAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.BCLIND.html\" target=\"_blank\">BCLIND<\/a>","<a href=\"/reports02/eq-in/risk/in.RKDL.html\" target=\"_blank\">RKDL<\/a>"],[2.5738500994396,0.3873440316393116,36.5278046390272,21.92726334352345,8.607246021252415,7.389426486910718,2.979477253017559,2.223278752600296,0.07575695786522926,4.709100283581191,1.68099264318985,1.56394811593097,0.06261754719532162,3.780730530965089,0.002836998430559485],[2.094417372033674,0.1824167677484698,28.89248316620887,19.90609443205667,7.511072429567553,7.358890223424535,5.374362804153367,null,0.065490985692057,3.214242606591966,1.779458067102652,1.73290533692949,0.05958943366936081,4.040904572073524,0.003322368232825933],[1.471816670354521,0.1876786398221085,33.79333845874829,22.50031558045195,8.890835667647677,9.514917384952149,4.196482687366761,5.765443849529507,0.1048323437811915,3.176567198237137,2.708941479935802,2.43101343201719,0.04792838900898058,5.206306168600727,0.003582049546012393]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":15,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,15,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a296348ba3cf1852495f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a296348ba3cf1852495f">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.UNITDSPR.html\" target=\"_blank\">UNITDSPR<\/a>","<a href=\"/reports02/eq-in/risk/in.UBL.html\" target=\"_blank\">UBL<\/a>","<a href=\"/reports02/eq-in/risk/in.RADICO.html\" target=\"_blank\">RADICO<\/a>","<a href=\"/reports02/eq-in/risk/in.ABDL.html\" target=\"_blank\">ABDL<\/a>","<a href=\"/reports02/eq-in/risk/in.TI.html\" target=\"_blank\">TI<\/a>","INDIAGLYCO","<a href=\"/reports02/eq-in/risk/in.PICCADIL.html\" target=\"_blank\">PICCADIL<\/a>","<a href=\"/reports02/eq-in/risk/in.GLOBUSSPR.html\" target=\"_blank\">GLOBUSSPR<\/a>","<a href=\"/reports02/eq-in/risk/in.GMBREW.html\" target=\"_blank\">GMBREW<\/a>","<a href=\"/reports02/eq-in/risk/in.SDBL.html\" target=\"_blank\">SDBL<\/a>","<a href=\"/reports02/eq-in/risk/in.ASALCBR.html\" target=\"_blank\">ASALCBR<\/a>","<a href=\"/reports02/eq-in/risk/in.SULA.html\" target=\"_blank\">SULA<\/a>","<a href=\"/reports02/eq-in/risk/in.IFBAGRO.html\" target=\"_blank\">IFBAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.BCLIND.html\" target=\"_blank\">BCLIND<\/a>","<a href=\"/reports02/eq-in/risk/in.RKDL.html\" target=\"_blank\">RKDL<\/a>"],[1.326774626234513,0.4606077256002566,47.96636449736569,18.2247224912374,3.169532508180006,8.525044719750561,1.111492950929601,3.410098619641514,0.06015800273878713,2.840787590357909,0.9440283207212812,0.8889998297497953,0.07641635470295774,2.841069527300967,0.05235100532296781],[0.9365649078927412,0.2384500766938974,50.08932613115764,16.04608888714255,2.447504739406684,6.577289555107369,1.55208235766067,null,0.04528008884644365,2.718990081310147,1.042688306838425,1.052675825147748,0.04860909952265568,3.039398580311392,0.06208232930892255],[0.7018233929356781,0.218550729866083,50.70405985931337,18.99523416996499,4.112459934058244,6.485828253219542,1.938953015332945,6.927048928717253,0.07022409366001606,3.158093631536185,1.300326981238949,1.466953406139013,0.04435563847536909,3.799494205776746,0.07659375976561968]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":15,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,15,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+</div>
+<div id="analysis-of-indian-breweries-distilleries-sector-based-on-q2h1-fy26-filings" class="section level3">
+<h3>Analysis of Indian Breweries &amp; Distilleries Sector (Based on Q2/H1 FY26 Filings)</h3>
+<p>The provided documents cover key players in IMFL (whisky, brandy, rum, vodka), beer, wine, ethanol production, and ancillary segments (e.g., ENA, maize oil extraction). Companies like Tilaknagar Industries, India Glycols, Som Distilleries, Sula Vineyards, Radico Khaitan, United Spirits, United Breweries, Allied Blenders, Globus Spirits, Piccadily Agro, Associated Alcohols, and BCL Industries report resilient Q2/H1 performance amid challenges. Revenue growth averages 10-17% YoY (excluding disruptions), with EBITDA margins at 14-19% and PAT growth 20-30% in many cases. Premiumization and diversification drive momentum, but policy volatility looms large. Below is a structured analysis.</p>
+<div id="headwinds-key-challenges" class="section level6">
+<h6><strong>Headwinds (Key Challenges)</strong></h6>
+<ul>
+<li><strong>Regulatory &amp; Policy Disruptions</strong>: Excise duty hikes (e.g., 15% overall, state-specific in Maharashtra/Andhra). License expiries (Telangana causing 15% sales drop for Sula), new policies like Maharashtra Made Liquor (MML) with FII restrictions limiting participation. Karnataka taxation led to 19-20% industry degrowth and market share loss.</li>
+<li><strong>Input Cost Volatility &amp; Oversupply</strong>: Maize prices INR20-25/kg (BCL/Tilaknagar); ENA prices falling (INR65-67/L due to ethanol diversion). Ethanol allocations low (50-60% of capacity; BCL at 107k KL/year vs. 260k KL potential), pushing diversion to lower-margin ENA/IMFL.</li>
+<li><strong>Demand Slump in Key Markets</strong>: Volume declines (Som: 19% YoY in beer due to Karnataka; Tilaknagar notes Andhra stabilization post-policy but tapering growth). IMFL industry down 20% in Maharashtra.</li>
+<li><strong>Operational Pressures</strong>: High inventory (Tilaknagar), working capital strain (rising short-term debt at BCL), and transient gross margin contraction (Sula: 900 bps YoY due to mix/sourcing shifts).</li>
+</ul>
+</div>
+<div id="tailwinds-positive-drivers" class="section level6">
+<h6><strong>Tailwinds (Positive Drivers)</strong></h6>
+<ul>
+<li><strong>Premiumization Success</strong>: Elite/premium mix stable at 78% (Sula); luxury launches (Tilaknagar’s Monarch Brandy in 6 states, Radico/Som expansions). Double-digit growth in key brands (Tilaknagar: 16% volume; India Glycols Potable Spirits: 24% revenue).</li>
+<li><strong>Diversification &amp; Expansions</strong>: Ethanol blending steady at 20% (potential 27%); ENA demand up (Tilaknagar/India Glycols). Wine tourism booming (Sula: 15% H1 growth, new resorts adding 50 keys). New capacities (Tilaknagar Prag: 36L cases; BCL 150 KLPD ethanol).</li>
+<li><strong>State Recoveries &amp; Mix Benefits</strong>: Andhra growth 20%+ (Tilaknagar market share to 12%); CSD doubling (Sula). Cans/state mix boosting realizations (Som: INR607/case, up 14%).</li>
+<li><strong>Stable Margins/Cost Discipline</strong>: EBITDA 14-19% (Tilaknagar 15.1%, Som 15%); input stability (ENA/glass). Fundraises (Tilaknagar INR986cr preferential) support balanced debt:equity.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Short-Term (H2 FY26)</strong>: Festive recovery (Sula/Karnataka/Andhra); new launches (Tilaknagar luxury whisky/Samsara flavors; Som Mahavat/Sunny Beaches). Mid-teens volume (Tilaknagar), 10-15% revenue (Som INR800cr H2). Wine tourism +15-20% (Sula resorts/highway boost).</li>
+<li><strong>Medium-Term (FY27+)</strong>: Premium/IMFL ramp-up (Tilaknagar 16% margins; Som 15% IMFL share to 20%). Expansions (BCL maize oil; India Glycols branded nutraceuticals). Pan-India push (Sula Source to Haryana/Delhi; Radico/BofA calls). Ethanol if blending rises; ENA/IMIL diversification (BCL Punjab whiskey).</li>
+<li><strong>Long-Term</strong>: 15-20% CAGR potential via premiumization (Elite 78%+ mix), tourism (Sula 154 keys), acquisitions (Tilaknagar Imperial Blue). Sector TAM expansion via urbanization, 20%+ blending, exports/duty-free.</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Company Example</th>
+<th>Volume Growth (H1/Q2)</th>
+<th>EBITDA Margin</th>
+<th>Key Driver</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Tilaknagar</td>
+<td>16% YoY</td>
+<td>15-19%</td>
+<td>Premium brandy, Andhra</td>
+</tr>
+<tr class="even">
+<td>India Glycols</td>
+<td>Potable 23%</td>
+<td>14.6%</td>
+<td>IMFL/Kerala expansion</td>
+</tr>
+<tr class="odd">
+<td>Som</td>
+<td>Beer subdued</td>
+<td>15%</td>
+<td>Cans/premium IMFL</td>
+</tr>
+<tr class="even">
+<td>Sula</td>
+<td>Flat (ex-Telangana +)</td>
+<td>14.6%</td>
+<td>Wine tourism/Source</td>
+</tr>
+<tr class="odd">
+<td>BCL</td>
+<td>Ethanol flat</td>
+<td>8-10%</td>
+<td>ENA/maize oil</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<ol style="list-style-type: decimal">
+<li><strong>Policy/Regulatory</strong>: Excise hikes, blending delays (20% cap till Oct’26), state bans (e.g., MML FII curbs), FTA impacts (EU/Australia MIP cuts favoring imports; Sula preps contingency).</li>
+<li><strong>Oversupply/Utilization</strong>: Ethanol capacity excess (BCL/Som low allocations); ENA price crash risk (falling to INR65/L).</li>
+<li><strong>Raw Material/Commodity</strong>: Maize/rice volatility (INR18-25/kg); damaged FCI rice dependency.</li>
+<li><strong>Debt &amp; Capex</strong>: Rising (Tilaknagar INR1,086cr cash but debt for acquisition; BCL INR310cr). Debt:EBITDA ~2.5x (manageable but sensitive to margins).</li>
+<li><strong>Competition/Execution</strong>: Local players in brandy/MML; integration risks (Tilaknagar Imperial Blue). State disruptions (Telangana auctions).</li>
+<li><strong>Macro</strong>: Rural slowdown, monsoon impacts on tourism/grains.</li>
+</ol>
+</div>
+<div id="overall-sector-summary-outlook" class="section level6">
+<h6><strong>Overall Sector Summary &amp; Outlook</strong></h6>
+<p><strong>Bullish with Cautious Optimism</strong>: Sector resilient (10-17% revenue, 11-25% EBITDA growth) despite ethanol headwinds and state disruptions. Premiumization (luxury/IMFL) and tourism provide 15-20% growth runway; diversification to ENA/maize oil buffers policy risks. H2 FY26 recovery likely (festives, launches), targeting mid-teens growth. <strong>Risk-Adjusted Outlook</strong>: Moderate (7/10) – Policy tailwinds (blending/FTA) could unlock 20%+ CAGR; headwinds cap at 10% if ethanol stalls. Focus: Debt discipline, ENA ramp-up, premium execution. Investors favor premium leaders (Tilaknagar/Sula) over ethanol-heavy (BCL). Monitor Q3 allocations, excise revisions.</p>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3><strong>Financial</strong></h3>
+<p><em>asof: 2025-12-02 </em></p>
+</div>
+<div id="indian-breweries-distilleries-sector-analysis-based-on-q3-fy25-results" class="section level3">
+<h3>Indian Breweries &amp; Distilleries Sector Analysis (Based on Q3 FY25 Results)</h3>
+<p>The analysis draws from Q3 FY25 (Oct-Dec 2024) financial results of key players: United Spirits (USL), United Breweries (UBL), India Glycols (IGL), Globus Spirits (GMBL), Som Distilleries (SDBL), GM Breweries (GMBL), Sula Vineyards (SULA), Associated Alcohols (AABL), IFB Agro (IFBA), BCL Industries (BCL), and Ravi Kumar Distilleries (RKDL). Sector shows robust revenue growth (~10-25% YoY in most), driven by premiumization and ethanol, but margins pressured by costs/excise.</p>
+<div id="tailwinds-positive-drivers-1" class="section level6">
+<h6><strong>Tailwinds (Positive Drivers)</strong></h6>
+<ul>
+<li><strong>Premiumization &amp; Volume Growth</strong>: Premium brands (e.g., Kingfisher Ultra +33% vol. in UBL; Ultra Max in USL) drove 8-35% vol. growth (UBL, USL). Overall revenue up 10-23% YoY (SDBL 23%, AABL strong ethanol).</li>
+<li><strong>Ethanol Demand</strong>: Govt. E20/ethanol blending push boosted AABL, BCL, IGL (biofuel rev. up). New capacities online (AABL Barwah plant).</li>
+<li><strong>Operational Efficiency</strong>: Productivity programs (UBL ₹50 Cr savings); capex (USL ₹47 Cr Q3; greenfield breweries).</li>
+<li><strong>Cash Generation</strong>: Strong CFO (USL ₹1,947 Cr; UBL ₹1,947 Cr 9M); dividends (USL ₹8/share proposed).</li>
+<li><strong>Policy Tailwinds</strong>: Andhra Pradesh changes aided UBL vol.; rationalization in subsidiaries (USL).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>High Excise/Regulatory Costs</strong>: Excise duty ~50-60% of rev. (USL ₹15,207 Cr FY25; GMBL ₹1.37L Cr 9M). CCI probes (UBL ₹751 Cr penalty stayed).</li>
+<li><strong>Input Inflation</strong>: Materials/power up (USL cost of materials +4%; SULA grape costs seasonal).</li>
+<li><strong>Seasonality</strong>: Q3 dip (SULA rev. down; Globus flat despite vol.).</li>
+<li><strong>Margin Pressure</strong>: EBITDA margins stable/mixed (12-15%; UBL down Q3 due to investments). Exceptional costs (severance: UBL ₹26 Cr; USL ₹65 Cr).</li>
+<li><strong>Legal/Compliance</strong>: Ongoing disputes (USL historical inquiries; Globus IT search; Ravi Kumar recoverables ₹290 Cr).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Premium &amp; Portfolio Expansion</strong>: 20-35% premium vol. growth (UBL, USL); new launches (Amstel Grande UBL; malt spirits AABL).</li>
+<li><strong>Capacity Ramp-Up</strong>: Ethanol/distillery expansions (AABL UP plant; BCL Kharagpur sub.); greenfield breweries (UBL UP).</li>
+<li><strong>Diversification</strong>: Non-alco/beer (UBL NAB +ve); exports (SULA); biofuels (IGL bio-fuel ₹770 Cr 9M).</li>
+<li><strong>M&amp;A/Subs</strong>: USL rationalization overseas; AABL new sub.; BCL Goyal Distillery.</li>
+<li><strong>Outlook</strong>: Sector vol. +8-10%; premium +25-30%; ethanol policy supportive. FY25 rev. growth 15-20% expected.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Details</strong></th>
+<th><strong>Impact</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory</strong></td>
+<td>State excise hikes; CCI probes (UBL); bans (Bihar UBL); historical issues (USL Vijay Mallya).</td>
+<td>Margin erosion; penalties (UBL ₹752 Cr stayed).</td>
+</tr>
+<tr class="even">
+<td><strong>Operational</strong></td>
+<td>Input volatility (sugar/grains); power/fuel (AABL ₹286 Cr 9M). Seasonality.</td>
+<td>EBITDA volatility (Q3 dips).</td>
+</tr>
+<tr class="odd">
+<td><strong>Legal/Financial</strong></td>
+<td>Disputes/recoverables (Ravi ₹2.9K Cr; Globus GST ₹344 Cr); IT searches (Globus ₹565 Cr demand appealed).</td>
+<td>Cash flow; provisions (IFBA electoral bonds discontinued).</td>
+</tr>
+<tr class="even">
+<td><strong>Competition</strong></td>
+<td>Illicit liquor; state monopolies; imports.</td>
+<td>Vol. share loss.</td>
+</tr>
+<tr class="odd">
+<td><strong>Macro</strong></td>
+<td>Rural slowdown; monsoon dependency; forex (exports SULA).</td>
+<td>Demand weakness.</td>
+</tr>
+<tr class="even">
+<td><strong>Execution</strong></td>
+<td>Capex delays (UBL ₹47 Cr Q3); sub. impairments (SULA ₹60 Cr warned).</td>
+<td>ROCE pressure.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Summary</strong>: Sector resilient with premium/ethanol tailwinds offsetting regulatory headwinds. Growth 15-20% FY25 viable, but risks from policy/legal overhangs persist. Monitor ethanol policy, premium vol., and disputes. (Data as of Q3 FY25; USL/UBL dominate ~70% market).</p>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-indian-breweries-distilleries-sector" class="section level9">
+<p class="heading">Summary Analysis: Indian Breweries &amp; Distilleries Sector</p>
+<p>Using the provided regulatory filings from key players (e.g., United Spirits, United Breweries, Radico Khaitan, Allied Blenders, Tilaknagar Industries, India Glycols, Piccadily Agro, Globus Spirits, Som Distilleries, G.M. Breweries, Sula Vineyards, Associated Alcohols), the sector shows resilience amid premiumization and consolidation, but faces regulatory headwinds. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="headwinds-challenges-slowing-momentum" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges Slowing Momentum)</strong></p>
+<ul>
+<li><strong>Regulatory and Tax Scrutiny</strong>: Persistent interventions, e.g., Customs inquiry at Som Distilleries (import/export reconciliation, no immediate impact but signals compliance burden); Sula Vineyards’ subsidiary faced CST tax demand (₹21 Cr+, later rectified/dropped). Ongoing litigations like Allied Blenders’ Supreme Court case (expedited trial ordered, but suit/counter-claim pending).</li>
+<li><strong>ESG Pressures</strong>: Ratings like Radico Khaitan (64/100) and United Spirits (72.8, improved from 70.4) highlight need for sustainability enhancements, potentially raising costs amid unengaged third-party assessments.</li>
+<li><strong>Operational/Compliance Costs</strong>: Routine disclosures (e.g., dividend TDS at United Breweries, committee changes at G.M. Breweries) indicate administrative burdens in a highly regulated state-excise environment.</li>
+</ul>
+</div>
+<div id="tailwinds-supportive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Supportive Factors)</strong></p>
+<ul>
+<li><strong>Premiumization and Brand Innovation</strong>: Globus Spirits’ launch of “DOAAB Expression 02” (Indian single malt in Japanese Mizunara casks) underscores shift to luxury craft spirits, building on awards and expanding to 8+ states/4,000 touchpoints.</li>
+<li><strong>ESG Momentum</strong>: United Spirits’ score improvement signals sector-wide sustainability adoption, aiding investor appeal.</li>
+<li><strong>Capital Market Access</strong>: Piccadily Agro’s BSE listing approval for 28.49L equity shares (from CCD conversion) eases funding; India Glycols secures NSE/BSE “No Objection” for spirits demerger.</li>
+</ul>
+</div>
+<div id="growth-prospects-opportunities-for-expansion" class="section level12">
+<p class="heading"><strong>Growth Prospects (Opportunities for Expansion)</strong></p>
+<ul>
+<li><strong>M&amp;A and Consolidation</strong>: Tilaknagar’s ₹3,442 Cr acquisition of Pernod Ricard’s Imperial Blue (turnover ₹3,067 Cr, 9% whisky share, 22.4M cases) creates PAN-India presence in whisky/brandy; Associated Alcohols bidding for SDF Industries to boost IMFL capacity.</li>
+<li><strong>Strategic Restructuring</strong>: India Glycols’ demerger into Ennature Biopharma and IGL Spirits (NCLT-bound, with detailed disclosures mandated) enables focused growth in bio-pharma/spirits.</li>
+<li><strong>Premium Segment Boom</strong>: Whisky (largest IMFL category) and single malts growing double-digits; complementary networks (e.g., Tilaknagar-Imperial Blue) strengthen distribution in 27 states.</li>
+</ul>
+</div>
+<div id="key-risks-potential-threats" class="section level12">
+<p class="heading"><strong>Key Risks (Potential Threats)</strong></p>
+<table>
+<colgroup>
+<col width="31%" />
+<col width="19%" />
+<col width="48%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Examples from Filings</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory/Legal</strong></td>
+<td>State/tax probes, litigations delaying operations; CCI/NCLT approvals critical.</td>
+<td>Som Customs search; Allied SC case; India Glycols’ mandated disclosures on enforcements.</td>
+</tr>
+<tr class="even">
+<td><strong>Execution/Financial</strong></td>
+<td>High acquisition costs (e.g., Tilaknagar’s ₹3,442 Cr + deferred €28M); post-closing adjustments/integration risks.</td>
+<td>Tilaknagar BTA adjustments; Piccadily CCD conversion dilution.</td>
+</tr>
+<tr class="odd">
+<td><strong>Market/Competitive</strong></td>
+<td>Intense rivalry in premium IMFL; volume share erosion if premium shift fails.</td>
+<td>Imperial Blue as #3 whisky brand amid consolidation.</td>
+</tr>
+<tr class="even">
+<td><strong>Compliance/ESG</strong></td>
+<td>Non-compliance fines; outdated financials (&gt;6 months) or undisclosed litigations could derail schemes.</td>
+<td>SEBI-mandated disclosures for demergers; unverified exports in tax cases.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: <strong>Moderate Growth (7-10% sector CAGR projected)</strong> driven by premiumization (tailwinds) and M&amp;A, but tempered by regulatory headwinds (e.g., 20-30% filings involve probes/litigations). Tailwinds outweigh headwinds short-term, with high growth in whisky/single malts. Monitor Q3FY26 earnings for acquisition impacts and litigation outcomes. Sector PE ~40-50x reflects optimism but embeds execution risks.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+</div>
+<div id="analysis-of-indian-breweries-distilleries-sector-based-on-q2h1-fy26-disclosures" class="section level3">
+<h3>Analysis of Indian Breweries &amp; Distilleries Sector (Based on Q2/H1 FY26 Disclosures)</h3>
+<p>The sector encompasses IMFL (Indian Made Foreign Liquor), beer, ethanol, wine, and ancillary businesses (e.g., ENA, bottling, tourism). Key players (Tilaknagar, United Spirits, Radico, Allied Blenders, Piccadily, Som, Globus, Sula, India Glycols, BCL) report <strong>mixed performance</strong>: premium segments resilient amid regulatory headwinds, ethanol oversupply, and state-specific disruptions. Overall revenue growth muted (e.g., Tilaknagar +16% volumes, Som -7% revenue), but margins stable/improving (15-20% EBITDA). Premiumization drives optimism.</p>
+<div id="headwinds-key-challenges-1" class="section level6">
+<h6><strong>Headwinds (Key Challenges)</strong></h6>
+<ul>
+<li><strong>Regulatory/Policy Volatility</strong>:
+<ul>
+<li>State excise hikes/tax changes (Maharashtra MML aggressive pricing/taxes causing 20% IMFL degrowth; Karnataka taxes/slump persisting).</li>
+<li>Andhra policy liberalization aiding growth but competitive; Tamil Nadu license expiries disrupting Telangana (15% sales impact for Sula).</li>
+<li>Ethanol: Low OMC allocations (50-60% of capacity; BCL/Som/BCL note oversupply, flat demand).</li>
+</ul></li>
+<li><strong>Volume Declines</strong>: Karnataka/Odisha slumps (Tilaknagar/Som down 19%); Telangana destocking (Sula mid-single digit ex-Telangana growth).</li>
+<li><strong>Input Costs</strong>: Maize ~₹23/kg (BCL; down from ₹24-25 but forward contracts limit benefits); ENA/glass stable but pricing pressure (ENA ₹65-70/L).</li>
+<li><strong>Competition/Discounting</strong>: Aggressive pricing in MML/IMFL; spirits giants (UB, etc.) facing industry degrowth.</li>
+</ul>
+</div>
+<div id="tailwinds-positive-drivers-2" class="section level6">
+<h6><strong>Tailwinds (Positive Drivers)</strong></h6>
+<ul>
+<li><strong>Premiumization Surge</strong>: Elite/premium &gt;70-80% mix (Tilaknagar/Sula); launches (Indri single malts, Cashmir vodka, Mahavat whiskey) gaining traction (Piccadily +39% premium revenue).</li>
+<li><strong>Wine Tourism Boom</strong>: Sula +8% Q2/+15% H1 (resort occupancy 77%; new Haven resort +50 keys).</li>
+<li><strong>State Recoveries</strong>: Maharashtra rebound (Sula growth); Andhra share gains (Tilaknagar +2% to 12%).</li>
+<li><strong>Diversification</strong>: ENA growth (Tilaknagar/BCL +79% YoY); CSD doublings (Sula/Tilaknagar); expansions (Piccadily/Chhattisgarh, BCL 150KLPD).</li>
+<li><strong>Acquisitions/Partnerships</strong>: Tilaknagar-Imperial Blue (Q3 close); userships (Spaceman Spirits).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<table>
+<colgroup>
+<col width="29%" />
+<col width="29%" />
+<col width="41%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Segment</th>
+<th>Outlook</th>
+<th>Key Drivers</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>IMFL/Beer</strong></td>
+<td>High (mid-teens volumes FY26; 20-30% premium CAGR)</td>
+<td>Premium launches (single malts, vodka, rum); new states (UP, Kerala); CSD/export/duty-free expansion (Piccadily 29 states/28 countries).</td>
+</tr>
+<tr class="even">
+<td><strong>Ethanol/ENA</strong></td>
+<td>Moderate (shift to ENA/IMFL)</td>
+<td>Grain focus (40% FCI rice mandate); blending to 20-27%; BCL maize oil.</td>
+</tr>
+<tr class="odd">
+<td><strong>Wine</strong></td>
+<td>Strong (double-digit)</td>
+<td>Sula’s Source (+double digits); tourism (Sula +15% H1).</td>
+</tr>
+<tr class="even">
+<td><strong>Overall</strong></td>
+<td>10-15% revenue FY26 (INR1,600cr+ for some); margins 15-19% EBITDA.</td>
+<td>Capacity adds (Tilaknagar Prag 36L cases); UP plants (Som).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>3-Year Horizon</strong>: Premium IMFL/wine tourism to drive; ethanol stabilization via policy (flex-fuel); ₹2,500cr+ topline feasible (BCL).</p>
+</div>
+<div id="key-risks-2" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<ol style="list-style-type: decimal">
+<li><strong>Policy (High)</strong>: Excise flips (Maharashtra MML FII curbs); ethanol blending delays/oversupply (capacity sufficiency).</li>
+<li><strong>Commodity Volatility (Medium)</strong>: Maize/rice prices; glass/ENA swings.</li>
+<li><strong>Execution (Medium)</strong>: Capacity utilization (ethanol &lt;60%); debt rise (Tilaknagar 1:1 equity-debt for acquisition; BCL INR310cr).</li>
+<li><strong>Competition/Channels (Medium)</strong>: Discounting; HoReCa/stadium access delays.</li>
+<li><strong>Macro (Low-Medium)</strong>: Urban slowdown; weather (harvests).</li>
+</ol>
+<p><strong>Summary</strong>: Sector resilient via premiumization (tailwind offsetting regulations), but ethanol headwinds cap near-term growth. Focus shifting to IMFL/ENA/bottling; expansions signal H2/FY27 acceleration (15%+ revenue). <strong>Bull Case</strong>: Policy easing + premium volumes → 20% EBITDA. <strong>Bear Case</strong>: Ethanol glut + taxes → flat FY26. Investors: Monitor state policies, ethanol tenders, premium traction.</p>
+</div>
+</div>
+<div id="meeting" class="section level3">
+<h3><strong>Meeting</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+</div>
+<div id="indian-breweries-distilleries-sector-analysis" class="section level3">
+<h3>Indian Breweries &amp; Distilleries Sector Analysis</h3>
+<p>Based on the provided documents (Q2/H1 FY26 financial results, corporate actions, AGMs/EGMs, and disclosures from key players like United Spirits, United Breweries, Radico Khaitan, Allied Blenders, Tilaknagar Industries, India Glycols, Piccadily Agro, Globus Spirits, SOM Distilleries, G.M. Breweries, Sula Vineyards, and Associated Alcohols), here’s a <strong>summary analysis</strong> of <strong>headwinds, tailwinds, growth prospects, and key risks</strong> for the sector. Data reflects strong H1 performance amid premiumization trends, but regulatory hurdles persist.</p>
+<div id="tailwinds-positive-factors" class="section level6">
+<h6><strong>Tailwinds (Positive Factors)</strong></h6>
+<ul>
+<li><strong>Robust Financial Performance</strong>: H1 FY26 shows revenue growth (e.g., Radico: +20% YoY to ₹10,370 Cr, PAT +72% to ₹272 Cr; Piccadily: Revenue ₹46,190 Lacs, PAT ₹4,501 Lacs; India Glycols: Revenue ₹4,916 Cr, PAT ₹138 Cr). EBITDA margins expanded (Radico: 12.7% vs. 7.5% prior), driven by cost optimization and premium volume growth.</li>
+<li><strong>Premiumization &amp; Portfolio Expansion</strong>: Focus on high-margin premium/luxury (P&amp;A) segments (e.g., Allied Blenders: P&amp;A up to 40.4%; Radico: New launches like luxury Scotch/Gin; Sula: Strong wine sales). Backward integration (e.g., Radico’s PET/malt distilleries; Piccadily’s expansions).</li>
+<li><strong>Capital Infusion &amp; Efficiency</strong>: Fundraises (Globus: ₹500 Cr QIP; India Glycols: Preferential issue ₹467 Cr), stock splits (India Glycols), demergers (Radico for focus). Debt reduction (Radico: Net Debt/EBITDA 1.7x from 3.0x).</li>
+<li><strong>Sustainability Push</strong>: Entry into renewables (Associated Alcohols: MOA/AOA amendments for solar/captive power).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>Seasonality &amp; Volatility</strong>: Alcohol sales uneven (e.g., Sula Q2 revenue down QoQ; Piccadily notes seasonal sugar/distillery). Inventory fluctuations (Radico: +₹1,907 Lacs changes).</li>
+<li><strong>High Costs &amp; Taxes</strong>: Excise duties dominant (Radico: 71% of expenses); power/fuel up (India Glycols: ₹207 Cr). Employee/depreciation costs rising.</li>
+<li><strong>Regulatory Stringency</strong>: State-specific policies, compliance burdens (e.g., auditor changes at United Breweries; director approvals via postal ballots).</li>
+<li><strong>Margin Pressures</strong>: Raw material volatility (sugar/ENA), forex gains/losses (India Glycols unrealized FX ₹8 Cr).</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>High Double-Digit Revenue/PAT Growth</strong>: Sector projected 10-15% CAGR (premium IMFL &gt;20%; driven by urbanization, rising incomes). H1 trends: Radico/Piccadily &gt;20% YoY.</li>
+<li><strong>Capacity &amp; Portfolio Expansion</strong>: Greenfield/brownfield (Radico: Malt distillery Q4FY26; Piccadily: Distillery expansions). Acquisitions (Radico: D’YAVOL stake; Allied: Brands like Woodburns).</li>
+<li><strong>Premium/Luxury Shift</strong>: P&amp;A salience rising (Allied: 40%; Sula: Wine focus). Exports/partnerships (e.g., Radico-Roust for Vodka).</li>
+<li><strong>Diversification</strong>: Biofuels/pharma (India Glycols Ennature); renewables (Associated). Fundraises for capex (Globus ₹500 Cr).</li>
+<li><strong>Long-Term</strong>: Demerger/schemes (Radico) for sharper focus; remuneration hikes signal confidence in leadership.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<ul>
+<li><strong>Regulatory/Policy</strong>: State excise hikes, bans (e.g., dry days); illicit liquor (20-30% market). Compliance delays (postal ballots for MOA/AOA changes).</li>
+<li><strong>Execution/Operational</strong>: Capex delays (India Glycols ₹172 Cr outflow); inventory/raw material risks (sugar volatility).</li>
+<li><strong>Financial</strong>: High debt (Piccadily ₹32,435 Lacs borrowings); forex/interest costs (Radico ₹94 Cr finance costs).</li>
+<li><strong>Competition/Market</strong>: Intense rivalry (United Spirits/Radico dominance); premium shift slow in rural/low-end segments.</li>
+<li><strong>External</strong>: Weather (agri-inputs), inflation, monsoons impacting costs/volumes.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: <strong>Positive with resilience</strong>. Sector tailwinds from premiumization outweigh headwinds; H1 growth (avg. 15-20% revenue) signals FY26 strength. Focus on efficiency/debt reduction key. Risks mitigated via diversification, but policy vigilance essential. Midcaps (Radico, Piccadily) outpacing largecaps on expansion.</p>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-indian-breweries-distilleries-sector-based-on-provided-documents" class="section level9">
+<p class="heading">Summary Analysis: Indian Breweries &amp; Distilleries Sector (Based on Provided Documents)</p>
+<p>The Indian alcohol sector (IMFL, beer, wine) shows resilience amid premiumization and innovation, with companies like United Spirits (USL), United Breweries (UBL), Radico Khaitan, Tilaknagar Industries (TI), and others reporting strong Q2/H1 FY26 performance. Key drivers include festive season tailwinds, premium segment growth, and strategic expansions/acquisitions. However, state-specific regulations pose challenges. Below is a structured analysis.</p>
+<div id="tailwinds-positive-factors-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Premiumization Momentum</strong>: USL’s Prestige &amp; Above (P&amp;A) at 89.6% salience, growing 12.4% YoY; Radico’s Rampur single malt launch; ABD Maestro’s YELLO fusion whisky; Globus’ award-winning Doaab single malt. Elite/premium share stable at ~78% (Sula).</li>
+<li><strong>Margin Expansion &amp; Efficiency</strong>: USL EBITDA up 31.5% (margin +337 bps); Som Distilleries EBITDA +15.1% despite revenue dip; gross margins improved via pricing, mix, and stable COGS.</li>
+<li><strong>Wine Tourism &amp; Diversification</strong>: Sula’s record Q2 wine tourism revenue (+8% YoY, resort occupancy 77%); steady “Others” growth (+35% YoY).</li>
+<li><strong>Strong H1 Volumes/Revenue</strong>: USL NSV +11.6%; Som volumes robust despite revenue softness.</li>
+<li><strong>Festive/Holiday Outlook</strong>: USL CEO highlights H2 excitement; stable demand recovery expected.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Regulatory Disruptions</strong>: Maharashtra policy changes offset growth (USL); Telangana license expiry caused destocking (Sula, revenue -1.1% YoY); Karnataka weakness (Som, total income -7.2% YoY).</li>
+<li><strong>Market-Specific Softness</strong>: Temporary declines in standalone revenue (USL/Som impacted by prior-year comparatives/state issues); urban demand subdued (Sula).</li>
+<li><strong>One-Off Costs</strong>: USL indirect tax hit (INR 40 Cr); Som working capital pressures.</li>
+</ul>
+</div>
+<div id="growth-prospects-4" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity &amp; Market Expansion</strong>: UBL greenfield brewery in UP (1-2 mhl, INR 750 Cr investment, operational Q2 FY27); USL re-entry in Andhra Pradesh; TI’s INR 3,442 Cr Imperial Blue acquisition (3rd largest whisky brand, 22.4 Mn cases).</li>
+<li><strong>Innovation &amp; Portfolio Strengthening</strong>: New launches (Radico’s Virasat malt, ABD’s YELLO, Associated’s CP Vodka variants, Sula’s premium wines); premium/super-premium focus (CSD doubling for Sula).</li>
+<li><strong>H2 Catalysts</strong>: Festive/wedding season; urban recovery; wine tourism boost from Sula’s new resort; underlying demand stable (double-digit growth ex-disruptions).</li>
+<li><strong>Long-Term</strong>: Premium salience rising; exports/awards enhancing brand equity; integrations (TI’s supply agreements) to unlock synergies.</li>
+</ul>
+</div>
+<div id="key-risks-4" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Regulatory/Policy Volatility</strong>: State-level excise hikes, license delays (e.g., Maharashtra, Telangana); high dependence on key states (UP, Maharashtra).</li>
+<li><strong>Execution Risks</strong>: Acquisition integrations (TI’s Imperial Blue, Som’s WGNPL subsidiary); capex delays (UBL brewery).</li>
+<li><strong>Cost/Inflation Pressures</strong>: Potential COGS rise despite current stability; forex/debt costs (TI funded via debt/equity).</li>
+<li><strong>Competition &amp; Demand</strong>: Intense rivalry in premium/white spirits; urban slowdown persistence; volume declines in popular segments if pricing fails.</li>
+<li><strong>Macro Factors</strong>: Input volatility, economic slowdown impacting discretionary spends.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Sector poised for H2 recovery (10-15% growth potential), driven by premiumization (20%+ CAGR) and expansions. USL/TI lead scale plays; niche players (Sula/Radico) via tourism/innovation. Monitor regulations closely—resilient firms with strong balance sheets (e.g., USL EBITDA margins 21%) best positioned.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

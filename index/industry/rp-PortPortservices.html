@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Port &amp; Port services</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Port &amp; Port services</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/PortPortservices.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/PortPortservices.fan.CAP_WT.png" /></p>
+<p><img src="plots/PortPortservices.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/PortPortservices.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/PortPortservices.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/PortPortservices.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/PortPortservices.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f7b1c01a392d12143c3b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f7b1c01a392d12143c3b">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["0.57%","1.36%"],["-1.94%","1.88%"],["-3.53%","2.25%"],["-1.05%","4.7%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/PortPortservices.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/PortPortservices.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-34349d2db76e5e562490" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-34349d2db76e5e562490">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.ADANIPORTS.html\" target=\"_blank\">ADANIPORTS<\/a>","<a href=\"/reports02/eq-in/risk/in.JSWINFRA.html\" target=\"_blank\">JSWINFRA<\/a>","<a href=\"/reports02/eq-in/risk/in.GPPL.html\" target=\"_blank\">GPPL<\/a>","<a href=\"/reports02/eq-in/risk/in.ATL.html\" target=\"_blank\">ATL<\/a>"],[0.8954620061755273,0.06551449508589971,0.03735564333952924,0.001667855399043758],[0.8490069939901429,0.12916754096731,0.02021533126999978,0.001610133772547499]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":4,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[4,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-6320d3556b4bcb3eca8d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-6320d3556b4bcb3eca8d">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.ADANIPORTS.html\" target=\"_blank\">ADANIPORTS<\/a>","<a href=\"/reports02/eq-in/risk/in.JSWINFRA.html\" target=\"_blank\">JSWINFRA<\/a>","<a href=\"/reports02/eq-in/risk/in.GPPL.html\" target=\"_blank\">GPPL<\/a>","<a href=\"/reports02/eq-in/risk/in.ATL.html\" target=\"_blank\">ATL<\/a>"],[56.49910796793795,24.18651990670392,11.70328602132671,0.454935961917166],[55.51940726681843,28.18533073258657,9.423410073878376,0.5416672215405565],[58.84524756430901,30.80833272980522,9.786067374323792,0.5603523315619939]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":4,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[4,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-3eb95db1caaad7a5c914" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3eb95db1caaad7a5c914">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.ADANIPORTS.html\" target=\"_blank\">ADANIPORTS<\/a>","<a href=\"/reports02/eq-in/risk/in.JSWINFRA.html\" target=\"_blank\">JSWINFRA<\/a>","<a href=\"/reports02/eq-in/risk/in.GPPL.html\" target=\"_blank\">GPPL<\/a>","<a href=\"/reports02/eq-in/risk/in.ATL.html\" target=\"_blank\">ATL<\/a>"],[30.80955704922165,40.62589644011982,13.55863413892006,5.039945033846511],[39.07416115740923,38.69298048895032,8.254658038459523,4.493428017604312],[44.95815572694136,37.24545275295564,11.98889000228107,5.80750151782193]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":4,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[4,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="analysis-of-indian-ports-port-services-sector" class="section level9">
+<p class="heading">Analysis of Indian Ports &amp; Port Services Sector</p>
+<p>Using the provided documents (regulatory filings from Adani Ports, JSW Infrastructure, Gujarat Pipavav Port Limited, and Allcargo Terminals’ Q2/H1 FY26 earnings transcript), the analysis focuses on sector-level insights. The filings highlight investor/analyst interactions (indicating strong institutional interest) and detailed operational/financial commentary from Allcargo Terminals (ATL), which provides the most substantive sector context. Key themes include government-driven capacity expansion, trade dynamics, and company-specific growth plans amid moderating global growth.</p>
+<div id="tailwinds" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Government Initiatives and Policy Support</strong>: SagarMala program (574 projects worth ~INR 6 lakh crore), shipbuilding financial assistance extended to March 2026, and development of 23 operational waterways by 2030 are fostering capacity addition (500-550M tonnes p.a. FY23-28, led by coal, containers, petroleum) and technological upgrades (e.g., green fuels). These enhance efficiency and position India as a maritime hub.</li>
+<li><strong>Robust Trade and Cargo Growth</strong>: Port volumes grew 4% QoQ and 6% YoY in Q2 FY26; addressable CFS/ICD market up 10% YoY/3% QoQ. Potential India-US trade agreement could boost EXIM flows in energy, manufacturing, and tech.</li>
+<li><strong>Domestic Momentum</strong>: Sequential improvements in volumes (e.g., ATL: 168k TEUs in Q2, +12% QoQ), revenue (+11% QoQ), and EBITDA (+17% QoQ). Active investor meetings (e.g., Adani in Singapore, JSW/GPPL/JM Financial events) signal confidence.</li>
+<li><strong>Operational Efficiencies</strong>: Companies like ATL report scale benefits (transport/equipment costs down), tech adoption (yard management, digital apps like myCFS), and ESG shifts (solar power, reducing electricity costs).</li>
+</ul>
+</div>
+<div id="headwinds" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Global Macro Pressures</strong>: IMF projects gradual moderation in global growth (3.3-3.1% through 2026), with advanced economies at ~1.5%. Persistent trade tensions and geopolitical uncertainty could dampen cargo volumes.</li>
+<li><strong>Inflation and Yield Pressures</strong>: Easing inflation is positive, but EBITDA/TEU yields (e.g., ATL at INR 2,390) must balance market share gains; potential moderation as capacity scales.</li>
+<li><strong>Modal Shifts</strong>: Gradual shift from road to rail (e.g., DFCCIL) may impact short-term CFS/ICD reliance, though companies are adapting (e.g., ATL’s rail-connected Farukhnagar ICD).</li>
+<li><strong>Execution Dependencies</strong>: Investor meetings note dates “subject to change due to exigencies,” reflecting operational flexibility needs.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Expansion</strong>: Sector poised for 500-550M tonnes p.a. addition; ATL plans to grow from 8.3L TEUs (start FY26) to 10.5L (current) and 13L+ TEUs by FY27-28 via 4 projects (JNPA yard +170k TEUs live; Mundra/Chennai/Farukhnagar upcoming). Targets 80-85% utilization (current: 76-77%).</li>
+<li><strong>Volume Trajectory</strong>: ATL monthly volumes rose from 55.5k TEUs (Q1) to 62.5k (Q2 avg)/66k (Sep run-rate), driven by imports, capacity unlocks, and market growth (4-6% port volumes). H1 FY26 flat YoY but Q2 strong; H2 expected to accelerate.</li>
+<li><strong>Financial Leverage</strong>: Strong cash flows funding expansions (e.g., ATL: INR120cr equity raise via warrants/rights issue; INR70cr debt prepayment). EBITDA/TEU sustainable at INR2,200-2,300.</li>
+<li><strong>Market Positioning</strong>: ATL estimates 12.5-13% share in 80% of India’s EXIM trade (5 locations, 7 facilities). Competitors like Navkar/GDL exist, but focus on EXIM (75-80% imports) provides edge.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Geopolitical/Trade Disruptions</strong>: US tariffs/FTAs could impact 1/5 of EXIM volumes (pharma, gems, agri less CFS-relevant), though minimal current effect.</li>
+<li><strong>Commodity/Corridor Volatility</strong>: No major shifts yet from FTAs/policies, but seasonal cargo mix (chemicals/manufacturing) could fluctuate.</li>
+<li><strong>Execution and Capex Risks</strong>: Phased expansions (e.g., ATL: Mundra end-2026, Farukhnagar Apr-2027) face land/rail delays; total capex ~INR400cr, funded via accruals/debt/equity.</li>
+<li><strong>Competition and Utilization</strong>: New capacity risks over-supply if demand lags; greenfield gestation (e.g., Farukhnagar to 75-80% util. by 2029).</li>
+<li><strong>Regulatory/No UPSI</strong>: Meetings emphasize Q&amp;A only, no presentations/UPSI, reducing info asymmetry but highlighting reliance on public trends.</li>
+</ul>
+</div>
+<div id="summary" class="section level12">
+<p class="heading"><strong>Summary</strong></p>
+<p>The Indian Ports &amp; Port Services sector benefits from strong <strong>tailwinds</strong> like policy-driven capacity builds and trade growth, offsetting <strong>headwinds</strong> from global slowdowns and trade tensions. <strong>Growth prospects</strong> are robust (10-17% volume/revenue upside via expansions, targeting 13L+ TEUs capacity), supported by healthy cash flows and 80-85% utilization. <strong>Key risks</strong> center on execution, geopolitics, and demand sustainability, but companies demonstrate resilience (e.g., ATL’s Q2 growth, debt reduction). Overall, positive outlook with investor interest (multiple conferences) signaling sector momentum into FY26-27. Sector players like Adani/JSW/GPPL/ATL are actively expanding amid 4-6% baseline port growth.</p>
+</div>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3><strong>Financial</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="summary-analysis-indian-ports-port-services-sector-based-on-q3-fy25-results-of-key-players---adani-ports-jsw-infra-gppl" class="section level9">
+<p class="heading">Summary Analysis: Indian Ports &amp; Port Services Sector (Based on Q3 FY25 Results of Key Players - Adani Ports, JSW Infra, GPPL)</p>
+<p>The sector demonstrates robust operational resilience and growth, driven by volume increases and strategic expansions. Adani Ports (market leader) reported 15% YoY revenue growth to ₹7,964 Cr (Q3) and 11% PAT growth to ₹2,518 Cr, fueled by port/SEZ ops (₹7,413 Cr). JSW Infra saw 26% revenue surge to ₹1,182 Cr and 32% PAT rise to ₹336 Cr, boosted by logistics integration. GPPL maintained steady standalone revenue (~₹2,629 Cr) with PAT at ₹940 Cr, though flat YoY amid disputes. Nine-month trends: Adani +11% revenue (₹21,987 Cr), JSW +20% (₹3,193 Cr), GPPL flat. High EBITDA margins (Adani ~60%, JSW ~50%) reflect efficiency. Overall, sector benefits from India’s trade boom but faces regulatory hurdles.</p>
+<div id="tailwinds-positive-drivers" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Strong Volume &amp; Revenue Momentum</strong>: Cargo handling growth (Adani’s ports up; JSW’s terminals expanding). India’s EXIM trade (projected 8-10% CAGR) supports utilization.</li>
+<li><strong>EBITDA Margins &amp; Cash Generation</strong>: Adani’s operating margin ~60%; JSW ~50%; healthy DSCR (Adani 1.83-6.04x, JSW 2-5x). Low debt (Adani D/E 0.77x; JSW 0.57x).</li>
+<li><strong>Capex Discipline &amp; Dividends</strong>: Asset covers &gt;100%; GPPL interim dividend ₹4/share (₹1,934 Cr payout).</li>
+<li><strong>Macro Support</strong>: Sagarmala initiatives, Gati Shakti for port infra; stable forex aiding ops.</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Regulatory/Legal Disputes</strong>: GPPL’s GMB BG encashment (₹185 Cr recoverable?) &amp; LD claims (₹338 Cr +18% interest); arbitration on tank farm refund (₹672 Cr est. liability). Adani’s lingering SSR overhang &amp; 3 SEBI notices (RPTs, shareholding).</li>
+<li><strong>One-offs &amp; Costs</strong>: Exceptional VRS settlements (Adani ₹226 Cr); cyclone Tauktae insurance delays (GPPL ₹430 Cr pending); tax remeasurements (GPPL deferred tax hit ₹169 Cr from indexation removal).</li>
+<li><strong>Flat Volumes in Spots</strong>: GPPL revenue stagnant; Adani forex losses (₹25 Cr Q3).</li>
+<li><strong>Geopolitical Noise</strong>: Adani executive’s US DOJ/SEC indictment (company not named, no financial impact claimed).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li>****Acquisitive Expansion**: Adani’s spree (Gopalpur Port ₹3,080 Cr EV; Astro Offshore USD 195 Mn; 160+ subs incl. intl.); JSW’s Navkar (logistics, 70% stake); GPPL rail assoc. (PRCL).</li>
+<li><strong>Capacity Additions</strong>: Adani’s infra devt. gain ₹603 Cr (Ennore stake sale); JSW Jaigarh/Mangalore expansions; Vizhinjam, Dharamtar projects.</li>
+<li><strong>Diversification</strong>: Logistics (JSW Navkar); intl. ports (Adani Haifa, Colombo; JSW Middle East).</li>
+<li><strong>Long-term</strong>: India port capacity to 3.5 Bn tonnes by 2030; EV/shipbuilding synergies; EBITDA CAGR 15-20% potential.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Details</strong></th>
+<th><strong>Mitigants</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory/Legal</strong></td>
+<td>GMB/arbitration disputes (GPPL ₹1 Bn+ exposure); SEBI probes (Adani); concession renewals.</td>
+<td>Legal opinions; arbitration progress; strong balance sheets.</td>
+</tr>
+<tr class="even">
+<td><strong>Operational</strong></td>
+<td>Cargo cyclicality (economy slowdown); cyclone/flood risks (Tauktae precedent).</td>
+<td>Insurance claims; diversified cargo (dry bulk, containers).</td>
+</tr>
+<tr class="odd">
+<td><strong>Financial</strong></td>
+<td>Debt refinancing (Adani NCDs ₹5,819 Cr); forex volatility (Adani hedges).</td>
+<td>Low leverage; high covers (2.48x book value).</td>
+</tr>
+<tr class="even">
+<td><strong>Geopolitical</strong></td>
+<td>Intl. ops exposure (Adani 50+ overseas subs); US probes spillover.</td>
+<td>No direct impact claimed; domestic focus.</td>
+</tr>
+<tr class="odd">
+<td><strong>Tax/Policy</strong></td>
+<td>Indexation removal hikes DTL (GPPL ₹169 Cr); LTCG changes.</td>
+<td>New regime elections; cash buffers.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Outlook</strong>: Bullish with 12-15% sector revenue CAGR FY25-27, led by Adani/JSW expansions. Risks skewed to legal (monitor GPPL disputes), but tailwinds from trade/volumes dominate. Investors: Focus on ROCE (&gt;20% for leaders) &amp; capex ROIs.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="analysis-of-indian-ports-port-services-sector-1" class="section level9">
+<p class="heading">Analysis of Indian Ports &amp; Port Services Sector</p>
+<p>Based on the provided announcements from key players (Adani Ports, JSW Infrastructure, Gujarat Pipavav Port Ltd., and Allcargo Terminals), the sector shows a mix of positive governance/ESG momentum and operational/regulatory challenges. These reflect broader trends in India’s port ecosystem, driven by trade growth (e.g., via Sagarmala initiatives), privatization, and capacity needs amid rising container/coal traffic. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>, followed by an executive summary.</p>
+<div id="tailwinds-supportive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Supportive Factors)</strong></p>
+<ul>
+<li><strong>ESG Improvements</strong>: Adani Ports’ MSCI ESG rating upgrade from ‘CCC’ to ‘B’ (Oct 31, 2025) signals stronger sustainability efforts, enhancing investor appeal amid global ESG focus. This could lower capital costs and attract foreign inflows.</li>
+<li><strong>Capacity Expansion Initiatives</strong>: Allcargo Terminals’ extension of term sheet for 30-acre land lease in Chennai (Sep 2025, Rs. 9 Cr annual rent, 15% escalation every 3 years) for CFS/ICD evaluation underscores proactive infrastructure scaling to capture rising cargo volumes.</li>
+<li><strong>Governance Stability</strong>: Gujarat Pipavav Port’s auditor switch (to M S K A &amp; Associates) and Independent Director re-appointment (Mr. Samir Chaturvedi till 2030) indicate robust compliance, supporting long-term operational credibility.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Regulatory Scrutiny &amp; Tax Disputes</strong>: JSW Infrastructure’s subsidiary (Ennore Coal Terminal) received a GST SCN (Sep 26, 2025) for Rs. 96.58 Cr demand (Apr 2019–Mar 2024 period) plus interest/penalty. Though contested with “no material impact,” such notices tie up resources and create uncertainty.</li>
+<li><strong>Lease/Term Sheet Dependencies</strong>: Allcargo’s reliance on short-term extensions (to Oct 31, 2025) for expansion highlights execution delays, potentially inflating costs amid high escalation rates.</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Infrastructure Build-Out</strong>: Allcargo’s Chennai land deal positions it for ICD/CFS growth, aligning with India’s 7–8% cargo traffic CAGR (driven by EXIM trade, coal imports). Adani’s ESG edge could accelerate similar expansions.</li>
+<li><strong>Privatization &amp; Efficiency Gains</strong>: Routine board actions (e.g., GPPL) support smoother operations in privatized ports like Pipavav (APM Terminals), with potential for higher throughput.</li>
+<li><strong>Sector-Wide Upside</strong>: Combined with national pushes (e.g., 3,000+ MTPA capacity additions by 2030), these firms could benefit from modal shifts to coastal shipping and green port tech, targeting 2–3x volume growth by 2030.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="24%" />
+<col width="40%" />
+<col width="34%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details from Documents</th>
+<th>Sector Implications</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory/Litigation</strong></td>
+<td>JSW’s Rs. 96.58 Cr GST SCN (contested but ongoing).</td>
+<td>Frequent tax probes (GST/ITR) could lead to 10–20% EBITDA hits if upheld; delays capex.</td>
+</tr>
+<tr class="even">
+<td><strong>Execution/Contractual</strong></td>
+<td>Allcargo’s term sheet extensions signal negotiation hurdles.</td>
+<td>Rising lease costs (15% escalation) amid land scarcity; failure to finalize could stall expansions.</td>
+</tr>
+<tr class="odd">
+<td><strong>Financial</strong></td>
+<td>Potential outflows from penalties/interest (JSW); high security deposits (Allcargo: 6 months’ rent).</td>
+<td>Leverage spikes if disputes escalate; ESG lapses could raise funding costs.</td>
+</tr>
+<tr class="even">
+<td><strong>Operational</strong></td>
+<td>Coal-specific exposure (JSW Ennore) vulnerable to energy transitions.</td>
+<td>Trade volatility (e.g., global slowdowns) impacts utilization; competition from DP World, DPCL.</td>
+</tr>
+<tr class="odd">
+<td><strong>Governance</strong></td>
+<td>Auditor changes (GPPL) – routine but signals past issues.</td>
+<td>Minor director/audit risks if not seamless.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="executive-summary" class="section level12">
+<p class="heading"><strong>Executive Summary</strong></p>
+<ul>
+<li><strong>Overall Sentiment</strong>: Mildly positive (tailwinds from ESG/capacity &gt; headwinds), with Adani/Allcargo driving optimism and JSW tempering it via taxes. Sector poised for 10–15% revenue growth (FY26–27) on trade recovery, but risks cap upside.</li>
+<li><strong>Investment Outlook</strong>: Buy on dips for ESG leaders (Adani); monitor JSW litigations. Key watch: GST resolutions, lease finalizations by Q4 FY26.</li>
+<li><strong>Recommendations</strong>: Firms should prioritize dispute resolutions and green capex to mitigate risks and unlock prospects.</li>
+</ul>
+<p>This analysis is derived directly from the filings, contextualized to sector dynamics (e.g., NMPT data, SEBI disclosures). No material criminal/escalatory content detected.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-indian-ports-port-services-sector-based-on-provided-documents" class="section level9">
+<p class="heading">Summary Analysis: Indian Ports &amp; Port Services Sector (Based on Provided Documents)</p>
+<p>The documents highlight key players like <strong>Adani Ports (APSEZ)</strong>, <strong>JSW Infrastructure</strong>, <strong>Gujarat Pipavav Port (GPPL)</strong>, and <strong>Allcargo Terminals (ATL)</strong>, showcasing robust operational updates, investor interactions, earnings transcripts, and strategic expansions amid India’s maritime push. The sector benefits from strong fundamentals (e.g., 11,099 km coastline, 95% trade via maritime routes, ~2,700 mtpa capacity), government initiatives (Sagarmala, Maritime India Vision 2030), and privatization trends. Below is a structured analysis of <strong>tailwinds</strong>, <strong>headwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-drivers-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Economic &amp; Policy Support</strong>: India’s GDP poised to hit $7 Tn+ (3rd largest globally), with capex surge (₹30 Tn infra pipeline). Sagarmala (574 projects, ₹6 Tn), Gati Shakti, and MIV 2030 target 10,000 mtpa capacity by 2047 via brownfield expansions, mega ports, transshipment hubs (e.g., South India), and landlord model favoring private operators (12 major ports: 1,630 mtpa capacity).</li>
+<li><strong>Cargo Volume Growth</strong>: Port volumes up 4-6% YoY/QoQ; addressable CFS/ICD market up 10% YoY. JSW handled 28.9 MT (Q2 FY26, +3% YoY), 58.2 MT (H1, +4%); ATL 168k TEUs (Q2, +7% YoY), 319k (H1, flat but +12% QoQ).</li>
+<li><strong>Private Sector Momentum</strong>: JSW (2nd largest private operator, 177 mtpa), expansions (e.g., Jaigarh LPG, Dharamtar, Oman greenfield 27 mtpa). ATL capacity from 0.83M to 1.3M TEUs (JNPA, Mundra, Chennai, Farukhnagar). Investor meets (Adani Singapore conference, GPPL JM Financial).</li>
+<li><strong>Financial Strength</strong>: JSW revenue ₹1,372 Cr (Q2, +26% YoY), EBITDA ₹716 Cr (+18%), net debt/EBITDA 0.75x; ATL EBITDA/TEU ₹2,390 (+17% YoY). Low leverage, ratings (BBB-/Stable).</li>
+<li><strong>Synergies &amp; Efficiency</strong>: JSW group cargo (steel, cement); ATL scale efficiencies (transport/equipment optimization, solar shift, digital apps like myCFS).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Global/Macro Pressures</strong>: IMF projects global growth moderation (3.3-3.1% ’24-’26), trade tensions (India-US tariffs), geopolitics impacting EXIM (e.g., JSW Paradip Iron Ore down 2.1 MT YoY due to weak exports).</li>
+<li><strong>Volume Variability</strong>: Subdued iron ore/coal in spots; ATL H1 flat YoY despite QoQ gains.</li>
+<li><strong>Cost &amp; Execution Pressures</strong>: Rising capex (JSW ₹9,000 Cr FY25-30 logistics; ATL ₹400 Cr expansions). Debt for growth (ATL rights issue ₹80 Cr + warrants).</li>
+<li><strong>Competition</strong>: Intensifying in CFS/ICD (e.g., Navkar, GDL); market share battles (ATL ~12.5-13% in key 80% EXIM markets).</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Explosion</strong>: Sector +500-550 mtpa (FY23-28); JSW to 400 mtpa (FY30, +2.3x via 121.6 mtpa approved projects +90 mtpa greenfields like Keni/Murbe/Oman). ATL to 1.3M TEUs (2-3 yrs, 80-85% utilization).</li>
+<li><strong>Diversification</strong>: Brownfield (JSW Tuticorin 7 mtpa, JNPA liquids 4.5 mtpa); greenfield (JSW Jatadhar 30 mtpa); logistics (JSW ₹8,000 Cr revenue FY30 via ICDs/GCTs/Navkar).</li>
+<li><strong>Revenue/EBITDA Trajectory</strong>: JSW FY21-25 PAT CAGR 52%, EBITDA 29%; ATL EBITDA/TEU sustainable ₹2,200-2,300. Privatization bids, inorganic (JSW leveraging balance sheet).</li>
+<li><strong>Timeline</strong>: JSW FY28E 298 mtpa; ATL Mundra/Chennai ’26-’27, Farukhnagar ’27 (rail/DFCC for domestic).</li>
+<li><strong>Upside Catalysts</strong>: FTAs, rail shift (road-to-rail), group captive cargo (JSW steel 51.5 mtpa FY31).</li>
+</ul>
+<table>
+<colgroup>
+<col width="15%" />
+<col width="34%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Player</th>
+<th>Current Capacity</th>
+<th>FY30 Target</th>
+<th>Key Drivers</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>JSW Infra</strong></td>
+<td>177 mtpa</td>
+<td>400 mtpa</td>
+<td>Expansions (121 mtpa), greenfields (90 mtpa), logistics ₹8,000 Cr rev.</td>
+</tr>
+<tr class="even">
+<td><strong>ATL</strong></td>
+<td>1.05M TEUs</td>
+<td>1.3M TEUs</td>
+<td>JNPA/Mundra/Chennai/Farukhnagar; 16-17% vol. growth run-rate.</td>
+</tr>
+<tr class="odd">
+<td><strong>Adani/GPPL</strong></td>
+<td>N/A (implied large)</td>
+<td>Sector-leading</td>
+<td>Investor focus, privatization.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks-3" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Macro/Commodity Volatility</strong>: Iron ore/coal slumps (JSW Paradip -3.4 MT H1); US tariffs/agri/pharma (~1/5 EXIM) non-CFS addressable.</li>
+<li><strong>Execution Delays</strong>: Greenfield gestation (e.g., JSW Keni env. clearance, ATL Farukhnagar rail); capex overruns (JSW Oman US$419 Mn, IRR 15%).</li>
+<li><strong>Leverage &amp; Funding</strong>: Equity infusions (ATL ₹120 Cr), debt (JSW net debt ₹1,810 Cr); rights/preferential dilution.</li>
+<li><strong>Competition/Geopolitics</strong>: Trade wars, port congestion; shift to rail/domestic may dilute EXIM focus.</li>
+<li><strong>Regulatory/External</strong>: Env. clearances, monsoons, global slowdown (IMF 1.5% advanced economies).</li>
+<li><strong>Sustainability</strong>: GHG intensity, water use (JSW tracking reductions, but sector scrutiny).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: <strong>Strongly Positive</strong> with tailwinds from policy/infra boom outweighing headwinds. Sector poised for 2-3x growth (e.g., JSW 177→400 mtpa), driven by privatization and EXIM (4-6% CAGR). Players like JSW/ATL show execution edge (low debt, EBITDA margins 52-53%). Monitor macro cargo (iron ore) and project timelines for near-term volatility. Recommended for growth-oriented investors.</p>
+</div>
+</div>
+</div>
+<div id="meeting" class="section level3">
+<h3><strong>Meeting</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="summary-analysis-indian-ports-port-services-sector-based-on-q2h1-fy26-results-from-apsez-jsw-infra-gppl-allcargo-terminals" class="section level9">
+<p class="heading">Summary Analysis: Indian Ports &amp; Port Services Sector (Based on Q2/H1 FY26 Results from APSEZ, JSW Infra, GPPL, Allcargo Terminals)</p>
+<p>The sector demonstrates robust financial performance amid capacity expansions and volume growth, driven by India’s trade recovery and infra push. Key players show revenue/PAT growth (e.g., JSW +24% YoY revenue H1; GPPL PAT ₹2,590 Cr H1), high cash reserves (GPPL ₹9,935 Cr deposits), and dividends (GPPL ₹5.40/share interim). However, regulatory/tax headwinds persist. Below is a structured analysis:</p>
+<div id="tailwinds-positive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Strong Operational Momentum</strong>: Revenue growth across peers—JSW H1 revenue ₹2,489 Cr (+24% YoY), GPPL standalone H1 ₹5,498 Cr (+16% YoY), Allcargo consolidated H1 ₹394 Cr (+2% YoY). Port ops dominant (JSW 88% revenue), supported by higher cargo volumes.</li>
+<li><strong>Profitability &amp; Balance Sheet Strength</strong>: High margins (JSW H1 PBT ₹936 Cr, 35% margins); PAT growth (GPPL +32% YoY H1). Strong liquidity (JSW cash ₹605 Cr + deposits ₹1,495 Cr; GPPL cash ₹765 Cr + deposits ₹9,170 Cr).</li>
+<li><strong>Capex &amp; Expansion</strong>: JSW H1 capex ₹902 Cr (ports/logistics); GPPL capex ₹752 Cr. New assets/subsidiaries (JSW: Navkar acquisition; Allcargo: Speedy 100% sub, new FTWZ sub).</li>
+<li><strong>Shareholder Confidence</strong>: APSEZ 99.34% approval for new Independent Director; dividends signal stability.</li>
+<li><strong>Macro Support</strong>: Govt. MCA circulars enable e-voting/postal ballots; sector benefits from trade growth (ports handle 92-93% polled volumes from promoters/institutions).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-3" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Regulatory &amp; Legal Disputes</strong>: GPPL ongoing GMB bank guarantee encashment (₹185 Cr + ₹371 Cr demands); customer arbitration (₹681 Cr BG submitted). Allcargo GST demands (₹25 Cr + penalty, stayed by HC); Speedy SCN (₹4 Cr).</li>
+<li><strong>Tax Scrutiny</strong>: Allcargo IT search (u/s 132/158BC notices); no material impact expected but ongoing.</li>
+<li><strong>Rising Costs</strong>: Finance costs up (JSW H1 ₹191 Cr; Allcargo ₹29 Cr H1) due to borrowings/capex. Employee/depreciation steady but elevated (JSW dep. ₹292 Cr H1).</li>
+<li><strong>Forex/Operational Volatility</strong>: JSW forex hedges show losses (OCI ₹168 Cr H1); past cyclone claims resolved but disruptions noted (GPPL).</li>
+</ul>
+</div>
+<div id="growth-prospects-4" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High (Strong Outlook)</strong>: Capacity additions (JSW: 20+ subs/terminals like Jaigarh, Paradip); logistics integration (JSW Navkar; GPPL rail associate). H1 revenue/EBITDA growth signals 15-25% FY26 potential.</li>
+<li><strong>Volume-Led Expansion</strong>: Port traffic up (JSW port segment ₹2,189 Cr H1); govt. infra (e.g., Sagarmala) + trade (exports/imports). Allcargo CFS focus complements (Speedy/HORCL stakes).</li>
+<li><strong>M&amp;A/Inorganic</strong>: JSW overseas FZE; Allcargo HORCL (7.6%) + FTWZ. APSEZ governance strengthening for scale.</li>
+<li><strong>Projected</strong>: Sector cargo handling to grow 8-10% CAGR (FY25-30), driven by Mundra/Kandla hubs.</li>
+</ul>
+</div>
+<div id="key-risks-4" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table style="width:100%;">
+<colgroup>
+<col width="27%" />
+<col width="24%" />
+<col width="25%" />
+<col width="22%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Impact Level</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory/Legal</strong></td>
+<td>Disputes (GPPL GMB/arbitration; Allcargo GST/IT) could tie up cash (₹1,200+ Cr exposure).</td>
+<td>High</td>
+<td>Legal stays/BGs; expert advice.</td>
+</tr>
+<tr class="even">
+<td><strong>Tax/Litigation</strong></td>
+<td>IT searches (Allcargo); GST demands (₹30+ Cr stayed).</td>
+<td>Medium-High</td>
+<td>Responses filed; no material provisions.</td>
+</tr>
+<tr class="odd">
+<td><strong>Operational</strong></td>
+<td>Cyclones/power disruptions (GPPL past); forex (JSW OCI volatility).</td>
+<td>Medium</td>
+<td>Insurance claims received; hedges.</td>
+</tr>
+<tr class="even">
+<td><strong>Financial</strong></td>
+<td>Debt rise (JSW borrowings ₹4,898 Cr); capex funding (₹900 Cr+ H1).</td>
+<td>Medium</td>
+<td>Strong cash flows (JSW ops ₹1,311 Cr H1).</td>
+</tr>
+<tr class="odd">
+<td><strong>Execution</strong></td>
+<td>Sub integrations (JSW Navkar); new ventures (Allcargo FTWZ).</td>
+<td>Low-Medium</td>
+<td>Promoter control (JSW 100% poll).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Sector Outlook</strong>: <strong>Positive (Buy/Hold)</strong>. Tailwinds from volumes/capex outweigh headwinds; growth 15-20% FY26 possible. Monitor disputes (20-30% PAT risk if adverse). Peers like APSEZ/JSW lead; GPPL cash-rich; Allcargo turnaround via subs.</p>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="summary-analysis-indian-ports-port-services-sector" class="section level9">
+<p class="heading">Summary Analysis: Indian Ports &amp; Port Services Sector</p>
+<p>Using the provided documents from Adani Ports &amp; SEZ Ltd (APSEZ), JSW Infrastructure Ltd, and Allcargo Terminals Ltd (ATL) as inputs, this analysis covers <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong> for the Indian Ports &amp; Port Services sector. These releases highlight Q2 FY26 financials (JSW, ATL), sustainability commitments (APSEZ), and strategic expansions, reflecting a sector driven by volume growth, capacity builds, and ESG integration amid commodity market volatility.</p>
+<div id="tailwinds-positive-factors-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Robust Financial Performance</strong>: JSW reported 26% YoY revenue growth to ₹1,372 Cr, 18% EBITDA growth to ₹716 Cr, and PAT of ₹369 Cr; ATL saw 6% YoY/11% QoQ revenue growth to ₹207 Cr and 24% YoY/17% QoQ EBITDA growth to ₹40 Cr. Operational leverage from volume-mix improvements and cost efficiencies (e.g., JSW port EBITDA margin up to 53%).</li>
+<li><strong>Volume Momentum</strong>: JSW cargo up 3% YoY to 28.9 MT (group cargo share rose to 54%); ATL volumes up 12% QoQ. Diversified growth from ports like Jaigarh, Dharamtar, and Navkar Corp (EXIM +20% YoY, domestic +46% YoY).</li>
+<li><strong>Sustainability Leadership</strong>: APSEZ’s TNFD adoption (first for Indian Integrated Transport Utility) signals ESG tailwinds, with mangrove restoration (4,200 Ha afforested) and biodiversity focus enhancing resilience and investor appeal.</li>
+<li><strong>Strong Balance Sheets</strong>: JSW’s net debt/EBITDA at 0.75x, ₹3,088 Cr cash; investment-grade ratings (BBB-/Stable) from S&amp;P/Fitch, enabling capex without leverage strain.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-4" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Commodity Market Weakness</strong>: JSW faced 2.1 MT shortfall at Paradip Iron Ore terminal due to weak seaborne iron ore exports, capping overall volume growth at 3% YoY (would have been ~10% otherwise).</li>
+<li><strong>Moderated Growth</strong>: Despite positives, JSW’s volume growth lagged revenue due to specific port underperformance; ATL’s PAT flat YoY despite EBITDA gains, indicating margin pressures.</li>
+<li><strong>External Dependencies</strong>: Reliance on hinterland cargo, group volumes (JSW at 54%), and market cycles (e.g., iron ore exports) exposes sector to global trade fluctuations.</li>
+</ul>
+</div>
+<div id="growth-prospects-5" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Expansion</strong>: JSW targeting 400 MTPA by FY30 (from 177 MTPA) via ₹30,000 Cr capex + ₹9,000 Cr for logistics; APSEZ at 633 MTPA aiming for 1 Bn tonnes by 2030 (28% India share). ATL advancing multimodal parks.</li>
+<li><strong>Strategic Projects</strong>: JSW’s greenfield ports (Keni, Murbe), Ballari MMLP acquisition (₹380 Cr capex, ops by Q4 FY26), Kolkata berth concession (6.3 MTPA capacity), and Navkar integration for pan-India logistics.</li>
+<li><strong>Diversification</strong>: Shift to containers/logistics (JSW/Navkar), “shore-to-door” models (APSEZ’s ports + rail/warehousing/trucks), and privatization (e.g., Kolkata berths). Sector benefits from India’s trade growth, with JSW/ATL emphasizing EXIM/domestic cargo.</li>
+<li><strong>ESG-Driven Opportunities</strong>: APSEZ’s TNFD disclosures from FY26 position sector for global standards (e.g., COP30 alignment), attracting capital for nature-positive infra.</li>
+</ul>
+<table>
+<colgroup>
+<col width="18%" />
+<col width="37%" />
+<col width="16%" />
+<col width="27%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Company</th>
+<th>Current Capacity</th>
+<th>Target</th>
+<th>Key Enablers</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>APSEZ</td>
+<td>633 MTPA</td>
+<td>1 Bn tonnes (2030)</td>
+<td>15 ports, logistics ecosystem</td>
+</tr>
+<tr class="even">
+<td>JSW</td>
+<td>177 MTPA</td>
+<td>400 MTPA (FY30)</td>
+<td>12 ports, ₹39,000 Cr capex</td>
+</tr>
+<tr class="odd">
+<td>ATL</td>
+<td>CFS/ICD focus</td>
+<td>Multimodal parks</td>
+<td>Pan-India network (Nhava Sheva, Mundra, etc.)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks-5" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Market/Commodity Volatility</strong>: Iron ore/seaborne trade weakness (JSW); broader risks include cargo demand fluctuations, competition, and client concentration.</li>
+<li><strong>Execution Risks</strong>: Greenfield delays (public hearings ongoing), capex overruns (₹30,000+ Cr plans), acquisition integration (e.g., Navkar, Ballari).</li>
+<li><strong>Macro/Regulatory</strong>: Wage hikes, political instability, immigration restrictions, fiscal incentives withdrawal (JSW forward-looking statements). Environmental scrutiny amid ESG push.</li>
+<li><strong>Financial/Operational</strong>: Earnings volatility, debt from expansions (though low now), and sector-specific issues like vessel turnaround inefficiencies or hinterland connectivity gaps.</li>
+<li><strong>Sector-Wide</strong>: Intense competition (APSEZ/JSW as top players), global economic conditions affecting trade volumes.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Strong tailwinds from expansions and financial health outweigh headwinds, positioning the sector for 10-20%+ CAGR through FY30. Sustainability (e.g., TNFD) and logistics integration are differentiators, but commodity cycles and execution remain pivotal. Investors should monitor iron ore exports and capex delivery.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

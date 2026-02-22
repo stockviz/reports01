@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Integrated Power Utilities</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Integrated Power Utilities</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/IntegratedPowerUtilities.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/IntegratedPowerUtilities.fan.CAP_WT.png" /></p>
+<p><img src="plots/IntegratedPowerUtilities.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/IntegratedPowerUtilities.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/IntegratedPowerUtilities.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/IntegratedPowerUtilities.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/IntegratedPowerUtilities.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-0f705be1dcb2bbc9fd94" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0f705be1dcb2bbc9fd94">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-0.13%","0.9%"],["-3.41%","0.59%"],["-8.35%","-1.5%"],["-14.03%","-1.89%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/IntegratedPowerUtilities.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/IntegratedPowerUtilities.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-50329a5011a8e85f21e8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-50329a5011a8e85f21e8">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.ADANIPOWER.html\" target=\"_blank\">ADANIPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.TATAPOWER.html\" target=\"_blank\">TATAPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.TORNTPOWER.html\" target=\"_blank\">TORNTPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.CESC.html\" target=\"_blank\">CESC<\/a>","<a href=\"/reports02/eq-in/risk/in.RELINFRA.html\" target=\"_blank\">RELINFRA<\/a>","<a href=\"/reports02/eq-in/risk/in.DPSCLTD.html\" target=\"_blank\">DPSCLTD<\/a>"],[0.3487235766068342,0.3902685261053482,0.1790821305264592,0.06004303662319722,0.01957758056173982,0.002305149576421354],[0.5533901805169473,0.2409218756221808,0.1538165052479727,0.04095329710602948,0.009076229882647231,0.00184191162422237]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-c49df72bf46028a6103f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c49df72bf46028a6103f">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.ADANIPOWER.html\" target=\"_blank\">ADANIPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.TATAPOWER.html\" target=\"_blank\">TATAPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.TORNTPOWER.html\" target=\"_blank\">TORNTPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.CESC.html\" target=\"_blank\">CESC<\/a>","<a href=\"/reports02/eq-in/risk/in.RELINFRA.html\" target=\"_blank\">RELINFRA<\/a>","<a href=\"/reports02/eq-in/risk/in.DPSCLTD.html\" target=\"_blank\">DPSCLTD<\/a>"],[57.28929618551255,24.87217743681672,23.9204418710734,0.09512340788421468,-7.270759365209655,-0.05938730399234689],[49.39837897922891,24.70600805756307,17.07121772966812,null,0.2807333022105685,-0.05172951114664328],[50.02616377025956,25.26691054338376,23.21484922323107,0.07966428756361872,1.529822800517162,-0.1174106249551802]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-580b3f7bd074c2d978f4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-580b3f7bd074c2d978f4">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.ADANIPOWER.html\" target=\"_blank\">ADANIPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.TATAPOWER.html\" target=\"_blank\">TATAPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.TORNTPOWER.html\" target=\"_blank\">TORNTPOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.CESC.html\" target=\"_blank\">CESC<\/a>","<a href=\"/reports02/eq-in/risk/in.RELINFRA.html\" target=\"_blank\">RELINFRA<\/a>","<a href=\"/reports02/eq-in/risk/in.DPSCLTD.html\" target=\"_blank\">DPSCLTD<\/a>"],[17.39019946978853,34.00851191798421,27.82616028941072,0.1423732606706626,9.728713294633511,0.3489234003817548],[26.60488301161356,41.73471845134824,18.58286141131904,null,12.96009854859854,0.2147378252768209],[24.4192708328515,38.0799468621499,25.00705507852983,0.0980809091569599,12.10750340333094,0.2881429139808766]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="analysis-of-indian-integrated-power-utilities-adani-power-tata-power-torrent-power-cesc" class="section level9">
+<p class="heading">Analysis of Indian Integrated Power Utilities (Adani Power, Tata Power, Torrent Power, CESC)</p>
+<p>Based on the provided documents (primarily Tata Power’s detailed Q2/H1 FY26 earnings transcript, supplemented by investor meeting intimations from all companies), here’s a structured analysis for these key players in India’s integrated power sector (spanning generation, renewables, distribution, and manufacturing). The sector shows resilience amid monsoon impacts but strong execution focus. Tata Power provides the most granular insights; others signal proactive investor engagement via conferences/roadshows.</p>
+<div id="tailwinds-positive-drivers" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Robust Financial Performance</strong>: Tata Power reported 24th consecutive QoQ PAT growth (+14% YoY), EBITDA &gt;Rs.4,000 cr (first time), driven by Odisha discoms (PAT Rs.174 cr Q/Q, +362%; H1 Rs.279 cr), solar manufacturing (PAT Rs.240 cr Q/Q, +262%), and rooftop solar (PAT Rs.123 cr Q/Q, +390%; sales &gt;Rs.1,000 cr/quarter).</li>
+<li><strong>Operational Scale-Up</strong>: Renewables stabilizing (solar cell/module efficiencies improved, costs optimized); rooftop market leadership (&gt;20% share); strong balance sheet (net debt/EBITDA 3.3x, net debt/equity 1.2x; S&amp;P outlook upgrade to BBB Stable).</li>
+<li><strong>Investor Confidence</strong>: All companies scheduling high-profile meets (Adani/Tata/CESC in Singapore; Torrent Investors Day in Mumbai), indicating transparency and growth narrative pitch.</li>
+<li><strong>Policy Support</strong>: Expected PLI for ingot/wafer; Sec.11 potential revival; discom bailout package (~Rs.1 tn) could boost distribution ops.</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Demand/Weather Volatility</strong>: Prolonged monsoon reduced power demand, halted Mundra plant ops (no Sec.11 invocation), causing losses (~Rs.360 cr cluster impact incl. coal/shipping).</li>
+<li><strong>Execution Delays</strong>: RE projects (wind sites inundated); H1 RE addition only 205 MW vs. FY26 target 2.6 GW (now ~1.5 GW adjusted); third-party EPC order book dipped (Rs.19 bn from Rs.27 bn).</li>
+<li><strong>Regulatory/Resolution Delays</strong>: Mundra PPA talks with Gujarat (expected Nov closure, then other states); Delhi regulatory assets liquidation ongoing but protracted.</li>
+<li><strong>Capex Intensity</strong>: Tata Power H1 capex Rs.7,300 cr (FY target Rs.25,000 cr), debt up Rs.6,400 cr to Rs.54,000 cr.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<table>
+<colgroup>
+<col width="19%" />
+<col width="51%" />
+<col width="29%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Area</th>
+<th>Key Highlights</th>
+<th>Outlook</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Renewables</strong></td>
+<td>Tata: 1.3 GW H2 addition (total ~7 GW operating by FY26-end); 5.8 GW pipeline (all PPAs tied); rooftop to scale to 5 cr homes nationally.</td>
+<td>2-2.5 GW/year; hybrid/RTC/pumped storage (2029 ops); backward integration (10 GW ingot/wafer plant, FY27+).</td>
+</tr>
+<tr class="even">
+<td><strong>Generation</strong></td>
+<td>Bhutan hydro (1,125 MW Dorjilung, Rs.13,000 cr CAPEX, 40% stake, Rs.1,500-1,600 cr equity); Mundra resolution for 4 GW.</td>
+<td>Thermal bids (Greenfield/Brownfield); Sec.11 revival FY27.</td>
+</tr>
+<tr class="odd">
+<td><strong>Distribution</strong></td>
+<td>Odisha template (sustainable PAT trajectory); UP/Delhi bids; parallel licenses.</td>
+<td>PPP expansion; discom bailout to unlock ops.</td>
+</tr>
+<tr class="even">
+<td><strong>Manufacturing/EPC</strong></td>
+<td>Solar cell/module PAT surge; 10 GW ingot/wafer (PLI/state subsidies).</td>
+<td>50-60 GW national need; export/third-party sales.</td>
+</tr>
+<tr class="odd">
+<td><strong>Overall Capex</strong></td>
+<td>Rs.17,500 cr balance FY26 (~60% RE/transmission/pumped storage).</td>
+<td>FY27+ targets intact despite H1 slippage.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Execution/Supply Chain</strong>: RE delays (land/transmission); monsoon recurrence; EPC third-party reliance.</li>
+<li><strong>Regulatory/Policy</strong>: Mundra PPA timelines; discom bailout uncertainty; regulatory asset amortization (Delhi/Mumbai).</li>
+<li><strong>Financial</strong>: Debt creep (guardrail ~4x net debt/EBITDA for AA rating); capex overruns amid weak H2 demand.</li>
+<li><strong>Market/Competition</strong>: Solar price volatility (demand/supply, wafer imports); rooftop regulation risks (untied PPAs); thermal stranded assets (net-zero 2045).</li>
+<li><strong>Macro</strong>: Weak power demand persistence; bidding slowdowns (e.g., solar awards paused on land/connectivity).</li>
+</ul>
+<p><strong>Summary</strong>: Strong tailwinds from RE/manufacturing/distribution scale-up and healthy balance sheets outweigh monsoon-led headwinds. Growth is anchored in 7+ GW RE ops FY26, backward integration, and discom turnarounds (Odisha as template), with FY26 PAT/EBITDA trajectory robust despite Mundra drag (resolution imminent). Risks center on execution/debt, but proactive investor outreach (Singapore/Mumbai events) signals confidence. Sector poised for 15-20%+ PAT CAGR if capex delivers.</p>
+</div>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3><strong>Financial</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="analysis-of-indian-integrated-power-utilities-sector" class="section level9">
+<p class="heading">Analysis of Indian Integrated Power Utilities Sector</p>
+<p><strong>Based on Q3 FY25 (ended Dec 31, 2024) financial results of key players: Adani Power (generation-focused), Tata Power, Torrent Power, CESC, Reliance Infrastructure (RInfra), and India Power (DPSC).</strong> These represent a mix of integrated utilities (gen-trans-dist) and generation-heavy firms. Sector shows resilience amid regulatory tailwinds but faces debt, fuel, and litigation pressures.</p>
+<div id="tailwinds-positive-drivers-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Revenue Momentum &amp; Profitability</strong>: Strong top-line growth (e.g., Adani Power: ₹13,671 Cr rev, ₹2,940 Cr PAT; Tata: ₹15,391 Cr rev; Torrent: ₹6,499 Cr rev). Regulatory compensations (change-in-law, LPSC) boosted income (Adani: ₹1,399 Cr prior-year items; Tata: ₹228 Cr regulatory deferral).</li>
+<li><strong>Renewables Expansion</strong>: Shift to green energy (Tata: 10 GW+ renewables; Torrent: 316 MW solar/wind demerger; Adani: New solar/wind subs). Govt. push (e.g., MoP extensions) aids viability.</li>
+<li><strong>Acquisitions &amp; Settlements</strong>: Adani’s aggressive buys (Korba Power, Coastal Energen: ₹7,436 Cr invested); Torrent QIP ₹3,500 Cr for debt prepay; RInfra OTS settlements reduced debt.</li>
+<li><strong>Operational Efficiency</strong>: Improving EBITDA (Torrent PAT up 28% YoY; Tata stable margins ~15%).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>High Fuel &amp; Finance Costs</strong>: Fuel ~40-50% of expenses (Adani: ₹7,425 Cr; Tata: ₹3,418 Cr Q3). Finance costs elevated (RInfra: ₹468 Cr Q3; Torrent: ₹276 Cr), with debt equity ratios 0.5-1.5x.</li>
+<li><strong>Regulatory Delays/Disputes</strong>: Tariff true-ups pending (CESC DERC disallowances; RInfra/Tata Delhi discoms LPSC ₹12,128 Cr disputed); change-in-law claims under litigation (Adani Mundra/Tiroda).</li>
+<li><strong>Impairments &amp; Provisions</strong>: RInfra massive ₹3,071 Cr exceptional loss (EPC settlements, guarantees); Torrent DGEN impairment watch (₹1,191 Cr carrying value).</li>
+<li><strong>Weak Discom Realizations</strong>: LPSC/pending payments strain cash flows (RInfra Delhi discoms).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Additions</strong>: Adani (15+ GW thermal/renewables via subs); Tata (GW-scale solar modules); Torrent (PSH, green H2 subs); CESC renewables push.</li>
+<li><strong>Infra Monetization</strong>: RInfra arbitration wins (₹1,541 Cr TKTR award); Toll road awards (Torrent, Adani).</li>
+<li><strong>Fund Infusions</strong>: QIPs/warrants (Torrent ₹3,500 Cr; RInfra 12.56 Cr warrants); FCCBs (RInfra $350 Mn).</li>
+<li><strong>Sector Tailwinds</strong>: India’s 500 GW RE target by 2030; PLI schemes (Tata solar cells); Demand growth (8-10% CAGR).</li>
+<li><strong>Projections</strong>: PAT growth 20-30% FY26 (Adani/Torrent strong); Renewables to drive 15-20% EBITDA CAGR.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="32%" />
+<col width="21%" />
+<col width="45%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Details</strong></th>
+<th><strong>Impact (High/Med/Low)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory</strong></td>
+<td>Tariff disputes, LPSC (RInfra ₹12k Cr), true-ups (CESC DERC); SEBI probes (Adani).</td>
+<td><strong>High</strong> (Cash flow erosion)</td>
+</tr>
+<tr class="even">
+<td><strong>Liquidity/Debt</strong></td>
+<td>High leverage (RInfra debt svc ratio -0.13); Going concern flags (RInfra subs net worth erosion, NPAs).</td>
+<td><strong>High</strong> (Default risk)</td>
+</tr>
+<tr class="odd">
+<td><strong>Fuel/Commodity</strong></td>
+<td>Gas/coal volatility (Adani/Torrent DGEN idle); Import dependence.</td>
+<td><strong>Med-High</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Litigation/Arbitration</strong></td>
+<td>20+ cases (RInfra toll roads, HKTR termination; Torrent NHAI).</td>
+<td><strong>High</strong> (₹5k+ Cr at stake)</td>
+</tr>
+<tr class="odd">
+<td><strong>Execution</strong></td>
+<td>Project delays (Adani Godda, RInfra defence); Impairments (RInfra EPC exposure).</td>
+<td><strong>Med</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Macro</strong></td>
+<td>Discom dues, monsoon variability; Hindenburg overhang (Adani).</td>
+<td><strong>Med</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: Sector buoyant on RE transition/govt support (EBITDA margins 15-20%), but integrated players face discom/regulatory drag. Adani/Torrent outperform; RInfra turnaround-dependent. FY25 PAT growth ~25% possible with settlements; monitor debt resolution. <strong>Rating: Positive with Caution</strong>.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="summary-analysis-indian-integrated-power-utilities-based-on-provided-filings" class="section level9">
+<p class="heading">Summary Analysis: Indian Integrated Power Utilities (Based on Provided Filings)</p>
+<p>The filings highlight activities from key players like Adani Power, Tata Power, CESC, Torrent Power, Reliance Infrastructure, and India Power Corporation, focusing on hydro expansions in Bhutan, renewables growth, financial performance, and regulatory matters. Below is an analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong> for the sector.</p>
+<div id="tailwinds-positive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Cross-Border Hydro Expansion</strong>: Adani Power (49% in 570 MW Wangchhu Hydro JV with Bhutan’s DGPC; BTN 490 Mn initial investment) and Tata Power (40% in 600 MW Khorlochhu Hydro; ₹60 Cr second tranche of ₹830 Cr total) signal strong momentum in Bhutan hydro projects. These leverage clean, low-cost hydro for export/reliable baseload, supported by govt-to-govt ties.</li>
+<li><strong>Renewables Acceleration</strong>: CESC’s aggressive push (3.2 GW by FY29, 10 GW by FY32; 1.2 GW under construction with PPAs tied-up) via solar/hybrid/FDRE bids from SECI/NTPC. Projects like 300 MW solar (Q4 FY26) and 450 MW hybrids show high tariffs (₹2.69-3.84/unit), secured connectivity, and 2 GW for captive discom use.</li>
+<li><strong>Operational &amp; Financial Strength</strong>: CESC Q2 FY26: Revenue +12.2% (₹5,351 Cr), EBITDA +11.8% (₹1,213 Cr), PAT +19.3% (₹445 Cr); T&amp;D losses down (e.g., Rajasthan 12.22% vs. 13.95%; Malegaon 37% vs. 40%). Fuel/power procurement savings and PLF improvements (e.g., Haldia 91%, Dhariwal 85%).</li>
+<li><strong>Distribution Stability</strong>: 4.8 Mn+ consumers across CESC entities; sales growth (e.g., NPCL +9% YoY).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Regulatory Scrutiny</strong>: Reliance Infrastructure’s SFIO notice (Nov 18, 2025) for information demands signals potential probes into past dealings, eroding investor confidence amid debt-heavy balance sheets.</li>
+<li><strong>High Execution Costs &amp; Delays</strong>: Renewables/hydro capex intensive (CESC: ₹8,700 Cr for 1.2 GW Phase-1); fuel costs volatile (CESC standalone generation down 5.3% YoY). T&amp;D losses persist in franchisees (Malegaon ~37-40%).</li>
+<li><strong>Management Transitions</strong>: Minor but notable (India Power’s President-HR resignation effective Nov 7, 2025), potentially impacting HR/execution in smaller players.</li>
+<li><strong>Macro Pressures</strong>: Coal linkage/e-auction dependence; regulatory income fluctuations (CESC H1 FY26 down due to tariff norms).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Clean Energy Transition</strong>: 60%+ clean mix by 2030 (CESC); hydro (1,170 MW combined from Adani/Tata JVs) + renewables pipeline positions sector for green bids, PPAs, and captive supply. CESC’s 7.8 GW connectivity applications (3.8 GW approved) enable scaling.</li>
+<li><strong>Discom Expansion</strong>: T&amp;D loss reductions + sales growth (CESC consolidated +9.8% H1 FY26) support revenue stability; new areas like Chandigarh (post-takeover sales 569 MU).</li>
+<li><strong>Integrated Model Leverage</strong>: Thermal (2,140 MW CESC) tied to discoms (78%); renewables for self-supply reduces costs. Interim dividends (CESC ₹6/share) signal cash flow health.</li>
+<li><strong>Sector-Wide</strong>: Govt RE targets + Bhutan hydro exports could add 5-10 GW+ capacity by FY30-32 across peers.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Execution &amp; Project Delays</strong>: Large-scale renewables/hydro (e.g., CESC SCODs Q3-Q4 FY27; land/EPC dependencies) vulnerable to supply chain, weather, or connectivity issues.</li>
+<li><strong>Regulatory/Approval Risks</strong>: Bhutan JVs need no Indian nods but face local clearances; tariff/MYT petitions (e.g., Chandigarh 5-yr plan); SFIO-like probes could spread.</li>
+<li><strong>Financial Leverage</strong>: High debt (CESC borrowings ₹18,513 Cr); capex funding via equity/debt amid rising finance costs (CESC +3-4% YoY).</li>
+<li><strong>Operational/Commodity Risks</strong>: Fuel price volatility, PLF dips (e.g., CESC Southern 30-37%), T&amp;D losses in high-loss areas; competition in bids.</li>
+<li><strong>Geopolitical/Currency</strong>: Bhutan exposure (BTN investments) to forex/Nu. fluctuations.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Strong tailwinds from renewables/hydro drive 10-15% CAGR potential, led by CESC/Adani/Tata. Headwinds like regulation manageable but capex risks loom. Sector poised for growth if execution holds, with clean energy as key differentiator. Monitor Q3 FY26 earnings for validation.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+</div>
+<div id="analysis-of-indian-integrated-power-utilities" class="section level3">
+<h3>Analysis of Indian Integrated Power Utilities</h3>
+<p>Indian Integrated Power Utilities (e.g., Tata Power, Adani Power, Torrent Power, CESC) operate across generation (thermal, renewables), transmission, distribution, and emerging solar manufacturing. They benefit from India’s power demand surge (projected 6% CAGR to FY32E) but face execution and regulatory challenges. Insights drawn from recent filings: Tata Power’s Q2/H1 FY26 earnings call (strong execution amid weather headwinds), Adani Power/Torrent Power investor meets, and CESC’s investor presentation (RE/distribution focus). Below is a structured analysis.</p>
+<div id="tailwinds" class="section level6">
+<h6>Tailwinds</h6>
+<ul>
+<li><strong>Robust Demand &amp; Sector Reforms</strong>: Low per capita consumption (1,538 kWh vs. global 3,664 kWh) drives 6% CAGR demand growth. Supreme Court curbs regulatory assets; draft Electricity Bill mandates cost-reflective tariffs; privatization (e.g., UP discoms: 17.6Mn consumers, ₹29,000 Cr revenue potential) unlocks opportunities.</li>
+<li><strong>Renewable Energy Boom</strong>: Govt. targets 500GW non-fossil by 2030 (RE ~50% of generation). RPO mandates rising to 43%; hybrid/FDRE bids offer high tariffs (₹3.8-3.84/kWh). Tata/CESC scaling RE (Tata: 7GW operating soon; CESC: 3.2GW by FY29, 10GW by FY32).</li>
+<li><strong>Manufacturing Push</strong>: PLI schemes, 40% module/27.5% cell import duties, DCR (cell by Jun’26, wafers/ingots by Jun’28). Tata (4.3GW cell/module + 10GW ingot/wafer); CESC (3GW cell/module by 2027).</li>
+<li><strong>Operational Turnarounds</strong>: Tata Odisha discoms PAT up 362% YoY (₹174 Cr); CESC T&amp;D losses reduced (Kolkata: 6.5%; Rajasthan DFs: 9-14%); high collection efficiency (97-102%).</li>
+<li><strong>Strong Financials</strong>: Tata PAT +14% (24th consecutive qtr growth), net debt/EBITDA 3.3x; CESC revenue CAGR 10% FY21-25, PAT doubling targeted by 2030.</li>
+</ul>
+</div>
+<div id="headwinds" class="section level6">
+<h6>Headwinds</h6>
+<ul>
+<li><strong>Weather &amp; Operational Disruptions</strong>: Prolonged monsoons reduced demand; Tata Mundra (thermal) offline (no Sec.11), causing losses; RE delays (wind site access issues).</li>
+<li><strong>High Capex &amp; Debt</strong>: Tata ₹25,000 Cr FY26 capex (debt up to ₹54,000 Cr); CESC ₹35,000+ Cr (distribution ₹6k Cr, RE ₹23k Cr). Leverage guardrails at 4x net debt/EBITDA.</li>
+<li><strong>Loss-Making Assets</strong>: CESC Malegaon DF (39.7% T&amp;D loss, negative PAT); Tata coal/Mundra cluster losses (₹360 Cr PAT drag).</li>
+<li><strong>Execution Delays</strong>: RE additions lag (Tata H1: 205MW vs. 2.6GW FY26 target; spillover to FY27); land/transmission bottlenecks.</li>
+<li><strong>Regulatory/Policy Uncertainty</strong>: Discom bailout (₹1Tn rumored) pending; tariff hikes gradual (CESC Kolkata +8.2% FPPPA).</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level6">
+<h6>Growth Prospects</h6>
+<ul>
+<li><strong>RE &amp; Hybrid Scale-Up</strong>: Tata: 700MW Q3 + 600MW Q4 FY26; Bhutan hydro (₹2,400 Cr equity, non-consolidated). CESC: 1,600MW under implementation (₹10,800 Cr capex, ₹1,500 Cr annualized revenue); 7.2GW pipeline with connectivity.</li>
+<li><strong>Distribution Expansion</strong>: Privatization (UP PUVVNL/DVVNL: 55k MU sales); parallel licenses; CESC/Tata eyeing Odisha/Delhi models.</li>
+<li><strong>Solar Ecosystem</strong>: Backward integration (Tata ingot/wafer; CESC TOPCon cells). Captive use + 3rd-party sales amid 50GW/year additions.</li>
+<li><strong>Diversification</strong>: Tata rooftop (₹1,000 Cr sales/qtr, 390% PAT growth); BESS (CESC 80MWh + 600MWh projects); thermal PPAs (CESC Chandrapur 225MW).</li>
+<li><strong>PAT Doubling</strong>: Tata robust EBITDA (₹4,000 Cr crossed); CESC targets 2x PAT by 2030 via RE (11k MU incremental sales), regulatory recovery.</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Company</th>
+<th>FY26 Capex (₹ Cr)</th>
+<th>RE Target</th>
+<th>Key Growth Driver</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Tata Power</td>
+<td>25,000</td>
+<td>7GW+ operating</td>
+<td>Solar mfg., discoms, hydro</td>
+</tr>
+<tr class="even">
+<td>CESC</td>
+<td>35,000+</td>
+<td>3.2GW FY29</td>
+<td>Hybrid RE, UP privatization, solar mfg.</td>
+</tr>
+<tr class="odd">
+<td>Torrent/Adani</td>
+<td>N/A (events)</td>
+<td>N/A</td>
+<td>Investor focus implies expansion</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks-3" class="section level6">
+<h6>Key Risks</h6>
+<ul>
+<li><strong>Execution/Supply Chain</strong>: Land acquisition (CESC: 3k+ acres solar, 5k wind); transmission (Tata/CESC approvals for 3.8-7.2GW); EPC delays (third-party focus winding down).</li>
+<li><strong>Financial</strong>: Debt rise (Tata 1.2x net D/E); capex funding via cash profits/internal accruals vulnerable to EBITDA volatility.</li>
+<li><strong>Regulatory/Market</strong>: Mundra-like PPA resolutions (Tata expects Nov’25); discom losses persist despite bailouts; RPO enforcement variability.</li>
+<li><strong>Fuel/Commodity</strong>: Coal costs, e-auction dependency (Tata/CESC thermal PLF 37-91%); global OEM reliance for BESS/wind.</li>
+<li><strong>External</strong>: Weather (monsoons), competition in bids, geopolitical (Bhutan hydro financing).</li>
+</ul>
+</div>
+<div id="summary" class="section level6">
+<h6>Summary</h6>
+<p><strong>Bullish Outlook with Managed Risks</strong>: Tailwinds from demand (6% CAGR), RE mandates, and privatization outweigh headwinds like weather/debt. Growth anchored in RE (20-30% portfolio mix), manufacturing (PLI/DCR), and discoms (e.g., UP ₹29k Cr opp.); PAT 2x potential by 2030. Risks center on execution (monitor Q3/Q4 additions) and leverage (stay &lt;4x). Sector poised for 10-15% revenue CAGR FY26-30, led by Tata/CESC integration; ESG strength (e.g., CESC 100% ash utilization) aids ratings/funding. Investors should track Mundra resolution, RE commissioning, and UP bids for near-term catalysts.</p>
+</div>
+</div>
+<div id="meeting" class="section level3">
+<h3><strong>Meeting</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="analysis-of-indian-integrated-power-utilities-sector-1" class="section level9">
+<p class="heading">Analysis of Indian Integrated Power Utilities Sector</p>
+<p>Based on the provided regulatory filings (Q1/Q2 FY26 financial results, postal ballots, and disclosures from Adani Power, Tata Power, Torrent Power, CESC, Reliance Infrastructure, and India Power Corporation), here’s a summary analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong> for the sector. These companies represent integrated utilities (generation, transmission, distribution, renewables, trading), reflecting broader trends amid India’s power demand surge (driven by industrialization, EVs, data centers).</p>
+<div id="tailwinds-positive-factors-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Regulatory Support &amp; Deferral Balances</strong>: Significant “Regulatory Income” (e.g., Adani Power’s merchant sales via PTSL; Tata Power/CESC/India Power’s net regulatory deferral gains of ₹231-₹1,670 Cr in H1 FY26) cushions profitability amid volatile fuel/power purchase costs.</li>
+<li><strong>Renewables Momentum</strong>: Strong segment growth (Tata Power: Renewables revenue up; Torrent: Demerger of 316 MW solar/wind; Adani/Tata expansions). Capacity additions (e.g., Torrent’s PSH projects, Tata’s Bhutan JV) align with India’s 500 GW RE target by 2030.</li>
+<li><strong>Merchant &amp; Trading Exposure</strong>: Adani Power’s enhanced RPT limit (₹12,720 Cr with PTSL) boosts merchant sales (₹5,029 Cr till Sep’25). Tata/Torrent leverage exchanges/bilaterals.</li>
+<li><strong>Debt Optimization</strong>: Reliance Infra repaid most bank debt; Tata/Torrent ratios stable (0.4-1.5x). Lower finance costs aid margins.</li>
+<li><strong>Demand Tailwinds</strong>: Rising power demand (Tata: 18% YoY revenue growth; Torrent: 10% H1 growth) from economic recovery.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-3" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Regulatory/Tariff Uncertainties</strong>: Delays/deviations in APR/MYT orders (CESC/Torrent/India Power); electricity duty disputes (India Power: ₹1,738 Cr liability). Adani seeks RPT approvals amid SEBI scrutiny.</li>
+<li><strong>High Input Costs</strong>: Fuel/power purchase volatility (Tata: ₹5,261 Cr Q1 cost; Torrent: ₹7,852 Cr H1 energy purchase). Adani/Tata note merchant price risks.</li>
+<li><strong>Debt Burden</strong>: Elevated ratios (Adani: implied via RPTs; Reliance seeking 5x borrowing powers). Finance costs remain high (₹428-₹700 Cr quarterly).</li>
+<li><strong>Litigation/Arbitrations</strong>: Tata’s $490M SIAC award (no provision); India Power’s IBC/IBC cases; CESC’s tariff appeals.</li>
+<li><strong>Operational Issues</strong>: Underutilization (India Power’s DGEN plant); receivables delays (India Power: ₹1,739 Cr duty offset pending).</li>
+</ul>
+</div>
+<div id="growth-prospects-4" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Expansion</strong>: Renewables (Torrent: 50+ SPVs; Tata: 53 GW pipeline); hydro/transmission JVs (Tata Bhutan; Torrent PSH). Adani: Power trading scale-up.</li>
+<li><strong>Infra/Diversification</strong>: Reliance: Defence/metro; Tata: EV charging/rooftop solar; Torrent: Smart metering acquisitions.</li>
+<li><strong>Merchant/Trading Upside</strong>: Adani’s ₹4,500 Cr add-on; Tata’s T&amp;D growth (39% of revenue).</li>
+<li><strong>M&amp;A/JVs</strong>: Torrent’s NZIPL land for coal; Tata’s 40% Khorlochhu Hydro stake.</li>
+<li><strong>Sector Outlook</strong>: India’s peak demand +8-10% YoY; utilities targeting 15-20% revenue CAGR via RE/merchant (e.g., Tata PAT +30% YoY).</li>
+</ul>
+</div>
+<div id="key-risks-4" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="45%" />
+<col width="30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Key Examples from Filings</th>
+<th>Potential Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory</strong></td>
+<td>Electricity duty (India Power ₹1,739 Cr); Tariff deviations/appeals (CESC/Torrent).</td>
+<td>Revenue deferrals, cash flow strain; 10-20% EBITDA hit if unresolved.</td>
+</tr>
+<tr class="even">
+<td><strong>Financial/Liquidity</strong></td>
+<td>High receivables (Tata ₹47K Cr assets; India Power ₹1,079 Cr); Debt (Reliance 5x borrowing seek).</td>
+<td>Interest coverage 2-5x; liquidity crunch if duties invoked.</td>
+</tr>
+<tr class="odd">
+<td><strong>Litigation/IBC</strong></td>
+<td>Tata SIAC award ($490M); India Power SBI Section 7; Meenakshi CG invocation.</td>
+<td>Provisions (none taken); balance sheet erosion (e.g., India Power ₹3,541 Cr loan risk).</td>
+</tr>
+<tr class="even">
+<td><strong>Operational</strong></td>
+<td>Fuel volatility; Underutilization (DGEN plant).</td>
+<td>Margins &lt;10%; capex delays (Torrent ₹2,705 Cr outflow).</td>
+</tr>
+<tr class="odd">
+<td><strong>RPT/Compliance</strong></td>
+<td>Adani’s ₹12,720 Cr PTSL RPT (21% turnover).</td>
+<td>SEBI scrutiny; approvals pending.</td>
+</tr>
+<tr class="even">
+<td><strong>Market</strong></td>
+<td>Merchant price risks; Forex (Tata USD award).</td>
+<td>Volatility in RE/merchant (Adani 106% of PTSL turnover).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Sector Summary</strong>: Strong tailwinds from RE push and demand (projected 8-10% CAGR), but headwinds from regulations/litigations cap near-term upside. Growth via renewables/merchant (15-25% revenue potential), but risks (esp. regulatory/financial) warrant monitoring. Adani/Tata/Torrent lead positivity; India Power/CESC face higher stress. Investors should track tariff orders, debt metrics, and litigation outcomes.</p>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="analysis-of-indian-integrated-power-utilities-based-on-provided-announcements" class="section level9">
+<p class="heading">Analysis of Indian Integrated Power Utilities (Based on Provided Announcements)</p>
+<p>The provided documents highlight announcements from key players—<strong>Adani Power</strong>, <strong>Tata Power</strong>, <strong>Torrent Power</strong>, and <strong>Reliance Infrastructure/Power</strong>—showcasing capacity expansions, financial performance, and project awards in thermal, hydro, pumped storage, and green energy segments. These reflect broader sector dynamics in India’s power utilities, driven by surging demand, regional development in Northeast/Bhutan/MP, and energy transition goals. Below is a structured analysis of <strong>tailwinds</strong>, <strong>headwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-drivers-2" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Robust Project Pipeline and Govt Support</strong>: Adani Power’s Rs 63,000 Cr investment in Assam (3,200 MW ultra-supercritical thermal + 2,700 MW PSP) via competitive LoAs (lowest tariffs: Rs 6.30/kWh thermal, energy storage bid). Torrent’s 1,600 MW thermal LoA in MP (Rs 5.829/kWh). Tata’s 1,125 MW Dorjilung hydro in Bhutan (PPP model, World Bank-backed). SHAKTI coal linkage and PSAs signal policy tailwinds.</li>
+<li><strong>Strong Financial Momentum</strong>: Torrent’s Q2 FY26 TCI up 48% YoY to Rs 730 Cr (revenue +10%, EBITDA +19%), fueled by merchant gas/LNG sales and lower finance costs. Adani/Tata’s equity commitments (e.g., Tata Rs 1,572 Cr) underscore execution confidence.</li>
+<li><strong>Renewable &amp; Green Energy Push</strong>: PSP (Adani/Torrent), hydro (Tata), and green hydrogen (Torrent’s 72 TPA plant in Gorakhpur) align with India’s net-zero goals, enabling grid stability and RE integration.</li>
+<li><strong>Regional Focus &amp; Employment</strong>: Northeast/Bhutan/MP projects (~Rs 1.3 lakh Cr combined capex) create 30,000+ jobs (Adani), boosting local economies and energy security (80% Tata hydro power to India).</li>
+<li><strong>Debt Reduction &amp; Scale</strong>: Reliance Infra/Power debt-free; Adani targeting 42 GW by 2031-32; Torrent’s 4.96 GWp operational + 10 GWp pipeline.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-4" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Long Gestation Periods</strong>: Projects slated for 2030-31 commissioning (Adani thermal Dec 2030 phased; Tata Sep 2031), delaying revenue amid rising capex (Adani Rs 48,000 Cr thermal alone).</li>
+<li><strong>High Capex Intensity</strong>: Total investments &gt; Rs 80,000 Cr across docs strain balance sheets, despite Torrent’s finance cost cuts; offset partially by merchant sales but vulnerable to spot prices.</li>
+<li><strong>Regulatory/Execution Delays</strong>: Dependence on PSAs (Adani APDCL), approvals (Assam ERC), and cross-border dynamics (Bhutan MoENR). Torrent H1 revenue dip YoY signals distribution volatility.</li>
+<li><strong>Legacy Issues (Reliance)</strong>: ED attachment on RCOM assets (sub-judice NCLT/Supreme Court), though clarified as “no material impact” on Rel Infra/Power operations.</li>
+</ul>
+</div>
+<div id="growth-prospects-5" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Expansion</strong>: Adani (to 42 GW), Torrent (10 GWp gen + 3 GW PSP), Tata (hydro corridor: Dagachhu, Khorlochhu + Dorjilung toward 5 GW Bhutan JV). Rel Power’s 5.3 GW base (Sasan UMPP).</li>
+<li><strong>Merchant &amp; Export Opportunities</strong>: Gas/LNG merchant sales (Torrent), hydro exports (Tata 80% to India), thermal at competitive tariffs. PSP for RE storage/grid peaking.</li>
+<li><strong>Diversification</strong>: Integrated value chain (gen-trans-dist): Torrent serves 4.2M customers; green hydrogen/CGD blending; defence/infra E&amp;C (Reliance).</li>
+<li><strong>Policy Alignment</strong>: India’s NE focus (Adani’s Rs 50,000 Cr pledge), Bhutan LoC (Rs 4,000 Cr), RE targets (Adani Green 50 GW by 2030). Potential for 5-10 GW annual additions.</li>
+<li><strong>Job/Economic Multiplier</strong>: 50,000+ construction jobs, industrial growth in underserved regions.</li>
+</ul>
+</div>
+<div id="key-risks-5" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="22%" />
+<col width="52%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Mitigation/Evidence from Docs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory/Approval</strong></td>
+<td>Tariff hikes, PSA delays, coal linkage disruptions (SHAKTI). NCLT/ED overhang (Reliance).</td>
+<td>Competitive bids, ERC approvals (Adani), PPP structures.</td>
+</tr>
+<tr class="even">
+<td><strong>Execution/Financial</strong></td>
+<td>Capex overruns, debt spikes, forex (Bhutan imports). H1 EBITDA flat for Torrent.</td>
+<td>Phased commissioning, equity tranches (Tata), debt-free status (Reliance).</td>
+</tr>
+<tr class="odd">
+<td><strong>Fuel/Commodity</strong></td>
+<td>Coal/gas price volatility; hydro seasonal risks.</td>
+<td>SHAKTI linkage (Adani), run-of-river with pondage (Tata).</td>
+</tr>
+<tr class="even">
+<td><strong>Environmental/Geo</strong></td>
+<td>Emissions scrutiny (thermal), RE intermittency; cross-border (Bhutan politics).</td>
+<td>Ultra-supercritical tech (Adani), ‘water positive’ certs (Adani Green).</td>
+</tr>
+<tr class="odd">
+<td><strong>Market</strong></td>
+<td>Demand slowdown, competition from RE/solar. Merchant price crashes.</td>
+<td>Lowest bids ensure offtake; 80% export assured (Tata).</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="summary-1" class="section level12">
+<p class="heading"><strong>Summary</strong></p>
+<p>Indian integrated power utilities (Adani, Tata, Torrent, Reliance) exhibit <strong>strong tailwinds</strong> from govt-backed mega-projects (Rs 1.3 lakh Cr+ capex), merchant gains, and RE transition, driving <strong>superior growth prospects</strong> (10-15 GW pipeline, 40-50 GW targets). Torrent’s 48% profit surge exemplifies operational leverage. <strong>Headwinds</strong> are moderate (gestation delays, capex), with <strong>key risks</strong> centered on execution/regulatory hurdles—mitigated by competitive wins and policy support. Overall, <strong>bullish outlook</strong> for 20-30% sector EBITDA growth FY26-30, contingent on timely execution; prefer Adani/Torrent for scale, Tata for hydro diversification. No major distress signals; Reliance defensive amid legal clarity.</p>
+<p><em>Data as of Nov 2025 announcements; sector benefits from India’s 500 GW non-fossil target by 2030.</em></p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

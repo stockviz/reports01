@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Ceramics</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Ceramics</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Ceramics.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Ceramics.fan.CAP_WT.png" /></p>
+<p><img src="plots/Ceramics.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Ceramics.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Ceramics.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Ceramics.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Ceramics.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-3697a68483002afc30f6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3697a68483002afc30f6">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["3.24%","5.41%"],["2.35%","1.48%"],["-0.2%","-4.5%"],["-3.5%","-6.54%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Ceramics.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Ceramics.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-93e3e9f23625893892c3" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-93e3e9f23625893892c3">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.KAJARIACER.html\" target=\"_blank\">KAJARIACER<\/a>","<a href=\"/reports02/eq-in/risk/in.NITCO.html\" target=\"_blank\">NITCO<\/a>","<a href=\"/reports02/eq-in/risk/in.ASIANTILES.html\" target=\"_blank\">ASIANTILES<\/a>","<a href=\"/reports02/eq-in/risk/in.SOMANYCERA.html\" target=\"_blank\">SOMANYCERA<\/a>","<a href=\"/reports02/eq-in/risk/in.ORIENTBELL.html\" target=\"_blank\">ORIENTBELL<\/a>","EXXARO","<a href=\"/reports02/eq-in/risk/in.MURUDCERA.html\" target=\"_blank\">MURUDCERA<\/a>","<a href=\"/reports02/eq-in/risk/in.REGENCERAM.html\" target=\"_blank\">REGENCERAM<\/a>","<a href=\"/reports02/eq-in/risk/in.LEXUS.html\" target=\"_blank\">LEXUS<\/a>"],[0.7622846377528053,0.0282936228010809,0.1037524064760794,0.069121961308397,0.01336719082101044,0.01198444233543677,0.005074619053575209,0.002980246085120575,0.003140873366494345],[0.713594502762456,0.08215875823785247,0.07592525768300987,0.07569463851123115,0.01983279657851587,0.01446570059843414,0.009467595293198362,0.005391514480623015,0.003469235854679172]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":9,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-cdc3651689470dccfe42" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-cdc3651689470dccfe42">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.KAJARIACER.html\" target=\"_blank\">KAJARIACER<\/a>","<a href=\"/reports02/eq-in/risk/in.NITCO.html\" target=\"_blank\">NITCO<\/a>","<a href=\"/reports02/eq-in/risk/in.ASIANTILES.html\" target=\"_blank\">ASIANTILES<\/a>","<a href=\"/reports02/eq-in/risk/in.SOMANYCERA.html\" target=\"_blank\">SOMANYCERA<\/a>","<a href=\"/reports02/eq-in/risk/in.ORIENTBELL.html\" target=\"_blank\">ORIENTBELL<\/a>","EXXARO","<a href=\"/reports02/eq-in/risk/in.MURUDCERA.html\" target=\"_blank\">MURUDCERA<\/a>","<a href=\"/reports02/eq-in/risk/in.REGENCERAM.html\" target=\"_blank\">REGENCERAM<\/a>","<a href=\"/reports02/eq-in/risk/in.LEXUS.html\" target=\"_blank\">LEXUS<\/a>"],[82.2063544827212,-0.1271747160317089,4.650055866019019,0.3883850353990624,0.6543385517011622,1.563441866792748,1.958098923299023,0.006537183235861664,0.2530470057624123],[81.79262898462237,0.01119623296655816,9.678891610628019,0.3513755518910632,0.6693818470096333,1.187693767037336,1.667511229029654,-0.6591115772969488,0.2019488759685926],[80.61605562546237,-0.9551845085514219,16.62066964312816,0.2338178195321144,1.153602792566697,null,2.41733923642088,-1.475943251564722,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":9,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-927e1eb44610d4ee9e3c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-927e1eb44610d4ee9e3c">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.KAJARIACER.html\" target=\"_blank\">KAJARIACER<\/a>","<a href=\"/reports02/eq-in/risk/in.NITCO.html\" target=\"_blank\">NITCO<\/a>","<a href=\"/reports02/eq-in/risk/in.ASIANTILES.html\" target=\"_blank\">ASIANTILES<\/a>","<a href=\"/reports02/eq-in/risk/in.SOMANYCERA.html\" target=\"_blank\">SOMANYCERA<\/a>","<a href=\"/reports02/eq-in/risk/in.ORIENTBELL.html\" target=\"_blank\">ORIENTBELL<\/a>","EXXARO","<a href=\"/reports02/eq-in/risk/in.MURUDCERA.html\" target=\"_blank\">MURUDCERA<\/a>","<a href=\"/reports02/eq-in/risk/in.REGENCERAM.html\" target=\"_blank\">REGENCERAM<\/a>","<a href=\"/reports02/eq-in/risk/in.LEXUS.html\" target=\"_blank\">LEXUS<\/a>"],[61.25221236925449,3.215309784529113,15.93348587266297,0.9961736907073122,2.956656899755544,3.221785386123717,2.265122676852751,0.2753049393166012,0.7858619977653357],[56.5248367587227,3.186777707671773,21.24569554217161,0.834749200692471,5.000689460299751,2.674078164654701,1.885293639496001,0.2679112032834756,0.7137136984267364],[54.47733017064935,4.646002754203569,28.47251647609005,0.6093563101723499,5.574726395830545,null,2.436132835349436,0.3961431946232744,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":9,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="indian-ceramics-industry-analysis-based-on-q2-fy26-earnings-transcripts-of-kajaria-and-somany-ceramics" class="section level9">
+<p class="heading">Indian Ceramics Industry Analysis (Based on Q2 FY26 Earnings Transcripts of Kajaria and Somany Ceramics)</p>
+<p>The analysis draws from Kajaria Ceramics (revenue +1% YoY to ₹1,186 Cr, EBITDA margin 17.94%) and Somany Ceramics (revenue +3.6% YoY despite regional disruptions, EBITDA margin 7.9%), reflecting branded players’ performance amid a soft industry. Both highlight operational resilience but muted volumes. Other documents (investor meets) add no substantive insights.</p>
+<div id="headwinds" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Persistent Soft Demand</strong>: Market sluggish for 2-3 years across building materials (except cement/steel). H1 FY26 volumes flat (Kajaria) or low (Somany ~75% utilization). Reasons: delayed real estate cycle (tiles as “last item” in construction), slow government infra spends, heavy North India rains/floods (46-47% of Somany’s tiles sales).</li>
+<li><strong>Unorganized Competition</strong>: Morbi players maintain ~20% price gap via duty evasion, low first-quality output (20% vs. branded 95%), and regional duty hikes. Simpolo/Varmora gaining retail share.</li>
+<li><strong>Operational Disruptions</strong>: Plant outages (Somany’s 20-25 day Kassar gas pipeline issue, -1.2% EBITDA), excess Nepal inventory (Kajaria JV).</li>
+<li><strong>Transition Costs</strong>: Sales unification (Kajaria) led to short-term destocking/restocking and minor volume loss from process changes.</li>
+</ul>
+</div>
+<div id="tailwinds" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Margin Expansion via Cost Discipline</strong>: Kajaria: +447 bps YoY EBITDA via packing reengineering (₹30-35 Cr annual savings), outsourcing cuts, 250 headcount reduction, no increments/promoter salary cuts. Somany: Insurance claim pending for outage; expects +150 bps H2.</li>
+<li><strong>Sales &amp; Distribution Reset</strong>: Kajaria unification (1 sales rep/dealer vs. 3) positive dealer feedback; new architect/influencer team (18-20 hires); consultant for non-performing dealer/white space analysis. Somany: +119 net dealers (total ~3,000), +520 exclusive showrooms.</li>
+<li><strong>Product Mix Shift</strong>: Somany GVT up to 41% (from 34% in FY24), targeting 50%+ in 12-18 months (highest margins). Bathware/adhesives growing (Kajaria +14%/+78% YoY; Somany ~9-10%, targeting 20%+ of revenue).</li>
+<li><strong>Exports Recovery</strong>: Industry H1 +9-10% (₹8,300 Cr vs. ₹7,600 Cr); FY26 guidance ₹18-20k Cr (eases domestic Morbi pressure).</li>
+<li><strong>Stable Inputs</strong>: Gas prices flat; price hikes retained (Somany 1.5% in Jul, more possible).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Volume Recovery in H2 FY26</strong>: Both expect uptick Oct-Dec (post-Diwali/rains); Kajaria targets “above industry growth”; Somany mid-high single-digit FY26 (despite flat H1 volumes).</li>
+<li><strong>Capacity Leverage</strong>: Focus on 100% utilization (current 75-85%); Kajaria 25% outsourcing buffer; Somany +₹500-600 Cr potential from JVs/existing plants.</li>
+<li><strong>Channel Diversification</strong>: Projects 15-30% of sales (rising with real estate); retail 70-75%. Exclusive showrooms/dealer incentives (volume-linked) to boost penetration/market share.</li>
+<li><strong>Non-Tiles Expansion</strong>: Bathware/sanitaryware/faucets/adhesives to drive 10-20%+ of revenue (higher margins).</li>
+<li><strong>FY27 Outlook</strong>: High single-digits (Somany); double-digit EBITDA margins sustainable (Kajaria 18%+ quality margins; Somany from 7.9% to 10%+ H2).</li>
+<li><strong>Macro Tail</strong>: Infra push, GST cuts, real estate revival (delayed but starting); branded premiumization.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Demand Uncertainty</strong>: Prolonged weakness if real estate/infra delays; no V-shaped recovery expected (slow turn).</li>
+<li><strong>Competitive Intensity</strong>: Morbi evasion/price dumping erodes branded share; export shifts may not fully relieve domestic pressure.</li>
+<li><strong>Input/External Shocks</strong>: Gas volatility (stable now but war-linked); weather (rains); geopolitics impacting exports.</li>
+<li><strong>Execution Risks</strong>: Sales unification/JV ramp-up (Somany Max/Vintage losses ₹7.5 Cr Q2); inventory overhang (Nepal).</li>
+<li><strong>Margin Pressure</strong>: Rising ad spends H2 (Kajaria from lower H1 base); no capex but utilization key for leverage.</li>
+<li><strong>Balance Sheet</strong>: JV debt (Somany ₹257 Cr, reducing); standalone debt-free but monitor working capital (Kajaria 56 days).</li>
+</ul>
+<p><strong>Summary</strong>: Branded ceramics players demonstrate resilience through cost cuts and restructuring, achieving margin highs amid flat volumes (industry growth ~low single-digits FY26). Tailwinds from exports, mix shifts, and distribution fixes position for H2 recovery (mid-high single-digit growth, 10-18%+ EBITDA). However, soft demand and Morbi competition cap prospects; key monitorables are Oct-Dec volumes and utilization. Overall outlook <strong>cautiously optimistic</strong> for FY27 double-digit margins/growth if macro improves. No major capex signals; focus on efficiency/debt reduction.</p>
+</div>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3><strong>Financial</strong></h3>
+<p><em>asof: 2025-12-01 </em></p>
+<div id="analysis-of-indian-ceramics-industry-based-on-q1-fy26-financial-results-of-key-players" class="section level9">
+<p class="heading">Analysis of Indian Ceramics Industry (Based on Q1 FY26 Financial Results of Key Players)</p>
+<p>The provided documents contain unaudited Q1 FY26 (quarter ended June 30, 2025) and some 9M/annual results for major ceramics players like <strong>Kajaria Ceramics</strong> (market leader), <strong>NITCO</strong>, <strong>Somany Ceramics</strong>, <strong>Asian Granito India Ltd (AGIL)</strong>, <strong>Orient Bell</strong>, <strong>Exxaro Tiles</strong>, <strong>Murudeshwar Ceramics</strong>, and <strong>Lexus Granito</strong>. These reflect a <strong>mixed industry outlook</strong>: resilient leaders (e.g., Kajaria, Somany) showing growth amid cost pressures, while stressed players (e.g., NITCO) face severe challenges. Overall revenue growth ~5-10% YoY for top firms, but EBITDA margins squeezed by input costs. Industry trends: tiles dominate (80-90% revenue), diversification into bathware/granito.</p>
+<div id="tailwinds-positive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Strong Demand &amp; Revenue Growth in Leaders</strong>: Kajaria (standalone revenue ₹1,007 Cr, +0.6% YoY; consolidated ₹1,103 Cr, +0.6%) and Somany (standalone ₹641 Cr, +6% QoQ) show resilient domestic/institutional demand. Tiles segment robust (Kajaria tiles: ₹1,011 Cr).</li>
+<li><strong>Operational Efficiency &amp; Cost Control</strong>: Kajaria’s EBITDA margins improved (PBT ₹134 Cr vs ₹116 Cr YoY); power/fuel optimized despite high base. Inventory drawdowns aided margins (e.g., Kajaria changes in inventories -₹15 Cr).</li>
+<li><strong>Diversification &amp; Export Push</strong>: Bathware/granito growth (Kajaria others: ₹91 Cr); AGIL/others report export revenues. Subsidiaries/JVs (Kajaria: 10 subs, 3 JVs) buffer volatility.</li>
+<li><strong>Capital Infusion</strong>: Rights issues/warrants (AGIL: ₹422 Cr utilized for capex; Lexus: warrants issued) fund expansions. ESOPs signal confidence (Kajaria/Somany).</li>
+<li><strong>Macro Tailwinds</strong>: Real estate recovery, govt infra (housing schemes) supports tiles demand.</li>
+</ul>
+</div>
+<div id="headwinds-negative-factors" class="section level12">
+<p class="heading"><strong>Headwinds (Negative Factors)</strong></p>
+<ul>
+<li><strong>High Input &amp; Operating Costs</strong>: Power/fuel (15-20% of expenses) up (Kajaria ₹149 Cr, +3% YoY); raw materials volatile. Employee costs rose 5-10% across board.</li>
+<li><strong>Debt &amp; Finance Costs</strong>: Elevated interest (Kajaria ₹1.7 Cr; NITCO ₹1,056 L; Exxaro ₹296 L). Leverage high in midcaps (NITCO: ₹423 Cr debt).</li>
+<li><strong>Loss-Making Players Drag Sentiment</strong>: NITCO massive losses (₹658 Cr PAT loss Q3 FY25, ongoing restructuring); AGIL consolidated loss ₹90 L Q3 FY25. Discontinued ops (Kajaria plywood loss ₹2 Cr).</li>
+<li><strong>Demand Softness in Segments</strong>: Inventory buildups/changes signal weak trading (NITCO changes +₹522 L). Exports hit by global slowdown?</li>
+<li><strong>Regulatory/One-offs</strong>: Tax penalties (NITCO ₹170 Cr DGFT); impairments (NITCO ₹169 Cr PPE).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Volume Expansion</strong>: Kajaria/Somany target 10-15% CAGR via capex (display centers, new units). Tiles market ~₹50,000 Cr, growing 8-10% (urbanization, premiumization).</li>
+<li><strong>Product Diversification</strong>: Bathware/sanitaryware ramp-up (Kajaria subs like Bathware Pvt Ltd); granito/quartz (AGIL marble/quartz 13% revenue).</li>
+<li><strong>Funding &amp; Recovery</strong>: Debt restructuring (NITCO with Authum: equity conversion, promoter infusion ₹225 Cr+); rights/warrants enable capex.</li>
+<li><strong>Outlook</strong>: FY26 revenue growth 8-12% industry-wide; EBITDA margins 12-15% for leaders. Premium tiles, exports (20-25% potential) key drivers.</li>
+<li><strong>M&amp;A/Subsidiaries</strong>: Kajaria’s 10 subs/JVs add ₹223 Cr revenue; inorganic growth via acquisitions.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Liquidity/Going Concern</strong>: NITCO auditor flags “material uncertainty” (negative networth, current liabilities &gt; assets); high defaults risk if restructuring fails.</li>
+<li><strong>Cost Inflation</strong>: Fuel/materials volatility (30-40% costs); forex exposure in exports.</li>
+<li><strong>Debt Sustainability</strong>: Interest coverage weak (&lt;2x for midcaps); rising rates could squeeze.</li>
+<li><strong>Regulatory/Legal</strong>: Tax raids/penalties (NITCO IT/DGFT; AGIL search); MSME delays.</li>
+<li><strong>Demand/Market Risks</strong>: Real estate slowdown, competition (unorg ~40% market), monsoon/infra delays. Overcapacity in vitrified tiles.</li>
+<li><strong>Operational</strong>: Lockouts/impairments (NITCO Alibaug plant); forex/OCI volatility.</li>
+<li><strong>Mitigants</strong>: Leaders like Kajaria (clean audit, 25% RoE) resilient; diversification buffers.</li>
+</ul>
+<p><strong>Summary</strong>: Indian ceramics poised for <strong>moderate growth (8-10%)</strong> led by Kajaria/Somany (tailwinds: demand, efficiency), but <strong>midcaps stressed</strong> (headwinds: debt, costs). Prospects hinge on realty/infra; risks from leverage/regulatory overhang. Investors favor leaders; monitor NITCO restructuring. Industry FY26 EBITDA ~₹5,000-6,000 Cr.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+</div>
+<div id="analysis-of-indian-ceramics-sector-headwinds-tailwinds-growth-prospects-and-key-risks" class="section level3">
+<h3>Analysis of Indian Ceramics Sector: Headwinds, Tailwinds, Growth Prospects, and Key Risks</h3>
+<p>Based on the provided documents from key players like <strong>Kajaria Ceramics</strong> (detailed Q2/H1 FY26 financials), <strong>NITCO</strong> (Q2 FY26 presentation highlighting turnaround), and others (e.g., Somany, Exxaro, Orient Bell, etc.), here’s a synthesized analysis of the <strong>Indian Ceramics sector</strong> (tiles, marble, mosaics, sanitaryware). The sector benefits from India’s position as the world’s 2nd largest tile producer, with domestic demand driven by real estate, infrastructure, and exports. Data reflects robust recovery post-COVID, but with pockets of challenges.</p>
+<div id="tailwinds-positive-factors-supporting-growth" class="section level6">
+<h6><strong>Tailwinds (Positive Factors Supporting Growth)</strong></h6>
+<ul>
+<li><strong>Strong Revenue &amp; Profit Momentum</strong>: Kajaria reported standalone revenue of ₹1,079 Cr (Q2 FY26, +2% YoY) and ₹2,086 Cr (H1, +1% YoY), with PAT surging 30% YoY to ₹221 Cr (H1). Consolidated revenue ₹2,289 Cr (H1, +1% YoY), PAT ₹244 Cr (+37% YoY). NITCO achieved explosive 64% YoY (Q2) and 91% YoY (H1) growth to ₹257 Cr, driven by debt restructuring and Authum’s ₹16,272 Cr backing.</li>
+<li><strong>Dividend Payouts &amp; Shareholder Value</strong>: Kajaria declared ₹8/share interim dividend (record date Oct 24, 2025), signaling confidence. High ROE implied (Kajaria EPS ₹13.84 H1).</li>
+<li><strong>Industry Tailwinds</strong>: NITCO highlights tiles market CAGR 8.67% (USD 10.45B in 2025 → 15.84B by 2030); marble 6.18% (USD 3.3B → 6B). Government infra/housing push, real estate boom, rising incomes, and hospitality growth fuel demand (75% floor tiles, 55% vitrified).</li>
+<li><strong>Strategic Expansions</strong>: Exxaro approved Dubai WOS for tile trading (export focus). Kajaria invested ₹3 Cr in subsidiary SSCPL (turnover ₹231 Cr FY25). NITCO unlocking ₹1,000+ Cr from 445+ acres real estate (₹58 Cr H1 FY26). Orient Bell/Lexus granted ESOPs for talent retention.</li>
+<li><strong>Operational Efficiencies</strong>: Kajaria’s EBITDA margins improving (power/fuel stable); NITCO’s cash cycle optimized (inventory 30 days, receivables 47 days).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-dragging-performance" class="section level6">
+<h6><strong>Headwinds (Challenges Dragging Performance)</strong></h6>
+<ul>
+<li><strong>Demand Volatility &amp; Discontinuations</strong>: Kajaria discontinued loss-making plywood ops (₹2.8 Cr H1 loss). NITCO’s past contraction (2013-25) due to forex hikes on Chinese imports, Alibaug plant shutdown, debt pressures.</li>
+<li><strong>Cost Pressures</strong>: Kajaria’s expenses stable but power/fuel (₹439 Cr H1 consolidated) and materials (₹513 Cr) remain high. NITCO finance costs dropped 96% post-restructuring but employee costs up 42%.</li>
+<li><strong>Unorganized Competition</strong>: ~60% market unorganized; top 5 organized players hold 40% (consolidation potential but pricing pressure).</li>
+<li><strong>Working Capital Strain</strong>: NITCO historically faced tight cycles; Kajaria’s inventories stable but trade receivables up (₹592 Cr consolidated).</li>
+<li><strong>Macro Slowdown</strong>: Subdued post-pandemic demand noted in NITCO’s “challenging phase” (2020-25).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Market Expansion</strong>: Domestic tiles/marble demand from realty/infra; exports rising (India challenging China). NITCO projects ~30% CAGR (FY26-29), market share gains via 1,200+ dealers, Prestige/Lodha LOIs (₹280 Cr), premium products, POS 2.0 plant.</li>
+<li><strong>Diversification &amp; Premiumization</strong>: Multi-product plays (tiles+marble+mosaic in NITCO/Kajaria). Tech adoption (Breton marble plants, HD printing, 4K/8K scanners). Kajaria’s single-segment tiles (₹2,095 Cr H1 revenue) scalable.</li>
+<li><strong>Real Estate Synergies</strong>: NITCO’s 445-acre bank to unlock ₹1,000+ Cr (e.g., Thane/Alibaug JDAs). Rising urbanization/homeownership.</li>
+<li><strong>Export &amp; Channel Push</strong>: 18+ countries for NITCO; Exxaro’s Dubai arm. Dealer/franchise growth (NITCO: 300+ dealers → 1,200).</li>
+<li><strong>Projections</strong>: Kajaria FY26 guidance implied via strong H1 (annualized PAT ~₹450 Cr+). Sector: Organized share to rise with consolidation.</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Kajaria H1 FY26 (Cons.)</th>
+<th>NITCO H1 FY26 (Core Biz)</th>
+<th>Sector Outlook</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Revenue Growth</td>
+<td>+1% YoY</td>
+<td>+91% YoY</td>
+<td>8-9% CAGR to 2030</td>
+</tr>
+<tr class="even">
+<td>PAT Growth</td>
+<td>+37% YoY</td>
+<td>Turnaround (₹51 Cr profit)</td>
+<td>Premium/exports key</td>
+</tr>
+<tr class="odd">
+<td>EBITDA Margin</td>
+<td>~15-18%</td>
+<td>16-18%</td>
+<td>Improving efficiencies</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks-2" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<ul>
+<li><strong>Forex &amp; Import Dependency</strong>: NITCO’s past forex losses on China imports; raw material volatility (materials 25-30% of costs).</li>
+<li><strong>Debt &amp; Liquidity</strong>: NITCO resolved via Authum, but others (e.g., Regency/Lexus routine audits signal compliance focus). Kajaria borrowings low (₹139 Cr current).</li>
+<li><strong>Competition &amp; Margins</strong>: Unorganized players erode pricing; power/fuel (15-20% costs) sensitive to energy prices.</li>
+<li><strong>Regulatory/Event Risks</strong>: ESOPs (Orient Bell/Lexus), subsidiary investments (Somany), AGM/book closures (Murudeshwar) – execution delays. Discontinued ops (Kajaria plywood) highlight strategic missteps.</li>
+<li><strong>Macro Risks</strong>: Real estate slowdown, inflation, elections/infra delays. Consolidated assets/liabilities show inventory buildup (Kajaria ₹635 Cr).</li>
+<li><strong>Execution</strong>: NITCO’s ambitious 30% CAGR depends on channel ramp-up; peer reliance on few auditors (e.g., Walker Chandiok for Kajaria).</li>
+</ul>
+</div>
+<div id="summary" class="section level6">
+<h6><strong>Summary</strong></h6>
+<p>The <strong>Indian Ceramics sector</strong> is in a <strong>strong recovery phase</strong> with <strong>tailwinds from real estate/infra boom, premiumization, and exports</strong> outweighing headwinds like costs and past debt issues. Leaders like <strong>Kajaria</strong> (market leader, consistent profits/dividends) and <strong>NITCO</strong> (turnaround success, 90%+ growth) signal <strong>high growth prospects (8-30% CAGR)</strong> via expansion and tech. However, <strong>risks from competition, forex, and execution</strong> persist – focus on organized players with clean balance sheets (e.g., low debt Kajaria) for outperformance. Overall outlook: <strong>Bullish</strong> for FY26-30, with real estate monetization as a differentiator. Investors should monitor Q3 results for sustained momentum.</p>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="indian-ceramics-industry-analysis-based-on-kajaria-somany-q2-fy26-earnings-transcripts" class="section level9">
+<p class="heading">Indian Ceramics Industry Analysis (Based on Kajaria &amp; Somany Q2 FY26 Earnings Transcripts)</p>
+<p>The Indian ceramics industry (primarily vitrified, ceramic tiles, bathware, and adhesives) faces a <strong>soft demand environment</strong> but shows <strong>structural improvements</strong> in cost efficiency, margins, and strategic resets among branded players like Kajaria and Somany. Kajaria reported flat volumes but superior margins (EBITDA 17.94%, PAT +58%), while Somany achieved 3.6% revenue growth despite regional disruptions, with EBITDA at 7.9% (impacted by outages). Industry exports are growing, but domestic volumes remain muted. Below is a structured summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="headwinds-current-challenges" class="section level12">
+<p class="heading"><strong>Headwinds (Current Challenges)</strong></p>
+<ul>
+<li><strong>Sluggish Domestic Demand</strong>: Last 2-3 quarters (and 3 years broadly) marked by soft volumes across building materials (except cement/steel). Attributed to delayed real estate cycle, slow government infra spends, heavy rains/floods in North (46-47% of Somany’s sales; impacted Kajaria too). Kajaria H1 volumes flat; Somany North volumes grew modestly but dragged overall.</li>
+<li><strong>Unorganized Competition (Morbi)</strong>: Pricing gap ~20% vs. branded; evasion tactics (GST, quality declaration) erode market share. Morbi players shifting to exports leaves domestic space, but local unorganized players capture retail/projects with low-quality/low-price offerings.</li>
+<li><strong>Operational Disruptions</strong>: Gas outages (Somany’s 20-25 day Kassar plant shutdown: -1.2% EBITDA); plant closures/restructuring (Kajaria’s supply sales division).</li>
+<li><strong>JV/Subsidiary Drag</strong>: Somany JVs (Max, Vintage) in losses (Max ~INR 7.5cr loss); Kajaria Nepal JV small but inventory-heavy, profit insignificant.</li>
+</ul>
+</div>
+<div id="tailwinds-positive-structural-shifts" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Structural Shifts)</strong></p>
+<ul>
+<li><strong>Margin Expansion via Cost Optimization</strong>: Kajaria: EBITDA +447 bps YoY to 17.94% (savings from packing reengineering ~INR 30-35cr/annum, outsourcing cuts, 250 headcount reduction, no increments). Somany: Expects +150 bps in H2 to double-digits via utilization ramp-up (75% → 85-87%).</li>
+<li><strong>Sales Reorganization</strong>: Kajaria’s unification (3→1 sales rep/dealer) boosts dealer efficiency/happiness; new architect/influencer team (18-20 hires). Hired consultant for dealer rationalization/white spaces. Somany: +119 dealers H1 (total 3,000; 520 showrooms).</li>
+<li><strong>Product Mix Shift</strong>: Somany GVT up 1% (41% of sales → 50% in 12-18 months; highest margins). Kajaria bathware +14%, adhesives +78%.</li>
+<li><strong>Export Momentum</strong>: Industry +7-10% H1 (INR 8,300cr vs. 7,600cr); FY26 guidance INR 18-20kcr (vs. INR 16.5kcr FY25). Reduces domestic dumping pressure.</li>
+<li><strong>Pricing Power</strong>: Branded hikes retained (Somany 1.5% in July; more possible). Flat gas prices stabilize costs.</li>
+<li><strong>Balance Sheet Strength</strong>: No new debt/capex (Somany standalone debt-free; JV debt down); high FCF (Kajaria WC days 56).</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Short-Term (H2 FY26)</strong>: Volume uptick expected (Kajaria: “definite growth” Q3; Somany mid-high single-digit FY26). Capacity utilization focus (no capex; outsource if needed). EBITDA trajectory: Kajaria sustainable 18%+; Somany 10%+.</li>
+<li><strong>Medium-Term (FY27+)</strong>: High single-digit revenue growth (Somany); above-industry volumes via market share gains (Kajaria: exclusive showrooms 450→more; projects 30%). Real estate/infra revival (tiles as “last item” in construction cycle). Non-tiles (bathware/adhesives) to &gt;20% revenue (Somany). Projects mix up (Somany 15-17% →18-19%).</li>
+<li><strong>Longer-Term</strong>: Branded premiumization (GVT, architects); export tailwinds; lean ops (Kajaria 2.0 leadership). Potential full utilization adds INR 500-600cr revenue (Somany).</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="37%" />
+<col width="32%" />
+<col width="30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Demand Risk</strong></td>
+<td>Prolonged slowdown if infra/real estate delays; seasonal (Diwali muted).</td>
+<td>Infra push, export diversion; dealer expansion.</td>
+</tr>
+<tr class="even">
+<td><strong>Competition</strong></td>
+<td>Morbi evasion/price wars; unorganized retail capture.</td>
+<td>Brand focus, pricing hikes, consultant-driven penetration.</td>
+</tr>
+<tr class="odd">
+<td><strong>Cost/OpEx Volatility</strong></td>
+<td>Gas price spikes; raw material/inventory (Nepal).</td>
+<td>Negotiations, unification savings; insurance (Somany outage).</td>
+</tr>
+<tr class="even">
+<td><strong>Execution</strong></td>
+<td>Sales reset teething (Kajaria lost some volumes); JV losses persist.</td>
+<td>New hires, no increments; product mix shifts.</td>
+</tr>
+<tr class="odd">
+<td><strong>Macro</strong></td>
+<td>Regional disruptions (rains, Nepal turmoil); no capex limits surge capacity.</td>
+<td>Outsourcing, 25% outsourcing ratio (Kajaria).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Summary</strong>: The industry is <strong>transitioning from volume pain to margin resilience</strong>, with branded players like Kajaria/Somany de-risking via lean ops (EBITDA 8-18%) amid flat demand. Tailwinds from exports (+10%), cost cuts, and reorganization outweigh headwinds, positioning for <strong>high single-digit growth</strong> in H2 FY26/FY27 once demand recovers (real estate/infra). Risks center on execution and macro recovery, but strong BS/FCF provides buffer. Branded share gains likely as Morbi pivots to exports. <strong>Bull Case</strong>: 15-20% EBITDA sustainable with 85%+ utilization. <strong>Bear Case</strong>: Flat volumes delay margin peak to FY27.</p>
+</div>
+</div>
+</div>
+<div id="meeting" class="section level3">
+<h3><strong>Meeting</strong></h3>
+<p><em>asof: 2025-12-01 </em></p>
+</div>
+<div id="analysis-of-indian-ceramics-sector-headwinds-tailwinds-growth-prospects-and-key-risks-1" class="section level3">
+<h3>Analysis of Indian Ceramics Sector: Headwinds, Tailwinds, Growth Prospects, and Key Risks</h3>
+<p>Based on the provided documents from key players like <strong>Kajaria Ceramics</strong>, <strong>NITCO</strong>, <strong>Somany Ceramics</strong>, <strong>Asian Granito India</strong>, <strong>Orient Bell</strong>, <strong>Exxaro Tiles</strong>, <strong>Murudeshwar Ceramics</strong>, <strong>Regency Ceramics</strong>, and <strong>Lexus Granito</strong>, the Indian ceramics sector exhibits resilience amid restructuring and leadership continuity. The sector is dominated by promoter-led firms focusing on tile manufacturing, with evidence of revenue recovery post-COVID, strategic demergers, and capital infusions. However, legacy issues like operational disruptions and losses persist. Below is a structured summary:</p>
+<div id="tailwinds-positive-factors-1" class="section level6">
+<h6><strong>Tailwinds (Positive Factors)</strong></h6>
+<ul>
+<li><strong>Strong Leadership Continuity &amp; Promoter Confidence</strong>: Multiple firms (Kajaria, Exxaro) seeking shareholder approval via postal ballots/AGMs for re-appointing promoters as CMD/MD/WTDs with 5-year terms and remuneration up to 5% of net profits (e.g., Kajaria’s Ashok Kajaria at ₹26.5L/month salary + perks). High AGM approval rates (e.g., NITCO, Somany, Orient Bell &gt;99%) signal trust.</li>
+<li><strong>Revenue &amp; Profit Recovery</strong>: Asian Granito reports strong H1 FY26 growth (standalone revenue ₹532 Cr, up ~1%; consolidated ₹795 Cr, up ~8%). Murudeshwar shows profitability despite revenue dip. NITCO/Somany AGMs reflect stable operations.</li>
+<li><strong>Capital Raising &amp; Restructuring</strong>: Warrant conversions (Lexus: 3L shares allotted), rights issues (Asian Granito: ₹422 Cr utilized), and schemes (Asian Granito’s NCLT-approved demergers/slant sales for efficiency).</li>
+<li><strong>Shareholder Support</strong>: Near-unanimous resolutions (e.g., NITCO 99.999%; Somany 99.999% for financials/dividends).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>Persistent Losses &amp; Net Worth Erosion</strong>: Regency Ceramics reports deepening losses (Q2 FY26: ₹42 Cr loss; H1: ₹62 Cr; net worth negative ₹663 Cr). Legacy issues from 2012 violence/lockout unresolved (insurance claims pending, plant refurbishment ongoing).</li>
+<li><strong>Revenue Volatility</strong>: Murudeshwar Q2 FY26 revenue down; sector-wide inventory fluctuations and raw material costs (e.g., Asian Granito’s material costs up).</li>
+<li><strong>High Executive Remuneration Amid Uncertainty</strong>: Kajaria/Exxaro proposing high pay (₹26-27L/month + 1-2% commission) despite profit variability; risks if profits inadequate (minimum remuneration clauses invoked).</li>
+<li><strong>Related Party Transactions</strong>: Somany/Exxaro approvals for RPTs (e.g., Somany with SSCPL faced ~3% opposition).</li>
+</ul>
+</div>
+<div id="growth-prospects-4" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Operational Resumption &amp; Expansion</strong>: Regency refurbishing Yanam plant + new glazed vitrified tiles facility in Andhra Pradesh. Asian Granito’s subsidiaries (e.g., Harmony Surfaces Thailand) for international push; stake sales (AGL Proteins) to streamline.</li>
+<li><strong>Scheme-Driven Efficiency</strong>: Asian Granito’s NCLT-approved demergers/amalgamations (e.g., marble/quartz to AGL Industries) to unlock value; pending schemes (Scheme2) for further optimization.</li>
+<li><strong>Capital Infusion</strong>: Lexus warrant conversions; Asian Granito rights issue utilization for capex/display centers. Potential for exports via overseas subs.</li>
+<li><strong>Sector Tailwinds</strong>: Rising housing/infra demand; high AGM dividends (Somany ₹3/share; Orient Bell ₹0.50/share) indicate cash flow positivity.</li>
+</ul>
+<p><strong>Projected Outlook</strong>: Sector revenue could grow 8-10% YoY (led by Kajaria/Asian Granito), driven by capacity ramps and exports. Profitability hinges on cost control (power/fuel 10-15% of expenses).</p>
+</div>
+<div id="key-risks-4" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Evidence from Docs</strong></th>
+<th><strong>Mitigation</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Operational/Legacy</strong></td>
+<td>Plant disruptions, lockouts, insurance delays.</td>
+<td>Regency’s 2012 violence; unprovided gratuity/leave.</td>
+<td>Refurbishments, settlements (Regency MOU).</td>
+</tr>
+<tr class="even">
+<td><strong>Financial</strong></td>
+<td>Losses, debt (Asian Granito borrowings ₹28 Cr), net worth erosion.</td>
+<td>Regency negative equity; high finance costs (Murudeshwar ₹4.5 Cr H1).</td>
+<td>Restructuring schemes, rights issues.</td>
+</tr>
+<tr class="odd">
+<td><strong>Regulatory/Tax</strong></td>
+<td>Tax raids, appeals (Asian Granito Note 7); NCLT schemes pending.</td>
+<td>Income tax searches; deferred tax volatility.</td>
+<td>Appeals, compliance (e.g., KYC updates).</td>
+</tr>
+<tr class="even">
+<td><strong>Promoter Dependency</strong></td>
+<td>Heavy reliance on family/promoters.</td>
+<td>Kajaria/Exxaro re-appointments (father-son dynamics).</td>
+<td>NRC oversight, independent directors.</td>
+</tr>
+<tr class="odd">
+<td><strong>Market</strong></td>
+<td>Raw material volatility, competition.</td>
+<td>Inventory changes (Somany -ve); RPT scrutiny.</td>
+<td>Diversification (subsidiaries, exports).</td>
+</tr>
+<tr class="even">
+<td><strong>Liquidity</strong></td>
+<td>High capex needs, working capital.</td>
+<td>Asian Granito capex ₹42 Cr rights utilization.</td>
+<td>Warrant conversions, dividends.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Sector Rating</strong>: <strong>Moderate Growth with Caution</strong>. Tailwinds from restructuring/leadership dominate, but Regency-like cases highlight execution risks. Monitor Q3 FY26 for plant restarts and scheme outcomes. Investors favor Kajaria/Asian Granito for stability.</p>
+<p><em>Analysis based solely on provided docs; no external data used.</em></p>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="indian-ceramics-sector-analysis-based-on-kajaria-ceramics-nitco-and-asian-granito-india-ltd.-q1q2h1-fy26-updates" class="section level9">
+<p class="heading">Indian Ceramics Sector Analysis (Based on Kajaria Ceramics, NITCO, and Asian Granito India Ltd. Q1/Q2/H1 FY26 Updates)</p>
+<p>The Indian ceramics sector shows resilience amid soft market conditions, with companies like Kajaria Ceramics (market leader), NITCO, and Asian Granito India Ltd (AGL) reporting improved profitability despite muted revenue growth. Key drivers include operational efficiencies, margin expansion, and non-core asset monetization, offset by weak demand and export pressures. Below is a structured summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="headwinds-challenges-pressuring-the-sector" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges Pressuring the Sector)</strong></p>
+<ul>
+<li><strong>Soft Domestic Demand</strong>: Kajaria cites “soft market” leading to minimal revenue growth (1% YoY consolidated to ₹1,186 Cr in Q2 FY26) despite 1% tile volume growth. Production dipped 4% YoY in Q2.</li>
+<li><strong>Export Declines</strong>: AGL reports 17% YoY drop in Q2 FY26 exports (₹64 Cr), signaling global headwinds like competition from cheaper imports (e.g., China) and freight costs.</li>
+<li><strong>Revenue Stagnation</strong>: Flat/slight growth across peers—Kajaria H1 revenue down 0.09%, AGL standalone Q2 down 3.7%—due to pricing pressures and absence of non-core segments (e.g., Kajaria’s plywood closure).</li>
+<li><strong>One-Off Boosts Masking Core Weakness</strong>: NITCO’s 114% revenue surge (₹150 Cr in Q1) was driven by ₹58 Cr from Alibaug land JDA, not organic tiles growth (31% but smaller base).</li>
+<li><strong>High Base Effects and Segment Shifts</strong>: AGL’s demerger of tile manufacturing (effective Jul 2025) redrafts numbers, complicating YoY comparisons.</li>
+</ul>
+</div>
+<div id="tailwinds-supportive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Supportive Factors)</strong></p>
+<ul>
+<li><strong>Margin Expansion</strong>: Strong cost controls and efficiency gains—Kajaria EBITDA margin up to 17.94% (+440 bps YoY), AGL H1 at 7.7% (+360 bps), NITCO’s tiles EBITDA implied improvement from loss-making base.</li>
+<li><strong>Profitability Turnaround</strong>: Kajaria PAT +58% (₹133 Cr Q2), AGL H1 net profit ₹23 Cr (from loss), NITCO PAT ₹47 Cr (from ₹44 Cr loss)—driven by lower finance costs, higher other income.</li>
+<li><strong>Healthy Balance Sheets</strong>: Kajaria’s net debt reduced to -₹593 Cr (net cash), low debt-equity (0.20x); peers show improving working capital (Kajaria ~50 days).</li>
+<li><strong>High Capacity Utilization</strong>: Kajaria subsidiaries at 63-88%; overall tile capacity 87.8 MSM with optimal operations.</li>
+<li><strong>Diversification Benefits</strong>: Growth in adhesives/sanitaryware (Kajaria), stable tiles/marble (NITCO 31% growth), post-demerger focus on luxury surfaces/bathware (AGL).</li>
+</ul>
+</div>
+<div id="growth-prospects-5" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Volume Recovery and Premiumization</strong>: Kajaria tile sales +1% YoY (15.66 MSM Q2); sector poised for real estate/infra boom (housing, urbanization). AGL targets ₹6,000 Cr revenue in 4-6 years via retail expansion (277+ showrooms) and brand campaigns (e.g., Ranbir Kapoor).</li>
+<li><strong>Capacity and Geographic Expansion</strong>: Kajaria’s 9 plants across India/Nepal; new adhesives investments (₹23 Cr); NITCO leveraging tiles + real estate monetization; AGL’s 14 units (54.5 MSM tiles pre-demerger).</li>
+<li><strong>Subsidiary/JV Strength</strong>: Kajaria’s Morbi/Telangana plants at high utilization; Nepal JV at 86%.</li>
+<li><strong>Export/International Push</strong>: Potential rebound with 100+ countries (AGL); Kajaria scaling UAE/UK JVs.</li>
+<li><strong>Strategic Initiatives</strong>: Kajaria 2.0 (leadership transition), AGL’s ESIP program, NITCO’s asset unlocking—could drive 8-10%+ CAGR if demand revives.</li>
+</ul>
+</div>
+<div id="key-risks-5" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Cyclical Demand Sensitivity</strong>: Heavy reliance on real estate/infra; prolonged softness could erode volumes/margins.</li>
+<li><strong>Competition and Pricing Pressure</strong>: Intense from unorganized/Morbi players; imports could cap realizations.</li>
+<li><strong>Cost Volatility</strong>: Raw materials (natural gas, soda ash), forex fluctuations impacting exports.</li>
+<li><strong>Execution Risks</strong>: AGL demerger integration, Kajaria plywood discontinuation, NITCO’s real estate dependency (non-recurring revenue).</li>
+<li><strong>Macro/Economic Factors</strong>: Slowing GDP, high interest rates, inflation; regulatory changes (e.g., SEBI disclosures).</li>
+<li><strong>Geopolitical/Supply Chain</strong>: Export declines signal global slowdown; capacity underutilization if demand lags.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Sector in turnaround mode with robust margins (15-18% EBITDA for leaders) offsetting flat revenues. Organic growth hinges on demand revival (H2 FY26 potential), but diversified strategies (premium products, non-core sales) provide buffers. Investors should monitor Q3 volumes and export trends for sustained momentum. Kajaria remains the bellwether with scale advantages.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Trading - Metals</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Trading - Metals</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/TradingMetals.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/TradingMetals.fan.CAP_WT.png" /></p>
+<p><img src="plots/TradingMetals.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/TradingMetals.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/TradingMetals.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/TradingMetals.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/TradingMetals.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-b16552144dd38e4d0315" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b16552144dd38e4d0315">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["5.18%","7.54%"],["4.89%","9.86%"],["0.69%","10.39%"],["-3.24%","9.62%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/TradingMetals.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/TradingMetals.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-39511a5af95ee076a6eb" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-39511a5af95ee076a6eb">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.LLOYDSENT.html\" target=\"_blank\">LLOYDSENT<\/a>","<a href=\"/reports02/eq-in/risk/in.SGMART.html\" target=\"_blank\">SGMART<\/a>","<a href=\"/reports02/eq-in/risk/in.BMWVENTLTD.html\" target=\"_blank\">BMWVENTLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.NRL.html\" target=\"_blank\">NRL<\/a>","<a href=\"/reports02/eq-in/risk/in.ASHOKAMET.html\" target=\"_blank\">ASHOKAMET<\/a>"],[0.3721446370757693,0.5776962944227242,0.02708797109575891,0.01934541760216997,0.003725679803577483],[0.5270698889729301,0.4062348670937652,0.03715215346284784,0.02657027447342973,0.002972815997027184]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-91fca79c21c611be8c8e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-91fca79c21c611be8c8e">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.LLOYDSENT.html\" target=\"_blank\">LLOYDSENT<\/a>","<a href=\"/reports02/eq-in/risk/in.SGMART.html\" target=\"_blank\">SGMART<\/a>","<a href=\"/reports02/eq-in/risk/in.BMWVENTLTD.html\" target=\"_blank\">BMWVENTLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.NRL.html\" target=\"_blank\">NRL<\/a>","<a href=\"/reports02/eq-in/risk/in.ASHOKAMET.html\" target=\"_blank\">ASHOKAMET<\/a>"],[81.24741159964111,null,null,2.103228823844082,0.3455403896566062],[67.64501228838196,13.02117017591589,7.645574811107693,2.457253720763939,0.791058789021779],[68.42997632350998,15.10673032835532,11.59751488297787,3.313688973235969,1.552089491920877]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-63481d7f6026b6d3adb2" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-63481d7f6026b6d3adb2">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.LLOYDSENT.html\" target=\"_blank\">LLOYDSENT<\/a>","<a href=\"/reports02/eq-in/risk/in.SGMART.html\" target=\"_blank\">SGMART<\/a>","<a href=\"/reports02/eq-in/risk/in.BMWVENTLTD.html\" target=\"_blank\">BMWVENTLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.NRL.html\" target=\"_blank\">NRL<\/a>","<a href=\"/reports02/eq-in/risk/in.ASHOKAMET.html\" target=\"_blank\">ASHOKAMET<\/a>"],[13.2524349924039,null,null,1.081214095920523,0.3044441857427567],[8.599010550158118,53.07605616628882,20.31647215081755,0.8435782607264452,0.1589446076083799],[10.96715117917831,59.80560997902933,27.67525193734713,1.339048586128768,0.212938318316461]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="analysis-of-sg-mart-limited-indian-trading---metals-sector" class="section level9">
+<p class="heading">Analysis of SG Mart Limited (Indian Trading - Metals Sector)</p>
+<p>SG Mart Limited operates in the steel trading and processing segment with four verticals: B2B metal trading (30% of Q2 revenue), service centers (50%), renewable structures (4%), and distribution products (16-17%). Q2 FY26 revenue exceeded INR 1,700 Cr (+50% QoQ), but EBITDA margins disappointed at ~1.6% due to one-offs. H1 FY26 shows flat revenue YoY but +61% EBITDA YoY growth. The company targets ROCE of 20-25% with WC days at 22. Below is a structured analysis based on the Q2 FY26 earnings call transcript.</p>
+<div id="headwinds" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Macroeconomic Pressures</strong>: Heavy monsoons and weak demand from construction, autos, and white goods led to stalled activity and heightened steel price volatility (Q2 decline of ~INR 3,000/ton).</li>
+<li><strong>Inventory Losses</strong>: Sharp price drops caused minor but optically significant losses (50-60 bps of revenue impact), primarily in service center raw material inventory (27 days).</li>
+<li><strong>One-Off Expenses</strong>: Front-loaded branding/advertising expenses (2.5-3x prior levels, &gt;50 bps impact) and upfront opex for renewable structures/profiling (e.g., marketing, manufacturing setup).</li>
+<li><strong>Guidance Misses</strong>: FY26 EBITDA target of INR 200 Cr now “difficult” (H1 at INR 64 Cr); Q3 expected similar to Q2, delaying normalization to Q4.</li>
+<li><strong>Demand-Supply Imbalance</strong>: Adequate steel supply but soft demand; unorganized traders still dominate market share capture.</li>
+</ul>
+</div>
+<div id="tailwinds" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Strong QoQ Recovery</strong>: Revenue +50% QoQ across verticals; combined B2B + service center volumes at highest-ever quarterly levels.</li>
+<li><strong>Steel Supply Normalization</strong>: Increasing domestic blast furnace capacity ensures raw material availability, critical for trading/processing scale-up.</li>
+<li><strong>Business Mix Shift</strong>: Higher contribution from stable, high-margin verticals—service centers (INR 1,500-2,000/ton EBITDA) and renewables (INR 2,000-3,000/ton)—insulating from volatility.</li>
+<li><strong>Low Working Capital Intensity</strong>: 22 days overall (15-25 days target); enables superior ROCE vs. peers.</li>
+<li><strong>Organized Shift</strong>: Capturing share from unorganized traders via balance sheet strength (INR 1,000 Cr cash) and network.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Service Centers</strong>: 7 operational (5 owned, 2 leased); +1 in Jaipur (Q4 FY26); target 4-6 additions/year for pan-India network (dozens in 3-4 years). Throughput exceeding expectations (up to 12,000 tons/month vs. 5,000 planned), driving 35% QoQ volume growth.</li>
+<li><strong>Renewable Structures</strong>: INR 260 Cr order book (visibility for 2-3 quarters); Q3 contribution to double Q2; expanding to 10-15 products (e.g., cable trays, solar struts) using existing service center assets (no extra capex).</li>
+<li><strong>B2B &amp; Distribution</strong>: B2B +50% QoQ; distribution stabilizing with new products (TMT, mesh, light structures) and royalty model (INR 15 Mn royalty, no capex).</li>
+<li><strong>Volume Outlook</strong>: FY26 &gt; H1 levels (0.5 Mn tons in H1 from B2B/service centers; renewables ramp to 30,000+ tons order book). FY27: +15-20% in B2B/distribution; service centers at ~10,000 tons/month each.</li>
+<li><strong>Capex &amp; Long-Term</strong>: INR 200 Cr/year funded by EBITDA/cash; long-term EBITDA guidance intact post-Q4 normalization (2-2.5% margins, INR 500-3,000/ton by vertical).</li>
+<li><strong>Strategic Positioning</strong>: Emulating global steel traders (Mitsui, Itochu); leveraging group distribution network for downstream products.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="32%" />
+<col width="28%" />
+<col width="39%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Potential Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Price Volatility</strong></td>
+<td>Sharp steel price drops (e.g., INR 3,000/ton in 30 days) amplify inventory hits despite low days; October 2025 dip noted.</td>
+<td>EBITDA erosion (15-50% in affected quarter); full-year dilutive if prolonged.</td>
+</tr>
+<tr class="even">
+<td><strong>Demand Recovery</strong></td>
+<td>Delayed restocking/confidence in construction/autos; global trade uncertainty limits exports, flooding domestic supply.</td>
+<td>Volume stagnation; margin pressure if supply outpaces demand.</td>
+</tr>
+<tr class="odd">
+<td><strong>Execution</strong></td>
+<td>Scaling service centers/renewables (e.g., land delays led to 2 leases vs. owned); upfront costs delaying profitability.</td>
+<td>Capex overruns; ROCE miss if throughput &lt; targets.</td>
+</tr>
+<tr class="even">
+<td><strong>Guidance Credibility</strong></td>
+<td>Repeated misses (e.g., Q3 normalization slipped from prior calls) erode investor trust.</td>
+<td>Higher cost of capital; stock volatility.</td>
+</tr>
+<tr class="odd">
+<td><strong>Competition/External</strong></td>
+<td>Unorganized traders; import tariffs/global factors affecting supply chain.</td>
+<td>Market share loss; WC creep in international trading.</td>
+</tr>
+<tr class="even">
+<td><strong>Financial</strong></td>
+<td>Cash deployment (INR 1,000 Cr) into WC/capex reduces other income; interest costs rise without EBITDA offset.</td>
+<td>Balance sheet strain if growth lags.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="summary" class="section level12">
+<p class="heading"><strong>Summary</strong></p>
+<p>SG Mart demonstrated resilience with +50% QoQ revenue growth amid macro headwinds (monsoons, price volatility), driven by service centers (50% mix) and steel supply adequacy. Tailwinds include high-margin vertical scaling and low WC, positioning it for pan-India dominance in steel trading/processing. Growth prospects are strong (Q4 normalization, 4-6 service centers/year, INR 260 Cr renewables book), targeting long-term 2-2.5% EBITDA margins and 20-25% ROCE. However, key risks—volatility, demand weakness, and execution—have led to FY26 guidance cuts, underscoring sector cyclicality. Overall, SG Mart suits patient investors betting on organized consolidation and infrastructure recovery, with Q4 FY26 as a critical inflection point. H1 FY26 EBITDA +61% YoY validates the model despite near-term disappointments.</p>
+</div>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3><strong>Financial</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="analysis-indian-metals-trading-recycling-sector-based-on-lloyds-enterprises-nupur-recyclers-ashoka-metcast-q39m-fy25-filings" class="section level9">
+<p class="heading">Analysis: Indian Metals Trading &amp; Recycling Sector (Based on Lloyds Enterprises, Nupur Recyclers, Ashoka Metcast Q3/9M FY25 Filings)</p>
+<p>These filings from listed players in metals trading, scrap recycling, and steel processing highlight sector dynamics amid volatile commodity cycles, infra demand, and compliance pressures. Nupur shows resilient profitability despite revenue dips; Ashoka exhibits consolidated growth via trading/subs; Lloyds faces regulatory scrutiny.</p>
+<div id="headwinds-1" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Revenue Volatility &amp; Declines</strong>: Nupur’s Q3 rev ops fell 33% QoQ (₹3,431L vs ₹5,118L) and 9M down 38% YoY (₹12,109L vs ₹19,638L), driven by scrap price corrections and inventory changes. Ashoka standalone rev modest (₹50L Q3). Signals softening demand or pricing pressure.</li>
+<li><strong>Compliance &amp; Reporting Issues</strong>: Lloyds clarification on unsigned results, format non-compliance (Schedule III), and auditor errors (e.g., incorrect associate review disclosure). Nupur/Ashoka note unreviewed subs (e.g., Nupur’s 4 subs on mgmt accounts, Ashoka’s associate not reviewed), raising audit quality concerns.</li>
+<li><strong>High Costs &amp; Leverage</strong>: Finance costs up (Nupur Q3 ₹64L; Ashoka cons. ₹40L). Inventory fluctuations (Nupur negative change aids profits but volatile).</li>
+<li><strong>Macro Pressures</strong>: Implicit global metal price weakness (steel/ferrous scrap down ~10-15% CY24), import competition, and monsoon/infra delays.</li>
+</ul>
+</div>
+<div id="tailwinds-1" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Margin Expansion &amp; Profit Resilience</strong>: Nupur 9M PAT up 103% YoY (₹1,396L vs ₹689L) via cost control (e.g., material costs down QoQ). Ashoka cons. PAT ₹679L (9M), EPS ₹2.72. Lloyds’ quick clarifications maintain listing compliance.</li>
+<li><strong>Fund Infusion for Expansion</strong>: Nupur raised ₹1,843L (25% warrants), deployed in subs/WC/capex (no deviations). Supports scaling in recycling.</li>
+<li><strong>Infra-Led Demand</strong>: Govt push (e.g., ₹11L cr budget) boosts steel/metal needs; Ashoka/Nupur in PAN-India trading/recycling align with “Make in India” scrap policy.</li>
+<li><strong>Segment Diversification</strong>: Ashoka’s steel trading (₹3,067L 9M cons.) + goods trading growth; Nupur ferrous/non-ferrous scrap processing.</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High</strong>: Recycling mandates (e.g., 50% steel from scrap by 2040) favor Nupur-like players. Infra (₹1.5L cr highways), realty, EVs to drive 8-10% steel demand CAGR FY25-27.</li>
+<li><strong>Company-Specific</strong>: Nupur’s subs (e.g., Frank Metals) contribute 30-40% rev; warrant conversion could add ₹5,500L equity. Ashoka’s sub Rhetan TMT scales cons. rev 20% YoY (₹3,247L 9M). Lloyds (steel-focused) could rebound post-compliance.</li>
+<li><strong>Sector Upside</strong>: Domestic scrap shortage (imports ~8MT), export curbs on low-grade steel create opportunities. Projected sector rev growth 12-15% FY26 on capex cycle.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Commodity Price Swings</strong>: 70-80% rev tied to metals; 10% LME drop erodes margins (Nupur inventory risk).</li>
+<li><strong>Regulatory/Governance</strong>: Lloyds’ deficiencies signal weak controls; SEBI/NSE scrutiny on unreviewed subs (Nupur: ₹9,731L assets unaudited).</li>
+<li><strong>Execution/Debt</strong>: High finance costs (Ashoka 9M ₹119L); Nupur’s mgmt-certified subs (₹10,731L assets, ₹949L PAT) vulnerable to errors.</li>
+<li><strong>External</strong>: Forex (scrap imports), China dumping, power costs. No loan defaults noted, but leverage up (Ashoka total debt ₹0 reported).</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Aspect</th>
+<th>Rating (Short-Term)</th>
+<th>Key Driver from Filings</th>
+<th>Outlook (FY26)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Headwinds</strong></td>
+<td>High</td>
+<td>Rev declines, compliance lapses</td>
+<td>Moderating</td>
+</tr>
+<tr class="even">
+<td><strong>Tailwinds</strong></td>
+<td>Medium</td>
+<td>Profit growth, fundraises</td>
+<td>Strengthening</td>
+</tr>
+<tr class="odd">
+<td><strong>Growth</strong></td>
+<td>Medium-High</td>
+<td>Infra/recycling tailwinds</td>
+<td>10-12% CAGR</td>
+</tr>
+<tr class="even">
+<td><strong>Risks</strong></td>
+<td>High</td>
+<td>Prices, audits</td>
+<td>Elevated</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Summary</strong>: Sector faces near-term headwinds from price weakness and compliance (Lloyds exemplar), but tailwinds from infra spending and recycling policy support Nupur/Ashoka’s profit beats. Growth prospects strong (double-digit via capex), but risks (volatility, governance) warrant caution—favor companies with clean audits/fund deployment. Monitor Q4 steel prices/global cues.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="summary-analysis-indian-trading---metals-sector-focus-on-lloyds-enterprises-ltd-peers" class="section level9">
+<p class="heading">Summary Analysis: Indian Trading - Metals Sector (Focus on Lloyds Enterprises Ltd &amp; Peers)</p>
+<p>Using the provided documents, the analysis centers on <strong>Lloyds Enterprises Ltd (LEL)</strong> as the primary source of metals-related insights (steel/allied trading, iron ore pellets, engineering for steel/power sectors, and indirect exposure via Lloyds Metals &amp; Energy Ltd - LMEL). Other filings (BMW Ventures, Nupur Recyclers, Ashoka Metcast) offer limited sector-specific data—mostly procedural (e.g., financial ads, auditor appointments, AGM notices)—but highlight operational continuity in small-cap metals/recycling/trading firms amid regulatory compliance. LEL’s H1FY26 results show robust momentum in a cyclical sector buoyed by infra demand.</p>
+<div id="tailwinds-positive-drivers" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Strong Demand &amp; Volume Growth</strong>: Standalone trading income up 36% YoY; consolidated up 44% YoY (H1FY26). Iron ore pellets cater to domestic/export steel markets amid India’s steel capacity expansion (e.g., infra push via govt schemes).</li>
+<li><strong>Subsidiary Synergies</strong>: LEWL (33% held by LEL) delivers stellar FY25/H1FY26 with ₹1,500 Cr order book (EPC in steel/power/defence); debt-free with 2x capacity ramp-up. LMEL exposure provides low-cost iron ore/pellet flywheel (26Mnt mining EC, 4Mt pellet plant).</li>
+<li><strong>Diversification Boost</strong>: Gold mining entry via 31.58% stake in Geomysore (₹140 Cr invest); Jonnagiri mine (1,000 kg/year peak, 42.5T resource) nears Q2FY26 commissioning—import substitution amid rising gold prices.</li>
+<li><strong>Realty-Infra Link</strong>: LRDL MoUs for 270+ acres (warehousing/residential in MMR); ₹5,000 Cr revenue potential ties into metals demand (construction).</li>
+<li><strong>Macro Support</strong>: Steel/infra cycle recovery; export pellet demand; low logistics costs (LMEL pipeline).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Commodity Volatility</strong>: Steel/iron ore prices susceptible to global slowdowns (e.g., China demand dip), import pressures, and freight costs—trading stable but PAT surge (1634% YoY standalone) partly from one-off portfolio monetization.</li>
+<li><strong>Execution Delays</strong>: Gold mine pre-commercial phase risks commissioning slips; LEWL’s EPC pivot (acquisitions/tech tie-ups) needs flawless delivery.</li>
+<li><strong>Scale Constraints in Peers</strong>: Small-caps like BMW Ventures/Ashoka Metcast show compliance focus but no growth metrics; recycling (Nupur) faces e-waste/metal scrap supply issues.</li>
+<li><strong>High Base Effect</strong>: LEL’s explosive PAT growth may moderate; trading remained “stable” YoY despite volumes.</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Near-Term (1-2 Yrs)</strong>: Gold production ramp (1,000 kg/year for 15 yrs); LEWL order execution (₹11,500 Cr group order book); LRDL land aggregation (99+32 acres Taloja warehousing in 9 months, 175 acres Khopoli).</li>
+<li><strong>Medium-Term (3-5 Yrs)</strong>: Trading expansion into steel raw materials; LMEL catalysts (pellet ramp, MDO integration); LRDL pipeline (2.9 Mn sq ft delivered, new JVs for Bandra/Goregaon/Khopoli).</li>
+<li><strong>Long-Term Value</strong>: Debt-free subsidiaries; asset-light realty model; gold resource upside (JORC 42.5T). Consolidated PAT up 441% YoY signals 20-30% CAGR potential if steel demand sustains (India’s 200+ Mt steel capacity target).</li>
+<li><strong>Market Positioning</strong>: LEL Market Cap ₹90 Cr (Sep ’25); undervalued vs. peers (52W H/L 88/34); promoter holding 62.7%.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Cyclical/Commodity Exposure</strong>: Metals price crashes or China oversupply could erode margins (LMEL mitigates via low-cost integration, but not immune).</li>
+<li><strong>Project Execution</strong>: Mining EC valid to 2043 but delays in gold commissioning/logistics; realty MoUs non-binding.</li>
+<li><strong>Regulatory/Environmental</strong>: Mining approvals, land aggregation timelines; SEBI compliance (e.g., disclosures in filings).</li>
+<li><strong>Liquidity &amp; Capital</strong>: Warrants/expansions need funding; small-cap volatility (LEL avg volume 3Mn shares).</li>
+<li><strong>Diversification Dilution</strong>: Realty/gold shift from pure metals trading may pressure focus if infra slows.</li>
+<li><strong>Peer-Specific</strong>: BMW/Nupur/Ashoka filings indicate governance risks (e.g., auditor changes, physical shareholder outreach).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Bullish tailwinds from infra/gold diversification outweigh headwinds; growth pegged at 30-50%+ for LEL via subsidiaries. Monitor Q3FY26 for gold ramp/steel prices. Sector resilient but cyclical—recommend position sizing for volatility. (Disclaimer: Not investment advice; based solely on docs.)</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="summary-analysis-sg-mart-limited-indian-trading---metals-sector" class="section level9">
+<p class="heading">Summary Analysis: SG Mart Limited (Indian Trading - Metals Sector)</p>
+<p>SG Mart Limited exemplifies key dynamics in India’s metals trading sector, focusing on steel B2B trading, service centers (processing), renewable structures (semi-processing), and distribution. Q2 FY26 showed resilient QoQ revenue growth (50% to ~INR 1,700 Cr) amid macro headwinds, but EBITDA margins disappointed (1.6% vs. 2-2.5% target) due to one-offs. H1 FY26 EBITDA up 61% YoY, but FY26 guidance (INR 200 Cr) revised lower. The company leverages a strong balance sheet (~INR 1,000 Cr cash) for capex (~INR 200 Cr/year) while targeting 20-25% ROCE. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="headwinds-2" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Steel Price Volatility</strong>: Sharp Q2 decline (~INR 3,000/ton, or 5-6%) led to inventory losses (50-60 bps EBITDA impact); ongoing October dip signals persistent pressure. Trading margins eroded (B2B: INR 500-1,000/ton).</li>
+<li><strong>Macro Demand Weakness</strong>: Heavy monsoons stalled construction (key steel consumer); weak autos/white goods demand due to low consumer sentiment. Global trade uncertainty caps exports/pricing power.</li>
+<li><strong>One-Off Costs</strong>: Pre-booking of branding/marketing expenses (2.5-3x prior levels, ~50 bps impact) and upfront opex for renewables/profiling depressed EBITDA. Q3 likely similar.</li>
+<li><strong>Inventory &amp; WC Pressure</strong>: 22-day WC cycle (up QoQ due to renewables/international trading); service centers hold bulk inventory, amplifying volatility hits.</li>
+</ul>
+</div>
+<div id="tailwinds-2" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Steel Supply Ramp-Up</strong>: Domestic blast furnaces operationalizing, ensuring availability; enabled highest-ever Q2 volumes (B2B + service centers).</li>
+<li><strong>Business Mix Shift</strong>: High-margin verticals (service centers: 50% revenue, INR 1,500-2,000/ton EBITDA; renewables: INR 2,000-3,000/ton) insulating from volatility; processing &gt; pure trading.</li>
+<li><strong>Efficiency &amp; Balance Sheet</strong>: Low WC (15-25 days target), 35% QoQ service center volume growth, high throughput (up to 12,000 tons/month/service center vs. 5,000 expected).</li>
+<li><strong>Organized Shift</strong>: Capturing share from unorganized traders via network/brand; TMT royalty model (zero capex, INR 15 Cr Q2 revenue) adds stable income.</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<table>
+<colgroup>
+<col width="20%" />
+<col width="34%" />
+<col width="46%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Vertical</th>
+<th>Q2 Contribution</th>
+<th>Key Drivers &amp; Outlook</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Service Centers</strong></td>
+<td>50%</td>
+<td>7 operational; +4-6 YoY (Jaipur Q4 FY26); pan-India network (like Mitsui/Itochu); 10,000 tons/month/service center target.</td>
+</tr>
+<tr class="even">
+<td><strong>B2B Metal Trading</strong></td>
+<td>30%</td>
+<td>50% QoQ growth; infinite potential with supply; H1 flat YoY, but 15-20% FY27 growth.</td>
+</tr>
+<tr class="odd">
+<td><strong>Renewables Structures</strong></td>
+<td>4%</td>
+<td>INR 260 Cr order book (30,000+ tons visibility for 2-3Q); doubling Q3 contribution; +10-15 products (e.g., cable trays) via existing centers (no extra capex).</td>
+</tr>
+<tr class="even">
+<td><strong>Distribution</strong></td>
+<td>16-17%</td>
+<td>Product additions (TMT/mesh); stabilizing post-QoQ jump; royalty from franchises.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Overall</strong>: FY26 volumes &gt; H1 (0.5 Mn tons B2B/service centers); FY27 acceleration via 10+ centers, renewables execution. Long-term: Dozens of centers, EBITDA growth to match capex (INR 200 Cr/year); Q4 FY26 as “true” run-rate milestone.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Execution/Guidance Misses</strong>: Repeated revisions (e.g., FY26 EBITDA &lt;INR 200 Cr); Q3 flat, Q4 dependency erodes trust; scaling renewables/service centers unproven.</li>
+<li><strong>Volatility Exposure</strong>: Despite low inventory, sharp/short-term drops (e.g., INR 3,000/ton in 30 days) hit harder than gradual ones; demand recovery (construction/autos) uncertain.</li>
+<li><strong>Capex/WC Sustainability</strong>: INR 200 Cr annual spend from cash/EBITDA; higher WC in high-margin units could dilute ROCE if volumes lag.</li>
+<li><strong>Macro/Competition</strong>: Prolonged weak demand or export shifts (despite import tariffs); competition from organized players; regional concentration (NCR-heavy).</li>
+<li><strong>Quantified Sensitivities</strong>: EBITDA per ton stable long-term, but 50+ bps one-offs common; full-year inventory hits dilute to &lt;15% profit impact.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: SG Mart’s pivot to value-added (processing/distribution) positions it well for sector consolidation amid rising supply, but near-term volatility caps FY26 upside. Long-term prospects strong (high ROCE, network scale), contingent on Q4 execution and demand rebound. Investors should monitor Q3 results and service center throughput for validation. Comparable peers (e.g., APL Apollo) show inventory efficiency improves with scale. <strong>Recommendation</strong>: Hold/Buy on dips for 2-3Y horizon; target 2-3x EBITDA growth by FY28 if guidance stabilizes.</p>
+</div>
+</div>
+</div>
+<div id="meeting" class="section level3">
+<h3><strong>Meeting</strong></h3>
+<p><em>asof: 2025-12-02 </em></p>
+</div>
+<div id="analysis-of-indian-metals-trading-sector-focus-non-ferrousferrous-scrap-recycling-steel-trading" class="section level3">
+<h3>Analysis of Indian Metals Trading Sector (Focus: Non-Ferrous/Ferrous Scrap, Recycling, Steel Trading)</h3>
+<p>Based on the provided documents from key players—<strong>Lloyds Enterprises Ltd</strong> (steel/engineering trading), <strong>Nupur Recyclers Ltd</strong> (non-ferrous recycling/trading), <strong>Ashoka Metcast Ltd</strong> (steel trading), and <strong>SG Mart Ltd</strong> (trading with metals exposure)—the Indian metals trading sector shows <strong>resilience amid headwinds</strong>. Revenue declines (20-50% YoY in Q2/H1 FY26 for most) reflect global slowdowns, but infra tailwinds and domestic demand support recovery. Below is a structured summary:</p>
+<div id="headwinds-challenges-pressuring-performance" class="section level6">
+<h6><strong>Headwinds (Challenges Pressuring Performance)</strong></h6>
+<ul>
+<li><strong>Demand Slump &amp; Revenue Pressure</strong>: Sharp drops in trading volumes—Lloyds standalone revenue Q2 FY26: ₹91 Cr (vs ₹170 Cr YoY); Nupur consolidated FY25: ₹16,769 Cr (down 32%); Ashoka consolidated Q2: ₹521 Cr (low base but volatile). Global factors (China real estate crisis) hit exports/imports.</li>
+<li><strong>Commodity Volatility</strong>: Inventory fluctuations hurt margins (Lloyds: +₹1.59 Cr inventory change Q2; Nupur: -₹619 Cr FY25). High forex exposure (Nupur imports 100% raw materials).</li>
+<li><strong>One-Off Dependencies</strong>: Profits boosted by non-core income (Lloyds Q1 “other income” ₹261 Cr, likely divestments; Ashoka Q2 ₹253 Cr).</li>
+<li><strong>High Debt/Receivables</strong>: Nupur debt-equity 0.11; Lloyds trade receivables ₹3,496 Cr (standalone). Slow collections risk liquidity.</li>
+<li><strong>Macro Pressures</strong>: Elevated finance costs (Lloyds ₹11.67 Cr H1; Ashoka ₹76 Cr H1), rising input costs, and monsoon/geopolitical risks (Nupur MD&amp;A).</li>
+</ul>
+</div>
+<div id="tailwinds-positive-catalysts" class="section level6">
+<h6><strong>Tailwinds (Positive Catalysts)</strong></h6>
+<ul>
+<li><strong>Domestic Infra Boom</strong>: India’s ₹111 Lakh Cr NIP, housing schemes, renewables/EVs drive steel/aluminium/zinc demand (Nupur: 6-10% steel growth FY26; Lloyds segments: Engineering ₹309 Cr Q2).</li>
+<li><strong>Policy Support</strong>: Aatmanirbhar Bharat, PLI schemes, recycling mandates boost local processing (Nupur: “leading in non-ferrous recycling”).</li>
+<li><strong>Fundraising &amp; Expansion</strong>: Rights issues (Lloyds ₹496 Cr H1 proceeds), acquisitions (Lloyds: Metalfab/Techno; Nupur: 4 subsidiaries), warrants (Ashoka ₹1,927 Cr).</li>
+<li><strong>Cost Discipline</strong>: EBITDA margins stable (Lloyds 288 Cr H1 PAT; Nupur ROCE 12%); debt reduction (Nupur repaid loans).</li>
+<li><strong>Diversification</strong>: Multi-segments (Lloyds: Real Estate/Steel/Engineering; Nupur: Trading/Recycling) hedge pure trading risks.</li>
+</ul>
+</div>
+<div id="growth-prospects-4" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Short-Term (FY26)</strong>: 6-8% sector growth (infra-led); Nupur projects 6.3-6.5% GDP aiding metals. Lloyds H1 PAT ₹251 Cr (standalone, up YoY); Ashoka Q2 PAT ₹296 Cr.</li>
+<li><strong>Medium-Term (2-3 Yrs)</strong>: 8-10% CAGR via EVs (aluminium/zinc), renewables (steel), exports (if China recovers). Recycling tailwinds (sustainability mandates); Nupur/Lloyds expansions (capacity ₹1,000+ Cr investments).</li>
+<li><strong>Long-Term</strong>: India as global metals hub (2nd largest steel producer); urbanisation/infra to sustain 7-9% demand growth. Fundraising (₹2,000+ Cr across firms) funds capex.</li>
+<li><strong>Catalysts</strong>: RBI rate cuts (credit growth), monsoon normalcy, China stimulus.</li>
+</ul>
+</div>
+<div id="key-risks-4" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<table>
+<colgroup>
+<col width="28%" />
+<col width="24%" />
+<col width="47%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Mitigation (from Docs)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Commodity/Price</strong></td>
+<td>Volatility in steel/zinc/aluminium (Lloyds OCI swings ₹1,198 Cr loss Q2).</td>
+<td>Hedging limited; inventory mgmt (Nupur turnover improved).</td>
+</tr>
+<tr class="even">
+<td><strong>Demand/Geopolitical</strong></td>
+<td>China slowdown, wars disrupt imports (Nupur 100% imports).</td>
+<td>Domestic focus (infra 60% demand).</td>
+</tr>
+<tr class="odd">
+<td><strong>Forex/Liquidity</strong></td>
+<td>Import-heavy; high receivables (Lloyds ₹3.5k Cr).</td>
+<td>Forex gains/losses managed; fundraising.</td>
+</tr>
+<tr class="even">
+<td><strong>Regulatory</strong></td>
+<td>Env norms, duties (Nupur contingent liabilities ₹348 Cr tax).</td>
+<td>Compliance (CSR, audits clean).</td>
+</tr>
+<tr class="odd">
+<td><strong>Execution</strong></td>
+<td>Subsidiary integration (Lloyds 4 subs; Nupur losses in some).</td>
+<td>Acquisitions accretive (Lloyds PAT up).</td>
+</tr>
+<tr class="even">
+<td><strong>Credit/Debt</strong></td>
+<td>Rising finance costs; NPAs (Ashoka debt ₹1,256 Cr).</td>
+<td>Strong net worth (Nupur ₹10,952 Cr).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: <strong>Positive with Caution</strong>. Sector resilient (PAT growth despite revenue dip via cost cuts/others); FY26 recovery likely on infra (target 10-15% EBITDA growth). Monitor China/global metals prices. Investors: Favor diversified players like Lloyds/Nupur (strong balance sheets, expansions). Risks tilted to macros, but tailwinds dominate long-term.</p>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="indian-metals-trading-sector-analysis-based-on-bmw-ventures-nupur-recyclers-q2-fy26-results" class="section level9">
+<p class="heading">Indian Metals Trading Sector Analysis (Based on BMW Ventures &amp; Nupur Recyclers Q2 FY26 Results)</p>
+<p><strong>Context</strong>: BMW Ventures (steel distribution, fabrication, PEBs/girders in Bihar) and Nupur Recyclers (ferrous/non-ferrous scrap trading/processing) exemplify resilience in India’s metals trading amid infra-led demand. BMW reported 6.2% YoY revenue growth (₹502 Cr) and 12.5% PAT rise (₹7.1 Cr), despite EBITDA margin dip; Nupur saw 7.1% QoQ PAT growth (₹43.3 Lacs) on marginal revenue dip, fueled by expansions.</p>
+<div id="headwinds-3" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Price Volatility &amp; Soft Demand</strong>: BMW noted “soft pricing environment” compressing EBITDA margins (398 bps YoY dip to 3.98%). Nupur’s QoQ revenue decline reflects cyclical scrap/steel pricing pressures.</li>
+<li><strong>Input Cost Fluctuations</strong>: Steel/scrap import dependency exposes to global commodity swings and forex risks.</li>
+<li><strong>Margin Pressure</strong>: Trading margins squeezed by competition; BMW’s EBITDA flat YoY despite revenue growth.</li>
+</ul>
+</div>
+<div id="tailwinds-3" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Infra &amp; Govt Push</strong>: BMW benefits from Bihar/east India infra boom (railways, PEBs); RDSO-approved girders align with railway capex. Nupur leverages “Make in India”/“Atmanirbhar Bharat” for recycling.</li>
+<li><strong>Dealer Networks &amp; Regional Strength</strong>: BMW’s 1,299 dealers across 29 Bihar districts; Nupur’s sourcing/processing edge.</li>
+<li><strong>Diversification Momentum</strong>: BMW’s value-added products (order book surge); Nupur’s expansions (Haryana land/unit, Tycod Autotech acquisition, solar/OEM supply).</li>
+</ul>
+</div>
+<div id="growth-prospects-5" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Strong Outlook</strong>: BMW targets 25-30% YoY PAT growth in H2 FY26 via PEBs/girders (27,800 MT capacity). Nupur eyes recycling value-chain integration, auto/solar via subsidiaries—yielding “sustainable returns.”</li>
+<li><strong>Sector Drivers</strong>: Rising steel consumption (infra/Railways), circular economy (scrap recycling), employment/job creation. Combined: 10-15%+ topline/PAT CAGR potential FY26+.</li>
+<li><strong>Expansion Plays</strong>: New facilities/acquisitions to reduce supplier reliance, tap OEMs (Tata, Sundaram) and high-growth segments.</li>
+</ul>
+</div>
+<div id="key-risks-5" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Macro/Regulatory</strong>: Domestic/global economic slowdowns, policy shifts (taxes, import duties)—noted in disclaimers.</li>
+<li><strong>Execution/Integration</strong>: Acquisition risks (Tycod), capex delays (Nupur’s Haryana units); BMW’s deleveraging.</li>
+<li><strong>Commodity/Operational</strong>: Price crashes, supply chain disruptions; competition in Bihar/east.</li>
+<li><strong>Forward-Looking Uncertainty</strong>: Actuals may vary from guidance due to steel cycles.</li>
+</ul>
+<p><strong>Summary</strong>: India’s metals trading shows resilience (double-digit PAT growth) despite pricing headwinds, buoyed by infra tailwinds and diversification (value-add/recycling). Growth prospects robust at 20-30% FY26 bottom-line via expansions, but volatility/execution risks warrant caution. Positive for infra-aligned players like BMW/Nupur.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

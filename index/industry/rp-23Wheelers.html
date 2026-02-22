@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>2/3 Wheelers</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">2/3 Wheelers</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/23Wheelers.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/23Wheelers.fan.CAP_WT.png" /></p>
+<p><img src="plots/23Wheelers.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/23Wheelers.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/23Wheelers.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/23Wheelers.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/23Wheelers.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-11fb21a10f87e35e6680" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-11fb21a10f87e35e6680">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["0.72%","2.24%"],["-0.34%","3%"],["-1.11%","5.5%"],["8.83%","15.25%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/23Wheelers.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/23Wheelers.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-3a0af1b6a98f599e4488" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3a0af1b6a98f599e4488">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.TVSMOTOR.html\" target=\"_blank\">TVSMOTOR<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJAUTO.html\" target=\"_blank\">BAJAJ-AUTO<\/a>","<a href=\"/reports02/eq-in/risk/in.EICHERMOT.html\" target=\"_blank\">EICHERMOT<\/a>","<a href=\"/reports02/eq-in/risk/in.HEROMOTOCO.html\" target=\"_blank\">HEROMOTOCO<\/a>","<a href=\"/reports02/eq-in/risk/in.ATHERENERG.html\" target=\"_blank\">ATHERENERG<\/a>","<a href=\"/reports02/eq-in/risk/in.OLAELEC.html\" target=\"_blank\">OLAELEC<\/a>"],[0.5959725042181848,0.1446317446519719,0.1449185225008323,0.09426956825880903,0.01382546496519119,0.006382195405010695],[0.5863119179544114,0.1770751389551038,0.14021053116396,0.07054063766773912,0.01804237702862841,0.007819397230157293]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-61edecc02f6328cb1d80" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-61edecc02f6328cb1d80">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.TVSMOTOR.html\" target=\"_blank\">TVSMOTOR<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJAUTO.html\" target=\"_blank\">BAJAJ-AUTO<\/a>","<a href=\"/reports02/eq-in/risk/in.EICHERMOT.html\" target=\"_blank\">EICHERMOT<\/a>","<a href=\"/reports02/eq-in/risk/in.HEROMOTOCO.html\" target=\"_blank\">HEROMOTOCO<\/a>","<a href=\"/reports02/eq-in/risk/in.ATHERENERG.html\" target=\"_blank\">ATHERENERG<\/a>","<a href=\"/reports02/eq-in/risk/in.OLAELEC.html\" target=\"_blank\">OLAELEC<\/a>"],[21.48284920065399,27.51555146301078,11.61326316049866,24.34916490037332,-0.03324629481284878,-0.1110969449806025],[22.60051698680028,32.91201830377189,8.536976647001197,30.73198445983935,-0.0356791041020402,-0.06129473184683931],[24.77930939333163,26.30963453177438,12.6008258013399,36.40627481697339,-0.03474981157246688,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8d228ff0900eccf5a1cb" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8d228ff0900eccf5a1cb">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.TVSMOTOR.html\" target=\"_blank\">TVSMOTOR<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJAUTO.html\" target=\"_blank\">BAJAJ-AUTO<\/a>","<a href=\"/reports02/eq-in/risk/in.EICHERMOT.html\" target=\"_blank\">EICHERMOT<\/a>","<a href=\"/reports02/eq-in/risk/in.HEROMOTOCO.html\" target=\"_blank\">HEROMOTOCO<\/a>","<a href=\"/reports02/eq-in/risk/in.ATHERENERG.html\" target=\"_blank\">ATHERENERG<\/a>","<a href=\"/reports02/eq-in/risk/in.OLAELEC.html\" target=\"_blank\">OLAELEC<\/a>"],[24.75503157664128,20.14706921855295,7.162025297104721,27.48062523825833,0.01823345052380778,0.02860710478953059],[30.23063891552904,23.76522292562789,6.725777684933361,29.02850003962588,0.02012322884749896,0.01262265711115881],[32.71567631091226,22.95417071918651,8.975281878568257,35.31700948302766,0.02523895119415824,null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-indian-23-wheeler-sector-based-on-provided-disclosures" class="section level9">
+<p class="heading">Summary Analysis: Indian 2/3-Wheeler Sector (Based on Provided Disclosures)</p>
+<p>The provided documents are SEBI Regulation 30 compliance filings from key players in the Indian 2/3-wheeler industry—<strong>TVS Motor, Bajaj Auto, Eicher Motors, Hero MotoCorp, Ather Energy, and Ola Electric</strong>—detailing scheduled investor/analyst meetings, plant visits, and group interactions in late November to early December 2025. These disclosures reflect <strong>heightened institutional interest</strong> amid routine investor roadshows (e.g., BofA Boardroom Series, Macquarie/JP Morgan events). No financials or UPSI are shared, but the clustering of physical/virtual engagements signals proactive management outreach. Below is a structured analysis of <strong>headwinds, tailwinds, growth prospects, and key risks</strong>, inferred from the volume, nature, and participants of these events.</p>
+<div id="tailwinds-positive-drivers" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Robust Institutional Engagement</strong>: High-profile participation from top fund houses/analysts (e.g., Aditya Birla Sun Life MF, Axis AMC, ICICI Pru AMC, Goldman Sachs, SBI Life, Premji Invest for TVS; BofA for Bajaj/Eicher; Macquarie, JP Morgan, Mirae Asset for Hero). This indicates sustained confidence from domestic/international investors in sector stability and growth potential.</li>
+<li><strong>Physical Plant Visits &amp; Factory Focus</strong>: Emphasis on on-site tours (TVS Hosur factory on Nov 28; Ather Hosur on Nov 22; Ola Futurefactory/Gigafactory on Dec 5) highlights investor scrutiny of manufacturing capabilities, likely signaling capex ramps and operational scale-up in EV/ICE production hubs (Hosur cluster).</li>
+<li><strong>Group Meets &amp; Roadshows</strong>: Virtual/physical group formats (e.g., Hero’s Gurugram/virtual events on Dec 5/9; Eicher’s BofA virtual on Nov 27) suggest efficient scaling of outreach, fostering broader buy-side alignment during potential earnings/strategy seasons.</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Limited Explicit Positives</strong>: Disclosures are boilerplate (e.g., “subject to change due to exigencies”; “no UPSI shared”), implying no major catalysts disclosed publicly yet. This could mask short-term pressures like input cost inflation or demand softness not addressed in investor forums.</li>
+<li><strong>Scheduling Overlaps &amp; Exigency Risks</strong>: Concentrated timelines (Nov 22–Dec 9) across competitors may strain management bandwidth, potentially delaying other priorities amid competitive intensity in a consolidating market.</li>
+<li><strong>EV Legacy Divide</strong>: EV pure-plays (Ather, Ola) emphasize “Gigafactory/Battery Innovation” visits, while ICE leaders (Hero, Bajaj, TVS) focus on general factories/group meets—hinting at transitional friction in investor narratives between EV disruption and traditional volumes.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>EV Transition Momentum</strong>: Ola/Ather’s high-profile site visits to advanced facilities (Gigafactory, Battery Centre) underscore scaling in electric 2/3-wheelers, aligning with India’s FAME-III push and rising urban demand. Legacy players’ plant tours (TVS/Eicher) suggest hybrid/ICE upgrades for volume growth.</li>
+<li><strong>Investor Appetite for Capacity</strong>: ~25+ analysts/funds across filings indicate appetite for updates on production ramps, exports (e.g., TVS/Bajaj global plays), and market share gains in a ~20M unit annual 2W market.</li>
+<li><strong>Outlook</strong>: Prospects remain strong (CAGR 8-10% projected sector-wide), driven by rural recovery, premiumization (e.g., Eicher-Royal Enfield), and EV penetration (target 30% by 2030). These meets could preview Q3FY26 guidance, fueling re-rating.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Event Disruptions</strong>: Explicit notes on “subject to change” (all filings) due to company/investor exigencies pose execution risk, especially physical events amid weather/logistics in Tamil Nadu/Gurugram.</li>
+<li><strong>Competitive &amp; Regulatory Pressures</strong>: Dense competitor scheduling amplifies peer benchmarking; any EV subsidy delays or import duties could hit Ather/Ola narratives.</li>
+<li><strong>Market Sensitivity</strong>: No UPSI assurance mitigates info asymmetry, but broader risks include monsoon impacts, raw material volatility (steel/aluminum), and slowing festive sales spillover into Q3.</li>
+<li><strong>Geopolitical/External</strong>: Implicit in virtual modes (e.g., Bajaj/Eicher)—currency fluctuations or global auto slowdowns could weigh on export-heavy firms.</li>
+</ul>
+<p><strong>Overall Summary</strong>: These disclosures portray a <strong>bullish investor sentiment</strong> with proactive engagement as a key tailwind, positioning the sector for EV-led growth despite routine operational headwinds. No red flags emerge, but monitor post-meet outcomes for strategic insights. Sector PE multiples likely supported by 15-20% earnings growth trajectory. For deeper analysis, await earnings transcripts.</p>
+</div>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3><strong>Financial</strong></h3>
+<p><em>asof: 2025-12-01 </em></p>
+<div id="summary-analysis-indian-23-wheeler-industry-based-on-q3-fy25-results-of-tvs-motor-hero-motocorp-and-ola-electric" class="section level9">
+<p class="heading">Summary Analysis: Indian 2/3-Wheeler Industry (Based on Q3 FY25 Results of TVS Motor, Hero MotoCorp, and Ola Electric)</p>
+<p>The Indian 2/3-wheeler sector shows resilient demand with volume/revenue growth led by ICE players (TVS, Hero), while EV pure-play Ola scales revenue but deepens losses amid execution challenges. Industry sales ~42L units in 9M FY25 (up ~10-15% YoY inferred from samples). Key metrics:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Company</th>
+<th>Q3 Vol/Sales (L units/₹ Cr)</th>
+<th>Q3 Rev YoY</th>
+<th>Q3 PAT YoY</th>
+<th>9M PAT YoY</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>TVS</strong> (Standalone)</td>
+<td>12.12L</td>
+<td>+10%</td>
+<td>+4%</td>
+<td>+16%</td>
+</tr>
+<tr class="even">
+<td><strong>Hero</strong> (Standalone)</td>
+<td>14.64L</td>
+<td>+5%</td>
+<td>+12%</td>
+<td>+20%</td>
+</tr>
+<tr class="odd">
+<td><strong>Ola</strong> (Consol.)</td>
+<td>~1L (inf.)</td>
+<td>-20%*</td>
+<td>Loss ↑</td>
+<td>Loss ↑</td>
+</tr>
+</tbody>
+</table>
+<p>_*Ola YoY unaudited; revenue down Q3 but 9M +14%._</p>
+<div id="tailwinds-positive-drivers-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Robust Volume/Revenue Growth</strong>: TVS +10% YoY volumes; Hero flat on high base but absolute leader (14.64L). Consolidated revenues up 5-10% amid festive demand/rural recovery.</li>
+<li><strong>Margin Resilience</strong>: Hero EBITDA ~15-16% (inferred); TVS operating margin 11.9%; strong pricing power in premium/ scooters (TVS Apache, Hero Xtreme).</li>
+<li><strong>Export &amp; Diversification</strong>: TVS Africa/Europe expansion; Hero global subs; 3W strength (TVS).</li>
+<li><strong>Capex Momentum</strong>: TVS ₹745 Cr subs investment; Ola cell tech ramp-up; Hero R&amp;D infusion (₹124 Cr in associate Ather).</li>
+<li><strong>Policy Support</strong>: PLI incentives (despite Ola reversal); EV infra push.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>EV Losses &amp; Slowdown</strong>: Ola Q3 loss ₹564 Cr (9M ₹1,406 Cr); revenue dip signals demand softness/competition (TVS/Hero EV share gaining).</li>
+<li><strong>Cost Pressures</strong>: Raw material inflation (TVS/Hero materials 70% of costs); Ola COGS high (83% of rev).</li>
+<li><strong>Regulatory/Quality Scrutiny</strong>: Ola CCPA notices (consumer complaints); Hero IT disallowance (₹178 Cr demand, under appeal) + probes.</li>
+<li><strong>Inventory Build</strong>: Ola +ve changes; Hero flat demand signals.</li>
+<li><strong>Margin Squeeze</strong>: TVS other income drag (₹41 Cr FV loss); Hero VRS exceptional (prior).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High (15-20% CAGR to FY28)</strong>: ICE stabilization + EV shift (10% market now, 30% by 2030). Hero/TVS premium/exports to drive; Ola targets 1M+ annual via vertical integration (cells).</li>
+<li><strong>EV Tailwind</strong>: Ola 9M rev +14%; TVS Drivell sub; Hero Ather tie-up. Festive/volumes signal 45-50M annual industry by FY27.</li>
+<li><strong>Premium/3W</strong>: TVS/Hero margins &gt;12%; exports 20%+ growth.</li>
+<li><strong>Subsidiary Synergies</strong>: TVS financials (TVS Credit) up 11%; Hero FinCorp stable.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>EV Execution (High)</strong>: Ola fires/recalls/CCPA; battery supply (cell delays); competition (TVS iQube, Bajaj Chetak, Ather).</li>
+<li><strong>Regulatory/Tax (Medium)</strong>: Hero probes/IT appeals; PLI reversals (Ola ₹23 Cr hit).</li>
+<li><strong>Macro/Demand (Medium)</strong>: Rural slowdown (monsoons); high rates curb financing (NBFC subs vulnerable).</li>
+<li><strong>Competition/Geopolitics (Medium)</strong>: Chinese imports; Honda/Bajaj aggression.</li>
+<li><strong>Valuation/Capex (Low-Medium)</strong>: Ola losses erode IPO proceeds (₹5,341 Cr utilized partially); TVS debt low (0.12x standalone).</li>
+</ul>
+<p><strong>Overall Outlook</strong>: ICE leaders (Hero/TVS) stable-profitable; EV pivot offers 20%+ growth but with volatility. Sector poised for 12-15% FY25 growth, led by premiums/EVs, but monitor EV quality/macro. Hero/TVS: <strong>Buy/Hold</strong>; Ola: <strong>High-Risk Growth</strong>.</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-indian-23-wheeler-sector-based-on-provided-filings" class="section level9">
+<p class="heading">Summary Analysis: Indian 2/3 Wheeler Sector (Based on Provided Filings)</p>
+<p>The filings from key players (TVS Motor, Bajaj Auto, Eicher Motors, Hero MotoCorp, Ather Energy, Ola Electric) highlight a maturing sector amid EV transition challenges. Traditional ICE leaders (Hero, Bajaj, TVS, Eicher) focus on procedural disclosures (divestments, debt, penalties, associate IPOs), while EV pure-plays (Ola, Ather) emphasize compliance and operational ramps. Ola’s Q2 FY26 shareholders’ letter provides the deepest sector insights, revealing an EV 2W slowdown but profitability inflection. Overall, the sector balances ICE stability with EV growth pains.</p>
+<div id="headwinds-key-challenges" class="section level12">
+<p class="heading"><strong>Headwinds (Key Challenges)</strong></p>
+<ul>
+<li><strong>EV Market Slowdown</strong>: Electric 2W volumes flat YoY in festive season (Ola: industry growth slowed; Graph 1 shows decelerating EV penetration from 7-8% peaks). Hyper-competitive discounting erodes margins for volume-chasers.</li>
+<li><strong>Regulatory/Compliance Pressures</strong>: E-waybill penalty (₹16.5L on Eicher for invoice mismatches; appeal planned, immaterial). Transaction approvals needed (TVS Rapido stake sale). Physical AGM notices for non-digital shareholders (Ather).</li>
+<li><strong>Cost &amp; Cash Pressures</strong>: EV players still loss-making consolidated (Ola: -18.1% EBITDA margin; ongoing capex for cells/capacity). High opex despite cuts (Ola Auto opex down 16% QoQ but Cell segment drags).</li>
+<li><strong>Macro/Execution</strong>: Inventory build-ups (Ola festive CFO hit), working capital volatility, and incentive reliance (PLI &lt;2% of Ola GM).</li>
+</ul>
+</div>
+<div id="tailwinds-supportive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Supportive Factors)</strong></p>
+<ul>
+<li><strong>Profitability Inflection</strong>: Ola Auto achieves first EBITDA positivity (0.3% margin, +510bps QoQ GM to 30.7%; near ICE peers). Opex discipline (Auto: ₹308Cr → ₹258Cr QoQ); target ₹225Cr by Q1 FY27.</li>
+<li><strong>Vertical Integration &amp; Diversification</strong>: Ola Gigafactory (2.5 GWh live, 5.9 GWh by Mar’26; first 4680 vehicles delivered). HyperService unlocks 50%+ GM parts revenue (currently 2.5% of sales). Entry into BESS (Ola Shakti: ₹100Cr Q4 FY26 revenue target).</li>
+<li><strong>Capital Access &amp; Monetization</strong>: Debt raises (Bajaj Auto Credit: ₹500Cr NCDs listed). Investment exits (TVS: ₹288Cr from Rapido stake to Accel/Prosus). Associate growth (Hero FinCorp DRHP addendum for IPO: ₹3,668Cr fresh+OFS).</li>
+<li><strong>Governance/Scale</strong>: Strong compliance (Ather AGM dispatch); product ramps (Ola Roadster: 4x QoQ sales).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>EV Scale-Up</strong>: Ola targets H2 FY26 deliveries ~100K units (focus on margins over volume); FY26 revenue ₹3,000-3,200Cr. Cell biz: captive 2-3 GWh auto demand + external BESS (₹1,000-1,200Cr FY27). Capacity to 20 GWh by H2 FY27.</li>
+<li><strong>Diversified Revenue</strong>: Parts/services (Ola: 10-15% industry norm); Energy storage (rooftop solar boom: 6-8 GW FY26 residential). Fintech leverage (Hero/Bajaj finance arms).</li>
+<li><strong>Sector Tail</strong>: Mainstream EV adoption wave (Ola: post-transition growth via value EVs). ICE stability (no major disruptions in filings); PLI incentives from FY26 (Ola Cell).</li>
+<li><strong>Outlook</strong>: FY26 transition year (profitability base); FY27 compounding via 40% Auto GM, 5% EBITDA, FCF positivity (Auto cash-generative).</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="29%" />
+<col width="17%" />
+<col width="52%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Mitigation (from Filings)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Market/Competition</strong></td>
+<td>Prolonged slowdown; discounting wars (Ola notes OEMs sacrificing profits).</td>
+<td>Margin focus (Ola: profitability &gt; share); premium products (Gen3 platform).</td>
+</tr>
+<tr class="even">
+<td><strong>Execution/Operational</strong></td>
+<td>Cell ramp delays; capex overruns (Ola: ₹100-150Cr H2 FY26 Auto; Gigafactory debt-financed). Warranty/service costs.</td>
+<td>Vertical integration; HyperService for cost reduction.</td>
+</tr>
+<tr class="odd">
+<td><strong>Regulatory/Financial</strong></td>
+<td>Approvals delays (TVS sale); penalties (Eicher); debt burdens (Bajaj NCDs; Ola interest obligations). Incentive cuts.</td>
+<td>Appeals (Eicher); PLI/project finance (Ola).</td>
+</tr>
+<tr class="even">
+<td><strong>Macro</strong></td>
+<td>Festive flatness persists; EV penetration stalls (~3-4% per Ola graphs). Forex/rare-earth dependency.</td>
+<td>Diversification (energy); in-house tech (ferrite motor, ADAS).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Verdict</strong>: Sector faces near-term headwinds from EV slowdown/competition but strong tailwinds from profitability shifts and diversification (e.g., Ola’s Auto-to-Energy pivot). Growth hinges on execution amid risks; traditional players provide stability while EV innovators drive upside. Bullish long-term on localization/PLI, but monitor Q3 volumes for sustained momentum.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-indian-23-wheeler-sector-based-on-provided-disclosures-1" class="section level9">
+<p class="heading">Summary Analysis: Indian 2/3 Wheeler Sector (Based on Provided Disclosures)</p>
+<p>The provided documents are SEBI Regulation 30 disclosures from key players—<strong>TVS Motor</strong>, <strong>Bajaj Auto</strong>, <strong>Eicher Motors</strong>, <strong>Hero MotoCorp</strong>, <strong>Ather Energy</strong>, and <strong>Ola Electric</strong>—detailing upcoming investor/analyst meetings, plant visits, and group interactions in late Nov–early Dec 2025. These indicate <strong>elevated investor engagement</strong> but contain no financials, UPSI, or operational details (all explicitly state no UPSI will be shared). Analysis is thus inferred from meeting volume, participants, formats, and themes.</p>
+<div id="tailwinds" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>High Institutional Interest</strong>: Broad participation from top-tier fund houses/analysts (e.g., Aditya Birla Sun Life MF, Axis AMC, ICICI Pru AMC, Goldman Sachs, Invesco, PPFAS, Premji Invest, SBI Pension Funds). TVS Motor lists ~25 representatives, signaling strong demand for management insights.</li>
+<li><strong>Sector Momentum via Roadshows</strong>: Coordinated events like BofA Boardroom Series (Bajaj Auto &amp; Eicher Motors on 27 Nov 2025) and group meets (Hero MotoCorp with Macquarie/JP Morgan/Mirae) suggest organized investor outreach, likely driven by positive sector narratives (e.g., EV transition).</li>
+<li><strong>Physical Plant Visits</strong>: Emphasis on manufacturing (TVS &amp; Ather at Hosur; Ola’s Gigafactory/Battery Centre on 5 Dec) highlights investor focus on capex, production scaling, and supply chain strength—key for volume growth.</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>EV &amp; Premiumization Focus</strong>: EV pure-plays (Ather, Ola) scheduling factory tours point to scrutiny of gigafactory progress and innovation (e.g., Ola Battery Centre), aligning with India’s EV push (subsidies, PLI schemes). Traditional players (TVS, Hero) also attract visits, indicating hybrid growth (ICE + EV).</li>
+<li><strong>Volume Expansion Potential</strong>: Cluster of Nov–Dec events (e.g., Hero’s multi-group meets on 5/9 Dec) amid post-monsoon recovery could preview Q3FY26 guidance, with physical meets emphasizing on-ground capabilities for export/domestic ramp-up.</li>
+<li><strong>Outlook</strong>: Sustained engagements imply 10–15%+ sector CAGR prospects (inferred from interest), especially EVs (Ather/Ola) targeting 20–30% market share by 2030, supported by public info on rural revival and urban 2W demand.</li>
+</ul>
+</div>
+<div id="headwinds" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Scheduling Flexibility</strong>: All disclosures note dates “subject to change due to exigencies” (company/investor-side), hinting at operational unpredictability (e.g., supply chain delays, regulatory hurdles).</li>
+<li><strong>Virtual vs. Physical Mix</strong>: Shift to virtual (Bajaj/Eicher) may reflect cost/logistics pressures or muted travel amid economic caution.</li>
+<li><strong>No New Catalysts</strong>: Reliance on “publicly available information” suggests limited fresh positives, potentially capping re-rating if macro slows (e.g., interest rates, monsoons).</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Execution at Scale</strong>: Plant visits underscore manufacturing risks (e.g., EV battery localization, capex overruns at Ola/Ather Gigafactories).</li>
+<li><strong>Competitive Intensity</strong>: Crowded investor calendars across peers signal zero-sum dynamics in a consolidating market (e.g., Hero/TVS vs. EV disruptors).</li>
+<li><strong>External Dependencies</strong>: No UPSI shared implies vulnerability to public risks like commodity volatility (steel/aluminum), subsidy policy shifts, or slowing festive demand.</li>
+<li><strong>Event Risk</strong>: Changes/cancellations could erode sentiment; over-reliance on group meets risks uniform messaging without differentiation.</li>
+</ul>
+<p><strong>Overall</strong>: Documents reflect <strong>bullish investor appetite</strong> (tailwind dominant), positioning the sector for growth via EV infra and premium bikes. However, risks center on execution amid competition. Monitor post-meet transcripts for guidance. Sector PE likely supported at 25–35x FY26E amid 12–15% earnings growth.</p>
+</div>
+</div>
+</div>
+<div id="meeting" class="section level3">
+<h3><strong>Meeting</strong></h3>
+<p><em>asof: 2025-12-01 </em></p>
+</div>
+<div id="indian-23-wheelers-sector-analysis-based-on-q2h1-fy26-filings" class="section level3">
+<h3>Indian 2/3 Wheelers Sector Analysis (Based on Q2/H1 FY26 Filings)</h3>
+<p>The filings from key players (TVS Motor, Bajaj Auto, Eicher Motors/Royal Enfield, Hero MotoCorp, Ather Energy, Ola Electric) reflect a <strong>robust recovery and growth phase</strong> post-festive demand surge, with ICE (Internal Combustion Engine) dominance persisting alongside accelerating EV adoption. Hero MotoCorp leads with record revenues (₹12,126 Cr Q2, +16% YoY), market share gains (40 bps festive), and EV traction via VIDA. Eicher shows strong profitability (PAT ₹1,369 Cr Q2 consolidated). Legacy players report healthy profits/margins, while EV pure-plays (Ather, Ola) scale revenues but remain loss-making. Approvals for fundraising (Ola) and RPTs (Bajaj) signal capex continuity. Overall sector volumes ~16-30L units/quarter, with exports/EV as bright spots.</p>
+<div id="tailwinds-positive-drivers-2" class="section level6">
+<h6><strong>Tailwinds (Positive Drivers)</strong></h6>
+<ul>
+<li><strong>Demand Surge &amp; Market Share Gains</strong>: Hero’s 16.9L units Q2 (+11% YoY), festive ICE registrations +16.2% (vs industry +14.7%). Eicher revenue +47% Q/Q. Legacy OEMs (Hero, Eicher, TVS) benefit from GST reforms boosting sentiment, new launches (e.g., Hero’s HF Deluxe Pro, Xpulse 210; Eicher’s VX2).</li>
+<li><strong>EBITDA/PAT Expansion</strong>: Hero EBITDA +20% Q2 (15% margin), Eicher PAT +36% H1. Bajaj/TVS resolutions passed unanimously, enabling strategic moves.</li>
+<li><strong>EV Momentum</strong>: Hero VIDA hits 11.7% EV share; Ather revenue ₹8,989 Cr Q2 (+54% Q/Q post-IPO); Ola/TVS/Bajaj expanding portfolios (e.g., Ola fundraising for scaling).</li>
+<li><strong>Exports/Global Push</strong>: Hero exports +77%; Eicher/TVS strong in LatAm/Europe. Entry into Europe/UK (Hero).</li>
+<li><strong>Corporate Actions</strong>: Postal ballots/AGMs approve fundraising (Ola), RPTs (Bajaj for KTM restructuring), investments (Hero ₹170 Cr parts center).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>EV Losses &amp; Capex Intensity</strong>: Ather/Ola deep losses (Ather ₹1,541 Cr Q2; Ola implied via peers). High depreciation (Ather 426 Cr Q2), employee costs (Eicher +20% YoY).</li>
+<li><strong>Supply Chain Disruptions</strong>: Ather flags China rare earth magnet ban impacting PMP compliance/PM E-DRIVE incentives (₹192 Cr deferred revenue).</li>
+<li><strong>Input Costs/Inventories</strong>: Raw material costs ~60-70% of revenue; inventory builds (Eicher +24% YoY).</li>
+<li><strong>Regulatory Uncertainty</strong>: All flag ELV Rules 2025 (EPR obligations unestimable due to pending portal/pricing).</li>
+<li><strong>Leadership Transitions</strong>: Hero CS resignation; Bajaj/TVS stable but KTM restructuring signals stress.</li>
+</ul>
+</div>
+<div id="growth-prospects-4" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Short-Term (FY26)</strong>: Festive tailwinds sustain; ICE + EV mix drives 10-20% revenue growth. Hero targets sustained momentum via launches; Eicher EV exports (Europe). Sector volumes to hit 60-65L FY26e on rural revival/GST benefits.</li>
+<li><strong>Medium-Term (2-3 Yrs)</strong>: EV penetration to 15-20% (from ~5%); Ather/Ola post-IPO scaling (Ather cash ₹7.9 Bn). Exports 20-25% of volumes (Hero/Bajaj). Policy tailwinds (PM E-DRIVE, PLI).</li>
+<li><strong>Long-Term</strong>: ₹1L Cr+ sector mkt cap potential; consolidation via JVs (Eicher Polaris, Bajaj KTM). Sustainability (DJSI scores up for Hero).</li>
+</ul>
+</div>
+<div id="key-risks-4" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<table>
+<colgroup>
+<col width="41%" />
+<col width="28%" />
+<col width="30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Details</strong></th>
+<th><strong>Mitigants</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Execution/Financial</strong></td>
+<td>EV cash burn (Ather H1 loss ₹3.3 Bn); high debt (Ather borrowings ₹2.7 Bn). Hero tax demands (₹178 Cr).</td>
+<td>Strong ICE cashflows fund EV; IPO infusions (Ather ₹26 Bn).</td>
+</tr>
+<tr class="even">
+<td><strong>Regulatory/Policy</strong></td>
+<td>ELV EPR unquantifiable; incentive deferrals (Ather); FPI voting curbs (Bajaj).</td>
+<td>Industry lobbying; phased compliance.</td>
+</tr>
+<tr class="odd">
+<td><strong>Supply/External</strong></td>
+<td>China magnet ban; forex volatility (Eicher OCI swings). Commodity inflation.</td>
+<td>Diversification (Hero global parts); hedging.</td>
+</tr>
+<tr class="even">
+<td><strong>Competition/Market</strong></td>
+<td>Intense EV rivalry (Ola/Ather/Hero VIDA); festive dependence (80% annual sales).</td>
+<td>Differentiation (Hero affordability; Eicher premium).</td>
+</tr>
+<tr class="odd">
+<td><strong>Operational</strong></td>
+<td>PMP deviations; capex overruns (Ather ₹2.2 Bn Q2). Talent churn (Hero CS exit).</td>
+<td>Fundraising (Ola approved); ESOPs.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: <strong>Bullish with caution</strong>. Sector poised for 12-15% CAGR FY26-28 on ICE stability + EV inflection (~30% sector growth). Legacy players (Hero/Eicher) de-risked; EV firms high-beta (scale or perish). Monitor ELV/China risks quarterly.</p>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-indian-23-wheeler-sector-based-on-provided-announcements" class="section level9">
+<p class="heading">Summary Analysis: Indian 2/3-Wheeler Sector (Based on Provided Announcements)</p>
+<p>The Indian 2/3-wheeler industry demonstrates robust momentum in late 2025, driven by post-festive demand, export surges, premium product launches, and EV scaling. Companies like Hero MotoCorp (+31% Nov sales), Eicher (+45% RE volumes), Bajaj (+8% total), TVS-BMW (200k unit milestone), Ather (+67% Q2 volumes), and Ola (service innovations) reflect a mix of ICE and EV strength. Overall YTD growth ~5-10% across majors, with exports as a key bright spot. However, patchy domestic ICE performance signals competitive pressures.</p>
+<table>
+<colgroup>
+<col width="53%" />
+<col width="46%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Aspect</th>
+<th>Key Highlights</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Tailwinds</strong></td>
+<td>Post-festive momentum, rural revival, GST rationalization (&lt;350cc boost), strong exports (+14-70%), EV ecosystem buildout (charging/service), premium launches (e.g., BMW F450 GS, RE 650s).</td>
+</tr>
+<tr class="even">
+<td><strong>Headwinds</strong></td>
+<td>Soft domestic ICE sales (Bajaj 2W -1% Nov/-5% YTD), festive dependency, regional disparities (strong South/Middle India, softer elsewhere).</td>
+</tr>
+<tr class="odd">
+<td><strong>Growth Prospects</strong></td>
+<td>EV market share gains (Ather 17.4%), global expansion (100+ markets for TVS-BMW), YTD totals scaling (Hero 4.3M units), new platforms/tech (Rizta, VX2, Hyperservice). Projected 10-15%+ sector growth into FY26.</td>
+</tr>
+<tr class="even">
+<td><strong>Key Risks</strong></td>
+<td>Intense EV competition, EBITDA/profitability pressures (Ather losses narrowing but persistent), supply chain/export volatility, regulatory shifts post-GST reforms.</td>
+</tr>
+</tbody>
+</table>
+<div id="tailwinds-positive-drivers-3" class="section level12">
+<p class="heading">Tailwinds (Positive Drivers)</p>
+<ul>
+<li><strong>Demand Surge &amp; Festive Spillover</strong>: Hero reports 31% dispatch growth in Nov’25 (604k units), with VAHAN registrations +26% Oct-Nov; Eicher cites “outstanding festive” (2.49L RE units); Bajaj +3% domestic total. Rural/urban revival aided by GST reforms enhancing &lt;350cc affordability.</li>
+<li><strong>Export Boom</strong>: Bajaj exports +14% YTD (14.4M units), Hero +70% Nov (34k units, LatAm/Africa focus); TVS-BMW products in 100+ markets. Strengthens revenue diversification.</li>
+<li><strong>Premiumization &amp; Partnerships</strong>: TVS-BMW 200k milestone + F450 GS rollout signals sub-500cc leadership; Eicher RE record 327k units (+45%), new launches (Meteor/Hunter refreshes, Bullet 650); Hero’s Xtreme/GlamourX success.</li>
+<li><strong>EV Momentum</strong>: Hero VIDA +66% (12k registrations, 10.4% share); Ather 17.4% share, 66k units (+67%), South leadership (25%); Ola’s Hyperservice (in-app bookings, open platform) addresses after-sales pain points.</li>
+<li><strong>Financial/Operational Strength</strong>: Eicher record Q2 (revenue +45% to ₹26k Cr, PAT +25%); Ather revenue +57% (₹941 Cr), EBITDA margin +1,100 bps YoY to -10%; Bajaj CV +37%; retail expansions (Ather 524 centers).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-3" class="section level12">
+<p class="heading">Headwinds (Challenges)</p>
+<ul>
+<li><strong>Domestic ICE Softness</strong>: Bajaj 2W domestic -1% Nov/-5% YTD (despite total +3%); Hero YTD flat at ~4.2M; signals competition, potential rural slowdown, or inventory adjustments post-festive.</li>
+<li><strong>Regional Imbalances</strong>: Ather strong in South (25%) and Middle India (14.6%), but Rest of India at 10%; broader sector may face tier-2/3 penetration hurdles.</li>
+<li><strong>Profitability Pressures</strong>: Ather Q2 loss ₹154 Cr (narrowed); EV scaling costs (R&amp;D, charging infra) persist despite margin gains.</li>
+<li><strong>Volume Dependency</strong>: Festive peaks (Eicher 2.49L) vs. normalized months highlight cyclicality.</li>
+</ul>
+</div>
+<div id="growth-prospects-5" class="section level12">
+<p class="heading">Growth Prospects</p>
+<ul>
+<li><strong>Volume Scaling</strong>: Sector YTD ~33-34M units (Bajaj 33.8M total); Hero 4.3M dispatches; RE 327k/QTR pace suggests 1.3M+ FY26 potential. Exports could drive 15-20% overall growth.</li>
+<li><strong>EV Transition Acceleration</strong>: Ather 66k/QTR, VIDA 10%+ share; Ola’s service platform scales D2C ecosystem. Combined EV push (Ather/Rizta, Hero VX2) targets 20%+ market penetration by FY27 amid infra build (Ather Grid 4.3k points).</li>
+<li><strong>Innovation &amp; Global Reach</strong>: TVS-BMW new era (F450 GS); Eicher/VECV +5-10% (Pro Plus trucks); Hero/Bajaj premium commuters/EVs. Events like RE Motoverse/One Ride boost brand loyalty.</li>
+<li><strong>Margin Expansion</strong>: Operational leverage (Ather +300 bps gross margin); Eicher EBITDA +39%. Sustainable mobility focus (TVS Deming Prize, RE heritage) supports premium pricing.</li>
+</ul>
+</div>
+<div id="key-risks-5" class="section level12">
+<p class="heading">Key Risks</p>
+<ul>
+<li><strong>Competition &amp; Market Share Erosion</strong>: Crowded ICE (Hero/Bajaj/TVS) and EV (Ather/Ola/VIDA) spaces; Ola’s open service could commoditize after-sales.</li>
+<li><strong>Macro/External Factors</strong>: Rural spending vulnerability, fuel price volatility, global trade tensions impacting exports (e.g., LatAm/Europe).</li>
+<li><strong>EV-Specific</strong>: Battery costs, charging adoption (despite Ather/Ola progress), subsidy phase-out risks. Ather’s losses signal scaling risks if demand softens.</li>
+<li><strong>Regulatory/Execution</strong>: Post-GST changes; supply chain disruptions (raw materials, semiconductors); Eicher disclaimer notes forward-looking uncertainties.</li>
+<li><strong>Cyclicality</strong>: Over-reliance on festivals; YTD domestic dips (Bajaj -4%) could worsen if monsoons/economy falter.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Bullish near-term (10-15% FY26 growth) with tailwinds from exports/EV/policy outweighing headwinds. EVs are the growth engine (17%+ shares), but ICE majors provide stability. Monitor domestic retail and EBITDA trends for sustained momentum. Sector poised for premium/global leadership, per TVS-BMW/Eicher narratives.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

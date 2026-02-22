@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Healthcare Service Provider</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Healthcare Service Provider</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/HealthcareServiceProvider.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/HealthcareServiceProvider.fan.CAP_WT.png" /></p>
+<p><img src="plots/HealthcareServiceProvider.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/HealthcareServiceProvider.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/HealthcareServiceProvider.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/HealthcareServiceProvider.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/HealthcareServiceProvider.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-6e93f48f0574e59db0b2" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-6e93f48f0574e59db0b2">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-0.17%","-0.48%"],["-0.47%","-1.38%"],["-2.11%","-3.3%"],["-0.14%","-1.81%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/HealthcareServiceProvider.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/HealthcareServiceProvider.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-81d7cf20c6d76173587c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-81d7cf20c6d76173587c">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.LALPATHLAB.html\" target=\"_blank\">LALPATHLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.VIJAYA.html\" target=\"_blank\">VIJAYA<\/a>","<a href=\"/reports02/eq-in/risk/in.METROPOLIS.html\" target=\"_blank\">METROPOLIS<\/a>","<a href=\"/reports02/eq-in/risk/in.THYROCARE.html\" target=\"_blank\">THYROCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.NEPHROPLUS.html\" target=\"_blank\">NEPHROPLUS<\/a>","<a href=\"/reports02/eq-in/risk/in.KRSNAA.html\" target=\"_blank\">KRSNAA<\/a>","<a href=\"/reports02/eq-in/risk/in.SURAKSHA.html\" target=\"_blank\">SURAKSHA<\/a>","<a href=\"/reports02/eq-in/risk/in.SASTASUNDR.html\" target=\"_blank\">SASTASUNDR<\/a>"],[0.4149224472102819,0.1891141591730087,0.189602714868499,0.09799290183105855,0.03481717174598312,0.044938197193806,0.02075989475934066,0.007852513218022043],[0.3880392884970171,0.1717221276746865,0.1632390343724434,0.1083714964791931,0.09552288733172305,0.03478305554687271,0.02339654643918742,0.01492556365887671]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5780db1045d3597e1760" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5780db1045d3597e1760">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.LALPATHLAB.html\" target=\"_blank\">LALPATHLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.VIJAYA.html\" target=\"_blank\">VIJAYA<\/a>","<a href=\"/reports02/eq-in/risk/in.METROPOLIS.html\" target=\"_blank\">METROPOLIS<\/a>","<a href=\"/reports02/eq-in/risk/in.THYROCARE.html\" target=\"_blank\">THYROCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.NEPHROPLUS.html\" target=\"_blank\">NEPHROPLUS<\/a>","<a href=\"/reports02/eq-in/risk/in.KRSNAA.html\" target=\"_blank\">KRSNAA<\/a>","<a href=\"/reports02/eq-in/risk/in.SURAKSHA.html\" target=\"_blank\">SURAKSHA<\/a>","<a href=\"/reports02/eq-in/risk/in.SASTASUNDR.html\" target=\"_blank\">SASTASUNDR<\/a>"],[3.114990062367216,24.11323631704939,23.3224114786841,23.76829494533437,null,13.40999636568678,3.965181635555407,4.53817529384214],[2.479762740231094,23.27214957119632,28.75090260724478,19.16663393739129,null,10.12679004827495,5.761051460959438,1.095824162816689],[1.850404978163885,28.96664033792002,31.33716275868261,19.4459526766609,0.9715628159716806,10.54664035929654,5.850272443742345,1.031363629562017]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ca33ce1eb53c1ee4621a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ca33ce1eb53c1ee4621a">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.LALPATHLAB.html\" target=\"_blank\">LALPATHLAB<\/a>","<a href=\"/reports02/eq-in/risk/in.VIJAYA.html\" target=\"_blank\">VIJAYA<\/a>","<a href=\"/reports02/eq-in/risk/in.METROPOLIS.html\" target=\"_blank\">METROPOLIS<\/a>","<a href=\"/reports02/eq-in/risk/in.THYROCARE.html\" target=\"_blank\">THYROCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.NEPHROPLUS.html\" target=\"_blank\">NEPHROPLUS<\/a>","<a href=\"/reports02/eq-in/risk/in.KRSNAA.html\" target=\"_blank\">KRSNAA<\/a>","<a href=\"/reports02/eq-in/risk/in.SURAKSHA.html\" target=\"_blank\">SURAKSHA<\/a>","<a href=\"/reports02/eq-in/risk/in.SASTASUNDR.html\" target=\"_blank\">SASTASUNDR<\/a>"],[1.766712962921296,12.73487611060377,25.76473847459098,14.48438187116003,null,13.35789650452398,3.761084314928362,15.9658314497655],[1.29983844931058,11.5540079618355,27.74081218011095,14.95934681750434,null,13.98728418850309,3.483746482445995,21.17679506094577],[0.949450750692036,13.69315108808971,27.92685585165791,14.12427439604487,9.260924366324614,13.66067372530362,3.979955778229513,16.40471404365773]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="summary-analysis-indian-healthcare-service-providers-diagnostics-distribution-focus" class="section level9">
+<p class="heading">Summary Analysis: Indian Healthcare Service Providers (Diagnostics &amp; Distribution Focus)</p>
+<p>Based on the provided documents from key players like Thyrocare Technologies, Sastasundar Ventures, Dr Lal PathLabs, Vijaya Diagnostic, Metropolis Healthcare, Krsnaa Diagnostics, and Suraksha Diagnostic (Q2/H1 FY26 earnings transcripts and analyst meeting intimations), the sector exhibits robust momentum driven by volume growth, network expansion, and operational efficiencies. However, it faces seasonal and competitive pressures. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Strong Financial Performance &amp; Investor Confidence</strong>: Thyrocare reported 22% YoY revenue growth (₹217 Cr consolidated), 82% PAT growth (EPS ₹9.05), and 49% normalized EBITDA growth; Sastasundar saw 16.9% YoY revenue growth (₹308 Cr) with gross margins expanding 100 bps to 7.5%. Bonus issues (Thyrocare 2:1), interim dividends (₹7/share), and frequent analyst meetings (e.g., JM Financial, Investec in Mumbai) signal high institutional interest.</li>
+<li><strong>Operational Efficiencies</strong>: Thyrocare improved TAT to 3.52 hours, gross margins to 71.6% (+100 bps), and franchisees to 10,100+ (up 20% YoY). Investments in automation, logistics (cold chain data loggers), and quality (100% NABL-accredited, Six Sigma target) are yielding results. Sastasundar emphasizes low working capital (5-6% of sales) and treasury (₹565 Cr) for self-funded growth.</li>
+<li><strong>Digital &amp; Partnership Momentum</strong>: Partnerships grew 35% (Thyrocare, e.g., PharmEasy +46%); online/offline mix balanced (20-35% growth). Sastasundar’s B2C (60% YoY) leverages AI, Health Buddies (260+), and JITO private label for affordability.</li>
+<li><strong>Policy &amp; Macro Support</strong>: GST input cuts passed to customers; CGHS rate hikes easing pricing pressure.</li>
+</ul>
+</div>
+<div id="headwinds" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Seasonal &amp; Demand Fluctuations</strong>: Muted fever volumes (-26% YoY at Thyrocare due to govt. vector control); Q3 expected soft (fixed costs, high H2 base). Radiology modest (3% YoY growth, some center closures).</li>
+<li><strong>Pricing Discipline</strong>: Focus on affordability limits price hikes; rationalization in online pricing (no aggressive discounts). Revenue per test/patient low but stable via volume/tests per patient (10.7 at Thyrocare).</li>
+<li><strong>Integration &amp; Cost Pressures</strong>: ESOP expenses (non-cash but normalized EBITDA reported); lab integrations (Polo/Vimta reduced count from 39 to 37). Sastasundar notes startup-like quarterly variability.</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Network &amp; Volume Expansion</strong>: Thyrocare targets mid-teens volume growth (53 Mn tests, +21% YoY); franchisees adding 100-150/month. Sastasundar aims for ₹6,000 Cr by FY30 (₹4,000 Cr B2B RetailerShakti at 30-40% CAGR, 55K retailers). Deeper Tier 2/3 penetration (Tier 3+ strong).</li>
+<li><strong>Product &amp; Category Diversification</strong>: Preventive packages (Aarogyam +19%, Jaanch +31%); GLP-1 weight-loss drug opportunity (complementary packages). Sastasundar expanding to personal care, nutraceuticals via JITO (20L/month orders), AI counseling, podcasts.</li>
+<li><strong>Inorganic &amp; Geographic</strong>: Tanzania (30% QoQ, breakeven in 18-24 months); Polo/Vimta/SyncHealth integration. Sastasundar warehouse automation (3x capacity), North/East focus (Lucknow/Udaipur).</li>
+<li><strong>Profitability Path</strong>: Thyrocare normalized EBITDA 36%; Sastasundar: RetailerShakti EBITDA+ FY26 (1%), B2C contribution+ FY27, PAT+ FY27. ROCE target 50-60% via platforms.</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Thyrocare (Q2 FY26)</th>
+<th>Sastasundar (Q2 FY26)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Rev Growth</strong></td>
+<td>22% YoY</td>
+<td>16.9% YoY</td>
+</tr>
+<tr class="even">
+<td><strong>Key Driver</strong></td>
+<td>Pathology (24%), Partnerships (35%)</td>
+<td>B2B (13%), B2C (60%)</td>
+</tr>
+<tr class="odd">
+<td><strong>Margin</strong></td>
+<td>EBITDA 36% (standalone)</td>
+<td>Gross 7.5% (+100 bps)</td>
+</tr>
+<tr class="even">
+<td><strong>Target</strong></td>
+<td>Mid-teens vol; H2 cautious</td>
+<td>₹6,000 Cr by FY30</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Demand &amp; Seasonality</strong>: Fever/viral downturns; high H2 base could pressure guidance (mid-teens targeted).</li>
+<li><strong>Competition &amp; Pricing</strong>: Online rationality but metro/Tier-1 saturation; B2G low-margin (1% revenue). GLP-1 early-stage.</li>
+<li><strong>Execution/Integration</strong>: Lab closures, franchise activation; working capital volatility in scaling (Sastasundar: 20-25 days target &lt;6%).</li>
+<li><strong>Regulatory/External</strong>: Schedule changes due to exigencies; no UPSI shared but reliance on public info. Debt-free but ESOP/capex needs monitoring.</li>
+<li><strong>Macro</strong>: Rural penetration slow (habit adoption for AI/digital); B2G price realizations low/margin-dilutive.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Bullish medium-term (high-teens growth, profitability inflection) with tailwinds from networks/digital outweighing seasonal headwinds. Sector ROCE/moats via affordability, quality, and platforms position it for 20%+ CAGR, but monitor Q3 for base effects. Investors should watch franchise additions, partnership traction, and GLP-1 uptake.</p>
+</div>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3><strong>Financial</strong></h3>
+<p><em>asof: 2025-12-01 </em></p>
+<div id="summary-analysis-indian-diagnostic-healthcare-services-sector-q3-fy25-insights-from-key-players" class="section level9">
+<p class="heading">Summary Analysis: Indian Diagnostic &amp; Healthcare Services Sector (Q3 FY25 Insights from Key Players)</p>
+<p>Based on Q3 FY25 (quarter &amp; 9M ended Dec 31, 2024) results from leading players—Dr Lal PathLabs, Metropolis Healthcare, Thyrocare Technologies, Krsnaa Diagnostics, Suraksha Diagnostics, and Sastasundar Ventures—the sector exhibits robust revenue momentum amid consolidation, but faces cost pressures and subsidiary challenges. Revenue grew 10-25% YoY across most (e.g., Lal PathLabs +11% Q3 standalone; Metropolis +11% consolidated; Suraksha ~16% YoY), driven by volumes and pricing. Profits were mixed (e.g., Lal PathLabs PAT +12% YoY; Thyrocare flat; Sastasundar losses widened). Key themes below:</p>
+<div id="tailwinds-positive-drivers" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Volume-Led Revenue Growth</strong>: Strong YoY top-line expansion (e.g., Lal PathLabs 9M revenue ₹18,588 Cr; Metropolis ₹98,591 Cr consolidated; Krsnaa +17% 9M). Pathology/radiology demand resilient post-COVID.</li>
+<li><strong>Profitability &amp; Shareholder Returns</strong>: PAT growth in leaders (Lal PathLabs 9M ₹3,387 Cr; Metropolis ₹11,638 Cr). High dividend payouts (Lal PathLabs 3rd interim ₹6/share, total FY25 ₹18+).</li>
+<li><strong>Operational Efficiency</strong>: Cost controls in materials/employees; EBITDA margins stable ~25-30% (e.g., Thyrocare, Suraksha).</li>
+<li><strong>Inorganic Momentum</strong>: Acquisitions/consolidations (Metropolis-Core Diagnostics; Thyrocare-Palo/Vimta labs; Lal PathLabs-Suburban liquidation for streamlining).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Cost Inflation</strong>: Employee expenses up 10-15% YoY (e.g., Metropolis +10%; Suraksha +11%); depreciation higher due to capex/revision (Thyrocare +₹4.75 Cr from asset life cuts).</li>
+<li><strong>QoQ Declines</strong>: Soft Q3 demand (Metropolis revenue -8% QoQ; Thyrocare flat).</li>
+<li><strong>Subsidiary Drag</strong>: Losses in intl/smaller units (Lal PathLabs Kenya dissolved; Thyrocare JVs; Sastasundar step-downs like Happymate with going concern issues).</li>
+<li><strong>Margin Pressure</strong>: Finance costs elevated (5-10% of expenses); exceptional losses (Sastasundar ₹19,000+ Cr from Flipkart Health exit).</li>
+</ul>
+</div>
+<div id="growth-prospects-high-potential" class="section level12">
+<p class="heading"><strong>Growth Prospects (High Potential)</strong></p>
+<ul>
+<li><strong>Market Consolidation</strong>: Fragmented sector ripe for M&amp;A (e.g., Metropolis ₹346 Cr Core Diagnostics deal; Thyrocare slump sales). PPP/rural expansion (Krsnaa).</li>
+<li><strong>Diversification</strong>: Radiology/pathology + digital/e-pharma (Sastasundar Healthbuddy merger; Suraksha ESOPs for talent).</li>
+<li><strong>Geographic/Intl Push</strong>: Exports/subsidiaries (Lal PathLabs Nepal/Bangladesh; Metropolis Africa).</li>
+<li><strong>Capex-Led Expansion</strong>: New labs/tech (Thyrocare Polo/Vimta; Suraksha IPO proceeds). Projected 15-20% sector CAGR to FY28 (driven by ageing population, preventive health).</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Regulatory/Tax Uncertainty</strong>: Disputes (Krsnaa ₹196 Cr demand under appeal; no material impact claimed).</li>
+<li><strong>Execution in Acquisitions</strong>: Integration risks, goodwill impairments (Thyrocare ₹4 Cr goodwill).</li>
+<li><strong>Subsidiary/Associate Volatility</strong>: Losses/going concern (Sastasundar Happymate net worth erosion; Flipkart Health exit loss).</li>
+<li><strong>Macro/Competition</strong>: Demand slowdown, pricing wars (e.g., collection center fees 10-15% of costs), high capex debt.</li>
+<li><strong>Valuation Stretch</strong>: Post-IPO (Suraksha) multiples vulnerable to growth misses.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: Bullish on leaders (Lal PathLabs, Metropolis) with 15%+ revenue/EBITDA growth; midcaps (Thyrocare, Krsnaa) stable but execution key. Sector tailwinds from demographics outweigh headwinds; monitor Q4 for festive recovery. Risks mitigated by cash-rich balance sheets (low debt/EBITDA &lt;1x).</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="analysis-of-indian-healthcare-service-providers-diagnostics-sector" class="section level9">
+<p class="heading">Analysis of Indian Healthcare Service Providers (Diagnostics Sector)</p>
+<p>Based on the provided announcements from key players (Krsnaa Diagnostics, Dr Lal PathLabs, Metropolis Healthcare, Sastasundar Ventures, Suraksha Diagnostics, Thyrocare Technologies, Vijaya Diagnostic Centre), the sector shows routine compliance and governance activities with limited operational insights. Diagnostics remains resilient amid rising health awareness, but announcements highlight minor financial pressures and stake changes. Below is a structured analysis:</p>
+<div id="tailwinds-positive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Strong Subsidiary Capital Management</strong>: Sastasundar Ventures’ material subsidiary (SHBL) completed a buyback of ~20L shares (8.55% stake) from Mitsubishi for ~₹100 Cr at ₹493/share (Sep-Nov 2025). Parent’s stake rose from 72.14% to 78.89%, enhancing control without cash outflow. Signals financial health and confidence in SHBL’s wholesale pharma/OTC business (FY25 turnover: ₹1,085 Cr).</li>
+<li><strong>Governance Stability</strong>: Approvals for director continuity (Krsnaa: Mr. Chetan Desai post-75 tenure till Apr 2026) and clarifications on AGM resolutions (Suraksha: single resolution for director re-appointments) reflect proactive compliance and board stability.</li>
+<li><strong>Routine Investor Engagement</strong>: Vijaya’s IEPFA “Saksham Niveshak” campaign for unclaimed dividends shows focus on shareholder welfare, aiding retention.</li>
+</ul>
+</div>
+<div id="headwinds-negative-factors" class="section level12">
+<p class="heading"><strong>Headwinds (Negative Factors)</strong></p>
+<ul>
+<li><strong>Tax Litigation Pressures</strong>: Dr Lal PathLabs received a FY18 reassessment order (Oct 29, 2025) with ₹2.79 Cr additions/disallowances and ₹2.43 Cr tax demand. Though small (~0.01-0.02% of typical annual revenue), it adds to ongoing disputes; company plans appeal, but could tie up resources.</li>
+<li><strong>Promoter Stake Dilution</strong>: Thyrocare’s promoter (Docon) sold 10% stake (53.3L shares) for ₹668 Cr at ~₹1,252/share (Oct 24, 2025), reducing group holding to 60.93% from 70.98%. May signal liquidity needs or reduced promoter commitment.</li>
+<li><strong>Minor Disruptions</strong>: Metropolis cancelled an analyst meet (Nov 2025) due to “exigencies,” potentially delaying investor visibility.</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Moderate to Stable</strong>: No direct revenue/growth data, but SHBL’s buyback (post strong FY24 turnover of ₹1,352 Cr) amid consistent pharma wholesale growth (FY22-25: ₹1,026 Cr to ₹1,085 Cr) suggests sector tailwinds from rising OTC/medicinal demand. Parent-level actions (e.g., Sastasundar stake increase) position for inorganic consolidation.</li>
+<li><strong>Sector-Wide Upside</strong>: Routine disclosures indicate operational continuity; diagnostics benefits from preventive health trends, but lacks aggressive expansion signals here. Potential for 10-15% CAGR if health infra investments continue (inferred from financial maneuvers).</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="40%" />
+<col width="24%" />
+<col width="35%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Impact Level</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Regulatory/Tax</strong></td>
+<td>Tax demands (Dr Lal: ₹2.43 Cr) and appeals could escalate; IEPFA compliance (Vijaya) risks share transfers if unclaimed dividends persist.</td>
+<td>Medium (financial drag if unresolved)</td>
+</tr>
+<tr class="even">
+<td><strong>Promoter/Governance</strong></td>
+<td>Stake sales (Thyrocare: 10% reduction) may erode confidence; director age/tenure issues (Krsnaa) need ongoing approvals.</td>
+<td>Low-Medium (watch for further sales)</td>
+</tr>
+<tr class="odd">
+<td><strong>Operational</strong></td>
+<td>Event cancellations (Metropolis) hint at unforeseen issues; trading window closures (Sastasundar) limit liquidity.</td>
+<td>Low (routine)</td>
+</tr>
+<tr class="even">
+<td><strong>Sectoral</strong></td>
+<td>No material impact noted (Dr Lal), but broader risks like competition, pricing pressure, or forex (if imports) unaddressed.</td>
+<td>Low (based on docs)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="overall-summary" class="section level12">
+<p class="heading"><strong>Overall Summary</strong></p>
+<p>The diagnostics sector faces <strong>mild headwinds</strong> from tax disputes and promoter stake sales, offset by <strong>tailwinds</strong> like subsidiary buybacks and governance stability. <strong>Growth prospects</strong> are steady (driven by pharma wholesale and health demand), but not explosive per these filings. <strong>Key risks</strong> center on litigation and ownership changes, with no systemic red flags. Investors should monitor appeals/outcomes; sector remains defensive with low beta. Positive: Consolidation signals; Neutral: Compliance-heavy disclosures. (Data as of Nov 2025 filings.)</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="analysis-of-indian-healthcare-service-providers-diagnostics-platforms" class="section level9">
+<p class="heading">Analysis of Indian Healthcare Service Providers (Diagnostics &amp; Platforms)</p>
+<p>Based on the provided documents (primarily analyst meeting intimations from Dr Lal PathLabs, Vijaya Diagnostic, Metropolis, Krsnaa Diagnostics, Suraksha Diagnostic, and detailed Q2/H1 FY26 earnings transcripts from Thyrocare Technologies and Sastasundar Ventures), this analysis focuses on the diagnostics-heavy healthcare service provider sector in India. Key themes include strong operational execution, franchise/network expansions, and investor engagement via upcoming meetings. Insights are synthesized across players, highlighting sector-level trends.</p>
+<div id="tailwinds-positive-factors-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Robust Revenue &amp; Volume Growth</strong>: Thyrocare reported 22% YoY consolidated revenue growth (INR 217 Cr, highest ever), driven by 21% test volume increase (53.3 Mn tests) and 24% pathology growth. Franchisee revenue up 20%, partnerships 35% (API/PharmEasy +46%). Sastasundar saw 16.9% YoY revenue growth (INR 307.9 Cr), with B2C up ~60%.</li>
+<li><strong>Margin Expansion &amp; Efficiency</strong>: Thyrocare’s standalone gross margin at 71.6% (+100 bps YoY), normalized EBITDA margin 36% (+470 bps). Consolidated EBITDA +49%, PAT +82%. Sastasundar gross profit +34.2%, margin +100 bps to 7.5%. Operational levers: automation, slab pricing, bad debt recovery, logistics investments (e.g., cold chain tracking).</li>
+<li><strong>Network &amp; Franchise Expansion</strong>: Thyrocare at 10,100+ active franchisees (+20% YoY), 37 labs in India +1 in Tanzania. Deeper Tier 2/3 penetration via field/central teams. Sastasundar scaling RetailerShakti (40K+ retailers, targeting 55K by FY26 end) and Healthbuddies (260 to 360).</li>
+<li><strong>Quality &amp; Innovation</strong>: Thyrocare’s 100% NABL accreditation, Six Sigma pursuit (complaints down to 3.8/Mn), new platforms (BioFire PCR, histopathology). Flagship packages (Aarogyam +19%, Jaanch +31%). Research (HbA1c, PIVA studies).</li>
+<li><strong>Investor Confidence Signals</strong>: Bonus issue (2:1) &amp; interim dividend (INR 7/share) at Thyrocare; strong treasury (INR 565 Cr net at Sastasundar). Multiple analyst meetings (e.g., JM Financial, JP Morgan, Investec) indicate institutional interest.</li>
+<li><strong>Partnerships &amp; Diversification</strong>: Healthtech/corporate growth; B2G (TB projects); international (Tanzania +30% QoQ, breakeven in 18-24 months).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Seasonal &amp; Disease Muted Volumes</strong>: Thyrocare fever volumes -26% YoY due to govt vector control; Q3 expected softer (fixed costs). Monsoon impacts on partnerships.</li>
+<li><strong>Geographic Concentration &amp; Metro Slowdown</strong>: Offline growth stronger in Tier 2+ (single-digit in metros); online partnerships metro/Tier-1 dominant.</li>
+<li><strong>Modest Segments</strong>: Radiology +3% YoY (Thyrocare), focus on profitability over volume (closures of non-profitable centers).</li>
+<li><strong>Integration Costs</strong>: Thyrocare integrating Polo/Vimta/SyncHealth (lab count from 39 to 37 post-integration).</li>
+<li><strong>Pricing Discipline</strong>: Affordable positioning limits price hikes; GST benefits passed to franchisees.</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Volume &amp; Revenue Acceleration</strong>: Mid-teens organic growth sustainable (Thyrocare 22% organic); GLP-1 weight-loss drugs as “huge opportunity” (monitoring packages). Sastasundar targets INR 6,000 Cr by FY30 (INR 4,000 Cr B2B, INR 2,000 Cr B2C), 30-40% CAGR via warehouses (Lucknow, Udaipur), automation, private labels (JITO generics saving 60%).</li>
+<li><strong>Franchisee/Partner Scaling</strong>: Thyrocare adding 100-150 net franchisees/month; partnerships (Healthtech, corporates, insurance). Sastasundar: Retailer app rollout (Apr-Jun 2026) for auto-reorders.</li>
+<li><strong>Tech &amp; Category Expansion</strong>: AI (counseling, inventory), podcasts, ECG-at-home. New categories (personal care, nutraceuticals, pet care) at higher margins. B2G/international upside.</li>
+<li><strong>Profitability Path</strong>: Thyrocare debt-free (INR 190 Cr net cash); Sastasundar breakeven Q4 FY26 (RetailerShakti 1% EBITDA FY26), PAT-positive FY27 via treasury income.</li>
+<li><strong>Market Tailwinds</strong>: Preventive health, Tier 3+ penetration, rational online pricing.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Execution &amp; Seasonality</strong>: Exigencies in meetings; Q3 softness, fever/monsoon volatility. H2 high base (mid-teens guidance).</li>
+<li><strong>Competition</strong>: Online (PharmEasy et al.) vs. offline; metro share battles. Rational pricing reduces differentiation.</li>
+<li><strong>Regulatory/External</strong>: No UPSI shared, but GST/CGHS changes, govt interventions (e.g., vector control). B2G low-margin (1% of revenue).</li>
+<li><strong>Capex &amp; Integration</strong>: Lab expansions (thoughtful but opex-intensive); acquisitions (Polo/Vimta). Sastasundar warehouse automation without external capital.</li>
+<li><strong>Macro/Demand</strong>: Disease patterns, GLP-1 early-stage; working capital cycles (20-25 days, targeting 3-4%).</li>
+<li><strong>Sector-Specific</strong>: Quality complaints (target &lt;3.4/Mn), phlebotomy reliance, radiology profitability.</li>
+</ul>
+</div>
+</div>
+<div id="summary" class="section level9">
+<p class="heading"><strong>Summary</strong></p>
+<p>The Indian diagnostics/service provider sector exhibits strong tailwinds from volume growth (20%+), margin leverage, and franchise/tech expansions, positioning players like Thyrocare (22% revenue CAGR) for sustained mid-teens growth into Tier 2/3 and adjacencies (GLP-1, international). Sastasundar adds platform-scale potential (30-40% CAGR to FY30). Headwinds are mild/temporary (seasonal volumes, metro competition), offset by debt-free balance sheets and investor interest (multiple roadshows). Prospects are bright (INR 6,000 Cr+ ambitions), but risks center on execution amid seasonality, competition, and regulatory flux. Overall, <strong>positive outlook</strong> with 15-25% sector growth feasible, prioritizing organic quality over aggressive pricing. Investors should monitor Q3 results for confirmation.</p>
+</div>
+</div>
+<div id="meeting" class="section level3">
+<h3><strong>Meeting</strong></h3>
+<p><em>asof: 2025-12-02 </em></p>
+<div id="summary-analysis-indian-diagnostic-healthcare-service-providers-based-on-q2h1-fy26-results" class="section level9">
+<p class="heading">Summary Analysis: Indian Diagnostic &amp; Healthcare Service Providers (Based on Q2/H1 FY26 Results)</p>
+<p>The provided documents cover Q2/H1 FY26 (ended Sep 30, 2025) financial results, board outcomes, and corporate actions from key players: <strong>Vijaya Diagnostic Centre</strong>, <strong>Metropolis Healthcare</strong>, <strong>Thyrocare Technologies</strong>, <strong>Krsnaa Diagnostics</strong>, <strong>Suraksha Diagnostic</strong>, and <strong>Sastasundar Ventures</strong>. These reflect a <strong>mixed but resilient sector</strong> amid expansion, with aggregate revenue growth ~15-20% YoY across peers (e.g., Vijaya H1 standalone revenue ₹366 Cr, up 16%; Krsnaa consolidated ₹399 Cr, up 12%; Suraksha consolidated ₹1,513 Cr, up 19%). Profitability improved post-adjustments (e.g., Vijaya PAT ₹81 Cr, up 18%), driven by volume-led diagnostics. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-drivers-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Robust Revenue Momentum</strong>: Core diagnostics/radiology drove 15-25% YoY growth (e.g., Vijaya Q2 ₹189 Cr; Suraksha H1 ₹1,513 Cr). Healthcare demand remains strong, supported by post-COVID awareness and preventive testing.</li>
+<li><strong>Operational Efficiency &amp; Scale</strong>: Pooling-of-interest amalgamations (Vijaya-MedInova) and network expansions (high capex: Krsnaa ₹103 Cr PPE; Suraksha ₹166 Cr) boosted margins (Vijaya EBITDA ~35%; Krsnaa PAT margins ~11%).</li>
+<li><strong>Capital Management Confidence</strong>: Bonus issues (Thyrocare 1:1), dividends (Vijaya ₹2/share), ESOPs (Metropolis new plans), and capital increases signal shareholder value focus.</li>
+<li><strong>Cash Generation</strong>: Strong operating cash flows (Krsnaa ₹52 Cr; Suraksha ₹367 Cr) despite capex, aiding debt servicing.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Cost Pressures</strong>: Employee expenses up 10-15% (e.g., Vijaya ₹59 Cr H1; Suraksha ₹262 Cr), finance costs rising (leases/borrowings: Krsnaa ₹14 Cr; Vijaya ₹14 Cr), and depreciation surging (Suraksha ₹196 Cr H1) amid expansions.</li>
+<li><strong>Margin Compression</strong>: EBITDA margins dipped in some (Sastasundar consolidated losses; Krsnaa flat at ~16%) due to high capex and impairments (Suraksha ₹-6.9 Cr gain but prior losses).</li>
+<li><strong>Cash Burn in Expansion</strong>: Heavy investing outflows (Krsnaa ₹104 Cr; Suraksha ₹218 Cr) led to net debt rises (Krsnaa borrowings ₹23 Cr).</li>
+<li><strong>One-Offs</strong>: Exceptional items (Sastasundar ₹-16 Cr impairment) and restatements (Vijaya amalgamation from Apr 2024).</li>
+</ul>
+</div>
+<div id="growth-prospects-opportunities" class="section level12">
+<p class="heading"><strong>Growth Prospects (Opportunities)</strong></p>
+<ul>
+<li><strong>Expansion &amp; Inorganic Growth</strong>: Aggressive capex (₹200-300 Cr peers) for new centers/labs; M&amp;A (Vijaya amalgamation; Suraksha Fetomat acquisition) to consolidate ~₹2,500 Cr market.</li>
+<li><strong>Subsidiary Synergies</strong>: Vijaya’s Medinova MRI LLP integration; Suraksha’s radiology subs; potential for Thyrocare bonus to enhance liquidity.</li>
+<li><strong>Digital/Talent Retention</strong>: ESOPs (Metropolis 2025 plans up to subsidiaries); e-pharma/diagnostics hybrid (Sastasundar healthcare network ₹586 Cr H1 revenue).</li>
+<li><strong>Sector Tailwinds</strong>: Aging population, rising chronic diseases; projected 15-20% CAGR to FY28 (network expansion to Tier-2/3 cities).</li>
+</ul>
+</div>
+<div id="key-risks-4" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Tax/Regulatory Litigations</strong> (High): Krsnaa faces ₹514 Cr IT demand (AY17-24; appeals filed, ₹103 Cr paid under protest); potential cash outflows/penalties.</li>
+<li><strong>Execution &amp; Debt Risks</strong> (Medium-High): High lease liabilities (Vijaya ₹34 Cr; Suraksha ₹101 Cr) and borrowings (Krsnaa ₹24 Cr); capex delays could strain liquidity.</li>
+<li><strong>Subsidiary/Associate Volatility</strong> (Medium): Sastasundar step-down losses (Genu Path erosion; buyback impacts); Metropolis Item 6 remuneration voted down by institutions (29% against).</li>
+<li><strong>Market/Competition</strong> (Medium): Intense rivalry (Apollo, Dr. Lal); impairment risks (Suraksha, Sastasundar); forex/inflation on imports.</li>
+<li><strong>Going Concern</strong> (Low-Medium): Sastasundar step-down (Genu Path) flagged uncertainty but parent support provided.</li>
+</ul>
+<p><strong>Overall Outlook</strong>: <strong>Positive with Caution</strong>. Sector poised for 15-20% growth via expansion, but monitor tax resolutions (Krsnaa) and capex ROIs. Peers like Vijaya/Suraksha demonstrate resilience; aggregate PAT growth ~20% H1 signals recovery. Investors should watch Q3 debt metrics and litigation updates.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>H1 FY26 Aggregate (Est.)</th>
+<th>YoY Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Revenue</td>
+<td>~₹2,800 Cr</td>
+<td>+17%</td>
+</tr>
+<tr class="even">
+<td>PAT</td>
+<td>~₹250 Cr</td>
+<td>+25%</td>
+</tr>
+<tr class="odd">
+<td>Capex</td>
+<td>~₹500 Cr</td>
+<td>+30%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="summary-analysis-indian-diagnostics-sector-healthcare-service-providers" class="section level9">
+<p class="heading">Summary Analysis: Indian Diagnostics Sector (Healthcare Service Providers)</p>
+<p><strong>Overview</strong>: The Q2/H1 FY26 results from key players (Krsnaa Diagnostics, Metropolis, Suraksha, Thyrocare, Vijaya; Dr Lal PathLabs via product launch) reflect robust sector momentum amid India’s growing healthcare demand. Consolidated revenue grew 10-23% YoY, EBITDA 7-49% (margins 28-40%), and PAT 1-82%, driven by volumes, premiumization, and expansions. Sector benefits from post-COVID health awareness but faces executional pressures.</p>
+<div id="tailwinds-positive-drivers-2" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Strong Volume &amp; Revenue Growth</strong>: Test/patient volumes up 8-29% YoY (e.g., Suraksha +25-29%, Vijaya +9-12%, Thyrocare 53mn tests +21%); B2C/B2B revenues +16-33% (Metropolis).</li>
+<li><strong>Margin Resilience &amp; Leverage</strong>: EBITDA margins stable/high (Krsnaa 28%, Vijaya ~40%, Thyrocare 33%); Thyrocare +4-6% YoY via efficiencies. Debt-free balance sheets (Thyrocare ₹190Cr cash).</li>
+<li><strong>Premium/Wellness Mix Shift</strong>: High-value segments accelerating (Metropolis TruHealth/specialty +24-33%, Vijaya wellness +16-21%); rising RPP/RPT +2-11%.</li>
+<li><strong>Quality &amp; Recognition</strong>: Global accreditations (Krsnaa ACR/CAP firsts, Suraksha CAP/NABL) boost trust/volumes; awards (Krsnaa “Most Trusted”).</li>
+<li><strong>Capital Returns</strong>: Thyrocare 2:1 bonus + ₹7 dividend signals confidence.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-3" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Margin Pressure</strong>: EBITDA margins dipped in some (Suraksha 32.8% vs. 36.3%, Vijaya -0.6%); ARPT down (Suraksha -5.5-8.7%) due to pricing competition/mix.</li>
+<li><strong>Working Capital Strain</strong>: High receivables (Krsnaa 150+ days from govt norms); new centers drag short-term profitability.</li>
+<li><strong>Seasonal/External Factors</strong>: Lower vector-borne diseases (Metropolis); muted PAT growth in spots (Suraksha Q2 -13%, Vijaya Q2 +2.7%).</li>
+<li><strong>Expansion Costs</strong>: Investments in hubs/spokes/acquisitions (e.g., Vijaya/Metropolis) weigh on near-term margins.</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Geographic/Network Expansion</strong>: Tier 2/3 penetration (Metropolis North 19%, Suraksha/Vijaya 11-20 new centers); PPPs (Krsnaa Rajasthan mega-project Q4FY26 impact).</li>
+<li><strong>Inorganic &amp; Tech Plays</strong>: Acquisitions (Metropolis Core/DAPIC), genomics/AI (Suraksha Genomics, Metropolis), specialty labs (Dr Lal autoimmune/complement firsts).</li>
+<li><strong>Demand Tailwinds</strong>: Autoimmune surge (30% post-COVID rise, 70% women per Dr Lal); preventive/wellness boom.</li>
+<li><strong>Scalability</strong>: Franchises/partnerships (Thyrocare +20-35%), pan-India footprint (160+ centers for Vijaya); full-year ramps from H1 launches.</li>
+<li><strong>Outlook</strong>: 12-20% revenue growth sustainable; Rajasthan/flagship centers unlock FY27 upside (Krsnaa).</li>
+</ul>
+</div>
+<div id="key-risks-5" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Regulatory/Payment Delays</strong>: Govt norms/receivables (Krsnaa); SEBI compliance, policy shifts.</li>
+<li><strong>Competition &amp; Pricing</strong>: Organized shift fragments margins; unorganized players in Tier 2/3.</li>
+<li><strong>Macro/Economic</strong>: Slowdown, inflation, monsoon/seasonality impacting volumes.</li>
+<li><strong>Execution/Integration</strong>: New center ramps, acquisition synergies (Metropolis); bad debts (though low historically).</li>
+<li><strong>External (Safe Harbors)</strong>: Currency fluctuations, interest rates, litigation, political changes.</li>
+</ul>
+<p><strong>Net View</strong>: Tailwinds dominate with 15%+ sector growth potential; monitor receivables/margins for sustained profitability. Sector poised for consolidation via tech/specialization.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

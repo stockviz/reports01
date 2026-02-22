@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Tea &amp; Coffee</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Tea &amp; Coffee</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/TeaCoffee.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/TeaCoffee.fan.CAP_WT.png" /></p>
+<p><img src="plots/TeaCoffee.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/TeaCoffee.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/TeaCoffee.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/TeaCoffee.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/TeaCoffee.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-868415bc6263591c6632" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-868415bc6263591c6632">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["1.96%","1.25%"],["-0.53%","-0.09%"],["-2.34%","0.28%"],["-0.4%","3.38%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/TeaCoffee.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/TeaCoffee.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1f3727dfc81bff5b7ee5" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1f3727dfc81bff5b7ee5">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.TATACONSUM.html\" target=\"_blank\">TATACONSUM<\/a>","<a href=\"/reports02/eq-in/risk/in.CCL.html\" target=\"_blank\">CCL<\/a>","<a href=\"/reports02/eq-in/risk/in.MCLEODRUSS.html\" target=\"_blank\">MCLEODRUSS<\/a>","<a href=\"/reports02/eq-in/risk/in.UNITEDTEA.html\" target=\"_blank\">UNITEDTEA<\/a>","<a href=\"/reports02/eq-in/risk/in.PKTEA.html\" target=\"_blank\">PKTEA<\/a>","<a href=\"/reports02/eq-in/risk/in.JAYSREETEA.html\" target=\"_blank\">JAYSREETEA<\/a>","<a href=\"/reports02/eq-in/risk/in.GILLANDERS.html\" target=\"_blank\">GILLANDERS<\/a>","<a href=\"/reports02/eq-in/risk/in.ROSSELLIND.html\" target=\"_blank\">ROSSELLIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DTIL.html\" target=\"_blank\">DTIL<\/a>","<a href=\"/reports02/eq-in/risk/in.NORBTEAEXP.html\" target=\"_blank\">NORBTEAEXP<\/a>","<a href=\"/reports02/eq-in/risk/in.GANGESSECU.html\" target=\"_blank\">GANGESSECU<\/a>","<a href=\"/reports02/eq-in/risk/in.GROBTEA.html\" target=\"_blank\">GROBTEA<\/a>"],[0.9048793454003792,0.0835408640178518,0.004888062294547004,0.001304365728810626,0.0008559105819409299,0.001386107528795908,0.0007214671809217039,0.0004782993660953882,0.0005489758852351759,0.0006296355522028516,0.000516466995013717,0.0002504994682057066],[0.8827179325072161,0.1013302817513835,0.003377277279073581,0.001915674434734169,0.001851869745795064,0.001832544287126008,0.001584994364174772,0.001258148710017965,0.00115231881730647,0.001097870104389686,0.001024939504412416,0.0008561484943703866]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":12,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-68f89766f6b0935a0a9c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-68f89766f6b0935a0a9c">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.TATACONSUM.html\" target=\"_blank\">TATACONSUM<\/a>","<a href=\"/reports02/eq-in/risk/in.CCL.html\" target=\"_blank\">CCL<\/a>","<a href=\"/reports02/eq-in/risk/in.MCLEODRUSS.html\" target=\"_blank\">MCLEODRUSS<\/a>","<a href=\"/reports02/eq-in/risk/in.UNITEDTEA.html\" target=\"_blank\">UNITEDTEA<\/a>","<a href=\"/reports02/eq-in/risk/in.PKTEA.html\" target=\"_blank\">PKTEA<\/a>","<a href=\"/reports02/eq-in/risk/in.JAYSREETEA.html\" target=\"_blank\">JAYSREETEA<\/a>","<a href=\"/reports02/eq-in/risk/in.GILLANDERS.html\" target=\"_blank\">GILLANDERS<\/a>","<a href=\"/reports02/eq-in/risk/in.ROSSELLIND.html\" target=\"_blank\">ROSSELLIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DTIL.html\" target=\"_blank\">DTIL<\/a>","<a href=\"/reports02/eq-in/risk/in.NORBTEAEXP.html\" target=\"_blank\">NORBTEAEXP<\/a>","<a href=\"/reports02/eq-in/risk/in.GANGESSECU.html\" target=\"_blank\">GANGESSECU<\/a>","<a href=\"/reports02/eq-in/risk/in.GROBTEA.html\" target=\"_blank\">GROBTEA<\/a>"],[87.11509231171169,18.33587323281499,-0.09565481273189863,1.269923312651611,0.4294769090955665,0.02081940718560154,-0.513006221419479,0.01234778953515539,-2.919000883395816,-0.006019896548665624,-0.2280885738995065,-0.8835629284670117],[82.01734249198505,13.8950148644592,null,0.8387849866118491,0.1008407795419715,0.008176168318405426,0.2967843368782153,0.007751071131782793,-1.288380024143049,-0.002569096698143854,0.0279281700443445,0.02431432748483472],[80.82484255959059,17.60491200340919,-0.1019436749880967,2.087745165744622,0.2423018292652667,0.0003890676901952441,0.4874184441667418,0.007122320777655798,-1.574541061906267,0.001250574718484713,0.1147948189999539,0.3057079525316774]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":12,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e768809635a40b600ce1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e768809635a40b600ce1">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.TATACONSUM.html\" target=\"_blank\">TATACONSUM<\/a>","<a href=\"/reports02/eq-in/risk/in.CCL.html\" target=\"_blank\">CCL<\/a>","<a href=\"/reports02/eq-in/risk/in.MCLEODRUSS.html\" target=\"_blank\">MCLEODRUSS<\/a>","<a href=\"/reports02/eq-in/risk/in.UNITEDTEA.html\" target=\"_blank\">UNITEDTEA<\/a>","<a href=\"/reports02/eq-in/risk/in.PKTEA.html\" target=\"_blank\">PKTEA<\/a>","<a href=\"/reports02/eq-in/risk/in.JAYSREETEA.html\" target=\"_blank\">JAYSREETEA<\/a>","<a href=\"/reports02/eq-in/risk/in.GILLANDERS.html\" target=\"_blank\">GILLANDERS<\/a>","<a href=\"/reports02/eq-in/risk/in.ROSSELLIND.html\" target=\"_blank\">ROSSELLIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DTIL.html\" target=\"_blank\">DTIL<\/a>","<a href=\"/reports02/eq-in/risk/in.NORBTEAEXP.html\" target=\"_blank\">NORBTEAEXP<\/a>","<a href=\"/reports02/eq-in/risk/in.GANGESSECU.html\" target=\"_blank\">GANGESSECU<\/a>","<a href=\"/reports02/eq-in/risk/in.GROBTEA.html\" target=\"_blank\">GROBTEA<\/a>"],[79.9704171174124,16.09293581792839,0.06910328064741533,0.2070010308080137,0.200300435508446,0.06427074958685415,1.44944204100655,0.01451328671578907,1.385947605506638,0.01177074111103669,0.05139607013390853,0.03111835824903857],[71.90247091497717,21.90306005881221,null,0.3286495264726852,0.2702404051996333,0.05662861224609285,2.358871134636551,0.01299347873423928,2.359442547041424,0.02488603132698398,0.1481386941726831,0.2828194814815211],[65.08218761453644,26.65417068540089,0.06671441096851473,0.903175817556315,0.3588631316715352,0.05987264635583635,2.826196440648606,0.01430652023901604,3.246796606083836,0.04421336434688723,0.1528175338521427,0.590685228339996]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":12,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="indian-tea-coffee-sector-analysis" class="section level9">
+<p class="heading">Indian Tea &amp; Coffee Sector Analysis</p>
+<p><strong>Based on inputs from Tata Consumer Products Ltd. (investor meets schedule) and CCL Products (India) Ltd. (Q2 FY26 Earnings Transcript).</strong><br />
+Tata’s update signals ongoing investor engagement amid sector stability (no UPSI shared), while CCL’s results highlight robust coffee demand and branded growth. Tea mentions are limited (Tata’s core; CCL’s iced tea trials), but coffee drives insights. Sector trends: Strong branded/domestic momentum offsets commodity volatility.</p>
+<div id="tailwinds" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Robust Branded Demand</strong>: CCL’s domestic sales hit INR310cr (H1; branded INR210cr, +40-50% YoY with 25-30% volume-led). Double-digit market share in e-com/modern trade; #2 in South states. Tata’s investor meets suggest confidence in consumer staples.</li>
+<li><strong>Operational Efficiencies</strong>: CCL EBITDA/kg up ~INR10-12 to INR130/kg (H1); better yields, receivables, inventory use. Debt reduction ahead of guidance (net ~INR1,250cr).</li>
+<li><strong>Distribution Expansion</strong>: CCL at 1.3-1.4L outlets, targeting 2x in 3yrs via multi-SKU (small packs, flavors).</li>
+<li><strong>Demand Resilience</strong>: Global coffee demand strong despite volatility; CCL volumes +20% Q2 (+15% H1 blended).</li>
+</ul>
+</div>
+<div id="headwinds" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Green Coffee Volatility</strong>: Prices softened post-Brazil but rebounded; Vietnam crop uncertainty (flooding risks, Dec clarity). Speculation drives swings (~$100/2 days).</li>
+<li><strong>Input Cost Pressure</strong>: 60-70% costs tied to coffee; elevated prices cap long-term contracts, buyer tentativeness.</li>
+<li><strong>Seasonal/External Factors</strong>: H2 procurement spikes debt; India tariffs high (US mitigated via Vietnam ops).</li>
+<li><strong>Limited Tea Visibility</strong>: Inputs focus coffee; tea growth muted (in-home low single-digits per CCL).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Domestic Branded Surge</strong>: CCL targets INR420-430cr FY26 (5-6% EBITDA margins, self-funding expansions). Category out-of-home &gt; in-home; 10-20% long-term volume growth.</li>
+<li><strong>FMCG Diversification</strong>: CCL vision: Pure coffee → FMCG (iced tea, snacks test-launched; complements distribution). Tata’s Tata Coffee synergies implied.</li>
+<li><strong>Capacity Ramp</strong>: CCL blended 65-70% util. (new FD/SD at 15-20%); full ramp in 3yrs supports 15-20% EBITDA CAGR (upper-end likely).</li>
+<li><strong>Intl./Exports</strong>: Vietnam/India ops buffer tariffs; Europe/US growth despite Brazil competition.</li>
+<li><strong>Overall Sector</strong>: 44% H1 revenue growth (CCL); investor forums (Tata) signal M&amp;A/capex potential.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="19%" />
+<col width="41%" />
+<col width="38%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk</th>
+<th>Description</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Commodity Volatility</strong></td>
+<td>Vietnam/Brazil crop failure → cost spikes, margin erosion (EBITDA/kg vulnerable).</td>
+<td>Short-term contracts, hedging via Vietnam (36-37KT capex).</td>
+</tr>
+<tr class="even">
+<td><strong>Debt &amp; WC Cycle</strong></td>
+<td>H2 harvest procurement → debt to INR1,300-1,400cr FY26-end.</td>
+<td>Efficiencies (receivables down); INR1,200cr target by Mar’26.</td>
+</tr>
+<tr class="odd">
+<td><strong>Competition/Execution</strong></td>
+<td>Branded wars (#1/#2 pricing aggression); FMCG scaling (test mkt failure).</td>
+<td>Market share gains; calibrated launches.</td>
+</tr>
+<tr class="even">
+<td><strong>Geopolitical/Regulatory</strong></td>
+<td>US/EU tariffs; India private label shifts.</td>
+<td>Diversified ops (India 40KT, Vietnam); 80% India private label share.</td>
+</tr>
+<tr class="odd">
+<td><strong>Macro</strong></td>
+<td>Demand slowdown if prices stay high; base effects in H2.</td>
+<td>Robust category demand; 15-20% vol. guidance.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Summary</strong>: Indian tea/coffee sector enjoys <strong>strong tailwinds</strong> from branded coffee acceleration (volumes/margins up) and FMCG pivot, driving <strong>20%+ growth prospects</strong> (upper-end FY26). <strong>Headwinds</strong> center on coffee volatility, but manageable via ops diversification. <strong>Key risks</strong> are commodity-driven (high probability, medium impact); focus on debt discipline and execution for sustained 15-20% EBITDA growth. Tata/CCL exemplify resilience; monitor Vietnam crop (Dec’25). <strong>Bullish outlook</strong> with volatility as primary watchpoint.</p>
+</div>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3><strong>Financial</strong></h3>
+<p><em>asof: 2025-12-02 </em></p>
+</div>
+<div id="indian-tea-coffee-sector-analysis-q3-9m-fy25-insights-from-filings" class="section level3">
+<h3>Indian Tea &amp; Coffee Sector Analysis (Q3 &amp; 9M FY25 Insights from Filings)</h3>
+<p>The provided filings cover ~12 listed tea/tea-focused companies (e.g., Tata Consumer Products, McLeod Russel, Jay Shree Tea, Rossell India, Dhunseri Tea, etc.) for Q3/9M ended Dec 31, 2024. These represent a mix of large integrated players (e.g., Tata Consumer) and smaller/niche firms. Overall sector shows <strong>resilient revenue growth amid cost pressures</strong>, with branded/international segments outperforming, but <strong>stressed balance sheets in mid/small-caps</strong>. Tata Consumer (market leader) drives positivity; McLeod Russel highlights distress.</p>
+<div id="tailwinds-positive-drivers" class="section level6">
+<h6><strong>Tailwinds (Positive Drivers)</strong></h6>
+<ul>
+<li><strong>Revenue Momentum</strong>: Aggregate YoY growth ~15-20% (e.g., Tata Consumer +17% consolidated, +22% standalone; Rossell +21%; Dhunseri +17%). Ex-acquisitions: 8-12% organic (Tata). Non-branded/plantations and international ops (e.g., Tata’s 4% intl growth) resilient.</li>
+<li><strong>Profitability Boost</strong>: Strong other income (dividends from subs, asset sales). Tata PAT +6% despite costs; United Nilgiri EPS ₹29; Rossell PAT ₹41 Cr (9M).</li>
+<li><strong>Strategic Wins</strong>: Acquisitions/amalgamations (Tata integrated Soulfull, Capital Foods); asset monetization (Jay Shree ₹55 Cr gain; Dhunseri ₹15 Cr exceptional). Dividend payouts signal confidence (e.g., United Nilgiri 10%).</li>
+<li><strong>Operational Efficiency</strong>: Inventory optimization, cost rationalization (e.g., Gillanders tea segment profit turnaround).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>Input Cost Inflation</strong>: Tea leaf prices up sharply (Tata: “impacted by tea cost inflation”; Rossell green leaf costs high). Power/fuel, employee expenses ~40-50% of costs.</li>
+<li><strong>Seasonality &amp; Weather</strong>: Q3 crop losses (Dhunseri, Gillanders); seasonal losses common (Peria Karamalai -₹3 Cr Q3 loss).</li>
+<li><strong>Distressed Peers</strong>: McLeod Russel severe (₹92 Cr Q3 loss; adverse audit on ICDs ₹2,860 Cr doubtful, debt ₹1,500 Cr default, going concern risk). High finance costs (10-20% of expenses).</li>
+<li><strong>Margin Pressure</strong>: EBITDA margins 8-13% (Tata 9.6%; others volatile); forex losses (Dhunseri ₹34 Cr 9M).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>High (15-20% CAGR 2-3 Yrs)</strong>:
+<ul>
+<li><strong>Branded/Processed Tea</strong>: Tata India branded +10%; premiumization (organic, ready-to-drink).</li>
+<li><strong>Intl/Non-Branded</strong>: Tata intl +4%, non-branded +8%; exports resilient.</li>
+<li><strong>Diversification</strong>: Coffee/fertilizers (Jay Shree); asset sales for deleveraging (Dhunseri plans tea estate sales).</li>
+<li><strong>M&amp;A/Expansion</strong>: Tata’s Soulfull/Capital Foods integration; Rossell acquired estate (+7 Mn Kg capacity).</li>
+<li><strong>Volume Drivers</strong>: Good monsoon outlook; capacity adds (Rossell to 7 Mn Kg).</li>
+</ul></li>
+<li><strong>Sector Tailwind</strong>: Rising domestic consumption (health beverages); exports to Middle East/Africa.</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Details</strong></th>
+<th><strong>Impact Level</strong></th>
+<th><strong>Mitigants</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Financial Distress</strong></td>
+<td>High debt (McLeod ₹1,500 Cr, ARC assignment); ICD recoverability (₹2,860 Cr doubtful).</td>
+<td><strong>High</strong> (sector contagion)</td>
+<td>Tata deleveraged (D/E 0.12); asset sales.</td>
+</tr>
+<tr class="even">
+<td><strong>Commodity Volatility</strong></td>
+<td>Tea prices +20-30% YoY; weather (crop losses).</td>
+<td><strong>High</strong></td>
+<td>Hedging; diversification (branded 70-80% revenue).</td>
+</tr>
+<tr class="odd">
+<td><strong>Operational</strong></td>
+<td>Seasonality (Q3 weak); labor costs (40% expenses).</td>
+<td><strong>Medium</strong></td>
+<td>Efficiency drives; mechanization.</td>
+</tr>
+<tr class="even">
+<td><strong>Regulatory/Audit</strong></td>
+<td>Adverse opinions (McLeod: going concern); tax disputes.</td>
+<td><strong>Medium</strong></td>
+<td>Strong governance in leaders (Tata clean audit).</td>
+</tr>
+<tr class="odd">
+<td><strong>Forex/Geo</strong></td>
+<td>Export exposure (40% revenue); currency swings.</td>
+<td><strong>Medium</strong></td>
+<td>Natural hedge via exports.</td>
+</tr>
+<tr class="even">
+<td><strong>M&amp;A Integration</strong></td>
+<td>Post-merger costs (Tata exceptional ₹50 Cr).</td>
+<td><strong>Low</strong></td>
+<td>Proven track record.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Sector Outlook</strong>: <strong>Moderately Positive</strong>. Leaders (Tata ~60% mcap) buoyed by branding/export growth; midcaps vulnerable (McLeod-like risks). Expect 10-15% revenue CAGR FY25-27, margins stabilizing at 10-12%. Watch debt resolution, tea auctions, monsoons. Investors: Favor Tata/Rossell; avoid distressed (McLeod).</p>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="summary-analysis-indian-tea-coffee-sector-based-on-provided-announcements" class="section level9">
+<p class="heading">Summary Analysis: Indian Tea &amp; Coffee Sector (Based on Provided Announcements)</p>
+<p>The provided documents are regulatory filings (under SEBI LODR Reg. 30) from key listed players like Tata Consumer Products, CCL Products, Dhunseri Tea, Grob Tea, Rossell India, Jay Shree Tea, McLeod Russel, Norben Tea, and others (dated Aug-Nov 2025). They highlight compliance, governance, sustainability, capital actions, and strategic shifts. Overall, the sector shows resilience amid sustainability focus but faces funding and asset optimization pressures. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-catalysts" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Catalysts)</strong></p>
+<ul>
+<li><strong>Sustainability &amp; ESG Momentum</strong>: Tata Consumer’s unsolicited “Strong” ESG rating (62/100) signals improving governance and environmental credentials, aiding investor appeal and access to green financing.</li>
+<li><strong>Cost Optimization via Renewables</strong>: CCL Products’ 26% stake acquisition in Mukkonda Renewables (Rs. 12.12 Cr) secures 10 MW captive wind-solar power (7.9 MW for parent, 2.1 MW for subsidiary), reducing energy costs, enhancing stability, and aligning with green mandates.</li>
+<li><strong>Shareholder Confidence</strong>: Rossell India’s AGM saw near-unanimous approvals (99.99%+ for key resolutions like financials, dividend, director reappointment); strong promoter/institutional support (77%+ poll turnout).</li>
+<li><strong>Dividend Continuity</strong>: Jay Shree Tea’s 10% dividend (Rs. 0.50/share) recommendation reflects stable cash flows.</li>
+<li><strong>Capital Infusion Success</strong>: Norben Tea’s preferential warrant conversion (15.5L shares) and Ganges Securities’ rights allotment in Morton Foods (19.68% stake) indicate successful fundraising without dilution concerns.</li>
+</ul>
+</div>
+<div id="headwinds-challenges-pressures" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges &amp; Pressures)</strong></p>
+<ul>
+<li><strong>Asset Monetization</strong>: Dhunseri Tea’s MoU to sell Balijan (North) Tea Estate (Rs. 35 Cr; ~10% of FY25 turnover) suggests underperforming assets or portfolio rationalization amid volatile tea prices/operations.</li>
+<li><strong>Funding Squeeze</strong>: Grob Tea’s postal ballot seeks 25% hike in borrowing (Rs. 200→250 Cr), loans/investments (Rs. 250 Cr over Section 186 limits), mortgages, and donations (Rs. 1 Cr cap), implying tight liquidity or capex needs.</li>
+<li><strong>Compliance Burden</strong>: Routine filings (e.g., McLeod Russel, Gillanders, Peria Karamalai on KYC/AGM notices) highlight ongoing regulatory scrutiny, physical-to-demat shifts, and e-governance mandates, increasing admin costs for smaller players.</li>
+<li><strong>Energy Transition Costs</strong>: CCL’s renewables push indirectly flags rising fossil fuel expenses, a sector-wide issue amid climate volatility.</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High (Medium-Term)</strong>: Renewables adoption (e.g., CCL) could cut costs 10-20% via captive green energy, boosting margins in a high-input sector. ESG strength (Tata) positions firms for premium pricing/export growth.</li>
+<li><strong>Strategic Expansions</strong>: Borrowing hikes (Grob) enable capex/ventures; equity infusions (Norben, Ganges) fund working capital or M&amp;A. Dividend payouts signal cash-rich balance sheets for reinvestment.</li>
+<li><strong>Sector Tail</strong>: Tea exports/domestic demand recovery post-FY25, with renewables/ESG aiding premiumization (e.g., organic/sustainable teas). Potential for 8-12% CAGR if input costs stabilize (fertilizers, energy).</li>
+<li><strong>Upside Catalysts</strong>: Strong AGM outcomes (Rossell) and fundraising suggest M&amp;A/diversification (e.g., CCL’s associate model).</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="18%" />
+<col width="16%" />
+<col width="32%" />
+<col width="31%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Severity (Low/Med/High)</th>
+<th>Mitigation from Filings</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Debt/Liquidity</strong></td>
+<td>Borrowing spikes (Grob: +25%) could elevate interest burdens if tea prices crash (cyclical crop).</td>
+<td>High</td>
+<td>Shareholder approvals via postal ballot.</td>
+</tr>
+<tr class="even">
+<td><strong>Operational/Asset</strong></td>
+<td>Estate sales (Dhunseri) risk revenue gaps; climate impacts on yields unmentioned but implicit.</td>
+<td>Medium</td>
+<td>Renewables for energy security (CCL).</td>
+</tr>
+<tr class="odd">
+<td><strong>Regulatory/Compliance</strong></td>
+<td>KYC/AGM delays (multiple firms); postal ballots for limits signal governance scrutiny.</td>
+<td>Medium</td>
+<td>E-voting/VC adoption (Rossell, Peria).</td>
+</tr>
+<tr class="even">
+<td><strong>Market/Execution</strong></td>
+<td>Preferential issues (Norben) lock-ins till Jun-2026 limit liquidity; renewables rollout delays.</td>
+<td>Medium</td>
+<td>Phased investments (CCL: 30-40-30%).</td>
+</tr>
+<tr class="odd">
+<td><strong>ESG/Reputational</strong></td>
+<td>Unsolicited ratings (Tata) positive, but gaps could hurt exports (EU green norms).</td>
+<td>Low</td>
+<td>Proactive renewables/ESG disclosures.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: <strong>Moderately Positive</strong>. Tailwinds from sustainability and capital access outweigh headwinds, with growth tied to cost efficiencies (renewables) and strategic funding. Risks center on debt and cyclicality—monitor Q3FY26 earnings for tea price trends. Sector PE likely compresses if borrowings rise, but ESG leaders (Tata, CCL) offer premium upside. Recommendation: Focus on renewables-integrated firms for long-term bets.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="indian-tea-coffee-sector-analysis-1" class="section level9">
+<p class="heading">Indian Tea &amp; Coffee Sector Analysis</p>
+<p><strong>Based on inputs from Tata Consumer Products Ltd. (TATACONSUM) investor meet intimation and CCL Products (India) Ltd. Q2 FY26 Earnings Transcript (Nov 2025).</strong><br />
+The documents highlight robust coffee demand (especially branded domestic), price volatility, and strategic expansions. Tea is indirectly referenced via Tata’s FMCG/consumer focus, but coffee dominates CCL’s insights. Overall sector shows resilience amid volatility.</p>
+<div id="tailwinds-1" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Strong Domestic Branded Demand</strong>: CCL’s India branded coffee grew ~40-50% YoY (H1 INR 210 Cr, Q2 INR 110 Cr), with 25-30% volume-led growth. Market share gains in e-com/modern trade (double-digit pan-India), South (#2 in AP/Telangana), North/Northeast/West via sachets/flavors. Tata’s investor forums (Avendus, CLSA, Goldman Sachs) signal confidence in consumer staples.</li>
+<li><strong>Volume &amp; Revenue Momentum</strong>: CCL Q2 volumes +20%+, H1 blended ~15%; group revenue +52.7% QoQ (INR 1,128 Cr). Category out-of-home growth &gt; in-home; private labels ~80% India share.</li>
+<li><strong>Operational Efficiencies</strong>: CCL EBITDA/kg up ~INR 10-12 to ~INR 130 (freeze-dried mix, small packs, domestic profitability). Receivables/inventory down; net debt ahead of guidance (target INR 1,200 Cr by Mar’26). Capacity utilization 65-70% (old 100%, new 15-20%).</li>
+<li><strong>Diversification</strong>: CCL shifting to FMCG (iced tea, snacks test-launches; 1.3-1.4L outlets, target double in 3 yrs). Green energy (26% stake in Mukkonda Renewables) for cost savings.</li>
+<li><strong>Global Positioning</strong>: Vietnam ops mitigate US tariffs; robust export demand (Europe/US/CIS).</li>
+</ul>
+</div>
+<div id="headwinds-1" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Green Coffee Price Volatility</strong>: CCL notes persistent fluctuations (post-Brazil softening, pre-Vietnam harvest spikes; ~$100 swings bi-daily). Conflicting Vietnam reports (flooding risks); speculative trading amplifies uncertainty till Dec’25 crop flow.</li>
+<li><strong>Input Cost Pressure</strong>: 60-70% costs tied to green coffee; H1 EBITDA growth (33.7%) lagged revenue (44.5%) due to volatility.</li>
+<li><strong>Seasonal/Procurement Needs</strong>: H2 harvesting ramps procurement/debt (gross debt INR 1,500-1,600 Cr currently).</li>
+<li><strong>Branded Investment Phase</strong>: CCL B2C EBITDA 5-6% (reinvesting in marketing/distribution); non-branded (private label/bulk) grew faster H1, distorting mix (branded &lt;50% of domestic).</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High Teens EBITDA/Volume Growth</strong>: CCL guides 15-20% long-term (upper end likely FY26); FY26 revenue ~INR 4,000 Cr if prices hold (H1 INR 2,186 Cr). Domestic target INR 420-430 Cr (profitable).</li>
+<li><strong>Branded Acceleration</strong>: 10-20% volume trajectory; pan-India penetration (South sachets, North e-com). Tata’s events suggest sector tailwinds from consumer recovery.</li>
+<li><strong>Capacity Ramp &amp; Mix Shift</strong>: 77K MT total (India 40K, Vietnam 36-37K); new FD/SD to drive EBITDA/kg higher by FY27-28 via utilization (target 80-85% before next capex).</li>
+<li><strong>FMCG Evolution</strong>: Adjacencies (tea institutional, snacks) self-funded via B2C accruals; 30-40% growth in UK brands. Distribution to 2-3L outlets aids multi-category scale.</li>
+<li><strong>Export Resilience</strong>: Tariff hopes post-deal; Vietnam diversion sustains US/Europe growth.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="28%" />
+<col width="25%" />
+<col width="46%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Mitigation (from Docs)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Commodity Supply/Price</strong></td>
+<td>Vietnam crop failure/flooding; Brazil competition in Europe.</td>
+<td>Diversified sourcing (India/Vietnam); short-term contracts; wait-and-watch till Dec.</td>
+</tr>
+<tr class="even">
+<td><strong>Margin Compression</strong></td>
+<td>Volatility erodes EBITDA/kg; SD vs FD mix shifts; depreciation/interest peak.</td>
+<td>Cost-plus pricing; efficiencies (yields, energy, WC); tax ~17%.</td>
+</tr>
+<tr class="odd">
+<td><strong>Execution in Branded/FMCG</strong></td>
+<td>Test-launches fail; high marketing spends slow profitability.</td>
+<td>Calibrated (micro-test markets); internal funding; proven coffee momentum.</td>
+</tr>
+<tr class="even">
+<td><strong>Debt &amp; Capex</strong></td>
+<td>H2 procurement spikes debt; renewable capex payback 2-3 yrs.</td>
+<td>WC improvements; guidance met early; no near-term capex.</td>
+</tr>
+<tr class="odd">
+<td><strong>External/Macro</strong></td>
+<td>Tariffs (US high); competition (#1/#2 players); tentative buyer sentiment.</td>
+<td>Vietnam ops; competitive pricing/SKUs; strong relationships.</td>
+</tr>
+<tr class="even">
+<td><strong>Regulatory</strong></td>
+<td>No UPSI shared (Tata/CCL compliant); agri policy shifts.</td>
+<td>SEBI LODR adherence.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Summary</strong>: Indian Tea &amp; Coffee sector enjoys <strong>strong tailwinds</strong> from domestic branded surge (volumes &gt; prices) and efficiencies, positioning for 15-20%+ growth (CCL FY26 upper-end likely). <strong>Headwinds</strong> center on coffee volatility, but mitigated by diversification. <strong>Prospects</strong> bright via FMCG pivot and capacity ramps; <strong>risks</strong> moderate (commodity-led), with debt trajectory improving. Tata’s engagement reinforces sector optimism; monitor Vietnam crop for Q3 clarity. Overall: <strong>Positive outlook</strong> with volatility as key watchpoint.</p>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-11-30 </em></p>
+<div id="indian-tea-coffee-sector-analysis-2" class="section level9">
+<p class="heading">Indian Tea &amp; Coffee Sector Analysis</p>
+<p><strong>Based on Tata Consumer Products Ltd. (major player in tea/coffee with brands like Tata Tea, Tetley, Eight O’Clock Coffee) Q2 FY26 results (ended Sep 30, 2025) and United Nilgiri Tea Estates Co. Ltd. (smaller tea producer) AGM notice.</strong></p>
+<div id="tailwinds-positive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Robust Demand &amp; Revenue Growth</strong>: Tata Consumer reported 18% YoY revenue growth to ₹4,966 Cr, driven by double-digit growth in India tea/salt, 56% surge in coffee, 19% in foods (Tata Sampann +40%), and 25% in RTD beverages. Growth businesses up 27%; international ops +9% (CC) led by US coffee.</li>
+<li><strong>Innovation &amp; Portfolio Expansion</strong>: 25 new product launches (e.g., Tata Tea Agni energy tea, Tata Sampann gravies/millets, Capital Foods Korean variants) focusing on health, wellness, convenience, premiumization.</li>
+<li><strong>Channel Expansion</strong>: Tata Starbucks added 7 stores (total 492 across 80 cities), with experiential formats and regional menus boosting accessibility.</li>
+<li><strong>Market Leadership</strong>: Retained share in key segments (e.g., Tetley in Canada, Eight O’Clock in US bags/K-Cups).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Weather &amp; Seasonality</strong>: Unseasonal rains hampered RTD growth despite 25% rise.</li>
+<li><strong>Competitive Intensity</strong>: Heightened rivalry in beverages/RTD; GST transition caused short-term disruptions for Capital Foods/Organic India.</li>
+<li><strong>Margin Pressure</strong>: EBITDA up only 7% (to ₹675 Cr) vs. 18% revenue growth, signaling cost headwinds (e.g., input/commodity costs).</li>
+<li><strong>Routine Compliance (Sector Echo)</strong>: United Nilgiri’s AGM/book closure notice indicates standard governance but no growth signals; smaller players may lag in innovation/scale.</li>
+</ul>
+</div>
+<div id="growth-prospects-4" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>India Core Acceleration</strong>: 2nd straight quarter of double-digit tea growth; coffee/RTD/foods poised for sustained momentum via innovation (health-focused, regional blends).</li>
+<li><strong>International Leverage</strong>: Steady 9% CC growth; US coffee gaining share for 4th quarter.</li>
+<li><strong>Diversification</strong>: Foods/RTD/non-core (26% CC growth) outpacing legacy tea; Starbucks expansion into Tier-2/3 cities enhances premium coffee footprint.</li>
+<li><strong>Scale Advantage</strong>: Tata’s reach (275M households) and ₹17,618 Cr annual turnover position it to capture premiumization trends; sector tailwinds from rising disposable incomes/urbanization.</li>
+</ul>
+</div>
+<div id="key-risks-4" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Commodity/External Volatility</strong> (per Tata disclaimer): Input cost fluctuations, climatic issues (e.g., rains), currency swings, supply chain disruptions.</li>
+<li><strong>Macro/Regulatory</strong>: Economic slowdowns, pricing pressures, competition, GST/tax changes, political instability.</li>
+<li><strong>Operational</strong>: Earnings volatility, customer/trade shifts, litigation; smaller peers like United Nilgiri vulnerable to tea price cycles (no data but implied via routine AGM).</li>
+<li><strong>Execution</strong>: Over-reliance on innovation success amid competition; international exposure to US/Canada market dynamics.</li>
+</ul>
+<p><strong>Summary</strong>: Strong tailwinds from Tata’s 18% growth, innovation (25 launches), and diversification signal bright prospects for premium tea/coffee segments, but headwinds like weather, competition, and costs cap margins. Risks center on commodities/climate; large players like Tata resilient, smaller ones (e.g., United Nilgiri) face scale challenges. Overall outlook <strong>positive</strong> for FY26 with focus on growth categories.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

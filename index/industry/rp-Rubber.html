@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Rubber</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Rubber</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Rubber.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Rubber.fan.CAP_WT.png" /></p>
+<p><img src="plots/Rubber.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Rubber.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Rubber.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Rubber.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Rubber.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-0f080ad496f044d80b91" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0f080ad496f044d80b91">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["1.62%","3.52%"],["0.94%","3.65%"],["-5.04%","-1.27%"],["-8.17%","-5.35%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Rubber.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Rubber.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-56cbfd52ebbd452d5bde" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-56cbfd52ebbd452d5bde">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.PIXTRANS.html\" target=\"_blank\">PIXTRANS<\/a>","<a href=\"/reports02/eq-in/risk/in.APCOTEXIND.html\" target=\"_blank\">APCOTEXIND<\/a>","<a href=\"/reports02/eq-in/risk/in.TINNARUBR.html\" target=\"_blank\">TINNARUBR<\/a>","<a href=\"/reports02/eq-in/risk/in.GRPLTD.html\" target=\"_blank\">GRPLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.RUBFILA.html\" target=\"_blank\">RUBFILA<\/a>","<a href=\"/reports02/eq-in/risk/in.HARRMALAYA.html\" target=\"_blank\">HARRMALAYA<\/a>","<a href=\"/reports02/eq-in/risk/in.ELGIRUBCO.html\" target=\"_blank\">ELGIRUBCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SAMPANN.html\" target=\"_blank\">SAMPANN<\/a>"],[0.2396872709338416,0.2761267333343978,0.1319094081529841,0.2028086157461153,0.04961449462248368,0.0516420258123749,0.02112017476031939,0.02709127663748321],[0.2850640021516508,0.2625892522878185,0.174144509303322,0.1332726041597682,0.05055703699298686,0.04651593397459376,0.0264766582375655,0.02138000289229447]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-b0ff9300ee568cd63b15" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b0ff9300ee568cd63b15">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.PIXTRANS.html\" target=\"_blank\">PIXTRANS<\/a>","<a href=\"/reports02/eq-in/risk/in.APCOTEXIND.html\" target=\"_blank\">APCOTEXIND<\/a>","<a href=\"/reports02/eq-in/risk/in.TINNARUBR.html\" target=\"_blank\">TINNARUBR<\/a>","<a href=\"/reports02/eq-in/risk/in.GRPLTD.html\" target=\"_blank\">GRPLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.RUBFILA.html\" target=\"_blank\">RUBFILA<\/a>","<a href=\"/reports02/eq-in/risk/in.HARRMALAYA.html\" target=\"_blank\">HARRMALAYA<\/a>","<a href=\"/reports02/eq-in/risk/in.ELGIRUBCO.html\" target=\"_blank\">ELGIRUBCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SAMPANN.html\" target=\"_blank\">SAMPANN<\/a>"],[20.47378225936414,38.49462428903502,9.338705097804484,8.902749269056335,6.263919085879166,3.469956028270829,-0.6017656222421744,1.901453799933216],[21.68432837388304,41.60470659811223,10.30964225473198,7.099906892782205,6.250958987233173,3.889216376357695,-1.842659468515806,1.933242065986066],[29.22911486953002,45.96833744042323,13.04047273657873,7.034568267198945,null,5.110780451541604,-8.671996679147266,2.037763926641561]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-6fb07a6c01c4c2587162" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-6fb07a6c01c4c2587162">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.PIXTRANS.html\" target=\"_blank\">PIXTRANS<\/a>","<a href=\"/reports02/eq-in/risk/in.APCOTEXIND.html\" target=\"_blank\">APCOTEXIND<\/a>","<a href=\"/reports02/eq-in/risk/in.TINNARUBR.html\" target=\"_blank\">TINNARUBR<\/a>","<a href=\"/reports02/eq-in/risk/in.GRPLTD.html\" target=\"_blank\">GRPLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.RUBFILA.html\" target=\"_blank\">RUBFILA<\/a>","<a href=\"/reports02/eq-in/risk/in.HARRMALAYA.html\" target=\"_blank\">HARRMALAYA<\/a>","<a href=\"/reports02/eq-in/risk/in.ELGIRUBCO.html\" target=\"_blank\">ELGIRUBCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SAMPANN.html\" target=\"_blank\">SAMPANN<\/a>"],[7.787482569490177,48.62268188050663,3.892548685063064,7.795349053941746,8.023587672672541,6.959041629641415,5.021561773511601,2.036552215334126],[8.252658470102167,47.58891509557788,5.117429127252842,8.13835987221956,7.831893751282483,7.577872680257594,5.419663805211797,2.144938746211119],[10.11521025716451,49.15270337844528,4.878928391810237,9.721741319908073,null,9.325116799521894,6.656680563680146,2.317725538187379]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="indian-rubber-industry-analysis-based-on-apcotex-grp-and-tinna-documents" class="section level9">
+<p class="heading">Indian Rubber Industry Analysis (Based on Apcotex, GRP, and Tinna Documents)</p>
+<p>The provided documents from Apcotex Industries (synthetic latex, nitrile rubber), GRP Limited (reclaim rubber, plastics recycling, pyrolysis), and Tinna Rubber (investor meet intimation) offer insights into the Indian rubber sector’s Q2/H1 FY26 performance. The industry shows resilience amid global headwinds, driven by domestic volume growth and expansions, but faces pricing/export pressures. Below is a structured summary of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="headwinds" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>US Tariffs &amp; Export Disruptions</strong>: Severe impact across players—GRP reports 29% YoY export decline to North America, 5% volume loss (INR 62 Cr revenue, INR 38 Cr margin hit), affecting Thailand/Brazil; Apcotex notes indirect hits to customers in tires, textiles, carpets. Overall, Western markets (US/Europe) down 10%, shifting demand dynamics.</li>
+<li><strong>Raw Material &amp; Realization Pressure</strong>: 3-15% sequential price declines (Apcotex/GRP), leading to 4% revenue drop despite volume gains; virgin polymer prices down 45% (GRP plastics), eroding margins.</li>
+<li><strong>Global Volatility &amp; Competition</strong>: Geopolitical tensions, overcapacity (post-COVID additions in Asia), Chinese low-cost imports in plastics; subdued truck/bus OE demand in NA/Latin America.</li>
+<li><strong>Segment-Specific Weakness</strong>: GRP non-reclaim at 40% utilization; nitrile latex margins still challenged (Apcotex); butyl rubber costs elevated.</li>
+</ul>
+</div>
+<div id="tailwinds" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Domestic Volume Surge</strong>: Apcotex +18% H1 volumes (highest ever); GRP reclaim domestic +20% YoY (+6% Q-o-Q), driven by tire sector/EPR mandates.</li>
+<li><strong>High Utilizations &amp; Efficiency</strong>: Apcotex &gt;80-100% across plants; GRP reclaim 85-90%; operational levers like manpower optimization, solar/power savings, automation boosting EBITDA (Apcotex +48% YoY, GRP +82 bps segmental).</li>
+<li><strong>Export Resilience in Emerging Markets</strong>: Apcotex +31% H1 exports (target 35-45%); GRP ROW (Vietnam/Indonesia) double-digit growth offsetting West declines.</li>
+<li><strong>Policy Support</strong>: EPR boosting tire/plastics recycling (GRP pyrolysis/crumb ramp); ADD final findings positive for NBR (Apcotex, awaiting notification).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Expansions</strong>: Apcotex INR 210 Cr (51-52k MT synthetic latex/NBR, INR 550-600 Cr revenue potential, online Q1 FY28); GRP INR 250 Cr pyrolysis Phase 1 (30k MT pyrolysis, 12k MT rCB, 60k MT crumb by Jun’26; Phase 2 +30k/12k MT); peak revenues ~INR 1,600-1,700 Cr (Apcotex current).</li>
+<li><strong>New Revenue Streams</strong>: GRP pyrolysis/crumb/steel/TPO (H2 FY26: INR 25-30 Cr); rCB ramp (pilot traction in non-tire); Apcotex NBR/synthetic latex for auto/footwear/construction.</li>
+<li><strong>Margin Expansion Path</strong>: Apcotex EBITDA 12% (target mid-teens ex-nitrile latex); GRP H2 +200-250 bps EBITDA via new tech/renewables; full utilizations unlock leverage.</li>
+<li><strong>Market Share Gains</strong>: Domestic focus (India tire growth), exports to 45%; innovation (Apcotex ICC award); 3-year ramp post-expansions.</li>
+</ul>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="35%" />
+<col width="21%" />
+<col width="42%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Potential Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Policy/Regulatory</strong></td>
+<td>ADD notification delay/changes (Dec’25 expected; mixed—one importer zero duty); EPR enforcement gaps in plastics.</td>
+<td>Margin erosion in NBR/reclaim; stalled recycling adoption.</td>
+</tr>
+<tr class="even">
+<td><strong>Demand/Geo</strong></td>
+<td>Prolonged US tariffs, Western slowdown; overcapacity cycles.</td>
+<td>Export volumes/margins (30-35% reliance); 1-2 quarter air pockets.</td>
+</tr>
+<tr class="odd">
+<td><strong>Pricing/Volatility</strong></td>
+<td>RM price swings (3-4 quarter declines historical); forex losses (GRP INR 20 Cr hit).</td>
+<td>Revenue compression; working capital spikes on price recovery.</td>
+</tr>
+<tr class="even">
+<td><strong>Execution</strong></td>
+<td>New capex ramp (6-7 quarters; GRP pyrolysis cash burn till Jan); utilization delays.</td>
+<td>Capex overruns (debt up); ROCE dilution if demand soft.</td>
+</tr>
+<tr class="odd">
+<td><strong>Competition</strong></td>
+<td>Chinese imports, peer expansions (synthetic latex).</td>
+<td>Pricing wars; margin pressure in commoditized segments.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Summary</strong>: The Indian rubber sector is in a <strong>recovery phase</strong> with strong domestic tailwinds offsetting global headwinds (US tariffs/pricing). FY26 H2/FY27 looks promising (volumes +15-18%, EBITDA mid-teens) via expansions and efficiencies, targeting INR 2,000+ Cr+ topline potential. However, <strong>export reliance (30-35%) and ADD outcomes are pivotal</strong>—success could drive 20-30% growth; delays/tariffs risk flat/single-digit. Debt discipline (Apcotex cash positive, GRP D/E 0.99) aids resilience. Investors should monitor Dec’25 ADD and H2 volumes.</p>
+</div>
+</div>
+</div>
+<div id="financial" class="section level3">
+<h3><strong>Financial</strong></h3>
+<p><em>asof: 2025-12-01 </em></p>
+<div id="summary-analysis-of-indian-rubber-industry-based-on-q3-9m-fy25-financial-results-of-key-players-apcotex-grp-rubfila-elgi-rubber-sampann-utpadan" class="section level9">
+<p class="heading">Summary Analysis of Indian Rubber Industry (Based on Q3 &amp; 9M FY25 Financial Results of Key Players: Apcotex, GRP, Rubfila, Elgi Rubber, Sampann Utpadan)</p>
+<p>The analysis draws from audited/reviewed financial results of these rubber-focused companies (synthetic polymers, reclaim rubber, rubber threads, machinery/solutions, and ancillary/power-linked products). Overall, the industry shows <strong>resilient revenue growth</strong> driven by domestic demand recovery, but faces <strong>margin pressures</strong> from costs and volatility. FY25 9M aggregate revenue across sample ~₹2.3 lakh crore (up ~25-30% YoY), with PAT growth muted at ~10-15% due to higher expenses.</p>
+<div id="tailwinds-positive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Strong Demand &amp; Revenue Momentum</strong>:
+<ul>
+<li>Apcotex: 9M revenue +28% YoY (₹1.04L Cr), Q3 +38%.</li>
+<li>GRP: Standalone 9M +17% (₹37.9k L), reclaim rubber segment dominant (+16%).</li>
+<li>Rubfila: Standalone 9M +23% (₹34.3k L), consolidated +18%.</li>
+<li>Industry tailwind from auto/tire sector rebound (e.g., emulsions/reclaim for tires ~70-80% of revenue).</li>
+</ul></li>
+<li><strong>Operational Efficiency &amp; Capacity Utilization</strong>: Inventory drawdowns (e.g., GRP -ve changes aiding profits), EBITDA margins stable ~7-8% (Rubfila, Apcotex).</li>
+<li><strong>Corporate Actions Signaling Confidence</strong>: Apcotex interim dividend (₹2/share), GRP 3:1 bonus issue (Aug’24).</li>
+<li><strong>Sustainability Push</strong>: Reclaim rubber (GRP) growth aligns with green tire mandates; global exports via subs (Elgi’s international network).</li>
+</ul>
+</div>
+<div id="headwinds-negative-factors" class="section level12">
+<p class="heading"><strong>Headwinds (Negative Factors)</strong></p>
+<ul>
+<li><strong>Margin Compression &amp; Losses in Segments</strong>:
+<ul>
+<li>Elgi Rubber: Q3 standalone loss ₹353L (revenue -4% YoY), consolidated loss ₹350L; high depreciation/finance costs (depn Q3 ₹380-407L).</li>
+<li>Across board: Employee costs +10-15% YoY, finance costs elevated (Apcotex ₹465L Q3, GRP ₹266L).</li>
+<li>Sampann: Negligible revenue/activity, persistent losses/negative reserves (₹-5Cr).</li>
+</ul></li>
+<li><strong>Cost Pressures</strong>: Raw material consumed ~70% of expenses (volatile natural rubber prices implied); other expenses up 10-20% (inflation/logistics).</li>
+<li><strong>Seasonal/One-offs</strong>: Negative other income in Elgi (reversal of sub interest), exceptional gains masking ops losses (Elgi ₹1.5k L 9M).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Medium-Term (FY26+)</strong>:
+<ul>
+<li><strong>Volume-Driven Expansion</strong>: Auto/tire demand (India ~2.2M vehicles FY25 est.); reclaim/synthetic polymers benefit from EV tires/recycling norms.</li>
+<li><strong>Export/Subs Leverage</strong>: Rubfila/GRP consolidated growth; Elgi’s global subs (USA, Kenya, Brazil) ~₹28k L 9M revenue potential.</li>
+<li><strong>Capex Cycle</strong>: GRP CWIP ₹551L prior; Apcotex depn +30% YoY signals investments.</li>
+<li><strong>Projected</strong>: Industry CAGR 8-10% (driven by tires ~60% market); sample cos could see 15-20% revenue growth if rubber prices stabilize ~₹180-200/kg.</li>
+</ul></li>
+<li><strong>Niche Opportunities</strong>: Latex threads (Rubfila), emulsions (Apcotex) for non-tire (gloves, adhesives).</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="28%" />
+<col width="37%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Description</th>
+<th>Impact Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Commodity Price Volatility</strong></td>
+<td>Natural rubber up ~20% CY24; crude-linked synthetics sensitive.</td>
+<td>High material costs (70% expenses); inventory swings (Apcotex +₹1.6k L Q3).</td>
+</tr>
+<tr class="even">
+<td><strong>High Leverage &amp; Interest Burden</strong></td>
+<td>Debt-heavy (Elgi finance ₹743L Q3; Sampann ₹102Cr total debt).</td>
+<td>Finance costs 4-5% of revenue; default disclosure nil but elevated (Sampann).</td>
+</tr>
+<tr class="odd">
+<td><strong>Forex &amp; Geo Exposure</strong></td>
+<td>Elgi subs (USA/Europe) forex losses implied in OCI volatility.</td>
+<td>Consolidated OCI swings (GRP ₹11L Q3 gain/loss).</td>
+</tr>
+<tr class="even">
+<td><strong>Operational/Regulatory</strong></td>
+<td>Depn non-charge (Elgi process change); SEBI XBRL clarifications (PIXTRANS ref).</td>
+<td>Q3 losses; compliance costs.</td>
+</tr>
+<tr class="odd">
+<td><strong>Demand Cyclicality</strong></td>
+<td>Auto slowdown risk; China exports competition.</td>
+<td>Elgi revenue dip; Sampann dormancy.</td>
+</tr>
+<tr class="even">
+<td><strong>Liquidity</strong></td>
+<td>Negative working capital in some; dividend payouts amid capex.</td>
+<td>Cash flows positive but thin (Rubfila ops ₹1.1k L 9M).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: <strong>Moderately Positive</strong> – Tailwinds from demand outpace headwinds, but risks tilt towards <strong>cautious optimism</strong>. Focus on cost control/debt reduction key for sustained PAT growth (est. 12-15% FY25). Monitor rubber prices/auto volumes. (Aggregated from filings; not investment advice.)</p>
+</div>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="indian-rubber-sector-analysis" class="section level9">
+<p class="heading">Indian Rubber Sector Analysis</p>
+<p><strong>Based on the provided announcements from key listed players (Apcotex Industries, Tinna Rubber, Rubfila International, Harrisons Malayalam, Elgi Rubber), the analysis focuses on natural/synthetic rubber, rubber products, plantations, and related infrastructure/recycling. Harrisons Malayalam provides the most detailed insights via Q2/H1 FY26 financials (rubber as a core segment alongside tea). Overall sector sentiment is cautiously positive amid expansions, but tempered by legal/operational risks.</strong></p>
+<div id="tailwinds-positive-factors-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Factors)</strong></p>
+<ul>
+<li><strong>Strong Operational Performance in Plantations</strong>: Harrisons Malayalam’s rubber segment drove H1 revenue (₹13,307 lakhs, up from prior periods) and profits (₹1,048 lakhs segment result), outperforming loss-making tea (₹11,658 lakhs revenue, -₹218 lakhs result). Total H1 revenue ₹25,086 lakhs (+7% YoY), PBT ₹1,239 lakhs (vs. loss prior year), signaling rubber resilience.</li>
+<li><strong>Strategic Investments &amp; Expansions</strong>:
+<ul>
+<li>Tinna Rubber infused ₹58 lakhs equity into Oman subsidiary (Global Recycle LLC) for recycling/infrastructure, enhancing global footprint.</li>
+<li>Rubfila (rubber threads/gloves) subsidiary Premier Tissues to set up tissue conversion unit in Kerala, indicating diversification into value-added products.</li>
+</ul></li>
+<li><strong>Shareholder &amp; Compliance Focus</strong>: Apcotex’s “Saksham Niveshak” campaign promotes KYC/dividend claims, improving liquidity and investor confidence. Elgi Rubber’s RTA updates ensure seamless communication.</li>
+<li><strong>Cost Management</strong>: Harrisons notes stable finance costs/depreciation; profit from rubber tree sales boosts “Others” segment.</li>
+</ul>
+</div>
+<div id="headwinds-negative-factors-1" class="section level12">
+<p class="heading"><strong>Headwinds (Negative Factors)</strong></p>
+<ul>
+<li><strong>Segmental Imbalances</strong>: Harrisons’ tea drag (-₹602 lakhs Q2 loss) offsets rubber gains; overall current liabilities exceed assets (₹23,287 lakhs vs. ₹10,469 lakhs current assets), though cash flows remain positive (₹538 lakhs operating CF).</li>
+<li><strong>Administrative/Compliance Burdens</strong>: BSE fine (₹2,000) on Harrisons for delayed FY25 report filing highlights regulatory scrutiny. Apcotex pushes KYC amid IEPF transfer risks.</li>
+<li><strong>Diversification Risks</strong>: Rubfila’s tissue pivot may dilute rubber focus amid volatile raw material costs (not quantified).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>High (Medium-Term: 10-20% CAGR Potential)</strong>: Rubber demand from auto/tyre (core consumer) and exports. Harrisons’ replanting/capex (₹1,138 lakhs H1) supports yield growth; Oman investment positions Tinna for recycled rubber/infra boom (roads, tyres). Rubfila’s new unit taps hygiene products market. Overall, sector benefits from EV tyres, exports, and govt. infra push (e.g., TBMM-Super logo in Tinna doc).</li>
+<li><strong>Financial Trajectory</strong>: Harrisons EPS ₹6.71 (H1); total assets up 6% to ₹50,249 lakhs. Unaudited results signal FY26 recovery.</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="34%" />
+<col width="20%" />
+<col width="44%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Mitigation/Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Legal/Land Disputes</strong></td>
+<td>Kerala govt. suit (Oct 2025) on Harrisons’ Wayanad estates (Achoor, Sentinel Rock, etc.) seeks possession; ongoing litigation.</td>
+<td>High impact on rubber/tea output; provisions exist but escalations possible.</td>
+</tr>
+<tr class="even">
+<td><strong>Liquidity/Working Capital</strong></td>
+<td>Harrisons: Current liabilities &gt; assets; gratuity liabilities (₹1,648 lakhs) tied to ex-employee quarters.</td>
+<td>Manageable via credit lines/cash flows; monitor ageing.</td>
+</tr>
+<tr class="odd">
+<td><strong>Commodity Volatility</strong></td>
+<td>Rubber prices implied in Harrisons’ inventory changes (-₹1,505 lakhs); unabsorbed losses/depreciation defer taxes.</td>
+<td>Medium; hedge via diversification (e.g., Rubfila tissues).</td>
+</tr>
+<tr class="even">
+<td><strong>Governance/Regulatory</strong></td>
+<td>Director resignation (Sampann, non-rubber but indicative); BSE fines; KYC non-compliance risks IEPF transfers.</td>
+<td>Low-medium; compliance improving.</td>
+</tr>
+<tr class="odd">
+<td><strong>Macro</strong></td>
+<td>Rural slowdown, monsoon dependency for plantations; forex (Oman investment).</td>
+<td>Diversified revenue (rubber 53% in Harrisons).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Summary</strong>: Indian rubber sector enjoys <strong>tailwinds from robust plantation profits (Harrisons rubber up materially), expansions (Tinna/Rubfila), and infra linkages</strong>, positioning for <strong>strong growth</strong> in tyres/recycling/exports. However, <strong>headwinds like working capital strains and tea losses persist</strong>, with <strong>land litigation as the top risk</strong> (could disrupt 20-30% assets). Outlook: <strong>Bullish short-term (Q3 FY26 profits likely sustained)</strong> but monitor legal outcomes; sector resilient with 7-10% H1 revenue growth benchmark. Investors: Focus on Harrisons/Tinna for pure plays.</p>
+</div>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="summary-analysis-of-indian-rubber-industry" class="section level9">
+<p class="heading">Summary Analysis of Indian Rubber Industry</p>
+<p>Based on the provided documents from key players—<strong>Apcotex Industries</strong> (synthetic latex, nitrile rubber), <strong>GRP Limited</strong> (reclaim rubber, tire recycling, plastics), and <strong>Tinna Rubber</strong> (investor meet intimation)—the Indian rubber sector shows resilience amid challenges. Companies report strong domestic volume growth and capacity expansions but face export headwinds from US tariffs and pricing pressures. Apcotex achieved 18% H1 volume growth and turned net cash positive; GRP navigated tariff impacts via domestic focus and new pyrolysis ops. Overall, the sector benefits from sustainability tailwinds (EPR, reclaim rubber) but risks margin erosion. Below is a structured analysis.</p>
+<div id="headwinds-1" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>US Tariffs and Export Disruptions</strong>: Severe impact across firms. GRP reports ~29% YoY export decline to North America (INR 6.2 Cr quarterly revenue loss, INR 3.8 Cr margin hit); Thailand volumes down 31%. Apcotex notes indirect effects on customers (textiles, tires, carpets) exporting to US, reducing demand. Affects ~30-35% of market volumes.</li>
+<li><strong>Raw Material &amp; Pricing Volatility</strong>: 3-15% quarterly declines in RM/finished goods prices (Apcotex: 4% YoY revenue drop despite 11% Q2 volume growth; GRP: 45% drop in virgin polymers). Leads to stock losses, lower realizations, and revenue pressure.</li>
+<li><strong>Global Overcapacity &amp; Competition</strong>: Nitrile latex margins challenged by Asian excess capacity (Apcotex at 80% utilization but “still low globally”); Chinese low-cost imports pressure plastics/reclaim (GRP non-reclaim down 17% YoY).</li>
+<li><strong>Geopolitical &amp; Demand Weakness</strong>: Subdued truck/bus OE in North America/Europe; uneven global tire demand (GRP). Butyl rubber costs elevated (GRP).</li>
+<li><strong>Operational Costs</strong>: Higher finance costs (GRP: subvention withdrawal, ECB loans); forex losses (GRP: INR 2 Cr notional).</li>
+</ul>
+</div>
+<div id="tailwinds-1" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Strong Domestic Demand &amp; Volumes</strong>: Apcotex: 18% H1 growth, highest-ever exports (+31%); GRP: 20% domestic reclaim revenue growth, tire sector uptick. High utilizations (Apcotex: 80-95%; GRP reclaim: 85-90%).</li>
+<li><strong>Margin Expansion via Efficiency</strong>: Apcotex EBITDA up 48% YoY (12% margin) from volumes/utilization; GRP EBITDA +13% YoY despite headwinds via automation, manpower optimization, solar investments.</li>
+<li><strong>Policy Support</strong>: Anti-dumping duties (Apcotex: DGTR positive on NBR imports from China/Russia; notification expected by Dec’25). EPR mandates boosting reclaim/recycled rubber adoption (GRP: Indian tire firms increasing usage).</li>
+<li><strong>Sustainability Focus</strong>: GRP pyrolysis ops live (crumb rubber, TPO, rCB); approvals for recycled nylon in autos. Apcotex ICC award for indigenous tech.</li>
+<li><strong>Cash Generation</strong>: Apcotex net cash positive (debt down INR 53 Cr H1); GRP operational efficiencies aiding resilience.</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capacity Expansions</strong>: Apcotex: INR 210 Cr for 37k MT synthetic latex + 14.6k MT nitrile rubber (INR 550-600 Cr revenue potential; online Q1 FY27-28). GRP: INR 250 Cr Phase 1 (pyrolysis 30k MT, rCB 12k MT, crumb 60k MT; H2 revenue INR 25-30 Cr); Phase 2 INR 100 Cr planned. Peak revenues: Apcotex ~INR 1,600-1,700 Cr at full capacity.</li>
+<li><strong>Export Diversification</strong>: Apcotex targets 35-45% exports (from 31% Q2). GRP eyes Vietnam/Indonesia offsetting US losses.</li>
+<li><strong>New Revenue Streams</strong>: Pyrolysis/rCB (GRP: ramp-up H2; non-tire approvals). Specialty latex/rubber (Apcotex: construction, auto, footwear). Reclaim demand up in India/China.</li>
+<li><strong>Margin Uplift</strong>: Apcotex: Mid-teens EBITDA ex-nitrile latex; GRP: 200-250 bps H2 improvement to 9-11%. H2 FY26 stronger (GRP: pyrolysis profitable; Apcotex: debottlenecking).</li>
+<li><strong>Long-Term</strong>: FY27 breakout (GRP); 3-year ramp-up post-expansion (Apcotex). Sector shift to sustainable products amid global green push.</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<table>
+<colgroup>
+<col width="41%" />
+<col width="25%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk Category</th>
+<th>Details</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Policy/Regulatory</strong></td>
+<td>Anti-dumping delay/non-notification (Apcotex/GRP history of mixed outcomes); EPR enforcement gaps in plastics.</td>
+<td>DGTR alignment improving; brownfield expansions viable sans duties.</td>
+</tr>
+<tr class="even">
+<td><strong>Demand/Export</strong></td>
+<td>Prolonged US tariffs/economic slowdown in West (10% rubber drop); customer destocking.</td>
+<td>Domestic focus (India bright spot); outsourcing/debottlenecking short-term.</td>
+</tr>
+<tr class="odd">
+<td><strong>Pricing/Margins</strong></td>
+<td>RM volatility, Chinese dumping; low-margin orders (Apcotex avoided some).</td>
+<td>High utilization (&gt;80%); tech upgrades (GRP new reclaim tech).</td>
+</tr>
+<tr class="even">
+<td><strong>Execution</strong></td>
+<td>Capex delays (GRP pyrolysis ramps; Apcotex 6-7 qtrs timeline); rCB adoption slow.</td>
+<td>Phased rollout; pilot facilities (GRP).</td>
+</tr>
+<tr class="odd">
+<td><strong>Financial</strong></td>
+<td>Debt rise for capex (GRP D/E 0.99; Apcotex mix debt/accruals); forex/interest spikes.</td>
+<td>Strong cash flows (Apcotex INR 107 Cr H1 ops); solar cost savings.</td>
+</tr>
+<tr class="even">
+<td><strong>Competition</strong></td>
+<td>Global/Indian capacity adds (latex post-COVID overhang).</td>
+<td>Tech edge (Apcotex “revolutionary” latex; GRP largest single-line pyrolysis).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Outlook</strong>: Moderately positive. Headwinds (tariffs/pricing) cap near-term growth (flat revenues for GRP; muted for Apcotex ex-volumes), but tailwinds from domestic volumes, expansions, and policy support drive H2 FY26/FY27 recovery. Risks center on exports/policy, but firms’ balance sheets and efficiencies provide buffers. Sector poised for 15-20% volume CAGR via sustainability, targeting INR 2,000+ Cr topline potential per player at peak capacity. Monitor Dec’25 ADD notification and H2 ramps.</p>
+</div>
+</div>
+</div>
+<div id="meeting" class="section level3">
+<h3><strong>Meeting</strong></h3>
+<p><em>asof: 2025-12-02 </em></p>
+<div id="indian-rubber-sector-analysis-based-on-q1q2-fy26-announcements" class="section level9">
+<p class="heading">Indian Rubber Sector Analysis (Based on Q1/Q2 FY26 Announcements)</p>
+<p>The provided documents cover financial results, board outcomes, and AGMs from key listed players (Apcotex, Pix Transmissions, Tinna Rubber, GRP, Rubfila, Elgi Rubber, etc.) for quarters ending Jun/Sep 2025. The sector shows <strong>mixed performance</strong>: resilient domestic demand but YoY declines in revenues/PAT for some, offset by growth in others. Overall revenue growth muted (~flat to -10% YoY in H1 for many), PAT volatile (up 29% in Apcotex Q1, down 32% in Pix H1). High finance costs, forex volatility, and subsidiary challenges are evident.</p>
+<div id="tailwinds-supportive-factors" class="section level12">
+<p class="heading"><strong>Tailwinds (Supportive Factors)</strong></p>
+<ul>
+<li><strong>Domestic Demand Resilience</strong>: Apcotex Q1 revenue +12% YoY (₹376 Cr), PAT +29% (₹19 Cr); Rubfila Q2 revenue +11% QoQ, PAT +32%. Tinna H1 PAT stable (+2%). Indicates steady tyre/auto/rubber products demand.</li>
+<li><strong>Strategic Initiatives</strong>: Tinna QIP (₹79 Cr) funding capex/debt reduction; GRP solar SPV investment for cost savings; Pix capex on PPE (₹28 Cr assets).</li>
+<li><strong>Operational Efficiency</strong>: Pix H1 EBITDA margins ~24% despite revenue dip; Apcotex EBITDA +31% YoY. Dividend payouts (GRP ₹14.5/sh, Pix ₹8.8/sh) signal confidence.</li>
+<li><strong>Export/Subsidiary Exposure</strong>: Pix consolidated revenue (intl subs contribute ~10-15%); Rubfila tissues sub adds diversification.</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Revenue Pressure</strong>: Pix H1 standalone revenue -13% YoY (₹236 Cr); GRP Q2 down YoY; Elgi consolidated revenue flat but losses widen.</li>
+<li><strong>Profitability Squeeze</strong>: Elgi Q2 standalone loss ₹1.25 Cr (vs profit), consolidated ₹7.5 Cr loss; Pix H1 PAT -32% YoY. High finance costs (Elgi 7-8% of rev, Pix rising).</li>
+<li><strong>Subsidiary Weakness</strong>: Elgi reverses ₹21.6 Cr interest from US/Brazil/Netherlands subs due to recoverability issues; forex losses (Elgi unrealized ₹890L).</li>
+<li><strong>Cost Inflation</strong>: Employee expenses +8-10% (GRP, Pix); other expenses up (inventory buildup in Elgi/Tinna).</li>
+</ul>
+</div>
+<div id="growth-prospects-4" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Capex &amp; Expansion</strong>: Tinna ₹33 Cr capex from QIP; GRP ₹26 Cr PPE; Pix CWIP ₹8 Cr. Focus on crumb rubber (Tinna), reclaim (GRP), threads (Rubfila).</li>
+<li><strong>Diversification</strong>: Rubfila tissues sub revenue +ve; Pix intl subs (Europe/UAE) ~10% growth potential; Elgi global footprint (9 subs).</li>
+<li><strong>Sector Tailwinds</strong>: Rubber demand from tyres/auto (Apcotex/Pix); infra (Tinna bitumen); green energy (GRP solar). FY26 PAT growth 10-15% possible if input costs stabilize.</li>
+<li><strong>Projections</strong>: Apcotex/Rubfila momentum could drive sector avg revenue +5-8% YoY; Pix/Elgi recovery via subs.</li>
+</ul>
+</div>
+<div id="key-risks-4" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Forex &amp; Commodity Volatility</strong>: Unrealized FX losses (Elgi ₹105 Cr H1); rubber price swings impact margins (Pix materials 35% of costs).</li>
+<li><strong>Subsidiary/Debt Risks</strong>: Elgi subs’ interest waiver signals liquidity strain; high borrowings (GRP ₹21 Cr current, Elgi ₹30 Cr).</li>
+<li><strong>Operational</strong>: Inventory pile-up (Elgi +₹136 Cr); rising depreciation (GRP +15%).</li>
+<li><strong>Regulatory/Execution</strong>: QIP utilization delays (Tinna); AGM approvals smooth but promoter abstentions in related-party items (Sampann).</li>
+<li><strong>Macro</strong>: Slow global demand (Elgi exports); interest rates pressuring finance costs.</li>
+</ul>
+<p><strong>Summary</strong>: Sector faces <strong>headwinds from subs’ weakness &amp; costs</strong> (e.g., Elgi losses) but <strong>tailwinds from domestic ops</strong> (Apcotex/Rubfila growth). <strong>Growth prospects moderate</strong> (5-10% via capex/exports), but <strong>risks high</strong> (FX/debt/subs). Selective plays (Apcotex, Rubfila) outperform; monitor Elgi/Pix recovery. Overall FY26 outlook: Stable revenue, patchy PAT (~flat YoY).</p>
+<table>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>H1 FY26 Avg (Sample Cos)</th>
+<th>YoY Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Revenue</td>
+<td>₹250-300 Cr (per co)</td>
+<td>-5%</td>
+</tr>
+<tr class="even">
+<td>PAT Margin</td>
+<td>5-8%</td>
+<td>-10-20% decline</td>
+</tr>
+<tr class="odd">
+<td>Debt/Equity</td>
+<td>0.5-1.0x</td>
+<td>Stable-High</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="analysis-of-indian-rubber-sector-focus-tyre-recycling-crumb-rubber-sub-sector" class="section level9">
+<p class="heading">Analysis of Indian Rubber Sector (Focus: Tyre Recycling &amp; Crumb Rubber Sub-Sector)</p>
+<p>Using the provided press release on Tinna Rubber and Infrastructure Limited (Tinna)—a key player in waste tyre recycling—as a proxy input, the analysis highlights sector dynamics in India. Tinna’s successful NSE listing (April 17, 2025, 1.71 Cr shares, symbol: TINNARUBR) signals maturity and investor confidence in the organized recycling segment, amid India’s push for circular economy. The sector benefits from ~1.4 Bn waste tyres generated annually (growing 8-10% YoY), with crumb rubber/powder demand in roads, tyres, and exports.</p>
+<div id="tailwinds-positive-drivers" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Sustainability &amp; Regulatory Push</strong>: Zero-waste philosophy (Tinna’s 99% recovery rate) aligns with govt mandates (e.g., EPR under PWM Rules 2016, Extended Producer Responsibility). PLI schemes and Swachh Bharat boost recycling.</li>
+<li><strong>Demand Diversification</strong>: Strong end-use in infrastructure (bituminous roads, 30% crumb rubber mandate in highways), industrial (mats, conveyor belts), steel (anti-vibration pads), and consumer products. Tinna’s 4 segments exemplify broad applicability.</li>
+<li><strong>Tech &amp; Scale</strong>: Advanced facilities (Tinna: 5 in India +1 in Oman) enable customization and efficiency. Multinational procurement ensures supply chain resilience.</li>
+<li><strong>IPO Momentum</strong>: Listing unlocks capital for expansion; sector capex rising (e.g., 20-25% CAGR in organized players).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-1" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Fragmented Supply</strong>: 70-80% unorganized recycling leads to quality inconsistencies and price volatility in scrap tyres.</li>
+<li><strong>High Capex &amp; Energy Costs</strong>: Recycling plants require heavy investment (Tinna’s 6 facilities highlight scale barriers for SMEs); rising energy prices (30-40% of opex) squeeze margins.</li>
+<li><strong>Import Competition</strong>: Cheap crumb rubber imports from China/Vietnam (~20% market share) pressure domestic prices.</li>
+<li><strong>Seasonal Demand</strong>: Infra slowdowns (monsoons, elections) impact 40% of usage.</li>
+</ul>
+</div>
+<div id="growth-prospects-5" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Market Size Expansion</strong>: Indian rubber recycling market ~₹15,000 Cr (2025), projected 15-20% CAGR to ₹40,000 Cr by 2030, driven by tyre production (2.5 Mn tonnes/year) and exports (crumb rubber up 25% YoY).</li>
+<li><strong>Infra Boom</strong>: ₹11 Lakh Cr Bharatmala/National Highways push crumb rubber demand (target: 5-10% blending).</li>
+<li><strong>Global/Export Play</strong>: Tinna’s Oman facility taps ME/Africa; sector exports could double to $500 Mn by 2028.</li>
+<li><strong>Innovation Edge</strong>: Value-added products (e.g., coloured powders) and ESG compliance attract FDI/premium pricing (Tinna’s tech focus as benchmark).</li>
+</ul>
+</div>
+<div id="key-risks-5" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Economic/Commodity Volatility</strong>: Rubber price swings (natural rubber up 15% in 2024) and GDP slowdowns hit demand (disclaimer notes forex/economic risks).</li>
+<li><strong>Regulatory Shifts</strong>: Stricter pollution norms or EPR delays could raise compliance costs (10-15% opex).</li>
+<li><strong>Supply Disruptions</strong>: Tyre waste availability tied to auto sector (e.g., EV shift reduces radial tyres).</li>
+<li><strong>Competition Intensity</strong>: New entrants post-listings (e.g., Tinna’s BSE/NSE peers) may erode 20-25% margins.</li>
+</ul>
+</div>
+</div>
+<div id="summary" class="section level9">
+<p class="heading"><strong>Summary</strong></p>
+<p>The Indian rubber recycling sector is at an inflection point, with <strong>strong tailwinds</strong> from sustainability mandates and infra spend outweighing <strong>headwinds</strong> like fragmentation and costs. Tinna’s listing underscores <strong>robust growth prospects</strong> (15-20% CAGR), fueled by scale, tech, and exports, positioning it as a sector bellwether. However, <strong>key risks</strong> from macro volatility and regs warrant caution—investors should monitor Q1 FY26 earnings for listing pops and capex plans. Overall Outlook: <strong>Bullish</strong> for organized players like Tinna (target multiples: 15-20x EV/EBITDA).</p>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

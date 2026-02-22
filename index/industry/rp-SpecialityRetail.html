@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-02-20" />
+
+<title>Speciality Retail</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Speciality Retail</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">February 20, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#market-cap">Market Cap</a></li>
+<li><a href="#ebit-of-industry-total">EBIT (% of Industry Total)</a></li>
+<li><a href="#revenue-of-industry-total">Revenue (% of Industry Total)</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/SpecialityRetail.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/SpecialityRetail.fan.CAP_WT.png" /></p>
+<p><img src="plots/SpecialityRetail.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/SpecialityRetail.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/SpecialityRetail.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/SpecialityRetail.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/SpecialityRetail.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d6c078b304e82f5c03d4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d6c078b304e82f5c03d4">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-1.74%","0.89%"],["-5.12%","-0.32%"],["-11.4%","-5.14%"],["-16%","-13.76%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/SpecialityRetail.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/SpecialityRetail.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+</div>
+<div id="market-cap" class="section level2">
+<h2>Market Cap</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f86c2075beabf6c8af5d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f86c2075beabf6c8af5d">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.TRENT.html\" target=\"_blank\">TRENT<\/a>","<a href=\"/reports02/eq-in/risk/in.LENSKART.html\" target=\"_blank\">LENSKART<\/a>","<a href=\"/reports02/eq-in/risk/in.ABLBL.html\" target=\"_blank\">ABLBL<\/a>","<a href=\"/reports02/eq-in/risk/in.MANYAVAR.html\" target=\"_blank\">MANYAVAR<\/a>","<a href=\"/reports02/eq-in/risk/in.ABFRL.html\" target=\"_blank\">ABFRL<\/a>","<a href=\"/reports02/eq-in/risk/in.V2RETAIL.html\" target=\"_blank\">V2RETAIL<\/a>","<a href=\"/reports02/eq-in/risk/in.ARVINDFASN.html\" target=\"_blank\">ARVINDFASN<\/a>","<a href=\"/reports02/eq-in/risk/in.AVL.html\" target=\"_blank\">AVL<\/a>","<a href=\"/reports02/eq-in/risk/in.STYLEBAAZA.html\" target=\"_blank\">STYLEBAAZA<\/a>","<a href=\"/reports02/eq-in/risk/in.GOCOLORS.html\" target=\"_blank\">GOCOLORS<\/a>","<a href=\"/reports02/eq-in/risk/in.KALAMANDIR.html\" target=\"_blank\">KALAMANDIR<\/a>","<a href=\"/reports02/eq-in/risk/in.MUFTI.html\" target=\"_blank\">MUFTI<\/a>","<a href=\"/reports02/eq-in/risk/in.BCONCEPTS.html\" target=\"_blank\">BCONCEPTS<\/a>","<a href=\"/reports02/eq-in/risk/in.SHANKARA.html\" target=\"_blank\">SHANKARA<\/a>","<a href=\"/reports02/eq-in/risk/in.PRAXIS.html\" target=\"_blank\">PRAXIS<\/a>"],[0.7016645081778196,0.09520608860784763,0.04088484466470806,0.02026045846933862,0.03025383878243739,0.02721501424070708,0.03162820349975959,0.02583421192056028,0.01050464236155865,0.006877128534546454,0.004830466176936919,0.001618316004423427,0.00107959897125802,0.001140348982619207,0.001002330605479066],[0.5014206504077596,0.2919034991875694,0.04589736348905012,0.03603650808183653,0.03002728647085234,0.02525253326111728,0.02191297754426451,0.02181290600845634,0.008603980358263682,0.006470626194791398,0.006117359539964635,0.001973543057717319,0.001199824276727201,0.0008533830315077455,0.0005175590901218811]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":15,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,15,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level2">
+<h2>EBIT (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-83ea846cc68b9c2313d0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-83ea846cc68b9c2313d0">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.TRENT.html\" target=\"_blank\">TRENT<\/a>","<a href=\"/reports02/eq-in/risk/in.LENSKART.html\" target=\"_blank\">LENSKART<\/a>","<a href=\"/reports02/eq-in/risk/in.ABLBL.html\" target=\"_blank\">ABLBL<\/a>","<a href=\"/reports02/eq-in/risk/in.MANYAVAR.html\" target=\"_blank\">MANYAVAR<\/a>","<a href=\"/reports02/eq-in/risk/in.ABFRL.html\" target=\"_blank\">ABFRL<\/a>","<a href=\"/reports02/eq-in/risk/in.V2RETAIL.html\" target=\"_blank\">V2RETAIL<\/a>","<a href=\"/reports02/eq-in/risk/in.ARVINDFASN.html\" target=\"_blank\">ARVINDFASN<\/a>","<a href=\"/reports02/eq-in/risk/in.AVL.html\" target=\"_blank\">AVL<\/a>","<a href=\"/reports02/eq-in/risk/in.STYLEBAAZA.html\" target=\"_blank\">STYLEBAAZA<\/a>","<a href=\"/reports02/eq-in/risk/in.GOCOLORS.html\" target=\"_blank\">GOCOLORS<\/a>","<a href=\"/reports02/eq-in/risk/in.KALAMANDIR.html\" target=\"_blank\">KALAMANDIR<\/a>","<a href=\"/reports02/eq-in/risk/in.MUFTI.html\" target=\"_blank\">MUFTI<\/a>","<a href=\"/reports02/eq-in/risk/in.BCONCEPTS.html\" target=\"_blank\">BCONCEPTS<\/a>","<a href=\"/reports02/eq-in/risk/in.SHANKARA.html\" target=\"_blank\">SHANKARA<\/a>","<a href=\"/reports02/eq-in/risk/in.PRAXIS.html\" target=\"_blank\">PRAXIS<\/a>"],[74.80393982146852,null,2.143372824075986,9.203636214829411,-15.47255722066635,1.087284708659188,8.107206891696741,3.726813275072185,-0.155097258589539,2.119630233629099,3.250573886413392,1.056371225708772,-0.06077215218270269,4.527393225864311,-0.5088725527041494],[71.50261685403572,5.177317516290997,2.908004076349203,5.268565492843155,-18.08305322131742,null,9.979567803976963,2.567662434675223,0.2033476338647219,2.179504987057154,3.538788153065436,0.9148341968320298,0.01822950180135,2.569784405794703,-0.8349914748571068],[67.69285949733658,10.57839479924393,6.041978022676519,7.629950002204945,-13.30810013232994,2.7651030516021,8.701510900867113,2.163677045491089,0.5499303659344892,1.345680944695172,2.928174160000692,1.004424295803682,0.0380019103415177,2.403699097161322,-0.5352839610292101]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":15,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,15,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level2">
+<h2>Revenue (% of Industry Total)</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ba7857940835104f89e1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ba7857940835104f89e1">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.TRENT.html\" target=\"_blank\">TRENT<\/a>","<a href=\"/reports02/eq-in/risk/in.LENSKART.html\" target=\"_blank\">LENSKART<\/a>","<a href=\"/reports02/eq-in/risk/in.ABLBL.html\" target=\"_blank\">ABLBL<\/a>","<a href=\"/reports02/eq-in/risk/in.MANYAVAR.html\" target=\"_blank\">MANYAVAR<\/a>","<a href=\"/reports02/eq-in/risk/in.ABFRL.html\" target=\"_blank\">ABFRL<\/a>","<a href=\"/reports02/eq-in/risk/in.V2RETAIL.html\" target=\"_blank\">V2RETAIL<\/a>","<a href=\"/reports02/eq-in/risk/in.ARVINDFASN.html\" target=\"_blank\">ARVINDFASN<\/a>","<a href=\"/reports02/eq-in/risk/in.AVL.html\" target=\"_blank\">AVL<\/a>","<a href=\"/reports02/eq-in/risk/in.STYLEBAAZA.html\" target=\"_blank\">STYLEBAAZA<\/a>","<a href=\"/reports02/eq-in/risk/in.GOCOLORS.html\" target=\"_blank\">GOCOLORS<\/a>","<a href=\"/reports02/eq-in/risk/in.KALAMANDIR.html\" target=\"_blank\">KALAMANDIR<\/a>","<a href=\"/reports02/eq-in/risk/in.MUFTI.html\" target=\"_blank\">MUFTI<\/a>","<a href=\"/reports02/eq-in/risk/in.BCONCEPTS.html\" target=\"_blank\">BCONCEPTS<\/a>","<a href=\"/reports02/eq-in/risk/in.SHANKARA.html\" target=\"_blank\">SHANKARA<\/a>","<a href=\"/reports02/eq-in/risk/in.PRAXIS.html\" target=\"_blank\">PRAXIS<\/a>"],[46.53963489583486,null,9.322461079812944,1.03992866316253,9.193977014558032,1.784573564032303,11.75642378636602,3.636039913325004,0.7680234511131125,1.093707339723338,2.03761965755716,0.7003770241354238,0.3519487218557593,6.161679081907123,0.09211708963484462],[43.70417190208227,5.064377406384467,6.398112240615337,0.8019099493136357,8.724843027494767,null,12.35504922048604,2.450104986942609,1.483763578774046,1.084259978152986,2.054741554043372,0.5296307430608841,0.1865664056158343,4.71099867621982,0.1198088024111006],[43.69886948778619,9.990282101399451,9.953223553790833,1.304872158553698,8.967755650591709,2.191712058406194,11.54781184254276,2.406366935238637,1.599948235088995,0.9603838534161306,1.852745898807087,0.661281607053717,0.2673380848542082,4.48611231779062,0.111296214679767]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":15,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,15,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="analyst" class="section level3">
+<h3><strong>Analyst</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+<div id="analysis-of-indian-speciality-retail-sector-based-on-provided-documents" class="section level9">
+<p class="heading">Analysis of Indian Speciality Retail Sector (Based on Provided Documents)</p>
+<p>The documents cover Q2/H1 FY26 earnings transcripts, analyst meeting schedules, and disclosures from key players like Trent, Lenskart, Aditya Birla Lifestyle Brands (ABLBL), ABFRL, V2 Retail, Baazar Style Retail, Go Fashion (Mufti), Credo Brands, and others. They reflect a mixed but resilient sector amid festive boosts, GST transitions, and demand softness. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="headwinds" class="section level12">
+<p class="heading"><strong>Headwinds</strong></p>
+<ul>
+<li><strong>Muted Consumer Demand &amp; SSSG Pressure</strong>: Flat/negative SSSG persists in premium/niche segments (e.g., Go Fashion: flat for 10 quarters; Mufti: muted footfalls). Regional disruptions (e.g., floods in East for ABLBL/ABFRL) and cautious sentiment (ABFRL: “measured consumer environment”) weigh on growth.</li>
+<li><strong>GST Transition Disruptions</strong>: Wholesale reconfiguration and IT changes impacted Sep’25 sales (ABLBL: “half of September lost”; V2 Retail: similar). Price hikes (12%→18% above ₹2,500) risk elasticity; reductions (12%→5% for ₹1,000-₹2,500) passed to consumers, limiting margins (Go Fashion: no immediate benefit).</li>
+<li><strong>Seasonal/Festive Volatility</strong>: Early Puja/Diwali shifted sales (V2: normalized SSSG 10.3% vs. reported 23.4%; ABFRL: preponement benefit offset by rains).</li>
+<li><strong>Supply Chain &amp; Inventory Issues</strong>: Bangladesh delays (Mufti: ₹20-25cr revenue shift); inventory buildup for weddings (ABLBL); rising days (Mufti: 217 days).</li>
+<li><strong>Cost Pressures</strong>: Sharp depreciation/interest rises from expansions (ABLBL: dep. up to ₹209cr; ABFRL: higher leases); marketing hikes (ABFRL: +200bps ad spend).</li>
+</ul>
+</div>
+<div id="tailwinds" class="section level12">
+<p class="heading"><strong>Tailwinds</strong></p>
+<ul>
+<li><strong>Festive &amp; Small-Town Momentum</strong>: Strong LTL/SSSG in value retail (V2: 23%; Baazar Style: 22%; ABLBL: 12%). Tier 2/3 outperforms metros (ABLBL: stronger small-town LTL).</li>
+<li><strong>Robust Expansion &amp; Network Growth</strong>: Aggressive additions (V2: 86 stores H1, target 130; Baazar: 36 H1, target 40-50; Trent/ABFRL: 75+ stores). Retail area up 38% YoY (Baazar).</li>
+<li><strong>Private Labels &amp; Mix Shift</strong>: Rising contribution (Baazar: 58%; ABFRL ethnic: 34% ex-TCNS). Premiumization aids ASP (Go Fashion: +2-3%; Mufti: higher AOV in flagships).</li>
+<li><strong>Digital/Tech Investments</strong>: E-comm doubles (Mufti); SAP/Infor rollout (Baazar: ₹20-25cr capex). Omni-channel pilots (ABFRL TMRW: +27%).</li>
+<li><strong>Policy Support</strong>: GST cuts/income tax reliefs boosting disposable income (multiple mentions); early winter aiding sales (V2: +5% sales delta).</li>
+</ul>
+</div>
+<div id="growth-prospects" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Value &amp; Ethnic Segments</strong>: Explosive potential (V2: 50%+ CAGR target; ABFRL ethnic: 20%+ LTL; Baazar: 25-30% FY26 revenue). Tier 2/3/rural runway (ABLBL: small-town acceleration).</li>
+<li><strong>Store Expansion &amp; Footprint</strong>: National scaling (V2: 150 stores FY27; Trent: 3,250 stores). Premium flagships (Mufti: 5 H1) and pilots (Lenskart plant; Go Fashion topwear).</li>
+<li><strong>Category Diversification</strong>: Emerging businesses (ABLBL: innerwear/Reebok +11% LTL); women’s/men’s pilots (Go Fashion: ₹1,000 PSF); luxury/ethnic (ABFRL: Tasva +58%).</li>
+<li><strong>Efficiency Gains</strong>: Inventory optimization (Baazar: 86 days; V2: breakeven Month 1); tech-driven leverage (ABFRL: rent leverage). ROE targets (V2: 20%+).</li>
+<li><strong>Long-Term</strong>: Organized shift (Technopak study pending); weddings/Diwali revival (ABFRL: optimistic).</li>
+</ul>
+</div>
+<div id="key-risks" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Demand Sensitivity</strong>: Prolonged slowdown/wedding softness (ABFRL/ABLBL: cautious festive); competition in value space (V2/Baazar).</li>
+<li><strong>GST/Price Elasticity</strong>: Threshold shifts (₹2,625 steep delta) could hit premium sales (Go Fashion: suits/blazers at 18%).</li>
+<li><strong>Execution Risks</strong>: Expansion cannibalization/store closures (Mufti: 23 closures; ABFRL: renovations flux); capex overruns (tech ₹20-25cr).</li>
+<li><strong>Operational</strong>: Supply disruptions (Bangladesh); attrition/management churn (V2: senior exits); working capital stretch (Mufti: 217 days).</li>
+<li><strong>Macro/External</strong>: Rains/floods (East disruptions); monsoon/winter unpredictability (V2).</li>
+</ul>
+</div>
+</div>
+<div id="summary" class="section level9">
+<p class="heading"><strong>Summary</strong></p>
+<p>Indian speciality retail shows <strong>resilience in value formats</strong> (V2/Baazar: 70%+ growth) amid <strong>premium/niche softness</strong> (Go/Mufti: flat/decline), driven by festive/small-town tailwinds but hampered by GST disruptions and demand caution. <strong>Growth prospects</strong> are strong (25-50% revenue CAGR via expansion/private labels/Tier 2/3), with <strong>tech/digital</strong> as enablers. <strong>Headwinds</strong> (seasonality/costs) are transitional, but <strong>risks</strong> like execution and macro sensitivity persist. Sector outlook: <strong>Optimistic for value/ethnic (H2 festive boost)</strong>; cautious premium. Overall FY26 guidance: 25-30% revenue (revised up), stable margins (pre-IndAS EBITDA 7-8%). Long-term: Tier 2/3 + organized shift = high potential.</p>
+</div>
+</div>
+<div id="general" class="section level3">
+<h3><strong>General</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+</div>
+<div id="indian-specialty-retail-sector-analysis-based-on-provided-documents" class="section level3">
+<h3>Indian Specialty Retail Sector Analysis (Based on Provided Documents)</h3>
+<p>The documents cover key players in apparel, eyewear, and fashion retail (e.g., Lenskart, Trent, V2 Retail, Baazar Style, Kalamandir, Arvind Fashions, Manyavar, Go Fashion, Mufti, Aditya Birla entities). They reflect Q1/Q2 FY26 updates, showing robust performance amid festive demand and expansion. Below is a structured analysis of <strong>headwinds</strong>, <strong>tailwinds</strong>, <strong>growth prospects</strong>, and <strong>key risks</strong>.</p>
+<div id="tailwinds-positive-drivers" class="section level6">
+<h6><strong>Tailwinds (Positive Drivers)</strong></h6>
+<ul>
+<li><strong>Strong Revenue &amp; Profitability Momentum</strong>: H1 FY26 revenue growth: Lenskart (+25% YoY), V2 Retail (+52% Q1), Baazar Style (+55% H1, +71% Q2), Kalamandir (+34% H1). EBITDA margins expanding (Lenskart 18.9%, V2 13.8%) due to operating leverage, volume growth (V2 +50%, Lenskart eyewear units +22%), and cost efficiencies.</li>
+<li><strong>Store Expansion &amp; Network Effects</strong>: Aggressive additions (V2: 28 Q1 stores to 216 total; Baazar: 42 H1 to 250; Kalamandir: 5 Q2). Tier 2/3 focus (Lenskart 431 cities, V2 PSF ₹960/month) drives SSSG (Lenskart 15%, V2 5-10%, Baazar 22%).</li>
+<li><strong>Omnichannel &amp; Tech Leverage</strong>: Lenskart’s AI eye-testing, app (100M+ downloads), 45% digitally influenced sales. V2 MRP sales at 92%. Premiumization via ASP/ABV rise (V2 ASP ₹303, ABV ₹901).</li>
+<li><strong>Improving Unit Economics</strong>: Store payback &lt;10 months (Lenskart), NWC days down (V2 34, Kalamandir efficient), ROE up (V2 27.8%).</li>
+<li><strong>Festive &amp; Market Tailwinds</strong>: Early Durga Puja boosted Q2 (Baazar normalized SSSG 19%).</li>
+</ul>
+</div>
+<div id="headwinds-challenges" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>Regulatory Scrutiny</strong>: Income Tax search at Go Fashion (completed); GST order on Manyavar (₹1.73 Cr ITC + penalties for FY17-20, minor impact). Potential GST revisions deferred demand (Lenskart Q2).</li>
+<li><strong>Macro Pressures</strong>: High inventory days (V2 131), working capital strain in expansions. Rent/capex costs rising (IndAS 116 adjustments noted).</li>
+<li><strong>Execution in Expansion</strong>: Store closures (V2 1 Q1, Baazar 6 H1) indicate optimization needs. International nascent (Lenskart margins 18% but investments heavy).</li>
+<li><strong>Margin Pressures</strong>: Employee/other expenses up with scale (V2 other expenses +59% YoY Q1), though offset by gross margins (29-69% range).</li>
+</ul>
+</div>
+<div id="growth-prospects-1" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Market Expansion</strong>: Eyewear (Lenskart: $9.2B India TAM, 46% first-time tests); Apparel value segment (V2/Baazar Tier 2/3 whitespace). H1 store adds signal 450+ annually (Lenskart target).</li>
+<li><strong>Category Tailwinds</strong>: Premium/progressives (Lenskart), occasions/ethnic (Manyavar implied), family value (V2 41% menswear). International (Lenskart 26% growth, $19B TAM).</li>
+<li><strong>Tech &amp; Innovation</strong>: AI (Lenskart smart glasses, GeoIQ), omnichannel (45% digital influence). Proforma adjustments show organic trends.</li>
+<li><strong>Outlook</strong>: Lenskart H1 PAT matches FY25 full-year; V2/Baazar 50-70% YoY growth sustainable via 20-40% store adds. Sector CAGR 13-20% (organized shift).</li>
+</ul>
+</div>
+<div id="key-risks-1" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<ul>
+<li><strong>Regulatory/Compliance</strong>: Ongoing probes (IT/GST) could escalate; TDS/audit impacts (Mufti AGM note).</li>
+<li><strong>Execution &amp; Competition</strong>: Rapid expansion risks cannibalization, capex overruns (Lenskart Hyderabad plant at 50% FY25 util.). Unorganized players, e-com peers.</li>
+<li><strong>Economic Sensitivity</strong>: Festive slowdown, inflation on ASPs, NWC cycles (V2 34 days but inventory high).</li>
+<li><strong>External</strong>: Geopolitical/fuel costs (international), one-offs (V2 fixed asset loss ₹2 Cr).</li>
+<li><strong>Financial</strong>: Debt (borrowings up), forex (intl ops), ESOP dilution (multiple grants).</li>
+</ul>
+<p><strong>Summary</strong>: Indian specialty retail is in a <strong>high-growth phase</strong> (20-70% YoY revenue) fueled by store/network expansion, Tier 2/3 penetration, and tech/omnichannel. Tailwinds from operating leverage and festive demand outweigh headwinds like regulations. Prospects are strong (multi-year runway, TAM $9-19B), but risks center on execution, compliance, and macros. Sector resilient, with leaders like Lenskart/V2 exemplifying scalable models. Investors should monitor Q3 festive results for sustainability.</p>
+</div>
+</div>
+<div id="investor" class="section level3">
+<h3><strong>Investor</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+</div>
+<div id="analysis-of-indian-speciality-retail-sector" class="section level3">
+<h3>Analysis of Indian Speciality Retail Sector</h3>
+<p>Using the provided documents (primarily Q2/H1 FY26 earnings transcripts, analyst meeting disclosures, and operational updates from companies like Trent, Lenskart, Aditya Birla Lifestyle Brands (ABLBL), Aditya Birla Fashion &amp; Retail (ABFRL), V2 Retail, Go Fashion, Baazar Style Retail, Credo Brands (Mufti), and others), here’s a structured analysis of the <strong>Indian Speciality Retail</strong> sector. The sector shows a <strong>mixed picture</strong>: <strong>value retail</strong> (e.g., V2, Baazar Style) is booming with aggressive expansion, while <strong>premium/specialty ethnic/apparel</strong> (e.g., ABLBL, ABFRL, Go Fashion, Mufti) faces demand softness but is investing in premiumization/digital. Key themes include GST transitions, festive shifts, tier-2/3 growth, and supply chain hiccups.</p>
+<div id="headwinds-challenges-1" class="section level6">
+<h6><strong>Headwinds (Challenges)</strong></h6>
+<ul>
+<li><strong>Muted Consumer Demand &amp; Flat SSSG</strong>: Persistent softness in footfalls and like-to-like (LTL/SSSG) growth across premium/specialty segments. Go Fashion reported flat SSSG for 10 quarters; Mufti cited muted demand; ABLBL/ABFRL noted cautious sentiment despite festive boosts. Regional drags (e.g., East floods/rains in ABLBL/ABFRL).</li>
+<li><strong>GST Transition Disruptions</strong>: Delays in wholesale/IT systems (ABLBL: Sep sales hit); price repricing (Go Fashion: 70-80% sales &lt;INR1,000 benefit, but hikes &gt;INR2,500 risk). ABFRL/others passing benefits but monitoring wedding season response.</li>
+<li><strong>Festive Calendar Shifts</strong>: Early Puja/Diwali preponed sales (ABFRL/ABLBL: Q2 boosted, Q3 normalized lower); complicates YoY comps (V2 normalized SSSG 10.3% vs. reported 23.4%).</li>
+<li><strong>Supply Chain Issues</strong>: Bangladesh delays (Mufti: ~INR20-25cr sales shift); inventory buildup/corrections (ABLBL emerging biz).</li>
+<li><strong>Store Closures/Renovations</strong>: Revenue drag from consolidations (Mufti: 13 closures H1; ABFRL/ABLBL renovations impacted Sep sales).</li>
+<li><strong>Rising Costs</strong>: Rent/depreciation up (ABFRL/ABLBL); marketing investments (Mufti: 5-7%; ABFRL doubled Pantaloons spend).</li>
+<li><strong>Execution Risks</strong>: High attrition/management churn concerns (V2 transcript defends); tech implementations (Baazar INR20-25cr capex).</li>
+</ul>
+</div>
+<div id="tailwinds-positives" class="section level6">
+<h6><strong>Tailwinds (Positives)</strong></h6>
+<ul>
+<li><strong>Tier 2/3 &amp; Small-Town Boom</strong>: Strong LTL (ABLBL: 12% retail, higher in small towns; V2: new stores 72-73% of mature PSF).</li>
+<li><strong>Value/Ethnic Segments Resilient</strong>: Explosive growth (V2: 86% YoY; Baazar: 71%; ABFRL ethnic: 20%+ LTL, Tasva 58%).</li>
+<li><strong>Private Label Momentum</strong>: Higher margins (Baazar: 58% sales, 119% YoY; ABLBL emerging profitability up).</li>
+<li><strong>Festive/Wedding/Winter Uptick</strong>: Early Puja/Diwali boosted Q2 (ABFRL/V2/Baazar); strong wedding outlook (ABLBL).</li>
+<li><strong>Digital/Omnichannel</strong>: Mufti website doubled YoY; TMRW (ABFRL) 27% growth.</li>
+<li><strong>Govt Stimuli</strong>: Income tax cuts/monetary easing aiding consumption (ABLBL/ABFRL noted small-town impact).</li>
+<li><strong>GST Benefits</strong>: Reductions &lt;INR2,500 (Go: pass-through; V2/Baazar potential volume uptick).</li>
+</ul>
+</div>
+<div id="growth-prospects-2" class="section level6">
+<h6><strong>Growth Prospects</strong></h6>
+<ul>
+<li><strong>Aggressive Expansion</strong>: V2: 130 FY26/150 FY27 stores (ROE 20%+ target); Baazar: 40-50 FY26 (250 stores now); ABFRL: Ethnic/Tasva/OWND! scaling; Trent/Lenskart investor meets signal confidence.</li>
+<li><strong>Category Diversification</strong>: Pilots in topwear/essentials (Go: INR1,000 PSF; ABFRL TCNS/Wishful); emerging brands (ABLBL: Reebok/AE 10-12% LTL).</li>
+<li><strong>Premiumization/Digital</strong>: Mufti: 20+ flagship stores, marketing ramp-up; Baazar: SAP/Infor tech stack.</li>
+<li><strong>Value Retail Underserved</strong>: Tier 2-4 runway (V2: 2,000-2,500 stores potential; Baazar PSF up 22%).</li>
+<li><strong>Seasonal Levers</strong>: H2 weddings/winter (ABFRL/ABLBL expect strong); overall sector FY26 guidance: 25-55% revenue growth (company-specific).</li>
+<li><strong>Long-Term</strong>: Organized shift, rising incomes (Technopak study in Go); 25%+ CAGR feasible in value/ethnic (V2/Baazar).</li>
+</ul>
+</div>
+<div id="key-risks-2" class="section level6">
+<h6><strong>Key Risks</strong></h6>
+<ul>
+<li><strong>Demand Slowdown Prolongs</strong>: Premium/specialty vulnerability (Go: 10-qtr flat SSSG; Mufti flattish FY26); macro weakness offsets stimuli.</li>
+<li><strong>GST Repricing Backlash</strong>: Hikes &gt;INR2,500 (ABLBL/Go: suits/blazers); input chain fluidity (V2/Mufti).</li>
+<li><strong>Execution/Supply Risks</strong>: Store ramp-up fails (V2 new stores 70% PSF target); Bangladesh disruptions recur; tech delays (Baazar).</li>
+<li><strong>Cost Pressures</strong>: Marketing/capex (Mufti 6-7%; Baazar INR20-25cr); rent/depreciation (IndAS gaps narrowing but persistent).</li>
+<li><strong>Competition/Attrition</strong>: Value (V2/Baazar vs. unorganized); premium (ABFRL ethnic vs. Manyavar); talent churn (V2).</li>
+<li><strong>Seasonality/Regional Bias</strong>: East-heavy exposure (Baazar/ABFRL Puja-dependent); weather/wedding volatility.</li>
+<li><strong>Balance Sheet</strong>: Working capital stretch (Mufti 217 days); pledges (Go).</li>
+</ul>
+</div>
+<div id="overall-summary" class="section level6">
+<h6><strong>Overall Summary</strong></h6>
+<p><strong>Bullish on Value Retail</strong>: Explosive growth (V2 86%, Baazar 71%) from tier 2-4 penetration, private labels, and aggressive expansion (100-150 stores/year). Tailwinds: Small-town surge, GST benefits &lt;INR2,500.</p>
+<p><strong>Cautious on Premium/Specialty</strong>: Muted SSSG (Go flat, Mufti flattish) amid demand softness/GST hiccups, but investments in premiumization/digital (Mufti flagships, ABFRL ethnic) position for H2/FY27 recovery (10-25% growth).</p>
+<p><strong>Sector Outlook</strong>: 20-30% revenue CAGR FY26-28 feasible (value leads); risks from demand/GST offset by organized shift, weddings, winter. <strong>Net Positive</strong>: Tailwinds &gt; headwinds; focus execution for 15-20% ROE (V2 target). Investors: Favor value scalers (V2/Baazar); monitor premium recovery (Go/Mufti).</p>
+</div>
+</div>
+<div id="meeting" class="section level3">
+<h3><strong>Meeting</strong></h3>
+<p><em>asof: 2025-12-03 </em></p>
+</div>
+<div id="indian-speciality-retail-sector-analysis-q2h1-fy26-insights" class="section level3">
+<h3>Indian Speciality Retail Sector Analysis (Q2/H1 FY26 Insights)</h3>
+<p>The Indian speciality retail sector (primarily apparel, fashion, ethnic wear, and lifestyle brands) demonstrates <strong>resilience amid macroeconomic moderation</strong>, with companies like Trent, Arvind Fashions, Vedant Fashions (Manyavar), and Brand Concepts reporting robust revenue growth (10-20% YoY). However, legacy players like ABFRL face profitability challenges post-demerger. Key insights from Q2/H1 FY26 results (Sept 2025) of ~12 listed players (Trent, ABFRL, Arvind Fashions, V2 Retail, etc.) highlight a mix of execution strengths and vulnerabilities. Below is a structured summary:</p>
+<div id="headwinds-challenges-pressuring-performance" class="section level6">
+<h6><strong>Headwinds (Challenges Pressuring Performance)</strong></h6>
+<ul>
+<li><strong>Demand Volatility &amp; Macro Slowdown</strong>: Soft consumer sentiment due to inflation, uneven monsoons, and delayed festive/wedding demand recovery. Retail LTL muted in some (e.g., Arvind Fashions 8.3%; ABFRL negative growth in continuing ops).</li>
+<li><strong>High Discounting &amp; Margin Pressure</strong>: Persistent discounting eroded gross margins in value segments (e.g., ABFRL at -6% NPM); inventory buildup (e.g., NWC days stable but high at 60 in Arvind).</li>
+<li><strong>Debt &amp; Liquidity Strain</strong>: Elevated leverage (e.g., ABFRL debt-equity NA due to losses; Trent D/E 0.35-0.38); high finance costs (Trent ₹81 Cr H1; ABFRL ₹238 Cr H1).</li>
+<li><strong>Operational Costs</strong>: Rising employee/occupancy expenses (Trent up 10-15% YoY); capex heavy expansion straining cash flows (e.g., Trent ₹1,034 Cr investing outflow H1).</li>
+<li><strong>Discontinued Ops Impact</strong>: ABFRL’s MFL demerger led to losses in continuing business (₹529 Cr H1 PAT loss).</li>
+</ul>
+</div>
+<div id="tailwinds-supportive-factors-driving-momentum" class="section level6">
+<h6><strong>Tailwinds (Supportive Factors Driving Momentum)</strong></h6>
+<ul>
+<li><strong>Revenue Momentum</strong>: Strong topline growth across peers (Trent 18% Q2; Arvind 11%; Manyavar stable; Brand Concepts 26% Q2). Direct channels (retail + online B2C) up 14-50% (Arvind online +50%).</li>
+<li><strong>Margin Expansion</strong>: Gross margins up 200bps+ (Arvind 52.5%; Trent 10.8% OPM); EBITDA growth 18-19% (Arvind ₹348 Cr H1).</li>
+<li><strong>Premiumization &amp; Adjacent Categories</strong>: 20%+ growth in footwear/accessories (Trent, Arvind); premium brands (US Polo, Arrow) outperforming.</li>
+<li><strong>Store Expansion</strong>: Aggressive EBO/FOFO additions (Trent 150+ planned; Arvind 24 Q2); net sq ft up 10-15%.</li>
+<li><strong>Policy Boost</strong>: GST reforms, wedding season tailwinds cited positively (Manyavar, Trent).</li>
+</ul>
+</div>
+<div id="growth-prospects-high-potential-opportunities" class="section level6">
+<h6><strong>Growth Prospects (High-Potential Opportunities)</strong></h6>
+<ul>
+<li><strong>Double-Digit Revenue Trajectory</strong>: 12-15% FY26 guidance (Arvind); festive/wedding boost (Manyavar Q3 optimism); adjacent categories scaling (20%+ CAGR).</li>
+<li><strong>Direct-to-Consumer Shift</strong>: Retail/online B2C share rising 100-200bps; FOFO model aids asset-light expansion (1,000+ stores targeted).</li>
+<li><strong>Digital &amp; Premium Play</strong>: Online B2C 50%+ growth; premiumization driving ASPs/margins (Trent NPM 9.3%; Arvind ROCE improving).</li>
+<li><strong>Geographic/Format Expansion</strong>: Tier-2/3 penetration; new formats (Trent Hypermarket, ABFRL ethnic push); international potential (Trent UAE).</li>
+<li><strong>EBITDA Leverage</strong>: Operating leverage from scale (Arvind margins +80bps); FCF generation via WC efficiency (NWC days 58-60).</li>
+</ul>
+</div>
+<div id="key-risks-critical-vulnerabilities-to-monitor" class="section level6">
+<h6><strong>Key Risks (Critical Vulnerabilities to Monitor)</strong></h6>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Risk Category</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Exposure Examples</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Macro/Consumer</strong></td>
+<td>Slowdown in discretionary spending; inflation/rainfall impacts.</td>
+<td>Weather hit Q2 demand (Arvind); muted LTL.</td>
+</tr>
+<tr class="even">
+<td><strong>Execution</strong></td>
+<td>Inventory glut, capex delays; store ramp-up risks.</td>
+<td>High inventories (Trent 2,224 Cr); NWC pressure.</td>
+</tr>
+<tr class="odd">
+<td><strong>Financial</strong></td>
+<td>Debt servicing (DSCR 2.5-3x); forex/volatility.</td>
+<td>ABFRL negative ratios; Trent debt up to ₹2,371 Cr.</td>
+</tr>
+<tr class="even">
+<td><strong>Competition</strong></td>
+<td>E-com/unorganized (50% market); discounting wars.</td>
+<td>Wholesale decline (Arvind -ve); MBO weakness.</td>
+</tr>
+<tr class="odd">
+<td><strong>Regulatory</strong></td>
+<td>GST changes; lease costs (Ind AS 116).</td>
+<td>High occupancy (Trent 9% rev); policy shifts.</td>
+</tr>
+<tr class="even">
+<td><strong>Company-Specific</strong></td>
+<td>Brand concentration; post-merger integration (ABFRL).</td>
+<td>Discontinued ops drag (ABFRL ₹528 Cr loss).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Mitigants</strong>: Debt coverage healthy (Trent ISCR 14-17x); ROCE focus; diversified portfolio.</p>
+</div>
+<div id="overall-summary-1" class="section level6">
+<h6><strong>Overall Summary</strong></h6>
+<ul>
+<li><strong>Sector Outlook</strong>: <strong>Positive with cautious optimism</strong> – 12-15% revenue growth FY26 feasible via direct channels/premiumization, but profitability hinges on demand recovery. Leaders (Trent, Arvind) thriving on execution; laggards (ABFRL) restructuring.</li>
+<li><strong>Valuation Context</strong>: Strong FCF/ROCE peers (Trent NPM 9%; Arvind improving) outperform; debt-heavy ones undervalued but risky.</li>
+<li><strong>Investment Thesis</strong>: Favor premium/direct-focused players; watch festive Q3 for confirmation. Risks tilted macro/competition, but tailwinds from weddings/GST reforms strong.</li>
+</ul>
+<p><em>Data aggregated from ~12 cos’ Q2/H1 FY26 filings; sector rev ~₹50,000 Cr H1 (est.).</em></p>
+</div>
+</div>
+<div id="press-release" class="section level3">
+<h3><strong>Press Release</strong></h3>
+<p><em>asof: 2025-11-29 </em></p>
+<div id="indian-specialty-retail-sector-analysis-q2h1-fy26-insights" class="section level9">
+<p class="heading">Indian Specialty Retail Sector Analysis (Q2/H1 FY26 Insights)</p>
+<p>Based on the provided press releases from key players (Trent, Lenskart, Aditya Birla entities, V2 Retail, Arvind Fashions, Go Colors, Mufti, Shankara Building Products, Praxis Home Retail), the sector shows resilient growth amid mixed demand signals. Focus areas include fashion/apparel (value to premium), eyewear, ethnic wear, and building materials/home retail. Aggregate revenue growth ~10-20% YoY (outliers: V2 Retail 86%), with EBITDA margins stable at 10-30% but pressured by spends.</p>
+<div id="tailwinds-positive-drivers-1" class="section level12">
+<p class="heading"><strong>Tailwinds (Positive Drivers)</strong></p>
+<ul>
+<li><strong>Robust Revenue &amp; Store Expansion</strong>: Strong top-line growth (Trent 17%, ABFRL 13%, Arvind Fashions 11%, V2 Retail 86%, ABLBL 4%). Aggressive store additions (Trent: 63 net; V2: 71 net; Go Colors: 36 net; Praxis: 5 new HomeTown stores). Network scales to 1000+ stores (Trent), 3256 (ABLBL), 259 (V2).</li>
+<li><strong>Margin Resilience &amp; Profitability</strong>: EBITDA up 10-150% YoY (Trent 16%, V2 158%, Arvind 18%). Gross margins stable/improving (52-62% range). PAT surges in most (V2 990% YoY).</li>
+<li><strong>Consumer &amp; Policy Boost</strong>: Positive festive/wedding season outlook; GST rate cuts (Trent, Mufti) expected to spur demand. SSSG positive in leaders (ABLBL 12%, V2 23.4%, Arvind 8.3%).</li>
+<li><strong>Innovation &amp; Channels</strong>: New brands/launches (Trent’s Burnt Toast, ABFRL’s OWND/Galeries Lafayette, Lenskart-Popmart collab). Omni-channel/e-com growth (&gt;20% in ABFRL/TMRW).</li>
+<li><strong>Own Brands &amp; Efficiency</strong>: Star (Trent) own brands &gt;73%; full-price sales 92-95% (V2, Go Colors).</li>
+</ul>
+</div>
+<div id="headwinds-challenges-2" class="section level12">
+<p class="heading"><strong>Headwinds (Challenges)</strong></p>
+<ul>
+<li><strong>Demand Softness</strong>: Muted footfalls/SSSG dips (Go Colors -2.4%, Mufti soft demand). Subdued non-steel/building materials (Shankara).</li>
+<li><strong>Margin Pressures</strong>: Ad spends up (ABFRL +200bps, ABLBL +120bps), leading to EBITDA dips (ABFRL PAT -295 Cr). Supply disruptions (Mufti Bangladesh delay).</li>
+<li><strong>Competition &amp; Seasonality</strong>: Intense rivalry (Trent); festival shifts (V2 Durga Puja normalization).</li>
+<li><strong>Working Capital Strain</strong>: High days (Go Colors 135, Mufti 217; inventory 99 days).</li>
+<li><strong>Losses in Segments</strong>: ABFRL/TMRW/Pantaloons losses; exceptional items (ABLBL/ABFRL).</li>
+</ul>
+</div>
+<div id="growth-prospects-3" class="section level12">
+<p class="heading"><strong>Growth Prospects</strong></p>
+<ul>
+<li><strong>Market Expansion</strong>: Tier 2/3/rural penetration (V2 23 states); international (Trent UAE, Lenskart Singapore). Target: 80-90 net stores (Go Colors), 1M+ tonne steel (Shankara).</li>
+<li><strong>Premiumization &amp; Diversification</strong>: Ethnic/luxury surges (ABFRL &gt;30% designer-led); value fashion (Zudio/Westside); kids/home (Praxis Smartsters).</li>
+<li><strong>Digital/Omni Shift</strong>: E-com share &gt;15% (ABFRL); D2C doubling (Mufti). Tech-led (Lenskart AI try-on).</li>
+<li><strong>Scale &amp; Efficiency</strong>: Portfolio resilience (Trent 14M sq ft); demerger unlocks (Shankara). FY26 guidance: Sustained 10-20% revenue, improving LTL/SSSG.</li>
+<li><strong>Macro Tail</strong>: Urbanization, weddings, GST benefits; sector TAM huge (value fashion, ethnic, home retail).</li>
+</ul>
+</div>
+<div id="key-risks-3" class="section level12">
+<p class="heading"><strong>Key Risks</strong></p>
+<ul>
+<li><strong>Macro/Consumer</strong>: Economic slowdown, inflation curbing discretionary spend (all disclaimers highlight).</li>
+<li><strong>Execution</strong>: Inventory provisioning, supply chain (Bangladesh reliance), capex for expansions.</li>
+<li><strong>Competition/Regulatory</strong>: Intensifying rivalry, GST/policy shifts; forward-looking uncertainties (disclaimers).</li>
+<li><strong>Financial</strong>: High debt/working capital; EBITDA volatility from ad spends/one-offs. Losses in new/turnaround biz (ABFRL TCNS, TMRW).</li>
+<li><strong>External</strong>: Geopolitical (supply), seasonality (festive dependency), forex (international forays).</li>
+</ul>
+<p><strong>Overall Summary</strong>: Sector resilient with mid-teens growth, led by store scaling and innovation, but headwinds from demand softness/marketing costs cap margins. Leaders (Trent, V2, Arvind) outperform via efficiency; laggards (ABFRL, Mufti) focus on turnaround. Prospects bright on policy/digital tailwinds, but risks tied to consumption revival. Watch festive Q3 for momentum.</p>
+</div>
+</div>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
