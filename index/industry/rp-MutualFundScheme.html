@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-03-06" />
+
+<title>Mutual Fund Scheme</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Mutual Fund Scheme</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">March 6, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/MutualFundScheme.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/MutualFundScheme.fan.CAP_WT.png" /></p>
+<p><img src="plots/MutualFundScheme.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/MutualFundScheme.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/MutualFundScheme.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/MutualFundScheme.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/MutualFundScheme.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-360515f51a7c21dbcbe4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-360515f51a7c21dbcbe4">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-2.61%","-1.1%"],["-2.18%","0.27%"],["-0.12%","3.76%"],["4.39%","9.44%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/MutualFundScheme.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/MutualFundScheme.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8df4ef1835440719db99" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8df4ef1835440719db99">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.SETFNIF50.html\" target=\"_blank\">SETFNIF50<\/a>","NIFTYBETA","<a href=\"/reports02/eq-in/risk/in.GOLDBEES.html\" target=\"_blank\">GOLDBEES<\/a>","<a href=\"/reports02/eq-in/risk/in.NIFTYBEES.html\" target=\"_blank\">NIFTYBEES<\/a>","SENSEXBETA","<a href=\"/reports02/eq-in/risk/in.NIFTYIETF.html\" target=\"_blank\">NIFTYIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.SILVERBEES.html\" target=\"_blank\">SILVERBEES<\/a>","<a href=\"/reports02/eq-in/risk/in.SENSEXIETF.html\" target=\"_blank\">SENSEXIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.CPSEETF.html\" target=\"_blank\">CPSEETF<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCGOLD.html\" target=\"_blank\">HDFCGOLD<\/a>","<a href=\"/reports02/eq-in/risk/in.SILVERIETF.html\" target=\"_blank\">SILVERIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.GOLD1.html\" target=\"_blank\">GOLD1<\/a>","<a href=\"/reports02/eq-in/risk/in.EBBETF0431.html\" target=\"_blank\">EBBETF0431<\/a>","<a href=\"/reports02/eq-in/risk/in.LIQUIDBEES.html\" target=\"_blank\">LIQUIDBEES<\/a>","<a href=\"/reports02/eq-in/risk/in.MON100.html\" target=\"_blank\">MON100<\/a>","<a href=\"/reports02/eq-in/risk/in.BBETF0432.html\" target=\"_blank\">BBETF0432<\/a>","<a href=\"/reports02/eq-in/risk/in.LIQUIDCASE.html\" target=\"_blank\">LIQUIDCASE<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCSILVER.html\" target=\"_blank\">HDFCSILVER<\/a>","<a href=\"/reports02/eq-in/risk/in.BANKBEES.html\" target=\"_blank\">BANKBEES<\/a>","<a href=\"/reports02/eq-in/risk/in.JUNIORBEES.html\" target=\"_blank\">JUNIORBEES<\/a>","<a href=\"/reports02/eq-in/risk/in.SBISILVER.html\" target=\"_blank\">SBISILVER<\/a>","EBBETF0433","<a href=\"/reports02/eq-in/risk/in.BANKNIFTY1.html\" target=\"_blank\">BANKNIFTY1<\/a>","<a href=\"/reports02/eq-in/risk/in.TATAGOLD.html\" target=\"_blank\">TATAGOLD<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCNIFBAN.html\" target=\"_blank\">HDFCNIFBAN<\/a>","<a href=\"/reports02/eq-in/risk/in.TATSILV.html\" target=\"_blank\">TATSILV<\/a>","<a href=\"/reports02/eq-in/risk/in.AXISGOLD.html\" target=\"_blank\">AXISGOLD<\/a>","<a href=\"/reports02/eq-in/risk/in.SDL26BEES.html\" target=\"_blank\">SDL26BEES<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCNIFTY.html\" target=\"_blank\">HDFCNIFTY<\/a>","<a href=\"/reports02/eq-in/risk/in.NIFTYETF.html\" target=\"_blank\">NIFTYETF<\/a>","<a href=\"/reports02/eq-in/risk/in.PSUBNKBEES.html\" target=\"_blank\">PSUBNKBEES<\/a>","GOLDBETA","BANKBETA","<a href=\"/reports02/eq-in/risk/in.MAFANG.html\" target=\"_blank\">MAFANG<\/a>","<a href=\"/reports02/eq-in/risk/in.LOWVOLIETF.html\" target=\"_blank\">LOWVOLIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.SILVER.html\" target=\"_blank\">SILVER<\/a>","<a href=\"/reports02/eq-in/risk/in.ITBEES.html\" target=\"_blank\">ITBEES<\/a>","<a href=\"/reports02/eq-in/risk/in.GOLDETF.html\" target=\"_blank\">GOLDETF<\/a>","<a href=\"/reports02/eq-in/risk/in.BSLNIFTY.html\" target=\"_blank\">BSLNIFTY<\/a>","<a href=\"/reports02/eq-in/risk/in.NIFTY1.html\" target=\"_blank\">NIFTY1<\/a>","<a href=\"/reports02/eq-in/risk/in.BANKIETF.html\" target=\"_blank\">BANKIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.PVTBANIETF.html\" target=\"_blank\">PVTBANIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.MID150BEES.html\" target=\"_blank\">MID150BEES<\/a>","ABSLBANETF","<a href=\"/reports02/eq-in/risk/in.LTGILTBEES.html\" target=\"_blank\">LTGILTBEES<\/a>","<a href=\"/reports02/eq-in/risk/in.PSUBANK.html\" target=\"_blank\">PSUBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.SILVER1.html\" target=\"_blank\">SILVER1<\/a>","<a href=\"/reports02/eq-in/risk/in.GOLDCASE.html\" target=\"_blank\">GOLDCASE<\/a>","GOLDADD","NEXT50BETA","<a href=\"/reports02/eq-in/risk/in.AXISILVER.html\" target=\"_blank\">AXISILVER<\/a>","<a href=\"/reports02/eq-in/risk/in.SILVERADD.html\" target=\"_blank\">SILVERADD<\/a>","<a href=\"/reports02/eq-in/risk/in.LIQUIDADD.html\" target=\"_blank\">LIQUIDADD<\/a>","<a href=\"/reports02/eq-in/risk/in.MOGOLD.html\" target=\"_blank\">MOGOLD<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCSML250.html\" target=\"_blank\">HDFCSML250<\/a>","<a href=\"/reports02/eq-in/risk/in.LIQUIDIETF.html\" target=\"_blank\">LIQUIDIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.MSCIINDIA.html\" target=\"_blank\">MSCIINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.LIQUID1.html\" target=\"_blank\">LIQUID1<\/a>","<a href=\"/reports02/eq-in/risk/in.ESILVER.html\" target=\"_blank\">ESILVER<\/a>","SILVERBETA","<a href=\"/reports02/eq-in/risk/in.ALPL30IETF.html\" target=\"_blank\">ALPL30IETF<\/a>","<a href=\"/reports02/eq-in/risk/in.SBIBPB.html\" target=\"_blank\">SBIBPB<\/a>","<a href=\"/reports02/eq-in/risk/in.EGOLD.html\" target=\"_blank\">EGOLD<\/a>","<a href=\"/reports02/eq-in/risk/in.LICMFGOLD.html\" target=\"_blank\">LICMFGOLD<\/a>","<a href=\"/reports02/eq-in/risk/in.MIDCAPETF.html\" target=\"_blank\">MIDCAPETF<\/a>","<a href=\"/reports02/eq-in/risk/in.SILVERCASE.html\" target=\"_blank\">SILVERCASE<\/a>","<a href=\"/reports02/eq-in/risk/in.MODEFENCE.html\" target=\"_blank\">MODEFENCE<\/a>","<a href=\"/reports02/eq-in/risk/in.AXISNIFTY.html\" target=\"_blank\">AXISNIFTY<\/a>","<a href=\"/reports02/eq-in/risk/in.MASPTOP50.html\" target=\"_blank\">MASPTOP50<\/a>","<a href=\"/reports02/eq-in/risk/in.EQUAL50ADD.html\" target=\"_blank\">EQUAL50ADD<\/a>","<a href=\"/reports02/eq-in/risk/in.NEXT50.html\" target=\"_blank\">NEXT50<\/a>","<a href=\"/reports02/eq-in/risk/in.MOSILVER.html\" target=\"_blank\">MOSILVER<\/a>","<a href=\"/reports02/eq-in/risk/in.PHARMABEES.html\" target=\"_blank\">PHARMABEES<\/a>","<a href=\"/reports02/eq-in/risk/in.SILVERAG.html\" target=\"_blank\">SILVERAG<\/a>","<a href=\"/reports02/eq-in/risk/in.AXISBPSETF.html\" target=\"_blank\">AXISBPSETF<\/a>","<a href=\"/reports02/eq-in/risk/in.METALIETF.html\" target=\"_blank\">METALIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.LIQUIDPLUS.html\" target=\"_blank\">LIQUIDPLUS<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCSENSEX.html\" target=\"_blank\">HDFCSENSEX<\/a>","<a href=\"/reports02/eq-in/risk/in.CASHIETF.html\" target=\"_blank\">CASHIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.LICNETFN50.html\" target=\"_blank\">LICNETFN50<\/a>","<a href=\"/reports02/eq-in/risk/in.TOP10ADD.html\" target=\"_blank\">TOP10ADD<\/a>","<a href=\"/reports02/eq-in/risk/in.FMCGIETF.html\" target=\"_blank\">FMCGIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.SMALLCAP.html\" target=\"_blank\">SMALLCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.MOM100.html\" target=\"_blank\">MOM100<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCPVTBAN.html\" target=\"_blank\">HDFCPVTBAN<\/a>","<a href=\"/reports02/eq-in/risk/in.NETF.html\" target=\"_blank\">NETF<\/a>","<a href=\"/reports02/eq-in/risk/in.GSEC10IETF.html\" target=\"_blank\">GSEC10IETF<\/a>","BANKADD","<a href=\"/reports02/eq-in/risk/in.ALPHA.html\" target=\"_blank\">ALPHA<\/a>","<a href=\"/reports02/eq-in/risk/in.MIDCAPIETF.html\" target=\"_blank\">MIDCAPIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.LIQUIDBETF.html\" target=\"_blank\">LIQUIDBETF<\/a>","<a href=\"/reports02/eq-in/risk/in.LICNMID100.html\" target=\"_blank\">LICNMID100<\/a>","<a href=\"/reports02/eq-in/risk/in.MOM30IETF.html\" target=\"_blank\">MOM30IETF<\/a>","<a href=\"/reports02/eq-in/risk/in.PVTBANKADD.html\" target=\"_blank\">PVTBANKADD<\/a>","<a href=\"/reports02/eq-in/risk/in.LIQUID.html\" target=\"_blank\">LIQUID<\/a>","<a href=\"/reports02/eq-in/risk/in.GROWWGOLD.html\" target=\"_blank\">GROWWGOLD<\/a>","<a href=\"/reports02/eq-in/risk/in.MAHKTECH.html\" target=\"_blank\">MAHKTECH<\/a>","<a href=\"/reports02/eq-in/risk/in.BFSI.html\" target=\"_blank\">BFSI<\/a>","<a href=\"/reports02/eq-in/risk/in.ITIETF.html\" target=\"_blank\">ITIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.SBIETFPB.html\" target=\"_blank\">SBIETFPB<\/a>","<a href=\"/reports02/eq-in/risk/in.METAL.html\" target=\"_blank\">METAL<\/a>","<a href=\"/reports02/eq-in/risk/in.BANKBETF.html\" target=\"_blank\">BANKBETF<\/a>","<a href=\"/reports02/eq-in/risk/in.AXISBNKETF.html\" target=\"_blank\">AXISBNKETF<\/a>","<a href=\"/reports02/eq-in/risk/in.AUTOBEES.html\" target=\"_blank\">AUTOBEES<\/a>","<a href=\"/reports02/eq-in/risk/in.ALPHAETF.html\" target=\"_blank\">ALPHAETF<\/a>","<a href=\"/reports02/eq-in/risk/in.INFRAIETF.html\" target=\"_blank\">INFRAIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.IT.html\" target=\"_blank\">IT<\/a>","<a href=\"/reports02/eq-in/risk/in.MIDSMALL.html\" target=\"_blank\">MIDSMALL<\/a>","<a href=\"/reports02/eq-in/risk/in.GROWWSLVR.html\" target=\"_blank\">GROWWSLVR<\/a>","<a href=\"/reports02/eq-in/risk/in.BBNPPGOLD.html\" target=\"_blank\">BBNPPGOLD<\/a>","<a href=\"/reports02/eq-in/risk/in.NIF100BEES.html\" target=\"_blank\">NIF100BEES<\/a>","BSLSENETFG","<a href=\"/reports02/eq-in/risk/in.GROWWDEFNC.html\" target=\"_blank\">GROWWDEFNC<\/a>","<a href=\"/reports02/eq-in/risk/in.OILIETF.html\" target=\"_blank\">OILIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.MOMENTUM50.html\" target=\"_blank\">MOMENTUM50<\/a>","<a href=\"/reports02/eq-in/risk/in.FINIETF.html\" target=\"_blank\">FINIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.UNIONGOLD.html\" target=\"_blank\">UNIONGOLD<\/a>","<a href=\"/reports02/eq-in/risk/in.MOREALTY.html\" target=\"_blank\">MOREALTY<\/a>","<a href=\"/reports02/eq-in/risk/in.GROWWEV.html\" target=\"_blank\">GROWWEV<\/a>","<a href=\"/reports02/eq-in/risk/in.BANKETF.html\" target=\"_blank\">BANKETF<\/a>","<a href=\"/reports02/eq-in/risk/in.MAKEINDIA.html\" target=\"_blank\">MAKEINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.PSUBANKADD.html\" target=\"_blank\">PSUBANKADD<\/a>","<a href=\"/reports02/eq-in/risk/in.GILT5YBEES.html\" target=\"_blank\">GILT5YBEES<\/a>","<a href=\"/reports02/eq-in/risk/in.ENERGY.html\" target=\"_blank\">ENERGY<\/a>","NIFTYADD","<a href=\"/reports02/eq-in/risk/in.MONIFTY500.html\" target=\"_blank\">MONIFTY500<\/a>","<a href=\"/reports02/eq-in/risk/in.MID150CASE.html\" target=\"_blank\">MID150CASE<\/a>","<a href=\"/reports02/eq-in/risk/in.CONSUMBEES.html\" target=\"_blank\">CONSUMBEES<\/a>","<a href=\"/reports02/eq-in/risk/in.AUTOIETF.html\" target=\"_blank\">AUTOIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.NV20IETF.html\" target=\"_blank\">NV20IETF<\/a>","<a href=\"/reports02/eq-in/risk/in.TECH.html\" target=\"_blank\">TECH<\/a>","<a href=\"/reports02/eq-in/risk/in.NIFTYBETF.html\" target=\"_blank\">NIFTYBETF<\/a>","<a href=\"/reports02/eq-in/risk/in.MIDCAP.html\" target=\"_blank\">MIDCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.INFRABEES.html\" target=\"_blank\">INFRABEES<\/a>","<a href=\"/reports02/eq-in/risk/in.LOWVOL1.html\" target=\"_blank\">LOWVOL1<\/a>","<a href=\"/reports02/eq-in/risk/in.QUAL30IETF.html\" target=\"_blank\">QUAL30IETF<\/a>","<a href=\"/reports02/eq-in/risk/in.MOSMALL250.html\" target=\"_blank\">MOSMALL250<\/a>","<a href=\"/reports02/eq-in/risk/in.TNIDETF.html\" target=\"_blank\">TNIDETF<\/a>","<a href=\"/reports02/eq-in/risk/in.NIF100IETF.html\" target=\"_blank\">NIF100IETF<\/a>","<a href=\"/reports02/eq-in/risk/in.MOGSEC.html\" target=\"_blank\">MOGSEC<\/a>","<a href=\"/reports02/eq-in/risk/in.AXISTECETF.html\" target=\"_blank\">AXISTECETF<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCMID150.html\" target=\"_blank\">HDFCMID150<\/a>","<a href=\"/reports02/eq-in/risk/in.HEALTHIETF.html\" target=\"_blank\">HEALTHIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.EVINDIA.html\" target=\"_blank\">EVINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.NV20BEES.html\" target=\"_blank\">NV20BEES<\/a>","<a href=\"/reports02/eq-in/risk/in.GOLD360.html\" target=\"_blank\">GOLD360<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCNEXT50.html\" target=\"_blank\">HDFCNEXT50<\/a>","<a href=\"/reports02/eq-in/risk/in.MOVALUE.html\" target=\"_blank\">MOVALUE<\/a>","<a href=\"/reports02/eq-in/risk/in.ITETF.html\" target=\"_blank\">ITETF<\/a>","<a href=\"/reports02/eq-in/risk/in.EQUAL50.html\" target=\"_blank\">EQUAL50<\/a>","<a href=\"/reports02/eq-in/risk/in.GROWWRAIL.html\" target=\"_blank\">GROWWRAIL<\/a>","<a href=\"/reports02/eq-in/risk/in.ELM250.html\" target=\"_blank\">ELM250<\/a>","<a href=\"/reports02/eq-in/risk/in.AXSENSEX.html\" target=\"_blank\">AXSENSEX<\/a>","<a href=\"/reports02/eq-in/risk/in.TOP100CASE.html\" target=\"_blank\">TOP100CASE<\/a>","<a href=\"/reports02/eq-in/risk/in.PSUBNKIETF.html\" target=\"_blank\">PSUBNKIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.MOCAPITAL.html\" target=\"_blank\">MOCAPITAL<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCMOMENT.html\" target=\"_blank\">HDFCMOMENT<\/a>","<a href=\"/reports02/eq-in/risk/in.MOMOMENTUM.html\" target=\"_blank\">MOMOMENTUM<\/a>","<a href=\"/reports02/eq-in/risk/in.COMMOIETF.html\" target=\"_blank\">COMMOIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCNIFIT.html\" target=\"_blank\">HDFCNIFIT<\/a>","GROWWPOWER","<a href=\"/reports02/eq-in/risk/in.LIQGRWBEES.html\" target=\"_blank\">LIQGRWBEES<\/a>","<a href=\"/reports02/eq-in/risk/in.AONELIQUID.html\" target=\"_blank\">AONELIQUID<\/a>","<a href=\"/reports02/eq-in/risk/in.ESG.html\" target=\"_blank\">ESG<\/a>","<a href=\"/reports02/eq-in/risk/in.LTGILTCASE.html\" target=\"_blank\">LTGILTCASE<\/a>","<a href=\"/reports02/eq-in/risk/in.MON50EQUAL.html\" target=\"_blank\">MON50EQUAL<\/a>","<a href=\"/reports02/eq-in/risk/in.MIDQ50ADD.html\" target=\"_blank\">MIDQ50ADD<\/a>","ITADD","<a href=\"/reports02/eq-in/risk/in.GSEC10YEAR.html\" target=\"_blank\">GSEC10YEAR<\/a>","<a href=\"/reports02/eq-in/risk/in.IVZINNIFTY.html\" target=\"_blank\">IVZINNIFTY<\/a>","<a href=\"/reports02/eq-in/risk/in.MIDSELIETF.html\" target=\"_blank\">MIDSELIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.AONEGOLD.html\" target=\"_blank\">AONEGOLD<\/a>","<a href=\"/reports02/eq-in/risk/in.NV20.html\" target=\"_blank\">NV20<\/a>","<a href=\"/reports02/eq-in/risk/in.GROWWLIQID.html\" target=\"_blank\">GROWWLIQID<\/a>","<a href=\"/reports02/eq-in/risk/in.QNIFTY.html\" target=\"_blank\">QNIFTY<\/a>","<a href=\"/reports02/eq-in/risk/in.CHOICEGOLD.html\" target=\"_blank\">CHOICEGOLD<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCNIF100.html\" target=\"_blank\">HDFCNIF100<\/a>","<a href=\"/reports02/eq-in/risk/in.DIVOPPBEES.html\" target=\"_blank\">DIVOPPBEES<\/a>","<a href=\"/reports02/eq-in/risk/in.SBIETFIT.html\" target=\"_blank\">SBIETFIT<\/a>","<a href=\"/reports02/eq-in/risk/in.MOLOWVOL.html\" target=\"_blank\">MOLOWVOL<\/a>","<a href=\"/reports02/eq-in/risk/in.BANKPSU.html\" target=\"_blank\">BANKPSU<\/a>","<a href=\"/reports02/eq-in/risk/in.HEALTHY.html\" target=\"_blank\">HEALTHY<\/a>","<a href=\"/reports02/eq-in/risk/in.MULTICAP.html\" target=\"_blank\">MULTICAP<\/a>","<a href=\"/reports02/eq-in/risk/in.SBILIQETF.html\" target=\"_blank\">SBILIQETF<\/a>","HDFCLIQUID","<a href=\"/reports02/eq-in/risk/in.LIQUIDSBI.html\" target=\"_blank\">LIQUIDSBI<\/a>","<a href=\"/reports02/eq-in/risk/in.MOM50.html\" target=\"_blank\">MOM50<\/a>","<a href=\"/reports02/eq-in/risk/in.SILVER360.html\" target=\"_blank\">SILVER360<\/a>","<a href=\"/reports02/eq-in/risk/in.CONSUMIETF.html\" target=\"_blank\">CONSUMIETF<\/a>","MOENERGY","<a href=\"/reports02/eq-in/risk/in.CHEMICAL.html\" target=\"_blank\">CHEMICAL<\/a>","<a href=\"/reports02/eq-in/risk/in.SHARIABEES.html\" target=\"_blank\">SHARIABEES<\/a>","ABSL10BANK","<a href=\"/reports02/eq-in/risk/in.LOWVOL.html\" target=\"_blank\">LOWVOL<\/a>","<a href=\"/reports02/eq-in/risk/in.EVIETF.html\" target=\"_blank\">EVIETF<\/a>","<a href=\"/reports02/eq-in/risk/in.ABGSEC.html\" target=\"_blank\">ABGSEC<\/a>","<a href=\"/reports02/eq-in/risk/in.MOMENTUM.html\" target=\"_blank\">MOMENTUM<\/a>","<a href=\"/reports02/eq-in/risk/in.NEXT30ADD.html\" target=\"_blank\">NEXT30ADD<\/a>","<a href=\"/reports02/eq-in/risk/in.MOHEALTH.html\" target=\"_blank\">MOHEALTH<\/a>","<a href=\"/reports02/eq-in/risk/in.MNC.html\" target=\"_blank\">MNC<\/a>","<a href=\"/reports02/eq-in/risk/in.CONSUMER.html\" target=\"_blank\">CONSUMER<\/a>","<a href=\"/reports02/eq-in/risk/in.AONETOTAL.html\" target=\"_blank\">AONETOTAL<\/a>","<a href=\"/reports02/eq-in/risk/in.SML100CASE.html\" target=\"_blank\">SML100CASE<\/a>","<a href=\"/reports02/eq-in/risk/in.VAL30IETF.html\" target=\"_blank\">VAL30IETF<\/a>","<a href=\"/reports02/eq-in/risk/in.LIQUIDSHRI.html\" target=\"_blank\">LIQUIDSHRI<\/a>","<a href=\"/reports02/eq-in/risk/in.ELIQUID.html\" target=\"_blank\">ELIQUID<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCLOWVOL.html\" target=\"_blank\">HDFCLOWVOL<\/a>","<a href=\"/reports02/eq-in/risk/in.CONS.html\" target=\"_blank\">CONS<\/a>","DEFENCE","<a href=\"/reports02/eq-in/risk/in.GROWWMETAL.html\" target=\"_blank\">GROWWMETAL<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCVALUE.html\" target=\"_blank\">HDFCVALUE<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCPSUBK.html\" target=\"_blank\">HDFCPSUBK<\/a>","<a href=\"/reports02/eq-in/risk/in.GSEC10ABSL.html\" target=\"_blank\">GSEC10ABSL<\/a>","<a href=\"/reports02/eq-in/risk/in.SBINEQWETF.html\" target=\"_blank\">SBINEQWETF<\/a>","<a href=\"/reports02/eq-in/risk/in.EMULTIMQ.html\" target=\"_blank\">EMULTIMQ<\/a>","SNXT50BETA","<a href=\"/reports02/eq-in/risk/in.ABSLLIQUID.html\" target=\"_blank\">ABSLLIQUID<\/a>","<a href=\"/reports02/eq-in/risk/in.SENSEXETF.html\" target=\"_blank\">SENSEXETF<\/a>","<a href=\"/reports02/eq-in/risk/in.SMALL250.html\" target=\"_blank\">SMALL250<\/a>","<a href=\"/reports02/eq-in/risk/in.AXISVALUE.html\" target=\"_blank\">AXISVALUE<\/a>","<a href=\"/reports02/eq-in/risk/in.MOMIDMTM.html\" target=\"_blank\">MOMIDMTM<\/a>","<a href=\"/reports02/eq-in/risk/in.NIFTYQLITY.html\" target=\"_blank\">NIFTYQLITY<\/a>","TWCGOLDETF","GILT5BETA","<a href=\"/reports02/eq-in/risk/in.GROWWNET.html\" target=\"_blank\">GROWWNET<\/a>","GILT10BETA","<a href=\"/reports02/eq-in/risk/in.NIFTYCASE.html\" target=\"_blank\">NIFTYCASE<\/a>","<a href=\"/reports02/eq-in/risk/in.SBIETFCON.html\" target=\"_blank\">SBIETFCON<\/a>","<a href=\"/reports02/eq-in/risk/in.AXISHCETF.html\" target=\"_blank\">AXISHCETF<\/a>","<a href=\"/reports02/eq-in/risk/in.ABSLPSE.html\" target=\"_blank\">ABSLPSE<\/a>","<a href=\"/reports02/eq-in/risk/in.GROWWMOM50.html\" target=\"_blank\">GROWWMOM50<\/a>","<a href=\"/reports02/eq-in/risk/in.GROWWCAPM.html\" target=\"_blank\">GROWWCAPM<\/a>","<a href=\"/reports02/eq-in/risk/in.GSEC5IETF.html\" target=\"_blank\">GSEC5IETF<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCBSE500.html\" target=\"_blank\">HDFCBSE500<\/a>","<a href=\"/reports02/eq-in/risk/in.GROWWNIFTY.html\" target=\"_blank\">GROWWNIFTY<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCQUAL.html\" target=\"_blank\">HDFCQUAL<\/a>","<a href=\"/reports02/eq-in/risk/in.MOQUALITY.html\" target=\"_blank\">MOQUALITY<\/a>","<a href=\"/reports02/eq-in/risk/in.INTERNET.html\" target=\"_blank\">INTERNET<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCGROWTH.html\" target=\"_blank\">HDFCGROWTH<\/a>","GROWWPSE","<a href=\"/reports02/eq-in/risk/in.SELECTIPO.html\" target=\"_blank\">SELECTIPO<\/a>","<a href=\"/reports02/eq-in/risk/in.EQUAL200.html\" target=\"_blank\">EQUAL200<\/a>","<a href=\"/reports02/eq-in/risk/in.AONENIFTY.html\" target=\"_blank\">AONENIFTY<\/a>","<a href=\"/reports02/eq-in/risk/in.ENIFTY.html\" target=\"_blank\">ENIFTY<\/a>","<a href=\"/reports02/eq-in/risk/in.ECAPINSURE.html\" target=\"_blank\">ECAPINSURE<\/a>","<a href=\"/reports02/eq-in/risk/in.ESENSEX.html\" target=\"_blank\">ESENSEX<\/a>","<a href=\"/reports02/eq-in/risk/in.GROWWN200.html\" target=\"_blank\">GROWWN200<\/a>","<a href=\"/reports02/eq-in/risk/in.SILVERBND.html\" target=\"_blank\">SILVERBND<\/a>","<a href=\"/reports02/eq-in/risk/in.EBANKNIFTY.html\" target=\"_blank\">EBANKNIFTY<\/a>","<a href=\"/reports02/eq-in/risk/in.HEALTHADD.html\" target=\"_blank\">HEALTHADD<\/a>","<a href=\"/reports02/eq-in/risk/in.GROWWSC250.html\" target=\"_blank\">GROWWSC250<\/a>","<a href=\"/reports02/eq-in/risk/in.AXISCETF.html\" target=\"_blank\">AXISCETF<\/a>","MIDCAPBETA","ABSLMSCIN","<a href=\"/reports02/eq-in/risk/in.GROWWRLTY.html\" target=\"_blank\">GROWWRLTY<\/a>","<a href=\"/reports02/eq-in/risk/in.FLEXIADD.html\" target=\"_blank\">FLEXIADD<\/a>","<a href=\"/reports02/eq-in/risk/in.GOLDBND.html\" target=\"_blank\">GOLDBND<\/a>","<a href=\"/reports02/eq-in/risk/in.MANUFGBEES.html\" target=\"_blank\">MANUFGBEES<\/a>","MONIFTY100","NEXT50ETF","<a href=\"/reports02/eq-in/risk/in.TOP20.html\" target=\"_blank\">TOP20<\/a>","GROWWHOSPI","<a href=\"/reports02/eq-in/risk/in.DIVIDEND.html\" target=\"_blank\">DIVIDEND<\/a>","<a href=\"/reports02/eq-in/risk/in.MIDCAPADD.html\" target=\"_blank\">MIDCAPADD<\/a>","<a href=\"/reports02/eq-in/risk/in.SENSEXADD.html\" target=\"_blank\">SENSEXADD<\/a>","<a href=\"/reports02/eq-in/risk/in.NIFTY100EW.html\" target=\"_blank\">NIFTY100EW<\/a>","<a href=\"/reports02/eq-in/risk/in.TOP15IETF.html\" target=\"_blank\">TOP15IETF<\/a>","<a href=\"/reports02/eq-in/risk/in.GROWWNXT50.html\" target=\"_blank\">GROWWNXT50<\/a>","<a href=\"/reports02/eq-in/risk/in.MOTOUR.html\" target=\"_blank\">MOTOUR<\/a>","GROWWCHEM","NEXT50ADD","INFRA","HEALTHCARE","<a href=\"/reports02/eq-in/risk/in.SMALLADD.html\" target=\"_blank\">SMALLADD<\/a>","<a href=\"/reports02/eq-in/risk/in.AONETMMQ50.html\" target=\"_blank\">AONETMMQ50<\/a>","<a href=\"/reports02/eq-in/risk/in.MOMENTUM30.html\" target=\"_blank\">MOMENTUM30<\/a>","<a href=\"/reports02/eq-in/risk/in.MID150.html\" target=\"_blank\">MID150<\/a>","<a href=\"/reports02/eq-in/risk/in.GROWWMC150.html\" target=\"_blank\">GROWWMC150<\/a>","<a href=\"/reports02/eq-in/risk/in.MOALPHA50.html\" target=\"_blank\">MOALPHA50<\/a>","AONESILVER","ITBETA","<a href=\"/reports02/eq-in/risk/in.MOSERVICE.html\" target=\"_blank\">MOSERVICE<\/a>","<a href=\"/reports02/eq-in/risk/in.MOIPO.html\" target=\"_blank\">MOIPO<\/a>","<a href=\"/reports02/eq-in/risk/in.SNXT30BEES.html\" target=\"_blank\">SNXT30BEES<\/a>","<a href=\"/reports02/eq-in/risk/in.GROWWLOVOL.html\" target=\"_blank\">GROWWLOVOL<\/a>","<a href=\"/reports02/eq-in/risk/in.BBNPNBETF.html\" target=\"_blank\">BBNPNBETF<\/a>","<a href=\"/reports02/eq-in/risk/in.IDFNIFTYET.html\" target=\"_blank\">IDFNIFTYET<\/a>","<a href=\"/reports02/eq-in/risk/in.MSCIADD.html\" target=\"_blank\">MSCIADD<\/a>","<a href=\"/reports02/eq-in/risk/in.MOMNC.html\" target=\"_blank\">MOMNC<\/a>","<a href=\"/reports02/eq-in/risk/in.MONEXT50.html\" target=\"_blank\">MONEXT50<\/a>","QUALITY30","<a href=\"/reports02/eq-in/risk/in.MOINFRA.html\" target=\"_blank\">MOINFRA<\/a>","<a href=\"/reports02/eq-in/risk/in.MOPSE.html\" target=\"_blank\">MOPSE<\/a>","<a href=\"/reports02/eq-in/risk/in.MOMGF.html\" target=\"_blank\">MOMGF<\/a>"],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[0.2359550402300269,0.0760549244513439,0.06607188981810072,0.06358207193868562,0.05849767057197338,0.04179839258730288,0.0385356586954007,0.0294005961993568,0.02830561508225944,0.02620876044580901,0.01847147436372833,0.0152063038024014,0.0146622558777189,0.01272334883595328,0.01236722624630974,0.01191121138763372,0.009809528121864499,0.009486166440863045,0.008694327119494704,0.007974179530651195,0.0072457718560054,0.00716022016895441,0.007089199079390523,0.006813777192713826,0.006430504740534778,0.006298276303402139,0.006084676520341724,0.005578609342013971,0.005337043747482224,0.005256946623180239,0.005010328851676053,0.004993372762146873,0.004400613803734526,0.004356384900460321,0.004055467403885099,0.003949349332698518,0.003732239851475833,0.003653998172699124,0.003636572633097283,0.003629754429661027,0.003415662841762587,0.003406910951122278,0.003221377575977337,0.00316740199500409,0.002947162846630337,0.002880769193496959,0.002818410575511922,0.002618167764756959,0.002517381305109876,0.002463696336086371,0.002306128772412762,0.002250621890012028,0.002182506919945562,0.001954119459596349,0.001913456141397825,0.001881242924507186,0.001850706315018905,0.001780858850636669,0.001764796951722079,0.001742196283938292,0.001733276732557747,0.001679289974201818,0.001671007533634169,0.001669889795365931,0.0016094313324369,0.001498082246154961,0.001450790740025782,0.001361628758368381,0.001324620444306997,0.001295201573086955,0.001284884848871112,0.00124793242172314,0.001182880054511648,0.001178420278821376,0.001168226505815039,0.001114273279607157,0.001112071335218727,0.0010761695820429,0.001009965944415122,0.0009856439596982478,0.0009390007417646469,0.0008986168581331828,0.0008823090567995802,0.0008612955773566927,0.0008343580850921401,0.0008271933827927301,0.0008253044051194067,0.0007964555804161658,0.000787737221923904,0.0006955349921768939,0.000694987300425457,0.0006896668662686407,0.0006484670337013623,0.0005753222414278221,0.0005717790111175054,0.0005261752897733666,0.0005057877437606927,0.0005021327396235522,0.000498779524818836,0.000490139408005351,0.0004640402194419774,0.0004634254633944462,0.0004611005677965096,0.0004484254158346828,0.0004413277778313671,0.0004363650199203873,0.0004307316190484642,0.0004283061270063863,0.0004173075824469175,0.0003986301759846489,0.0003557090264842829,0.0003193042910877485,0.0003135702937716841,0.0003080486667265849,0.0003023705563239322,0.0003013198823517879,0.000296468898267632,0.0002888235685128793,0.0002830001521353556,0.0002822512674956357,0.0002771990905231968,0.000275701321243757,0.0002751983390230496,0.0002512116757866471,0.0002368263842744151,0.0002335514111484757,0.0002240953453991764,0.0002165953216192947,0.0002092741359623312,0.0002086482025321175,0.0002055632449117787,0.0002028359635372763,0.0001977167222687431,0.0001924409976426564,0.0001915244522627007,0.0001851868762817873,0.0001801794088400779,0.000178938719362333,0.0001752278283117805,0.0001751160544849566,0.0001739536066859884,0.0001720199194819355,0.0001709245359790615,0.000170879826448332,0.0001699185715376467,0.0001668000817692607,0.000164698733824972,0.0001642739932830413,0.0001603395545788411,0.0001591994615452376,0.0001504252161395638,0.0001479997240974859,0.000147742644295791,0.0001453842165498073,0.0001448924117117823,0.0001415839064377957,0.0001372359045743472,0.0001352798626049295,0.0001302276856324906,0.0001271762601601989,0.0001224035177548197,0.0001220458415089833,0.0001213751985480401,0.0001181337575701479,0.0001155182500224693,0.0001140987224218062,0.0001095271729047099,0.0001074034701950564,0.0001056821532619688,0.000104474995932271,0.0001016247633482623,9.619255536462225e-05,9.562250884782052e-05,9.172160229166747e-05,9.049209019660491e-05,8.966496387810827e-05,8.710534324384166e-05,7.923646583544122e-05,7.526849498319385e-05,7.394956382667218e-05,7.373719355570682e-05,7.364777449424774e-05,7.198234447457208e-05,6.763434261112355e-05,6.751139140161729e-05,6.242568228113122e-05,6.198976435651813e-05,6.044728554634872e-05,6.011196406587712e-05,5.930719251274527e-05,5.716113503772696e-05,5.594280032534677e-05,5.424383815762396e-05,5.312609988938526e-05,5.175128181945167e-05,5.064472093389536e-05,4.921401595054983e-05,4.893458138349015e-05,4.791743955939293e-05,4.759329546160371e-05,4.730268351186165e-05,4.688912035261334e-05,4.584962376315135e-05,4.104334920972495e-05,4.093157538290108e-05,3.998149785489819e-05,3.981383711466238e-05,3.943380610346123e-05,3.936674180736691e-05,3.829371306985775e-05,3.80813427988924e-05,3.723186171503099e-05,3.641591277921674e-05,3.582351149705023e-05,3.572291505290875e-05,3.548819001657863e-05,3.172141205261422e-05,3.15649286950608e-05,3.077133452461133e-05,2.997774035416185e-05,2.995538558879708e-05,2.982125699660843e-05,2.870351872836973e-05,2.856939013618109e-05,2.740694233721285e-05,2.662452554944576e-05,2.654628387066905e-05,2.609918856337357e-05,2.57303349348548e-05,2.523853009682977e-05,2.476908002416952e-05,2.38413572615314e-05,2.296952141230523e-05,2.210886294576142e-05,2.201944388430233e-05,2.17064771691955e-05,2.037636862999145e-05,2.034283648194428e-05,1.987338640928403e-05,1.948217801540049e-05,1.929216250979991e-05,1.856563263544476e-05,1.834208498179702e-05,1.826384330302031e-05,1.745907174988845e-05,1.682196093699239e-05,1.653134898725033e-05,1.530183689218776e-05,1.465354869660932e-05,1.454177486978545e-05,1.44970653390559e-05,1.431822721613771e-05,1.374818069933597e-05,1.327873062667572e-05,1.285399008474501e-05,1.276457102328592e-05,1.268632934450921e-05,1.257455551768534e-05,1.222805665453134e-05,1.065204569631478e-05,9.936693204642017e-06,9.780209847088597e-06,9.51195266271131e-06,9.51195266271131e-06,9.456065749299377e-06,9.243695478334022e-06,8.874841849815253e-06,8.818954936403318e-06,8.696003726897063e-06,8.293617950331132e-06,8.22655365423681e-06,8.215376271554421e-06,8.103602444730551e-06,7.444136866469722e-06,7.321185656963465e-06,6.929977263079921e-06,6.918799880397535e-06,6.617010547973086e-06,6.482881955784442e-06,6.069318796536123e-06,6.069318796536123e-06,5.75635208142929e-06,5.242192478039489e-06,5.175128181945167e-06,4.973935293662202e-06,4.862161466838331e-06,4.348001863448531e-06,3.722068433234861e-06,2.570798016949003e-06,2.369605128666037e-06,2.146057475018298e-06,2.134880092335911e-06,1.754849081134754e-06,1.721316933087593e-06]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":294,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,50,100,294]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d6c6e2de6cf7178bc8fd" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d6c6e2de6cf7178bc8fd">{"x":{"filter":"none","vertical":false,"data":[[]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":0,"columnDefs":[{"name":"SYMBOL","targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[0,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e4aa2ffc5cdf619b8b4b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e4aa2ffc5cdf619b8b4b">{"x":{"filter":"none","vertical":false,"data":[[]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":0,"columnDefs":[{"name":"SYMBOL","targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[0,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
