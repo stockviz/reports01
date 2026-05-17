@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-05-15" />
+
+<title>Rubber</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Rubber</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">May 15, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Rubber.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Rubber.fan.CAP_WT.png" /></p>
+<p><img src="plots/Rubber.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Rubber.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Rubber.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Rubber.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Rubber.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1bdaca3e1d48825e1af0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1bdaca3e1d48825e1af0">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-1.45%","2%"],["7.2%","9.98%"],["9.13%","13.09%"],["3.79%","9.23%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Rubber.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Rubber.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1ef26cd621e9def7d1a6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1ef26cd621e9def7d1a6">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.APCOTEXIND.html\" target=\"_blank\">APCOTEXIND<\/a>","<a href=\"/reports02/eq-in/risk/in.PIXTRANS.html\" target=\"_blank\">PIXTRANS<\/a>","<a href=\"/reports02/eq-in/risk/in.TINNARUBR.html\" target=\"_blank\">TINNARUBR<\/a>","<a href=\"/reports02/eq-in/risk/in.GRPLTD.html\" target=\"_blank\">GRPLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.HARRMALAYA.html\" target=\"_blank\">HARRMALAYA<\/a>","<a href=\"/reports02/eq-in/risk/in.RUBFILA.html\" target=\"_blank\">RUBFILA<\/a>","<a href=\"/reports02/eq-in/risk/in.ELGIRUBCO.html\" target=\"_blank\">ELGIRUBCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SAMPANN.html\" target=\"_blank\">SAMPANN<\/a>"],[0.3213080411536939,0.220052780549069,0.1264317941050818,0.1839574657407319,0.0557327675362199,0.04599422524988064,0.02549447278191411,0.02102845288340875],[0.3070363864491845,0.2607076537013802,0.1662333751568381,0.1204516938519448,0.05001756587202007,0.04717942283563362,0.03183814303638645,0.0165357590966123]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-700d64fabf6175f51eb0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-700d64fabf6175f51eb0">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.APCOTEXIND.html\" target=\"_blank\">APCOTEXIND<\/a>","<a href=\"/reports02/eq-in/risk/in.PIXTRANS.html\" target=\"_blank\">PIXTRANS<\/a>","<a href=\"/reports02/eq-in/risk/in.TINNARUBR.html\" target=\"_blank\">TINNARUBR<\/a>","<a href=\"/reports02/eq-in/risk/in.GRPLTD.html\" target=\"_blank\">GRPLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.HARRMALAYA.html\" target=\"_blank\">HARRMALAYA<\/a>","<a href=\"/reports02/eq-in/risk/in.RUBFILA.html\" target=\"_blank\">RUBFILA<\/a>","<a href=\"/reports02/eq-in/risk/in.ELGIRUBCO.html\" target=\"_blank\">ELGIRUBCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SAMPANN.html\" target=\"_blank\">SAMPANN<\/a>"],[38.49462428903502,20.47378225936414,9.338705097804484,8.902749269056335,3.469956028270829,6.263919085879166,-0.6017656222421744,1.901453799933216],[41.60470659811223,21.68432837388304,10.30964225473198,7.099906892782205,3.889216376357695,6.250958987233173,-1.842659468515806,1.933242065986066],[46.92928444141808,29.84013610370042,13.31307783533853,7.181622688917359,5.21761897172992,7.903576654572699,-12.4656791421493,2.080362446472294]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1b4a09dd02143f7732d7" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1b4a09dd02143f7732d7">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.APCOTEXIND.html\" target=\"_blank\">APCOTEXIND<\/a>","<a href=\"/reports02/eq-in/risk/in.PIXTRANS.html\" target=\"_blank\">PIXTRANS<\/a>","<a href=\"/reports02/eq-in/risk/in.TINNARUBR.html\" target=\"_blank\">TINNARUBR<\/a>","<a href=\"/reports02/eq-in/risk/in.GRPLTD.html\" target=\"_blank\">GRPLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.HARRMALAYA.html\" target=\"_blank\">HARRMALAYA<\/a>","<a href=\"/reports02/eq-in/risk/in.RUBFILA.html\" target=\"_blank\">RUBFILA<\/a>","<a href=\"/reports02/eq-in/risk/in.ELGIRUBCO.html\" target=\"_blank\">ELGIRUBCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SAMPANN.html\" target=\"_blank\">SAMPANN<\/a>"],[48.62268188050663,7.787482569490177,3.892548685063064,7.795349053941746,6.959041629641415,8.023587672672541,5.021561773511601,2.036552215334126],[47.58891509557788,8.252658470102167,5.117429127252842,8.13835987221956,7.577872680257594,7.831893751282483,5.419663805211797,2.144938746211119],[46.01454738898853,9.469404320332652,8.551742980583953,9.101056420521696,8.729754405891347,9.732059639235374,6.231684570683067,2.169750273763385]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time" class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over time?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Evolution of Challenges Over Time</strong></p>
+<p>The challenges faced by the companies have evolved across macroeconomic pressures, raw material inflation, technological hurdles, and sudden regulatory shifts:</p>
+<ul>
+<li><strong>Macroeconomic Pressures and Geopolitical Trade Barriers:</strong> Companies like GRP Limited faced significant historical headwinds due to a subdued global tyre demand, including historic lows in North America and persistent weakness in Europe [1, 2]. A major challenge was the imposition of steep U.S. tariffs on Indian imports, which soared to as high as 50% [3, 4]. This severely impacted India’s competitiveness, causing GRP’s export volumes to North America to plummet by nearly 40% year-on-year, accompanied by a 45% decline in export margins [5-8].</li>
+<li><strong>Market Distortions and Import Dumping:</strong> GRP Limited’s recycled polypropylene segment encountered near-term headwinds due to a sharp decline in virgin polypropylene prices and a sustained influx of low-cost imports, heavily driven by China emerging as a net exporter [9, 10]. This price distortion compressed the economic spread between virgin and recycled materials, reducing the commercial incentive for customers to use recycled content and subsequently slowing down the demand momentum linked to Extended Producer Responsibility (EPR) benefits [11, 12].</li>
+<li><strong>Raw Material Inflation and Technology Stabilization:</strong> Inflation has persistently pressured margins, with GRP Limited noting a 45% year-on-year cost increase in one key raw material grade, of which only 35% could initially be passed through to customers [5, 7]. Additionally, the company faced operational delays; the stabilization of its new tyre pyrolysis technology took much longer than anticipated, leading to sub-optimal capacity utilization and forcing the company to prudently defer its next stage of expansion to protect capital [13-16].</li>
+<li><strong>Regulatory and Legal Hurdles:</strong> The notification of four new Labour Codes by the Government of India in November 2025 introduced sudden financial challenges [17, 18]. For instance, Elgi Rubber Company Limited and Harrisons Malayalam Limited had to recognize incremental gratuity costs due to changes in wage definitions under these new codes [17-20]. Harrisons Malayalam Limited also faced a new civil suit filed by the Government of Kerala in October 2025, which challenged the ownership of land across multiple tea estates in the Wayanad district [21, 22]. Furthermore, the company is dealing with legacy liabilities involving former employees who have refused to vacate official quarters post-retirement, forcing the company to carry provisions for their unpaid gratuity [23, 24]. Elsewhere, Apcotex Industries Limited faced an order from the Income Tax Department regarding alleged non-reporting of certain transactions from FY 2016-17 [25, 26].</li>
+<li><strong>Subsidiary Distress:</strong> Elgi Rubber Company Limited experienced significant deterioration in credit risk regarding its wholly-owned step-down subsidiary in the Netherlands, Rubber Resources B.V., which lacked viable recovery prospects, resulting in a full impairment of investments and loans before the subsidiary ultimately filed for bankruptcy [27-29].</li>
+</ul>
+<p><strong>Evolution of Opportunities Over Time</strong></p>
+<p>Despite these hurdles, the landscape has evolved to present substantial growth avenues through trade normalization, regulatory tailwinds, sustainability initiatives, and strategic restructuring:</p>
+<ul>
+<li><strong>Favorable Trade Normalization and International Agreements:</strong> The severe U.S. tariff challenges for GRP Limited are now reversing, with tariffs recently dropping from 50% down to approximately 18% [3, 4]. This development is viewed as a major turning point expected to improve export volumes, realizations, and capacity utilization in the near future [3, 4, 30, 31]. Furthermore, the India-EU Free Trade Agreement is expected to grant Indian tyre manufacturers zero-duty access to the European Union [3, 4]. Over the medium term, this will enhance competitiveness and significantly boost the demand for reclaim rubber for both direct European sales and domestic customers exporting to the EU [32, 33].</li>
+<li><strong>Regulatory Tailwinds Driving Demand:</strong> India remains structurally underpenetrated in recycled content usage compared to global benchmarks, presenting a massive growth opportunity [34, 35]. The implementation of upcoming auto EPR norms, which mandate minimum recycled content by FY 2028, along with broader regulatory support in the packaging and consumer goods sectors, is expected to create sustained, highly visible demand for recycled materials [34, 36].</li>
+<li><strong>Strategic Investments in Renewable Energy:</strong> To structurally reduce costs and improve sustainability, companies are capitalizing on renewable energy partnerships. Apcotex Industries Limited approved entering into Power Purchase Agreements (PPA) and subscribing to equity shares in Amplus Ceres Solar Private Limited and Amplus Energy One Private Limited to secure captive solar power [37-39]. Similarly, GRP Limited entered into a PPA involving a ₹3 crore equity investment in a solar SPV, which is projected to deliver annual cost savings of ₹3 to ₹4 crores while advancing its decarbonization goals [40-43].</li>
+<li><strong>Capital Market Expansion and Value Chain Integration:</strong> Tinna Rubber and Infrastructure Limited successfully listed its equity shares on the National Stock Exchange (NSE) in April 2025 [44]. This strategic milestone aims to enhance market visibility, improve stock liquidity, and broaden its base of institutional and retail investors [45, 46]. The company also successfully captured a major opportunity by securing a two-year, ₹75.79 crore contract to supply Crumb Rubber Modifier to Indian Oil Corporation Limited [47, 48].</li>
+<li><strong>Corporate Restructuring and Debt Reduction:</strong> Companies are evolving their financial strategies to optimize capital. Elgi Rubber Company Limited approved the sale of 7.24 acres of non-core land assets in Coimbatore to reduce its existing debts [49, 50]. Additionally, Elgi Rubber opted to reverse ₹22.18 million in interest receivables from its overseas subsidiaries to reduce their interest burdens and improve their overall financial health [51-53]. GRP Limited has also successfully initiated structural cost reduction measures—such as leaner manpower deployment and energy optimization—which have already begun to improve margins in its reclaim rubber business [54, 55].</li>
+</ul>
+<p><em><a href="footnote/Rubber.1.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the headwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Global Demand Pressures:</strong> Global tyre demand is currently under significant pressure, presenting a major macroeconomic headwind for the industry [1, 2]. While passenger car and light truck OEM markets have seen modest growth largely driven by China, the European market continues to experience ongoing weakness [1, 2]. Furthermore, truck and bus OEM demand remains subdued, particularly in North America, where it has hit historic low levels [1, 2].</p>
+<p><strong>Tariffs and Trade Barriers:</strong> Tariffs have severely impacted international competitiveness, particularly for Indian exports targeting the North American market [3, 4]. High U.S. tariffs on Indian imports—which previously reached potential highs of 50% before a very recent reduction—caused the U.S. share of reclaim rubber exports from India to decline from 12% to 7% [1, 2, 5, 6]. This high-tariff regime led to a nearly 40% year-on-year volume drop for key customers in North America and substantially affected export margins [7-9].</p>
+<p><strong>Raw Material Cost Inflation:</strong> The industry is also grappling with continued inflation in select raw materials, which continuously places pressure on profit margins [7, 8]. For instance, the input cost for one key grade of raw material experienced a massive 45% increase year-on-year, against which companies were only initially able to achieve a 35% pass-through of prices to their customers [7, 8].</p>
+<p><strong>Pricing and Import Pressures in Plastics:</strong> In the non-reclaim and recycled polypropylene segments, companies face distinct near-term headwinds due to a sharp decline in the prices of virgin polypropylene [10, 11]. This issue is exacerbated by sustained inflows of low-cost imports, especially from China, which has recently emerged as a net exporter [10, 12]. As a result, industry prices for recycled materials dropped 4% to 5% sequentially during the third quarter and remained 30% to 35% lower year-on-year [12, 13].</p>
+<p><strong>Regulatory and Demand Slowdowns:</strong> The aforementioned price distortions have temporarily compressed the economic spread between virgin and recycled materials [12, 13]. This reduces the immediate commercial incentive for customers to voluntarily increase their use of recycled content beyond minimum compliance requirements [12, 13]. Consequently, the demand momentum associated with Extended Producer Responsibility (EPR) benefits has been much slower than initially anticipated by the industry [14, 15].</p>
+<p><em><a href="footnote/Rubber.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry" class="section level3">
+<h3><strong>What are the key things to understand about this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The Drive Towards a Circular Economy and Tyre Recycling</strong> A major strategic focus within the rubber and tyre industry is the development of a <strong>fully integrated tyre recycling ecosystem</strong> and the processing of End-of-Life Tyres (ELT) [1-3]. Companies are actively investing in sustainable technologies to produce materials such as tyre pyrolysis oil, recovered carbon black, crumb rubber, and micronized rubber powder [1, 2, 4]. These recycled products cater to diverse end-markets, including infrastructure (such as providing Crumb Rubber Modifier for road construction), industrial, steel, cement, and consumer goods [4-8]. Industry leaders are emphasizing a <strong>zero-waste philosophy</strong>, achieving up to a 99% recovery rate from tyres and committing to long-term sustainability and decarbonization initiatives [7, 9, 10].</p>
+<p><strong>Extended Producer Responsibility (EPR) and Regulatory Tailwinds</strong> The industry’s growth is heavily influenced by regulatory tailwinds, particularly <strong>Extended Producer Responsibility (EPR) norms</strong> [11, 12]. Forthcoming regulations, such as <strong>auto EPR norms mandating minimum recycled content by FY ’28</strong>, alongside new rules in the packaging and consumer goods sectors, are expected to create sustained demand visibility for recycled materials [11, 12]. Companies monetize these environmental regulations by generating and selling EPR credits on government portals based on their domestic sourcing and production [13-16]. Different recycled products yield different credit conversion factors, with reclaim rubber typically generating the highest credits, followed by crumb rubber, and pyrolysis oil and char [17, 18]. Furthermore, the <strong>India-EU Free Trade Agreement</strong> is anticipated to push vehicles produced in India for European export to comply with strict European auto EPR norms, further driving demand for recycled compounding materials [19-22].</p>
+<p><strong>International Trade Dynamics and Tariffs</strong> <strong>International trade policies significantly impact the competitiveness</strong> of the rubber industry. High US tariffs previously placed extreme pressure on Indian exporters, causing a sharp year-over-year decline of nearly 40% in export volumes to North American markets for certain reclaim rubber companies [23-26]. However, recent developments have seen the <strong>reduction of US tariffs on Indian imports from a potential 50% down to approximately 18%</strong>, providing crucial relief and an expected recovery in export volumes and realizations [19, 21, 27, 28]. Simultaneously, the India-EU Free Trade Agreement is expected to grant Indian tyre manufacturers <strong>zero-duty access to the European Union market</strong>, which will bolster medium-term demand for reclaim rubber [19, 21].</p>
+<p>Conversely, the recycled polyolefin and plastics segment faces distinct trade headwinds due to a <strong>sustained influx of low-cost imports from China</strong>, which has emerged as a net exporter [29, 30]. This influx, combined with a sharp decline in virgin polypropylene prices, temporarily compresses the economic spread between virgin and recycled materials, reducing the immediate commercial incentive for customers to utilize recycled content beyond basic compliance levels [31, 32].</p>
+<p><strong>Raw Material Sourcing Economics</strong> Manufacturers face margin pressures due to <strong>significant inflation in certain raw material costs</strong>, forcing them to negotiate price pass-throughs with customers and diversify their sourcing [24, 26]. In sectors like Crumb Rubber Modified Bitumen (CRMB), relying solely on domestic sourcing currently does not yield attractive returns [33, 34]. To build structurally margin-accretive models, companies are <strong>actively developing import channels for waste tyres</strong> to secure more favorable input economics [33, 34].</p>
+<p><strong>The Financial Impact of New Labour Codes</strong> Across the industry, the Indian government’s notification of <strong>four new Labour Codes</strong>—the Code on Wages (2019), Industrial Relations Code (2020), Code on Social Security (2020), and the Occupational Safety, Health and Working Conditions Code (2020)—has created direct financial implications [35-37]. This regulatory shift has required companies to estimate and account for <strong>incremental liabilities and increased gratuity costs</strong> for their own employees and temporary workers due to changes in wage definitions [35, 36, 38, 39].</p>
+<p><strong>Challenges in the Natural Rubber and Tea Plantations Segment</strong> For entities whose core business involves natural rubber and tea production through traditional plantation estates, a major vulnerability includes <strong>legal disputes over land ownership</strong> [40-43]. State governments, such as the Government of Kerala, have filed civil suits challenging the ownership of various estate lands, seeking the declaration of title and the recovery of possession of these properties [44-47]. Additionally, some of these plantation businesses have navigated financial strains where their <strong>current liabilities have exceeded their current assets</strong>, requiring them to rely heavily on unutilized credit facilities and future cash flow planning to meet their financial obligations [48-51].</p>
+<p><strong>Investments in Operational Efficiency and Green Energy</strong> To mitigate operating expenses and advance decarbonization goals, companies across the rubber and infrastructure sectors are investing in <strong>green energy initiatives</strong> [9, 10]. Businesses are entering into Power Purchase Agreements (PPAs) and subscribing to equity in solar power special purpose vehicles (SPVs) for the captive consumption of solar energy, which promises substantial annual cost savings [9, 10, 52, 53]. Additionally, companies are structurally reducing costs through leaner manpower deployment, energy optimization, and shifting toward newer, more efficient manufacturing technologies [54, 55].</p>
+<p><em><a href="footnote/Rubber.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the tailwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The rubber recycling, reclaim rubber, and circular materials industry is currently experiencing several significant tailwinds driven by international trade agreements, regulatory mandates, and a structural shift toward sustainability.</p>
+<p><strong>Favorable Trade Agreements and Tariff Reductions</strong> A major immediate tailwind for the industry is the <strong>reduction of U.S. tariffs on Indian imports, which have dropped from a potential high of 50% down to approximately 18%</strong> [1, 2]. This development provides meaningful relief from prior external pressures and is expected to significantly improve export volumes and realizations, aiding in volume recovery for key markets [1-4].</p>
+<p>Furthermore, the <strong>India-EU Free Trade Agreement</strong> is poised to act as a strong medium-term catalyst [1, 2]. This agreement is expected to enhance the competitiveness of Indian tyre manufacturers by providing them with zero-duty access to the European Union market [1, 5]. Consequently, this will support an increased demand for reclaim rubber, both through direct sales to Europe and indirectly through Indian customers who will utilize this expanded platform for exports to the EU [5, 6].</p>
+<p><strong>Regulatory Push and Extended Producer Responsibility (EPR) Norms</strong> Regulatory frameworks are emerging as powerful structural drivers for the sector. The <strong>implementation of auto EPR norms, which will mandate a minimum recycled content by FY 2028</strong>, is expected to create sustained demand visibility over the medium term [7-9].</p>
+<p>Additionally, stringent auto EPR norms already established in Europe will benefit Indian recyclers [10, 11]. Vehicles manufactured in India for export to Europe will increasingly need to comply with these international norms, providing a strong demand impetus for recycled materials and plastic compounding wherever approvals with automotive brand owners are in place [10, 11]. Beyond the automotive sector, <strong>broader regulatory tailwinds in the packaging and consumer goods sectors</strong> are further incentivizing the use of recycled content [7, 8].</p>
+<p><strong>Sustainability Initiatives and Market Underpenetration</strong> The industry is heavily supported by a <strong>growing commitment from governments and corporate brand owners toward sustainability, decarbonization, and circular economies</strong> [12, 13]. Currently, India remains structurally underpenetrated in its usage of recycled content when compared to global benchmarks [7, 8]. This gap between current domestic usage and global standards presents a massive runway for growth, creating a strong commercial incentive for customers to eventually increase recycled content beyond mere compliance requirements as pricing distortions normalize [7, 8, 14, 15].</p>
+<p><strong>Domestic Demand and Application Diversification</strong> The domestic market has been highly supportive, with <strong>consumption rising on a year-on-year basis and companies successfully expanding their market share</strong> [16, 17]. A deliberate and strategic focus on <strong>non-tyre applications</strong> is yielding tangible results, with consumption in these alternative segments rising sharply [16, 17]. Leading companies in the sector are successfully catering to a wide array of diverse segments, including infrastructure, industrial applications, steel, and consumer goods, allowing for the widest possible application of recycled rubber and mitigating external demand pressures [18, 19].</p>
+<p><em><a href="footnote/Rubber.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry" class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Global Demand and Export Dynamics</strong> The global tyre demand has recently faced persistent macroeconomic pressures, with passenger car and light truck OEM markets seeing only modest growth—primarily driven by China—while Europe has experienced continued weakness [1]. Furthermore, truck and bus OEM demand has been notably subdued, with the North American commercial market hitting historically low levels [1]. However, the replacement tyre markets have offered crucial stability, helping to balance the overall demand environment [1].</p>
+<p>Despite these broader headwinds, <strong>the near-term export outlook has significantly improved due to highly favorable trade developments.</strong> U.S. tariffs on Indian imports have recently been drastically reduced from a potential high of 50% down to approximately 18% [2, 3]. This reduction is considered a major turning point that will provide meaningful relief from recent pressures, allowing companies to recover previously lost export volumes and significantly improve their realizations [3-5]. Additionally, the India-EU Free Trade Agreement is anticipated to greatly enhance the competitiveness of Indian tyre manufacturers by granting them zero-duty access to the European Union market [3, 6]. Over the medium term, this agreement is expected to bolster the demand for reclaim rubber, both for direct sales in Europe and through Indian customers leveraging a stronger platform for EU exports [6].</p>
+<p><strong>Strong Domestic Consumption and Diversification</strong> Domestically, the trends in the reclaim rubber and tyre recycling industry are highly supportive. Overall consumption has risen on a year-on-year basis, and deliberate industry strategies to focus on non-tyre applications are yielding tangible financial results [7]. Companies within the sector are successfully diversifying and penetrating various segments, including infrastructure, industrial applications, steel, and consumer goods [8, 9]. The financial outlook for domestic players is exceptionally robust; for instance, some industry participants have demonstrated outstanding operational performance with a 3-year CAGR of 41% in revenue and 53% in EBITDA, while setting ambitious growth and profitability targets (such as a 25%+ Revenue CAGR) leading up to 2027 [10, 11].</p>
+<p><strong>Near-Term Challenges in Recycled Plastics</strong> While the rubber recycling side shows strong resilience, the recycled polyolefin and polypropylene segments are currently facing cyclical, near-term headwinds [12, 13]. <strong>A sharp decline in virgin polypropylene prices, combined with a sustained influx of low-cost imports—particularly from China, which has recently emerged as a net exporter—has driven industry prices down 30% to 35% year-on-year</strong> [12, 14]. This price distortion has temporarily compressed the economic spread between virgin and recycled materials [14]. Consequently, the immediate commercial incentive for customers to utilize recycled content beyond baseline compliance requirements has been reduced, leading to slower-than-anticipated demand momentum linked to Extended Producer Responsibility (EPR) benefits [13, 14].</p>
+<p><strong>Regulatory Tailwinds and Long-Term Structural Growth</strong> Despite temporary pricing pressures in certain sub-segments, <strong>the long-term structural outlook for the industry is extremely bullish, heavily driven by sustainability mandates and the global transition to a circular economy</strong> [6, 15, 16]. India remains structurally underpenetrated in terms of recycled content usage when compared to global benchmarks, leaving massive room for catch-up growth [13].</p>
+<p>A major growth catalyst is the impending regulatory environment. <strong>The upcoming implementation of auto EPR norms, which will mandate minimum recycled content in vehicles by FY 2028, is expected to create massive, sustained demand visibility over the medium term</strong> [13, 17]. Furthermore, vehicles produced in India for export to Europe will increasingly need to comply with stringent European auto EPR norms, providing a direct demand impetus for approved recycled plastic and rubber compounds [18]. Broader regulatory tailwinds in the packaging and consumer goods sectors are also accelerating product and customer approvals across the board [13, 17]. Ultimately, strong backing from brand owners, proactive government sustainability initiatives, and an industry-wide commitment to building a globally relevant recycling ecosystem firmly position the sector for sustainable, long-term expansion [15, 16, 19].</p>
+<p><em><a href="footnote/Rubber.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

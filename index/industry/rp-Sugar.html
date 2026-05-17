@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-05-15" />
+
+<title>Sugar</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Sugar</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">May 15, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Sugar.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Sugar.fan.CAP_WT.png" /></p>
+<p><img src="plots/Sugar.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Sugar.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Sugar.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Sugar.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Sugar.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-687210143dffaa050db0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-687210143dffaa050db0">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-4.82%","-2.85%"],["3.05%","2.98%"],["5.47%","7.81%"],["-1.44%","5.66%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Sugar.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Sugar.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8c8b0c4043871832a188" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8c8b0c4043871832a188">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BALRAMCHIN.html\" target=\"_blank\">BALRAMCHIN<\/a>","<a href=\"/reports02/eq-in/risk/in.TRIVENI.html\" target=\"_blank\">TRIVENI<\/a>","<a href=\"/reports02/eq-in/risk/in.RENUKA.html\" target=\"_blank\">RENUKA<\/a>","<a href=\"/reports02/eq-in/risk/in.BANARISUG.html\" target=\"_blank\">BANARISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHIND.html\" target=\"_blank\">BAJAJHIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DALMIASUG.html\" target=\"_blank\">DALMIASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.AVADHSUGAR.html\" target=\"_blank\">AVADHSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DHAMPURSUG.html\" target=\"_blank\">DHAMPURSUG<\/a>","<a href=\"/reports02/eq-in/risk/in.UTTAMSUGAR.html\" target=\"_blank\">UTTAMSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DWARKESH.html\" target=\"_blank\">DWARKESH<\/a>","<a href=\"/reports02/eq-in/risk/in.DBOL.html\" target=\"_blank\">DBOL<\/a>","<a href=\"/reports02/eq-in/risk/in.ZUARIIND.html\" target=\"_blank\">ZUARIIND<\/a>","<a href=\"/reports02/eq-in/risk/in.MAGADSUGAR.html\" target=\"_blank\">MAGADSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.MAWANASUG.html\" target=\"_blank\">MAWANASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.DCMSRIND.html\" target=\"_blank\">DCMSRIND<\/a>","<a href=\"/reports02/eq-in/risk/in.KCPSUGIND.html\" target=\"_blank\">KCPSUGIND<\/a>","<a href=\"/reports02/eq-in/risk/in.PONNIERODE.html\" target=\"_blank\">PONNIERODE<\/a>","<a href=\"/reports02/eq-in/risk/in.KMSUGAR.html\" target=\"_blank\">KMSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.SAKHTISUG.html\" target=\"_blank\">SAKHTISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.KOTARISUG.html\" target=\"_blank\">KOTARISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.VISHWARAJ.html\" target=\"_blank\">VISHWARAJ<\/a>","<a href=\"/reports02/eq-in/risk/in.RAJSREESUG.html\" target=\"_blank\">RAJSREESUG<\/a>","<a href=\"/reports02/eq-in/risk/in.PRUDMOULI.html\" target=\"_blank\">PRUDMOULI<\/a>"],[0.3444884189764718,0.180428735236899,0.1068720704105487,0.05281416837813412,0.08926633183293026,0.03565130318878518,0.02075618140047103,0.02537230137390886,0.01291935090282251,0.02582200279626301,0.0200747822248925,0.0177822832362075,0.01188966895683416,0.008380806852328077,0.008360542421916632,0.008578632736193892,0.007409095243111848,0.006217686742940766,0.004652012274503689,0.003066171272898873,0.004599612695655209,0.003400723404023742,0.001197117441258711],[0.2487758062303226,0.1896313382773461,0.117195849339996,0.1018969249155137,0.09651160061812195,0.06318645114237023,0.02195425103261026,0.02089614143150111,0.02065468754513157,0.01839856048352156,0.01707530292308137,0.01701595491175876,0.01526191653909477,0.009400679861933508,0.008197697929002627,0.006263584601831258,0.005995503090609746,0.005854466942029404,0.004835396146847289,0.004806963259293493,0.00265441314520089,0.002408446102076774,0.001128063530805003]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":23,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,23,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5c1f4bc5e9605b224d25" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5c1f4bc5e9605b224d25">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BALRAMCHIN.html\" target=\"_blank\">BALRAMCHIN<\/a>","<a href=\"/reports02/eq-in/risk/in.TRIVENI.html\" target=\"_blank\">TRIVENI<\/a>","<a href=\"/reports02/eq-in/risk/in.RENUKA.html\" target=\"_blank\">RENUKA<\/a>","<a href=\"/reports02/eq-in/risk/in.BANARISUG.html\" target=\"_blank\">BANARISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHIND.html\" target=\"_blank\">BAJAJHIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DALMIASUG.html\" target=\"_blank\">DALMIASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.AVADHSUGAR.html\" target=\"_blank\">AVADHSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DHAMPURSUG.html\" target=\"_blank\">DHAMPURSUG<\/a>","<a href=\"/reports02/eq-in/risk/in.UTTAMSUGAR.html\" target=\"_blank\">UTTAMSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DWARKESH.html\" target=\"_blank\">DWARKESH<\/a>","<a href=\"/reports02/eq-in/risk/in.DBOL.html\" target=\"_blank\">DBOL<\/a>","<a href=\"/reports02/eq-in/risk/in.ZUARIIND.html\" target=\"_blank\">ZUARIIND<\/a>","<a href=\"/reports02/eq-in/risk/in.MAGADSUGAR.html\" target=\"_blank\">MAGADSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.MAWANASUG.html\" target=\"_blank\">MAWANASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.DCMSRIND.html\" target=\"_blank\">DCMSRIND<\/a>","<a href=\"/reports02/eq-in/risk/in.KCPSUGIND.html\" target=\"_blank\">KCPSUGIND<\/a>","<a href=\"/reports02/eq-in/risk/in.PONNIERODE.html\" target=\"_blank\">PONNIERODE<\/a>","<a href=\"/reports02/eq-in/risk/in.KMSUGAR.html\" target=\"_blank\">KMSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.SAKHTISUG.html\" target=\"_blank\">SAKHTISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.KOTARISUG.html\" target=\"_blank\">KOTARISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.VISHWARAJ.html\" target=\"_blank\">VISHWARAJ<\/a>","<a href=\"/reports02/eq-in/risk/in.RAJSREESUG.html\" target=\"_blank\">RAJSREESUG<\/a>","<a href=\"/reports02/eq-in/risk/in.PRUDMOULI.html\" target=\"_blank\">PRUDMOULI<\/a>"],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[21.43978001434756,16.23774295337756,-0.3304957698040291,5.03438927259674,7.805818720306211,13.43105523252784,6.377509874821585,4.185456589050635,0.07553318228932983,4.558119256148286,1.59333322143406,1.628245313874694,5.677341610276766,3.534432214846305,0.08397194288118345,-1.522973308617542,0.01167695132636095,0.03340676496407982,4.49661810280692,-0.04723043387648483,-0.5435051023344744,0.03809618894053653,0.2287977324292848],[22.02704748065968,18.09218187245171,-0.5162877600106157,8.467271644816584,1.431871519097645,14.24901190331149,6.273486343932352,3.440778216040952,0.07549922241791708,3.51198181886107,1.609679998975376,1.497770955224367,4.840009415783455,1.91524463294171,0.04696137558495651,-1.278098551143077,0.01309075785956024,0.03275475171057218,2.113310493852946,-0.6816913242049151,-1.149187951339049,-0.3376267694645556,0.1617897680047366],[0.643003180255445,44.43889579739503,-6.754049872964353,0.2337202296154617,4.716653421314011,36.21297482030967,0.1247659656404066,10.45146749683007,0.1606371524227322,0.05209628102586156,3.213603163051648,-0.1105304239740627,0.1282359904676897,6.355171728604312,0.0909893729304319,0.00653224782126226,0.03062007965329907,0.08039921195483514,-0.00307211431184469,-0.02084111425700056,-0.03166393623108658,-0.02612447568341478,0.006515798129594582]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-03-31<\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":23,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4]},{"name":"SYMBOL","targets":0},{"name":"2025-03-31","targets":1},{"name":"2025-06-30","targets":2},{"name":"2025-09-30","targets":3},{"name":"2025-12-31","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,23,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1e54474d0d9812c2b608" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1e54474d0d9812c2b608">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BALRAMCHIN.html\" target=\"_blank\">BALRAMCHIN<\/a>","<a href=\"/reports02/eq-in/risk/in.TRIVENI.html\" target=\"_blank\">TRIVENI<\/a>","<a href=\"/reports02/eq-in/risk/in.RENUKA.html\" target=\"_blank\">RENUKA<\/a>","<a href=\"/reports02/eq-in/risk/in.BANARISUG.html\" target=\"_blank\">BANARISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHIND.html\" target=\"_blank\">BAJAJHIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DALMIASUG.html\" target=\"_blank\">DALMIASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.AVADHSUGAR.html\" target=\"_blank\">AVADHSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DHAMPURSUG.html\" target=\"_blank\">DHAMPURSUG<\/a>","<a href=\"/reports02/eq-in/risk/in.UTTAMSUGAR.html\" target=\"_blank\">UTTAMSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.DWARKESH.html\" target=\"_blank\">DWARKESH<\/a>","<a href=\"/reports02/eq-in/risk/in.DBOL.html\" target=\"_blank\">DBOL<\/a>","<a href=\"/reports02/eq-in/risk/in.ZUARIIND.html\" target=\"_blank\">ZUARIIND<\/a>","<a href=\"/reports02/eq-in/risk/in.MAGADSUGAR.html\" target=\"_blank\">MAGADSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.MAWANASUG.html\" target=\"_blank\">MAWANASUG<\/a>","<a href=\"/reports02/eq-in/risk/in.DCMSRIND.html\" target=\"_blank\">DCMSRIND<\/a>","<a href=\"/reports02/eq-in/risk/in.KCPSUGIND.html\" target=\"_blank\">KCPSUGIND<\/a>","<a href=\"/reports02/eq-in/risk/in.PONNIERODE.html\" target=\"_blank\">PONNIERODE<\/a>","<a href=\"/reports02/eq-in/risk/in.KMSUGAR.html\" target=\"_blank\">KMSUGAR<\/a>","<a href=\"/reports02/eq-in/risk/in.SAKHTISUG.html\" target=\"_blank\">SAKHTISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.KOTARISUG.html\" target=\"_blank\">KOTARISUG<\/a>","<a href=\"/reports02/eq-in/risk/in.VISHWARAJ.html\" target=\"_blank\">VISHWARAJ<\/a>","<a href=\"/reports02/eq-in/risk/in.RAJSREESUG.html\" target=\"_blank\">RAJSREESUG<\/a>","<a href=\"/reports02/eq-in/risk/in.PRUDMOULI.html\" target=\"_blank\">PRUDMOULI<\/a>"],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[11.63699054394777,17.21497035124982,0.4342338426559096,2.098224939999545,10.71832081258109,8.703216739515335,5.335134658327062,3.158117086954971,0.07658406064172844,3.834573937713821,5.684021566740397,1.736807747921287,2.631136862668071,2.844236729317716,0.08781854646045506,0.473460086200542,0.01609390701343903,0.02644078184237175,2.761145317648472,0.3963464406556615,0.9255552142789532,1.397786201858407,0.01966319151915096],[12.38573677240906,17.69883802082137,0.2763795467046042,2.96590181074283,10.40917013082351,8.404016592647391,5.880548964370468,2.55368859549404,0.05767043719637235,2.916264893247589,7.101232056114663,1.730728614715061,2.885266110427601,2.845229404625572,0.04815890303543122,0.5013397200226128,0.01150804204698459,0.01839612951339988,2.079522190098095,0.4876028013753345,0.9317236645428907,1.134436821558474,0.03998431346925651],[0.2429859986098164,30.36903457360908,3.70048384193419,0.08380285649474047,21.02590056674975,14.36143064062568,0.1063828760094267,11.53935740496609,0.09050054836046081,0.05651959947050001,12.0592845004139,0.04069676181364277,0.05154673542403505,6.061576578774671,0.06909352280455329,0.01004657520624038,0.01653418565423632,0.02778601597264076,0.03618220854037807,0.009484901162398612,0.01702900236580295,0.02088068403120734,0.00345942100655616]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-03-31<\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":23,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4]},{"name":"SYMBOL","targets":0},{"name":"2025-03-31","targets":1},{"name":"2025-06-30","targets":2},{"name":"2025-09-30","targets":3},{"name":"2025-12-31","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,23,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time" class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over time?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>The evolution of challenges and opportunities within the sugar, bio-energy, and allied industries reveals a significant shift from a traditional, cyclical commodity market toward a highly diversified, technology-driven, and resilient ecosystem.</strong> Over time, companies have had to navigate severe agricultural and macroeconomic headwinds, but these very challenges have catalyzed innovative strategies, product premiumization, and expansive diversification.</p>
+<div id="the-evolution-of-challenges" class="section level9">
+<p class="heading"><strong>The Evolution of Challenges</strong></p>
+<p><strong>1. Escalating Agricultural and Climatic Headwinds</strong> Historically, the industry has contended with unseasonal rainfall and erratic monsoons, which negatively impacted crop recoveries [1, 2]. However, over the past few seasons, <strong>the challenge has evolved into severe biological threats, specifically widespread pest infestations and diseases.</strong> Outbreaks of red rot (particularly affecting the popular Co 0238 cane variety), white flies, and black bugs in regions like Uttar Pradesh severely reduced net sugar recovery rates and drove up the overall cost of production [1, 3-6]. Additionally, these agricultural issues led to localized drops in sugarcane acreage as frustrated farmers temporarily diverted their land to other crops, such as maize [7].</p>
+<p><strong>2. Margin Squeezes from Asymmetric Pricing Dynamics</strong> A persistent and evolving challenge has been the disconnect between rising input costs and product realization. <strong>Companies have faced sudden and substantial increases in the Fair and Remunerative Price (FRP) and State Advised Price (SAP) for sugarcane</strong> [8-11]. For instance, Uttar Pradesh witnessed historic hikes in sugarcane prices, significantly pressuring industry margins [12, 13]. While input costs soared, <strong>domestic sugar prices frequently stagnated or softened before recovering, and the Minimum Selling Price (MSP) of sugar remained unrevised despite the steep hikes in cane costs</strong> [4, 10, 11, 14].</p>
+<p>Furthermore, <strong>the global sugar market witnessed catastrophic drop-offs, with international prices falling to multi-year historic lows</strong> [15-17]. This sharp decline in global pricing heavily impacted export viability, raising fears of excess inventory remaining trapped in the domestic market [14, 18, 19].</p>
+<p><strong>3. Delayed Policy Revisions and Regulatory Burdens</strong> While the government has driven bio-energy adoption, <strong>the industry has been challenged by delayed policy revisions, specifically the non-revision of ethanol prices derived from sugar syrup and B-heavy molasses</strong> [17, 20-22]. Without upward revisions to match rising input costs, the economic incentive for ethanol production is squeezed [17]. Additionally, <strong>companies are facing increased regulatory compliance costs driven by the transition to the New Labour Codes, stricter packaging norms, and enhanced environmental regulations</strong> [10, 11, 23-25].</p>
+</div>
+<div id="the-evolution-of-opportunities" class="section level9">
+<p class="heading"><strong>The Evolution of Opportunities</strong></p>
+<p><strong>1. The Strategic Shift to Bio-Energy and Multi-Feed Distilleries</strong> To combat the cyclicality of the sugar market, <strong>the industry has aggressively pivoted toward becoming comprehensive bio-energy providers.</strong> The government’s push toward a 20% ethanol blending target has served as a massive growth lever, transforming ethanol from a mere byproduct into a primary, stable revenue stream [17, 26, 27]. To adapt to fluctuating sugarcane availability, <strong>companies have engineered “dual-feed” distilleries capable of processing both molasses and grain (such as maize and surplus rice)</strong> [28-30]. This technological evolution provides operational flexibility, allowing facilities to optimize feedstock utilization year-round regardless of cane crop performance [28].</p>
+<p><strong>2. Premiumization and Value-Added Products</strong> Rather than relying solely on raw, conventional bulk sugar, companies have found lucrative opportunities in premiumization. <strong>There has been a structural shift towards manufacturing refined, retail, and pharma-grade sugars, which command higher margins and repeat institutional engagement</strong> [31-34]. In the B2C segment, brands have diversified their portfolios to include natural brown sugar, icing sugar, and liquid invert sugar, successfully integrating these products into modern e-commerce platforms like BlinkIt, Zepto, and Amazon [34].</p>
+<p><strong>3. Next-Generation Agricultural and Operational Efficiencies</strong> In response to the disease outbreaks, <strong>companies have spearheaded aggressive varietal replacement programs to phase out vulnerable cane strains (like Co 0238) in favor of newer, disease-resistant, and high-yielding varieties</strong> [35-38]. Inside the mills, capital is being deployed to upgrade aging infrastructure—such as transitioning from traditional sulphitation processes to advanced refinery operations, and implementing steam-saving measures to slash energy consumption [24, 31]. <strong>Operations are also undergoing digital transformation, with the adoption of smart factory solutions, CRM systems, and advanced ERP platforms like SAP HANA</strong> [39, 40].</p>
+<p><strong>4. Expansive Diversification: Engineering, Defence, and New Materials</strong> To fully insulate against agricultural risks, some companies have successfully evolved entirely new business verticals. Opportunities have surged in the <strong>engineering and power transmission sectors, with significant market share gains in the export of high-speed gearboxes for compressors and gas turbines, particularly in the Middle East</strong> [39, 41, 42]. The Defence sector has also emerged as a highly profitable avenue, with facilities being commissioned for specialized manufacturing and equipment packaging [39, 43, 44].</p>
+<p>Furthermore, the industry is capitalizing on environmental sustainability trends by venturing into the <strong>Water and Wastewater treatment business (utilizing EPC and HAM models for zero liquid discharge and water recycling)</strong> [45, 46] and <strong>pioneering bio-based alternatives like Polylactic Acid (PLA) bioplastics</strong> to replace fossil-based materials and drive a circular, regenerative economy [47].</p>
+<p><em><a href="footnote/Sugar.1.txt">sources</a> </em></p>
+</div>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the headwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p>The industry is currently grappling with a <strong>sharp decline in global sugar prices</strong>, driven by a massive surge in worldwide production [1, 2]. Global output is projected to reach around 189.3 million metric tons for the upcoming season, creating an overwhelming surplus of over 41.2 million metric tons, which is the highest recorded in eight years [1]. This oversupply has driven global sugar prices down by over 16% year-to-date, with raw sugar futures plunging to near four-year lows of 14.7 to 16.5 cents per pound [2-4]. Because of these softening international prices, <strong>exports have become highly subdued and economically unviable</strong> for Indian manufacturers, increasing the risk of carrying excess inventory [5-7].</p>
+<p>Another major headwind is the <strong>severe margin pressure caused by rising input costs coupled with stagnant selling prices</strong> [8, 9]. State Advisory Prices (SAP) for sugarcane have seen steep hikes, such as a Rs. 30 per quintal increase in Uttar Pradesh and a Rs. 15 per quintal increase in Bihar [6, 10-12]. Similarly, the national Fair and Remunerative Price (FRP) has surged by 29% to Rs. 355 per quintal [8]. Despite these rising raw material costs, <strong>the government has not enacted a corresponding upward revision in the Minimum Selling Price (MSP) of sugar</strong>, which has severely squeezed industry profitability and cash flows [8, 9, 13, 14].</p>
+<p>Agricultural challenges have also significantly impacted sugarcane availability, yields, and recovery rates [15, 16]. Widespread <strong>infestations of red rot (a fungal disease), white flies, and black bugs</strong> have taken a heavy toll on the predominant sugarcane varieties (such as the 238 variety) across key states like Uttar Pradesh [15, 17-21]. Alongside these pest issues, <strong>unseasonal rainfall and adverse agroclimatic conditions</strong> have led to poor cane crops in regions like Maharashtra and Karnataka, while also drastically reducing the yield of the ratoon crops nationwide [16, 20, 22-24]. These factors have elevated the overall cost of production and caused a 5% to 7% drop in cane acreage in certain regions as frustrated farmers divert their land to other crops like maize [15, 19, 25].</p>
+<p>The biofuels and distillery segment is facing headwinds due to the <strong>stagnation and non-revision of ethanol procurement prices</strong>, particularly for juice and B-heavy molasses-derived ethanol [26, 27]. The industry has repeatedly requested price revisions to align with current input costs to maintain production incentives, but these have not yet materialized [13, 14, 26]. Additionally, recent Oil Marketing Company (OMC) tenders have heavily favored FCI rice-based ethanol, which creates <strong>uncertainty and potential supply curtailments for ethanol produced from maize, B-heavy, and C-heavy molasses</strong> in upcoming supply cycles [28, 29].</p>
+<p>Changes in statutory frameworks pose further financial burdens on the sector. The <strong>implementation of new labor codes</strong> (which consolidate 29 existing labor laws), along with new packaging norms and strict environmental regulations, is anticipated to increase overall operating and compliance costs for manufacturers [8, 9, 12, 30].</p>
+<p>Finally, for diversified sugar companies that also operate in the engineering and power transmission spaces, <strong>geopolitical uncertainties are causing delayed decision-making by OEM customers</strong> [31]. This global ambivalence has led to muted order bookings and a slower conversion of inquiries into actual sales for critical industrial equipment, such as high-speed gearboxes and aftermarket repairs [29, 31].</p>
+<p><em><a href="footnote/Sugar.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry" class="section level3">
+<h3><strong>What are the key things to understand about this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>The industry is fundamentally seasonal in its operations</strong>, with sugarcane crushing normally taking place over a concentrated period between November and April or May, while the actual sales of the sugar are distributed throughout the entire year [1-3]. Because manufacturing is limited to these specific months, an individual company’s financial performance naturally varies from quarter to quarter, meaning that short-term quarterly results are not fully representative of the company’s overall annual performance [4-9].</p>
+<p><strong>Government policy strictly dictates industry direction and profitability</strong> [10, 11]. The sector is highly regulated, with local and central governments exercising control over key variables such as export quotas, stock limits, and the establishment of ethanol pricing [10, 11]. Most critically, state governments mandate the cost of the primary raw material by setting the Fair and Remunerative Price (FRP) and State Advised Price (SAP) for sugarcane, while also enforcing a Minimum Selling Price (MSP) for the final sugar product [10-12]. Consequently, when authorities raise sugarcane prices or when production costs rise without a simultaneous, corresponding revision in the sugar MSP, industry margins can be severely squeezed [10, 11, 13, 14].</p>
+<p><strong>Performance is highly vulnerable to agro-climatic conditions and agricultural health</strong>, which directly impact both sugarcane yield and the rate of sugar recovery [15]. Extreme weather events, such as unseasonal and excessive rainfall or threats of drought like El Nino, can negatively impact crop sizes and sugarcane recovery rates [16-20]. Additionally, the crop is highly susceptible to pests—such as the black bug and white fly—as well as devastating fungal diseases like red rot [17, 19, 21-25]. To safeguard their supply chains, companies invest heavily in cane development, forming deep, long-term relationships with farmers, and undertaking aggressive varietal substitution programs (for instance, phasing out the vulnerable Co 0238 sugarcane variety in favor of more disease-resistant alternatives) [26-34].</p>
+<p><strong>Companies employ integrated business models to de-risk against the cyclicality of sugar as a pure commodity</strong> [35, 36]. To buffer against the volatility of the core sugar business, operations are heavily forward-integrated into bio-energy and power [36, 37]. By-products of the sugar process are used to fuel distilleries that produce ethanol and industrial alcohol, and co-generation facilities that utilize bagasse to produce renewable power [38-42]. Ethanol production has emerged as the industry’s strongest growth lever, heavily backed by national policies aiming for a 20% ethanol blending target in fuel, which provides highly necessary revenue stability and cash-flow resilience [39, 43-45]. Furthermore, to guarantee that distilleries remain productive even during periods of low sugarcane availability, many companies utilize dual-feed facilities capable of processing flexible feedstocks, including various forms of molasses, sugar syrup, and grains like maize [46-50].</p>
+<p><strong>There is a strategic industry-wide shift toward premiumization and value-added products</strong> [51]. To reduce reliance on conventional bulk and loose sugar—which leaves them overly exposed to cyclical commodity price risks—manufacturers are expanding their portfolios to include higher-margin offerings [35, 51]. This includes the manufacturing of refined sugar, pharmaceutical-grade sugar, liquid and invert sugar, brown sugar, and branded retail consumer packages [51-56].</p>
+<p><strong>Domestic producers are heavily influenced by global supply and demand dynamics</strong> [57, 58]. The Indian market is not immune to the impacts of international production trends; for example, massive global sugar surpluses driven by major contributors like Brazil and Thailand can push international prices to multi-year lows [57-63]. When global prices soften to these extents, Indian sugar exports become economically unviable, which forces companies to hold onto stock and raises the risk of massive domestic inventory buildups at the end of a season [29, 32, 64].</p>
+<p><em><a href="footnote/Sugar.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the tailwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p>The Indian sugar and bio-energy industry is currently benefiting from several structural, operational, and policy-driven tailwinds that are enhancing profitability and reducing historical cyclicality.</p>
+<p><strong>Robust Ethanol Blending Program and Policy Push</strong> The government’s ethanol blending initiative remains the strongest growth lever for the industry, providing critical revenue stability and mitigating the traditional boom-and-bust cycles of sugar production [1, 2]. The industry has successfully reached a 20% ethanol blending rate as of December 2025, keeping it on track to achieve national targets [3, 4]. Furthermore, there is a strong policy impetus to expand this program; the Bureau of Indian Standards (BIS) has agreed on increasing blending standards from E20 to E22, E25, E27, and eventually E30 [5]. The Inter-ministerial Group and NITI Aayog are actively working on a concrete roadmap for blending targets beyond E20, supported by the Union budget’s focus on clean energy [6, 7]. To capitalize on this, companies have developed multi-feed distilleries capable of utilizing molasses, sugarcane juice, and grains like maize and rice, allowing them to rapidly respond to policy changes and optimize margins based on fluctuating feedstock prices [2, 6, 8].</p>
+<p><strong>Favorable Demand-Supply Dynamics and Firm Domestic Pricing</strong> The domestic sugar market is experiencing a tightened supply due to lower-than-expected production in key states. Early flowering and lower yields in Maharashtra and Karnataka are expected to reduce national sugar production estimates by 1 to 1.5 million metric tonnes [9-11]. Consequently, the projected national closing stock for the season is expected to drop from earlier estimates of 8 million metric tonnes to around 6 million metric tonnes [12-15]. This reduced inventory ratio bodes extremely well for the stability and robustness of domestic sugar prices going forward [9, 10, 13, 15]. Average sugar realizations have already seen improvements, helping companies offset the impact of increased State Advised Prices (SAP) for sugarcane procurement [16, 17]. Additionally, there is growing traction around industry representations requesting the government to increase the Minimum Selling Price (MSP) of sugar and ethanol prices, which, if approved, would significantly strengthen industry economics and alleviate margin pressures [18-20].</p>
+<p><strong>Improved Sugarcane Yields and Disease Management</strong> At the operational level, the industry is seeing a marked improvement in sugarcane health and recovery rates, particularly in northern states like Uttar Pradesh. Favorable weather conditions—specifically sporadic rather than excessive unseasonal rainfall—have kept major fungal infections like red rot and pest infestations firmly under control [21-23]. Sugar mills have proactively undertaken extensive cane development initiatives and varietal substitution programs to phase out susceptible cane varieties (like Co 0238) in favor of newer, high-yielding, and disease-resistant seeds [16, 24-26]. These agronomic enhancements are resulting in healthier plant cane crops, higher yields, and improved gross sugar recovery rates [16, 17, 25, 27].</p>
+<p><strong>Diversification and Circular Economics</strong> The industry has successfully transitioned into an integrated model, extracting value beyond just sugar. By heavily investing in downstream by-products, companies have diversified their revenue streams across refined sugar, branded/packaged retail sugar, pharma-grade sugar, potable liquor, and renewable power co-generation [28-30]. The co-generation segment is currently acting as a margin stabilizer, ensuring operational stability while monetizing waste streams (bagasse) to generate renewable energy for the grid [31]. Recent upward revisions in power tariffs by state regulators, such as the UPERC, have also directly driven performance growth in the power division [32]. Additionally, supportive regional policies, such as the Bihar government’s ambitious roadmap to revive its agro-industrial sugar sector, are providing targeted momentum for companies operating in those jurisdictions [33].</p>
+<p><em><a href="footnote/Sugar.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry" class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>The global sugar market is currently experiencing a significant surplus, leading to depressed international prices.</strong> According to the sources, global sugar production for the 2025-26 season is projected to reach record highs of around 189.3 million metric tons (MMT), representing a 4.6% to 4.7% year-over-year increase [1, 2]. This surge in supply is largely driven by higher output from Brazil (estimated at 44.7 MMT) and Thailand (10.3 MMT), resulting in a global surplus estimated to be between 1.6 MMT and 41.2 MMT, the highest in eight years [1-3]. Consequently, international sugar prices have plummeted to near historic four-year lows, with raw sugar trading below 15 cents per pound and white sugar around US$425 per metric ton [2-4]. <strong>Because of these low global prices, Indian sugar exports have become less economically viable, raising the risk that higher season-end sugar inventories will be carried forward domestically despite the government permitting up to 1.5 million tons of exports</strong> [5-8].</p>
+<p><strong>Domestically in India, the demand-supply dynamics are much more stable, supported by lower closing stocks and the ethanol blending program.</strong> The Indian Sugar &amp; Bio-energy Manufacturers Association (ISMA) estimates gross domestic sugar production at approximately 34.3 to 35 MMT for the 2025-26 season [9-11]. After accounting for the diversion of roughly 3.4 to 3.5 MMT of sugar toward ethanol production, the net sugar production is expected to be around 30 MMT [9, 11, 12]. With domestic consumption estimated at 28 to 28.5 MMT, the closing inventory is projected to settle between 5.4 and 6 MMT [11-14]. <strong>This tightening of domestic closing stocks—partially due to factories in Maharashtra and Karnataka closing earlier than anticipated—bodes extremely well for maintaining robust and stable domestic sugar prices</strong> [14, 15]. Currently, domestic ex-factory sugar realizations are hovering firmly around ₹4,050 to ₹4,100 per quintal [5, 10, 16].</p>
+<p><strong>However, the industry is facing intense margin pressures due to rising production costs and higher sugarcane procurement prices.</strong> The Fair and Remunerative Price (FRP) for sugarcane was recently increased to ₹355 per quintal [10, 17, 18]. Additionally, state governments have announced sharp hikes in their State Advised Prices (SAP); for example, Uttar Pradesh increased its SAP by ₹30 to ₹400 per quintal for early varieties, and Bihar raised its SAP by ₹15 to ₹380 per quintal [6, 7, 19, 20]. <strong>Because the Minimum Selling Price (MSP) of sugar has remained stagnant at ₹3,100 per quintal while the FRP has risen by 29% over the years, the industry is heavily lobbying the government for an upward revision in the sugar MSP and ethanol prices to offset these heightened costs</strong> [17, 18, 21-23].</p>
+<p><strong>On the agricultural front, crop health and recovery trends are showing positive momentum.</strong> The industry is actively recovering from severe red rot disease infestations that impacted recent seasons by aggressively replacing the susceptible Co 0238 sugarcane variety with newer, disease-resistant varieties [10, 24-26]. While there were minor, localized instances of pests like the “white fly” or “black bug,” these have been largely contained [27-30]. As the new plant cane matures, sugar mills are reporting healthier crops and anticipate improved agronomic yields and sugar recovery rates across regions like Uttar Pradesh [10, 25, 27, 31, 32].</p>
+<p><strong>The ethanol and biofuel segment remains the strongest structural growth engine and margin stabilizer for the industry.</strong> The diversion of sugarcane to ethanol significantly reduces the industry’s exposure to the cyclicality of commodity sugar prices [33-35]. India’s ethanol blending program has successfully reached its 20% target [34-37]. Looking forward, the government and NITI Aayog are actively drafting a roadmap for blending targets beyond E20, discussing potential milestones like E22, E25, E27, and E30 [34, 36-38]. <strong>To capitalize on this and mitigate the risk of fluctuating sugarcane availability, companies are heavily investing in dual-feed distilleries that can alternate between processing sugarcane molasses and grains (like maize and FCI rice)</strong> [39-43].</p>
+<p><strong>Looking ahead, the industry’s profitability will be heavily dictated by government policy and a strategic shift towards premiumization.</strong> Government decisions on export quotas, stock limits, and statutory pricing (both for sugar MSP and ethanol) remain the most critical variables for future cash flows [17, 18]. Furthermore, newly notified national Labour Codes are expected to introduce some regulatory compliance costs, though they will aid in the formalization of the sector [17, 18, 20, 44, 45]. To build long-term resilience against raw commodity price fluctuations, major sugar players are increasingly focusing their capital on value-added products, transforming their portfolios to include branded, packaged, refined, and pharmaceutical-grade sugars [46-49].</p>
+<p><em><a href="footnote/Sugar.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

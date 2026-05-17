@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-05-15" />
+
+<title>Animal Feed</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Animal Feed</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">May 15, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/AnimalFeed.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/AnimalFeed.fan.CAP_WT.png" /></p>
+<p><img src="plots/AnimalFeed.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/AnimalFeed.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/AnimalFeed.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/AnimalFeed.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/AnimalFeed.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-be21305459e93f649de5" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-be21305459e93f649de5">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-1.4%","-4.78%"],["2.96%","0.36%"],["8.55%","10.91%"],["12.68%","21.99%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/AnimalFeed.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/AnimalFeed.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f2e287d1cc1023def4d2" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f2e287d1cc1023def4d2">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.AVANTIFEED.html\" target=\"_blank\">AVANTIFEED<\/a>","<a href=\"/reports02/eq-in/risk/in.GODREJAGRO.html\" target=\"_blank\">GODREJAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.MUKKA.html\" target=\"_blank\">MUKKA<\/a>","<a href=\"/reports02/eq-in/risk/in.NARMADA.html\" target=\"_blank\">NARMADA<\/a>","<a href=\"/reports02/eq-in/risk/in.AJOONI.html\" target=\"_blank\">AJOONI<\/a>"],[0.6369078865856399,0.3250483781368559,0.02316066841015056,0.008465125571617379,0.006417941295736219],[0.6065470967440011,0.3622717951032156,0.0240376660298741,0.004713602123310453,0.002429839999598871]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d4b85a9e42fba17d6bea" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d4b85a9e42fba17d6bea">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.AVANTIFEED.html\" target=\"_blank\">AVANTIFEED<\/a>","<a href=\"/reports02/eq-in/risk/in.GODREJAGRO.html\" target=\"_blank\">GODREJAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.MUKKA.html\" target=\"_blank\">MUKKA<\/a>","<a href=\"/reports02/eq-in/risk/in.NARMADA.html\" target=\"_blank\">NARMADA<\/a>","<a href=\"/reports02/eq-in/risk/in.AJOONI.html\" target=\"_blank\">AJOONI<\/a>"],[62.70720300341677,35.91251871110087,0.4736978905420651,0.1915603539177366,0.2719072631353912],[54.24348047383357,35.23713629977867,1.17099311338334,0.2706137955287857,0.380312597847871],[1.590300041181424,97.26213335847923,1.127691097198717,0.00845925665387485,0.01141624648675639]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-04ae4ed458aebd930254" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-04ae4ed458aebd930254">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.AVANTIFEED.html\" target=\"_blank\">AVANTIFEED<\/a>","<a href=\"/reports02/eq-in/risk/in.GODREJAGRO.html\" target=\"_blank\">GODREJAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.MUKKA.html\" target=\"_blank\">MUKKA<\/a>","<a href=\"/reports02/eq-in/risk/in.NARMADA.html\" target=\"_blank\">NARMADA<\/a>","<a href=\"/reports02/eq-in/risk/in.AJOONI.html\" target=\"_blank\">AJOONI<\/a>"],[35.62211583642296,56.60578403131097,4.414925691765174,0.3220310747915168,0.4847234275977522],[29.48409246935969,56.6427201406896,5.1109128437381,0.3352253195273254,0.7179803381223727],[0.5843979314077882,97.97734084972095,1.416318123125593,0.007195185183328995,0.01474791056234038]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time" class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over time?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The evolution of challenges and opportunities over time reflects a shift from navigating volatile weather and sudden trade tariffs to strategically capitalizing on value-added products, new global markets, and sustainable business practices.</strong></p>
+<p><strong>Evolving Challenges</strong></p>
+<p><strong>Volatility in Raw Material Prices and Supply Chains:</strong> Over time, the cost and availability of key raw materials have been highly susceptible to global events. For example, the aquaculture feed industry has faced <strong>steep increases in the prices of major raw materials like fish meal and soya bean meal</strong> due to fluctuating ocean catches and agricultural output [1, 2]. The El Nino weather pattern has impacted fish catches in major producing countries like Chile and Peru [3, 4]. Furthermore, a strong U.S. dollar and rupee depreciation have made exporting Indian fish meal more lucrative, creating a tight domestic supply and driving up local prices [5]. Similarly, the dairy sector has experienced profitability pressures due to <strong>inflation in milk procurement costs</strong>, driven largely by high global demand for Indian butter exports [6-8]. In the animal nutrition segment, a <strong>global fishmeal supply shortage</strong> has also persisted [9].</p>
+<p><strong>Unpredictable Climatic Conditions:</strong> Weather anomalies have increasingly become a persistent challenge across agro-based sectors. <strong>Unseasonal rains and cyclones have severely impacted the Crop Protection business</strong>, leading to lower volumes and devastated crops, such as grape crops [10-12]. Aquaculture businesses also continue to face risks related to climate and diseases which determine the overall consumption of feed [13, 14].</p>
+<p><strong>International Trade and Tariff Uncertainties:</strong> Exporters have historically struggled with changing international tariffs. For instance, the Indian seafood industry faced severe uncertainty due to <strong>reciprocal tariffs and a 25% penalty duty imposed by the U.S.</strong> on shrimp imports [15, 16]. While some of these U.S. tariffs were recently invalidated by a Supreme Court ruling, they were swiftly replaced by a <strong>temporary global import surcharge of 10% to 15%</strong>, requiring continuous monitoring by exporters [17-19].</p>
+<p><strong>Evolving Opportunities</strong></p>
+<p><strong>Favorable Global Trade Agreements and Shifting Geopolitics:</strong> The landscape of international trade is evolving to offer better market access. The <strong>implementation of bilateral trade deals with the UK and the EU is expected to substantially reduce tariffs</strong> and increase the end-market demand for Indian shrimp exports [20-22]. In the chemical and CDMO (Contract Development and Manufacturing Organization) sectors, the <strong>“China Plus One” strategy is slowly materializing</strong>, leading to a doubled inquiry rate from Western and Japanese markets [23].</p>
+<p><strong>Strategic Shift Towards Value-Added and Branded Products:</strong> Companies are actively moving away from low-margin commodity trading toward high-margin, value-added portfolios. * In the food sector, there is a <strong>strategic shift to reduce live bird trading in favor of branded retail products</strong> like “Real Good Chicken” and “Yummiez”, increasing the branded salience to 81% [24-26]. * Livestock feed companies are expanding their value-added offerings, such as <strong>pelletized cattle feed, molasses-enriched feed blocks, and cottonseed oil</strong>, which align with farmers’ shifting preferences toward scientifically formulated nutrition [27, 28]. * Shrimp processors are targeting premium clients and <strong>scaling up value-added shrimp products</strong> to secure better margins [29, 30].</p>
+<p><strong>Diversification and Capacity Expansion:</strong> To mitigate risks, businesses are expanding their capacities and exploring new markets. * <strong>Expansion into New Geographies:</strong> Companies are tapping into dairy-deficit and non-GMO markets in <strong>Southeast Asia, the Middle East, and Africa</strong> [31-33]. Trial supplies of shrimp feed have also commenced in the Middle East [34]. * <strong>Infrastructure and Production Growth:</strong> Massive capacity expansions are underway, including a new plant in Punjab that increases feed production capacity to 1,80,000 Metric Tons [35], and aggressive <strong>expansion of oil palm plantations</strong>, with record additions of up to 18,000 hectares to harness long-term “demographic dividends” as trees reach peak productivity [36, 37].</p>
+<p><strong>Sustainability and Eco-Friendly Innovations:</strong> Opportunities are increasingly tied to environmental, social, and governance (ESG) practices. There is a lucrative pivot towards waste-to-value solutions, highlighted by <strong>large-scale legacy leachate treatment orders (worth ₹474.89 crores) and the formal listing of wet-waste processing operations on the Verra Registry to earn carbon credits</strong> [9, 38]. Additionally, zero-waste approaches in agro-processing, utilizing by-products for the textile and paper industries alongside renewable energy adoption, are enhancing eco-efficiency [39, 40].</p>
+<p><strong>Government Support and Policy Initiatives:</strong> The Indian government’s proactive policy measures have bolstered industry confidence. Initiatives such as increased allocations under the <strong>Pradhan Mantri Matsya Sampada Yojana</strong>, the National Livestock Mission, and the <strong>reinstatement of customs duties on imported feed</strong> have protected domestic manufacturers and supported whole-chain infrastructure development [19, 27, 41, 42].</p>
+<p><em><a href="footnote/Animal%20Feed.1.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the headwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Raw Material Cost Inflation and Supply Shortages</strong> Across various segments of the agriculture and aquaculture industries, rising input costs are severely impacting profitability margins. In the shrimp feed sector, there has been a <strong>steep increase in the prices of major raw materials such as fish meal and soybean meal</strong> [1, 2]. Fish meal prices are highly volatile because production depends on unpredictable ocean catches and agricultural conditions [3]. High demand from East and West Asia, coupled with a strong US dollar, has made exporting Indian fish meal highly lucrative, which in turn drives up domestic prices and creates supply challenges for local feed manufacturers [4, 5]. Similarly, the broader animal nutrition and fishmeal markets are navigating a <strong>global fishmeal supply shortage and tightness</strong>, which is heavily influencing price dynamics [6, 7]. General animal feed producers also must constantly strategize around raw material price volatility driven by crop seasonality [8, 9].</p>
+<p><strong>Tariffs, Surcharges, and Trade Barriers</strong> Export-heavy sectors, particularly shrimp processing, are facing significant geopolitical and regulatory headwinds. The US recently imposed harsh reciprocal tariffs on Indian shrimp imports, which reached <strong>as high as 50% during Q3 FY26</strong>, causing a massive spike in operational expenses [10]. Although the US Supreme Court invalidated tariffs based on the International Emergency Economic Powers Act (IEEPA)—and a 25% duty related to Russian oil was withdrawn—the US administration immediately replaced these with a <strong>new temporary global import surcharge of 10%, which subsequently threatened to rise to 15%</strong> [11-14]. This has created a high degree of uncertainty for seafood exporters [11].</p>
+<p><strong>Adverse Weather and Climatic Conditions</strong> Unpredictable weather patterns are a persistent headwind. In the crop protection and agrochemical sector, <strong>unseasonal rains and cyclones across key geographies</strong> severely impacted the application and sales volumes of both in-house and in-licensed portfolios [15, 16]. For example, adverse weather devastated grape crops, directly reducing the demand for related agricultural chemicals [17]. In the aquaculture space, unpredictable climatic conditions and disease outbreaks dictate the success of the farming season, which directly limits or expands feed consumption volumes [18, 19]. Furthermore, shrimp processing inherently suffers from lower raw material availability during the winter off-season [20].</p>
+<p><strong>Global Oversupply and Pricing Pressures in Agrochemicals</strong> The agrochemical and enterprise segments are experiencing intense price competition primarily due to <strong>manufacturing overcapacity in China</strong> [21, 22]. While this pricing pressure is showing signs of bottoming out, the industry remains cautious and is closely monitoring potential regulatory announcements regarding changes to China’s export tax benefits, which could further impact global market dynamics [23, 24].</p>
+<p><strong>Dairy Sector Inflation</strong> Companies operating in the dairy business are experiencing significant profitability pressures due to soaring milk procurement costs, which negatively impacted EBITDA margins [25-27]. <strong>Milk procurement prices spiked by approximately 10%</strong> in certain regions like Maharashtra [28, 29]. This inflation was largely driven by a surge in Indian butter exports due to high global demand, which tightened domestic milk supplies and drove up local prices [30, 31].</p>
+<p><strong>Geopolitical and Shipping Disruptions</strong> Broader geopolitical turmoil is also affecting international operations and logistics. The ongoing war in the Middle East and Red Sea region poses a threat of <strong>shipping disruptions and trickle-down effects on container movement and inventory management</strong> for exporters [32, 33]. Additionally, localized political turmoil in neighboring markets, such as Bangladesh, has depressed consumer demand, leading to lower sales volumes and average price realizations for regional joint ventures [34, 35].</p>
+<p><em><a href="footnote/Animal%20Feed.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry" class="section level3">
+<h3><strong>What are the key things to understand about this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The agri-business, aquaculture, and animal feed industry is highly dynamic, driven by raw material availability, weather conditions, evolving farmer practices, and global trade policies.</strong> To comprehensively understand this sector, several key factors must be examined:</p>
+<p><strong>1. Vulnerability to Weather, Climate, and Environmental Conditions</strong> The industry’s success is heavily tethered to climatic stability across various sub-segments: * <strong>Crop Protection:</strong> Unseasonal rains and cyclones can severely suppress the demand for crop protection products [1], [2]. Extended rainy seasons disrupt the application cycles for both in-house and in-licensed agricultural chemicals, directly leading to lower sales volumes [3], [4], [5]. * <strong>Aquaculture and Fishing:</strong> Feed consumption in aquaculture is completely dependent on whether the climatic conditions are favorable for shrimp farming and pond stocking [6], [7], [8], [9]. Furthermore, weather anomalies like El Niño affect ocean catches in primary sourcing regions like Peru and Chile, which directly impacts the global supply and pricing of essential raw materials like fish meal [10], [11], [12], [13].</p>
+<p><strong>2. Extreme Volatility in Raw Material Costs</strong> Profit margins in this industry are largely determined by the fluctuating costs of agricultural and marine commodities, such as soya bean meal, fish meal, wheat flour, and milk [14], [15], [16], [17], [18], [19]. To mitigate these risks, successful companies deploy robust procurement strategies. For example, maintaining buffer stocks of 20–25% above baseline demand helps ensure smooth production during supply disruptions [20], [21]. Companies also use pre-booking contracts during specific quarters to lock in prices for raw materials like cottonseed and molasses, shielding themselves from sudden market spikes [20], [21]. Furthermore, maximizing operational efficiencies—such as improving the Oil Extraction Ratio (OER) and increasing Fresh Fruit Bunch (FFB) arrivals in palm oil production—acts as an internal buffer to boost profitability even when market pricing is unfavorable [22], [23], [24], [25].</p>
+<p><strong>3. The Link Between Farmer Economics and Product Demand</strong> The demand for high-quality animal feed behaves much like a consumer B2C market, heavily influenced by the end-farmer’s income [26], [27], [28], [29]. When agricultural outputs yield strong prices (such as high milk procurement prices), farmers are highly motivated to maximize their production [26], [28]. Consequently, they upgrade their purchasing habits from unbranded, low-cost compound feeds to branded, scientifically formulated feeds [26], [27], [28], [29].</p>
+<p><strong>4. Strategic Pivot Toward Value-Added and Branded Retail</strong> A major trend across the industry is the conscious move away from volatile commodity trading toward branded, value-added products that command higher and more stable margins: * <strong>Poultry &amp; Food:</strong> Companies are deliberately shrinking their exposure to the live bird trading business, pivoting entirely toward branded retail products (like ready-to-cook chicken) to capture category growth and higher profitability [30], [31], [32], [33]. * <strong>Cattle Feed:</strong> The introduction of value-added nutritional variants—such as pelletized cattle feed, molasses-enriched feed blocks, and specific breed-focused products—helps companies capture a premium and increase customer loyalty [34], [35], [36], [37], [38]. * <strong>Shrimp Processing:</strong> To navigate a fragmented market with hundreds of commodity packers, top players are focusing on moving more value-added processed shrimp to premium, demanding clients rather than simply moving raw commodities [39], [40], [41], [42].</p>
+<p><strong>5. Impact of Geopolitics, Tariffs, and Global Trade</strong> The export-heavy segments of this industry are highly sensitive to international trade agreements and foreign government policies. * Changes in U.S. reciprocal tariffs, anti-dumping duties, and countervailing duties directly impact the competitiveness of Indian seafood exports compared to rival nations like Ecuador [43], [44], [45], [46], [47], [48]. * Conversely, new bilateral trade deals, such as those anticipated with the UK and the EU, are expected to substantially lower tariff barriers, thereby expanding market access and driving higher demand for Indian exports [49], [50], [51], [52]. * Currency dynamics also play a role; a strong U.S. dollar and rupee depreciation make Indian raw materials (like fish meal) cheaper for foreign buyers in Asia, driving up export demand but simultaneously creating a supply challenge and price hikes for domestic feed manufacturers [11], [53], [13], [54].</p>
+<p><strong>6. Evolving Formulations and Scientific Innovation</strong> Driven by government initiatives and the need for optimal livestock health, there is a distinct shift toward scientifically formulated nutrition [55]. Companies are diversifying their portfolios to meet these niche requirements: * There is a rising global demand for non-GMO, organic, and pure-vegetarian animal healthcare solutions and tailored diet programs [37], [56], [57], [58], [59]. * Firms are also actively investing in alternate protein sources, such as manufacturing insect meal and insect oil, to expand their core business and create sustainable feed alternatives [60], [61].</p>
+<p><em><a href="footnote/Animal%20Feed.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the tailwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The sources highlight several distinct industries, each benefiting from a unique set of macroeconomic, regulatory, and consumer-driven tailwinds.</p>
+<p>Here is a detailed breakdown of the positive growth drivers affecting these industries:</p>
+<p><strong>1. Aquaculture and Shrimp Processing Industry</strong> The shrimp feed and processing sectors are experiencing significant tailwinds driven by favorable trade policies, regulatory support, and improved climatic conditions: * <strong>Tariff Reductions and Trade Deals:</strong> A major tailwind is the expectation of improved global market access due to tariff reductions. The <strong>anticipated implementation of bilateral trade deals with the UK and the EU is expected to significantly lower tariffs</strong> (which previously reached up to 26% in the EU and 9% in the UK) [1, 2]. Additionally, the U.S. has seen the withdrawal of a 25% duty imposed as a penalty for Russian oil imports, and the U.S. Supreme Court invalidated earlier IEEPA-based reciprocal tariffs, providing much-needed relief to seafood exporters [3-6]. * <strong>Favorable Currency Dynamics:</strong> Exporters are benefiting from a strong U.S. dollar and rupee depreciation, which improves average selling price realizations and profit margins [7-12]. * <strong>Government Support and Protection:</strong> The Indian government’s Union Budget has increased allocations for the fisheries sector through schemes like the <strong>Pradhan Mantri Matsya Sampada Yojana</strong>, focusing on aquaculture and export promotion [13-16]. Furthermore, the government reinstated a 15% customs duty on imported shrimp feed, protecting domestic feed manufacturers from cheap international competition [14, 16]. * <strong>Positive Farmer Sentiment and Climate:</strong> Following previous challenging seasons, farmers are actively preparing ponds and expanding culture areas, spurred by expectations of more aquaculture-friendly climatic conditions and the return of farmers who had paused operations during the COVID-19 pandemic [17-22].</p>
+<p><strong>2. Animal Feed, Dairy, and Poultry Industries</strong> The livestock and animal feed sectors are being propelled by shifting consumer habits, increased farmer awareness, and robust market expansion: * <strong>Shifting Consumer Dietary Habits:</strong> There is a <strong>massive surge in awareness across population strata regarding protein consumption</strong>, leading to a sharp increase in demand for protein-rich diets, particularly reasonably priced poultry like chicken [23-26]. * <strong>Upgrading to Scientific and Branded Feed:</strong> As milk procurement prices rise and farmers’ yields improve, there is a <strong>behavioral shift among farmers upgrading from unbranded to scientifically formulated, branded compound cattle feed</strong> to boost milk production and animal health [27-31]. This transition is further supported by government initiatives like the National Livestock Mission, which promotes scientific livestock nutrition [32]. * <strong>Massive Market Expansion:</strong> The Indian animal feed market is projected to grow from INR 1,110.0 Billion in 2024 to INR 2,025.1 Billion by 2033, reflecting a compound annual growth rate (CAGR) of 6.9% [33]. Furthermore, India’s status as a global leader in milk production ensures sustained, structural demand for cattle feed [33]. * <strong>Global Export Opportunities:</strong> There is a rising global demand for non-GMO, organic, and high-protein feeds. Indian feed manufacturers are tapping into this by expanding exports to dairy-deficit markets across Southeast Asia, the Middle East, and Africa [34-36].</p>
+<p><strong>3. Agrochemicals and Crop Protection (CDMO)</strong> The agrochemical industry is experiencing tailwinds from global supply chain realignments and normalizing market conditions: * <strong>The “China Plus One” Strategy:</strong> Global players are actively seeking to diversify their supply chains away from a singular reliance on China. This macro trend has resulted in a <strong>doubling of inquiries from the Western world and Japan</strong> for Contract Development and Manufacturing Organization (CDMO) businesses [37, 38]. * <strong>Normalization of Global Demand:</strong> The industry is recovering from overcapacity and inventory gluts. Pipeline stock inventories have cleared out of major geographies, and agrochemical consumption is returning to normal levels previously seen in 2019-2020 [39, 40].</p>
+<p><strong>4. Vegetable Oil (Palm Oil) Industry</strong> * <strong>Plantation “Demographic Dividend”:</strong> The industry is benefiting from record-high acreage expansion (e.g., adding 15,000 to 18,000 hectares annually) [41, 42]. Furthermore, a <strong>“demographic dividend” is playing out as younger plantations mature past 4 years of age into their highly productive phase (4 to 18 years)</strong>, organically driving up Fresh Fruit Bunch (FFB) yields [43, 44]. * <strong>Improved Operational Efficiencies:</strong> Focused capability-building with farmers (improving harvesting practices and yields) is resulting in historically high Oil Extraction Ratios (OER), directly expanding profitability [45-48].</p>
+<p><strong>5. Fishmeal and Waste-to-Value Solutions</strong> * <strong>Global Supply Shortages:</strong> Manufacturers of fishmeal and fish oil are currently <strong>benefiting from a global tightness in fishmeal supply</strong>, which has led to price recovery and improved profit trajectories [49, 50]. * <strong>ESG and Circular Economy Opportunities:</strong> There are massive emerging tailwinds in sustainability. Companies are successfully diversifying into lucrative waste management solutions, such as securing massive government contracts for treating legacy leachate, and generating carbon credits through innovative wet-waste processing using insect protein (Black Soldier Fly projects) [50, 51].</p>
+<p><em><a href="footnote/Animal%20Feed.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry" class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The general outlook across the interconnected agricultural, aquaculture, and animal nutrition industries is highly positive and characterized by robust growth, though certain segments face near-term raw material cost pressures. Companies are actively expanding capacities, pivoting toward value-added and branded products, and leveraging favorable global trade dynamics.</p>
+<p>Here is a detailed breakdown of the outlook across these key sectors:</p>
+<p><strong>Animal and Cattle Feed Sector</strong> The outlook for the animal feed industry is exceptionally strong, driven by India’s position as the global leader in milk production, contributing approximately 24.76% of the world’s output [1]. <strong>The Indian animal feed market is projected to grow at a CAGR of 6.9%, reaching INR 2,025.1 Billion by 2033</strong> [2]. * <strong>Shift to Branded Feed:</strong> A major growth driver is the ongoing transition from unbranded to branded compound feeds. When milk procurement prices are favorable, farmers are heavily incentivized to upgrade their feed to maximize yields, a consumer-like behavior that is significantly boosting branded feed volumes [3]. * <strong>Expansion and Value Addition:</strong> To capitalize on this, companies are launching highly differentiated, region-specific, and breed-specific nutritional feeds [4]. There is a strong strategic focus on value-added product portfolios, such as pelletized cattle feed, molasses-enriched feed blocks, and scientifically formulated pure vegetarian supplements, which carry superior high-margin potential and foster stronger customer loyalty [5-7]. * <strong>Global Export Opportunities:</strong> The industry is expanding its footprint beyond domestic borders into Southeast Asia, the Middle East, and Africa to participate in the rising global demand for non-GMO, high-protein, and cost-effective livestock feed [6, 8].</p>
+<p><strong>Aquaculture and Shrimp Exports</strong> The shrimp culture sector is entering the season with highly positive expectations from farmers and stakeholders, with robust pond preparation and progressive stocking underway [9]. * <strong>Improving Trade Environment:</strong> <strong>The export environment is poised to be highly encouraging due to the withdrawal of retaliatory US tariffs on Indian shrimp imports and the anticipation of improved market access through upcoming bilateral trade agreements with the UK and the EU</strong> [10-13]. This is creating positivity among international importers, who foresee an eventual drop in prices for consumers that will make shrimp more competitive against other proteins [12, 14]. * <strong>Volume Growth and Government Support:</strong> On the basis of an estimated 8 to 9 lakh metric tons of shrimp production, feed consumption is expected to reach 11 to 12 lakh metric tons, representing a minimum expected growth of 10% in feed volumes [15, 16]. The Indian government is also supporting the sector through increased budget allocations for fisheries and by reinstating a 15% custom duty on imported shrimp feed, which protects domestic feed manufacturers from cheap imported competition [17, 18]. * <strong>Margin Pressures:</strong> Despite the positive demand, the shrimp feed industry is facing challenges due to steep and fluctuating increases in the prices of major raw materials, specifically fish meal and soya bean meal, which are temporarily compressing profit margins [19, 20].</p>
+<p><strong>Fishmeal, Fish Oil, and Alternative Proteins</strong> Companies engaged in manufacturing fishmeal and fish oil are experiencing a highly lucrative period. <strong>The sector is benefiting from a global fishmeal supply shortage and a subsequent price recovery, which has led to revenues more than doubling for some key players</strong> [21, 22]. * <strong>Export Demand:</strong> Heavy demand from East and West Asian countries, such as Taiwan, for cheaper Indian fish meal has driven up prices and export margins, further aided by a strong US dollar against the rupee [23, 24]. * <strong>Diversification into Sustainability:</strong> Companies in this space are using their strong financial performance to undertake strategic acquisitions and expand into innovative “waste-to-value” and environmental solutions [22, 25]. This includes securing massive government contracts for the scientific treatment of legacy leachate and expanding into alternate proteins, such as insect meal and insect oil [21, 22, 26].</p>
+<p><strong>Poultry and Dairy</strong> * <strong>Poultry:</strong> The industry is undergoing a structural shift. Companies are intentionally minimizing their reliance on volatile live-bird trading and are instead doubling down on the branded retail business (such as ready-to-cook chicken products) [27, 28]. <strong>The overarching goal is to become pure-play branded retail organizations to capitalize on the massive shift in Indian dietary habits toward protein-rich foods</strong> [27-29]. * <strong>Dairy:</strong> The dairy outlook is currently challenged by high milk inflation and elevated procurement costs [30, 31]. This inflation is largely driven by a surge in global demand for butter, which has led to significant butter exports from India and correspondingly higher domestic milk prices [32]. Companies are navigating this by restructuring their go-to-market strategies and increasing direct-to-farm procurement to ensure supply stability [33, 34].</p>
+<p><strong>Crop Protection and Agrochemicals</strong> While the domestic crop protection sector recently suffered from unseasonal rains and cyclones that devastated key crops like grapes [35, 36], the broader global outlook is stabilizing. * <strong>Global Demand Normalization:</strong> Global demand for agrochemicals has returned to normal 2019-2020 levels, as excess pipeline stock inventories across major geographies have finally cleared out [37]. * <strong>The “China Plus One” Advantage:</strong> The Contract Development and Manufacturing Organization (CDMO) segment is experiencing a robust turnaround. Inquiries from the Western world and Japan have doubled as global companies actively seek to reduce their supply chain reliance on China, positioning Indian agrochemical manufacturers for sustained long-term growth [38].</p>
+<p><strong>Vegetable and Palm Oil</strong> The vegetable oil sector is slated for steady, strong growth, driven by a focused expansion of cultivation acreage [39, 40]. <strong>The industry is expecting a “demographic dividend” over the next few years as vast numbers of newly planted palm trees mature past the four-year mark and enter their peak high-productivity stages</strong> [41]. Coupled with continuous improvements in oil extraction ratios, this guarantees a robust structural outlook for domestic oil production [41, 42].</p>
+<p><em><a href="footnote/Animal%20Feed.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

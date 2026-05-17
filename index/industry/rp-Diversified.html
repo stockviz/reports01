@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-05-15" />
+
+<title>Diversified</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Diversified</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">May 15, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Diversified.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Diversified.fan.CAP_WT.png" /></p>
+<p><img src="plots/Diversified.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Diversified.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Diversified.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Diversified.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Diversified.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-0fda7647a016972498a8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0fda7647a016972498a8">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["1.19%","1.01%"],["8.78%","5.92%"],["7.12%","3.19%"],["0.89%","2.37%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Diversified.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Diversified.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4ccdf02ecb610a87d6f2" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4ccdf02ecb610a87d6f2">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.GODREJIND.html\" target=\"_blank\">GODREJIND<\/a>","<a href=\"/reports02/eq-in/risk/in.3MINDIA.html\" target=\"_blank\">3MINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.DCMSHRIRAM.html\" target=\"_blank\">DCMSHRIRAM<\/a>","KAMAHOLD","<a href=\"/reports02/eq-in/risk/in.BALMLAWRIE.html\" target=\"_blank\">BALMLAWRIE<\/a>","<a href=\"/reports02/eq-in/risk/in.TTKHLTCARE.html\" target=\"_blank\">TTKHLTCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.GILLANDERS.html\" target=\"_blank\">GILLANDERS<\/a>","<a href=\"/reports02/eq-in/risk/in.ASPINWALL.html\" target=\"_blank\">ASPINWALL<\/a>"],[0.2259564351147554,0.3998778488565088,0.2033524868314646,0.09496728670114353,0.05673877085310791,0.01379736780210656,0.002639424561423804,0.002670379279489404],[0.3696976113868597,0.3344255137190548,0.1674664763762371,0.08119129082928693,0.03162802200188738,0.01195271265083813,0.001896409633605067,0.001741963402230926]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4101c82f6f7cfe04cebd" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4101c82f6f7cfe04cebd">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.GODREJIND.html\" target=\"_blank\">GODREJIND<\/a>","<a href=\"/reports02/eq-in/risk/in.3MINDIA.html\" target=\"_blank\">3MINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.DCMSHRIRAM.html\" target=\"_blank\">DCMSHRIRAM<\/a>","<a href=\"/reports02/eq-in/risk/in.BALMLAWRIE.html\" target=\"_blank\">BALMLAWRIE<\/a>","<a href=\"/reports02/eq-in/risk/in.TTKHLTCARE.html\" target=\"_blank\">TTKHLTCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.GILLANDERS.html\" target=\"_blank\">GILLANDERS<\/a>","<a href=\"/reports02/eq-in/risk/in.ASPINWALL.html\" target=\"_blank\">ASPINWALL<\/a>"],[48.06079609694049,16.22151519351178,16.84613166977926,5.640904122658852,1.746076999108334,null,null],[52.33177743408852,16.92855795743664,17.98631701106844,5.145261439433359,1.742031144758102,null,null],[71.13131086474962,0.2426668004688755,28.52237506033332,0.07568461713261032,0.02366879655846024,0.0032933109689479,0.00100054978815991]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":7,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-908fefca45b27e1432b7" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-908fefca45b27e1432b7">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.GODREJIND.html\" target=\"_blank\">GODREJIND<\/a>","<a href=\"/reports02/eq-in/risk/in.3MINDIA.html\" target=\"_blank\">3MINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.DCMSHRIRAM.html\" target=\"_blank\">DCMSHRIRAM<\/a>","<a href=\"/reports02/eq-in/risk/in.BALMLAWRIE.html\" target=\"_blank\">BALMLAWRIE<\/a>","<a href=\"/reports02/eq-in/risk/in.TTKHLTCARE.html\" target=\"_blank\">TTKHLTCARE<\/a>","<a href=\"/reports02/eq-in/risk/in.GILLANDERS.html\" target=\"_blank\">GILLANDERS<\/a>","<a href=\"/reports02/eq-in/risk/in.ASPINWALL.html\" target=\"_blank\">ASPINWALL<\/a>"],[27.10723247558835,11.27087413344163,36.26528118908194,6.071157454592918,2.35953752726551,null,null],[33.77409016641536,10.96799527020832,34.70257346131554,5.881401785817508,2.172478499490374,null,null],[59.20861758335234,0.1424290841926142,40.52605456860552,0.07520232864868967,0.02417124435965765,0.01256903774412406,0.01095615309705813]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":7,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time" class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over time?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p>The global business landscape is currently undergoing a period of significant transition, described as a “Great Realignment,” where the focus is shifting away from globalization toward regional resilience and new global trade re-alignments [1, 2]. Over time, companies have had to navigate an increasingly complex array of challenges while simultaneously capitalizing on new structural and demographic opportunities.</p>
+<p><strong>Evolving Challenges</strong> The operating environment has become increasingly turbulent due to macro-level headwinds and industry-specific pressures: * <strong>Supply Chain Volatility and Trade Weaponization:</strong> Extreme geopolitical shifts, rapid technological disruptions, and the tightening of financial liquidity have created highly volatile supply chains [1, 2]. Furthermore, the weaponization of trade through selective tariffs has increasingly impacted global supply networks [1, 2]. * <strong>Oversupply and Predatory Pricing:</strong> Various industries are grappling with global oversupply and the dumping of cheap imports. For example, the domestic hydrogen peroxide market has become oversupplied due to the commissioning of new facilities and dumping from Bangladesh, putting continuous pressure on prices [3, 4]. Similarly, the PVC industry has faced severe downward pricing pressure due to abundant imports, global oversupply, and the government’s decision not to impose anti-dumping duties despite evidence of predatory pricing [5, 6]. * <strong>Rising Costs and Unpredictable Weather:</strong> In regions like Europe, industries are facing unsustainable energy costs, which heavily impact chemical production [7, 8]. Domestically, the sugar and ethanol industries are urging government support due to the increasing costs of production and reduced allocation of sugarcane feedstock for ethanol [9, 10]. Additionally, agricultural segments have been challenged by unpredictable weather; for instance, extended monsoons and heavy rainfall reduced farmers’ profitability during the Kharif season, which subsequently lowered their spending power for the Rabi season [11, 12]. * <strong>Strategic Divestments:</strong> As corporate priorities evolve, companies are forced to phase out certain operations. For example, 3M Company is divesting its global Precision Grinding &amp; Finishing (PG&amp;F) business, which will require 3M India to cease its local PG&amp;F operations after providing limited transitional support [13-15].</p>
+<p><strong>Evolving Opportunities</strong> Despite these external headwinds, companies are finding robust avenues for long-term growth by leveraging demographic shifts, sustainability initiatives, and strategic expansions: * <strong>India’s Macroeconomic Resilience:</strong> India remains resilient, powered by a massive infrastructure build-up and a demographic dividend that is actively converting into strong consumption and entrepreneurial energy [16, 17]. Recent reforms, such as new labor codes, are aligning the country with global standards and driving the formalization and scale of the economy [16, 17]. * <strong>Strategic Capacity Expansions and R&amp;D:</strong> Companies are aggressively expanding their manufacturing footprints to capture structural demand. Dhunseri Poly Films Private Limited recently laid the foundation stone for a new BOPP Plant in Jammu to expand its manufacturing footprint [18]. 3M India is focusing on localizing its R&amp;D capabilities to create “for-India” products and expanding its local manufacturing and supply chain infrastructure [19]. Meanwhile, DCM Shriram is commissioning new capacities, such as its Epichlorohydrin (ECH) plant and an aluminium extrusion project, to strengthen its product portfolio [20-23]. * <strong>Consumer Lifestyle and Affordability Shifts:</strong> Consumer-facing businesses are evolving their value propositions. DCM Shriram’s Fenesta building systems brand is transitioning from a mere product provider to a comprehensive “lifestyle partner” to capture a larger share of customer spending [24, 25]. Godrej Consumer Products has capitalized on an improving trajectory in personal care, driven by better affordability following GST reductions, allowing them to competitively gain market share [26, 27]. * <strong>Green Energy and Sustainable Financing:</strong> Sustainability has become the bedrock of corporate decision-making and a major opportunity for value creation [28, 29]. DCM Shriram is setting up a Renewable Energy Power project for its Bharuch Plant, investing in special purpose vehicles to obtain an additional 48 MW of renewable power supply [30, 31]. To support its sustainability and expansion goals, DCM Shriram also successfully secured a $90 million investment commitment from the International Finance Corporation (IFC) through Sustainability-Linked Non-Convertible Debentures [32, 33]. This financing links operational improvements directly with sustainability objectives, fostering local value creation and green growth [34, 35].</p>
+<p><em><a href="footnote/Diversified.1.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the headwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p>The provided sources highlight several macroeconomic and industry-specific headwinds across various sectors, particularly in chemicals, vinyl, agriculture, and sugar.</p>
+<p><strong>Macroeconomic and Global Trade Headwinds</strong> Across industries, businesses are facing a “Great Realignment” characterized by a shift from globalization to regional resilience. Key global headwinds include <strong>extreme geopolitical shifts, tightening financial liquidity, rapid technological disruption, and the weaponization of trade</strong> through selective tariffs, all of which are creating highly volatile supply chains [1, 2].</p>
+<p><strong>Chemicals Industry</strong> * <strong>Pricing and Cost Pressures:</strong> The industry is dealing with fluctuating prices driven by economic factors, geopolitical uncertainty, and <strong>unsustainable energy costs</strong> in regions like Europe [3, 4]. * <strong>Supply Chain and Tariffs:</strong> Short-term volatility from global supply chain disruptions is a major challenge [3, 4]. Chlorine prices, in particular, have been under pressure, and downstream customers have been negatively impacted by tariffs and geopolitical factors [3, 4]. * <strong>Oversupply and Dumping:</strong> The domestic hydrogen peroxide market is <strong>heavily oversupplied</strong> due to new facilities being commissioned and <strong>product dumping from Bangladesh</strong>, which continues to keep prices suppressed [5, 6].</p>
+<p><strong>Vinyl (PVC) Industry</strong> * <strong>Muted Demand and Oversupply:</strong> Both global and Indian PVC demand has been muted, and the industry is suffering from a global oversupply [7, 8]. * <strong>Predatory Pricing and Lack of Tariffs:</strong> PVC pricing has faced severe downward pressure due to <strong>abundant, cheap imports and predatory pricing</strong> (dumping) [7, 8]. The situation was exacerbated when the Ministry of Finance chose not to impose an anti-dumping duty (ADD) despite justifications, leading to a sharp fall in domestic PVC prices [9, 10].</p>
+<p><strong>Agriculture and Agri-Inputs (Seeds &amp; Fertilizers)</strong> * <strong>Adverse Weather Impacts:</strong> Extended monsoons and heavy rainfall negatively impacted farmers’ profitability during the Kharif season [11, 12]. * <strong>Reduced Farmer Spending:</strong> Because of the poor Kharif season, farmers had less money to spend in the subsequent Rabi season. Instead of buying new seeds, <strong>many farmers resorted to using saved seeds</strong> (such as wheat and mustard), which led to lower product prices and moderated margins for seed businesses [11-14].</p>
+<p><strong>Sugar &amp; Ethanol Industry</strong> * <strong>Rising Costs and Levies:</strong> The industry is struggling with <strong>increasing costs of production</strong> [15, 16]. Additionally, there are regulatory frictions, such as the contested retrospective export levies on ethanol sent outside of Uttar Pradesh, which has led to ongoing court battles [15, 16]. * <strong>Global Surplus:</strong> The market is also bracing for a global sugar supply surplus of roughly 3.2 million metric tonnes, heavily driven by expected surplus production in India [9, 10].</p>
+<p><strong>Fast-Moving Consumer Goods (FMCG)</strong> * While not detailed extensively, companies in the consumer goods space, such as Godrej Consumer Products, have noted that <strong>“temporary headwinds”</strong> have contributed to year-over-year declines in consolidated net profits [17].</p>
+<p><em><a href="footnote/Diversified.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry" class="section level3">
+<h3><strong>What are the key things to understand about this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p>Your query asks about “this industry,” but the provided sources cover a wide variety of companies operating across several completely different industries.</p>
+<p>For example, the sources include information on: * <strong>Chemicals, Sugar, and Agriculture:</strong> Covered by companies like DCM Shriram and Godrej Industries. * <strong>Healthcare, Medical Devices, and Consumer Products:</strong> Covered by companies like TTK Healthcare and 3M India. * <strong>Logistics, Packaging, and Travel:</strong> Covered by companies like Maheshwari Logistics and Balmer Lawrie. * <strong>Real Estate:</strong> Covered by Godrej Properties. * <strong>BOPP Films and Manufacturing:</strong> Covered by Dhunseri Ventures.</p>
+<p>To provide the most accurate and helpful response, could you please clarify which specific industry or company you would like to know more about?</p>
+<p><em><a href="footnote/Diversified.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the tailwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p>Several distinct tailwinds are currently driving growth and providing a positive outlook across multiple industries, ranging from chemicals and agriculture to consumer goods and real estate.</p>
+<p><strong>Macroeconomic and Demographic Tailwinds</strong> On a broader macroeconomic level, India’s economy is being powered by a massive infrastructure build-up and a demographic dividend that is actively converting into strong consumption and entrepreneurial energy [1, 2]. The implementation of recent labor codes is aligning the country with global health, safety, and social inclusion standards, thereby driving the scale and formalization of the economy [1, 2]. Additionally, the Reserve Bank of India (RBI) is actively supporting the government’s growth agenda through calibrated monetary easing, robust liquidity support, and a strong focus on financial stability [3, 4].</p>
+<p><strong>Chemicals, Resins, and Polymers</strong> The chemicals sector is benefiting from several structural and regulatory tailwinds: * <strong>Structural Demand:</strong> There is growing structural demand stemming from industrial end-markets for essential chemicals [5, 6]. Demand for Epichlorohydrin (ECH) stands firm, supported by structurally strong consumption as well as an increase in the production capacity of epoxy resins [7-10]. * <strong>Favorable Trade Policies:</strong> Regulatory interventions are helping protect domestic manufacturers. The Indian government levied anti-dumping duties on Liquid Epoxy Resin (LER) in November 2025, providing a significant advantage to domestic players [8, 10-12]. * <strong>International Market Shifts:</strong> The Chinese government’s decision to revoke a 13% VAT subsidy on PVC, effective from April 1st, has already created a positive impact on the industry by helping domestic realization and pushing prices upward [13, 14].</p>
+<p><strong>Agriculture, Sugar, and Ethanol</strong> The agricultural and allied sectors are experiencing momentum through both consumer acceptance and government initiatives: * <strong>Agri-Inputs &amp; Animal Feed:</strong> There is strong farmer acceptance for newly launched, differentiated crop protection molecules and specialty plant nutrition products [15, 16]. The animal feed industry is seeing robust volume growth driven by sustained improvements in the cattle, layer, and fish feed categories, while the vegetable oil segment is expanding due to improved Fresh Fruit Bunch (FFB) yields [17]. * <strong>Ethanol Blending:</strong> The government’s push for ethanol blending is generating massive demand. For the 2025-26 season, Oil Marketing Companies (OMCs) received 1,777 crore liters of ethanol offers—1.70 times the total requirement tendered—with allocations sourced from both grain-based (72%) and sugarcane (28%) feedstocks [18, 19].</p>
+<p><strong>Consumer Goods (FMCG)</strong> In the consumer goods and personal care sector, a major tailwind is improving consumer affordability. Specifically, reductions in GST have fueled a positive growth trajectory in personal wash and care categories, enabling brands to win competitively and capture greater market share [20].</p>
+<p><strong>Real Estate and Building Materials</strong> The residential real estate sector is witnessing rapid growth and robust sales bookings [21, 22]. Concurrently, the building materials category is evolving; consumer-facing brands in this space are successfully transitioning from traditional product providers to comprehensive “lifestyle partners,” which allows them to capture a significantly larger share of the customer’s wallet [23, 24].</p>
+<p><strong>Infrastructure and Renewable Energy Applications</strong> Targeted industrial and infrastructure developments are opening new avenues for specialized components. For example, there is increasing demand for specialized materials and solutions in expanding sectors, including solar and wind power projects (such as cable accessories and touchproof terminations), airport interiors and exteriors, and automotive manufacturing [25].</p>
+<p><em><a href="footnote/Diversified.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry" class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p>The provided sources primarily detail the outlook for the diverse business segments operated by the conglomerate DCM Shriram Limited. Because the company operates across several distinct sectors, the “general outlook” is multifaceted.</p>
+<p>Overall, the global macroeconomic landscape is undergoing what is described as a <strong>“Great Realignment”</strong>—a shift from globalization toward regional resilience [1]. Industries are navigating volatile supply chains caused by extreme geopolitical shifts, tightening financial liquidity, and the weaponization of trade through selective tariffs [1]. Despite these external headwinds, <strong>the Indian market remains highly resilient</strong>, supported by a massive infrastructure build-up, a strong demographic dividend transitioning into consumption, recent labor reforms, and calibrated monetary easing by the Reserve Bank of India (RBI) [2], [3].</p>
+<p>Here is the detailed outlook across the specific industries highlighted in the sources:</p>
+<p><strong>1. Chemicals Industry (Caustic Soda, Hydrogen Peroxide, and Epichlorohydrin)</strong> * <strong>Caustic Soda &amp; Chlorine:</strong> Globally, the caustic soda market is operating at around 80% utilization with strong demand in the Asia-Pacific region, though European markets are struggling with unsustainable energy costs [4]. Domestically, the industry has a <strong>“two-faced outlook”</strong>: there is growing, structural demand from industrial end-markets, but it is currently battling short-term volatility from global supply chain disruptions [5]. Within India, surplus capacity and subdued demand for chlorine derivatives continue to put downward pressure on prices [6]. However, because the bulk of demand is domestic and fundamentally robust, the outlook for the coming quarters remains <strong>fairly stable to positive</strong> [7]. * <strong>Hydrogen Peroxide:</strong> Demand remains broadly stable—driven by the pulp and paper, textile, and water treatment sectors—but the <strong>domestic market is currently oversupplied</strong> due to new facility commissionings and product dumping from Bangladesh, which is keeping prices under pressure [8]. * <strong>Epichlorohydrin (ECH) &amp; Epoxy:</strong> The demand for ECH stands firm, supported by structurally strong consumption and expanding capacity for epoxy resins [8]. The Indian government also recently levied anti-dumping duties on liquid epoxy resin, which is expected to positively impact the industry in upcoming quarters [9].</p>
+<p><strong>2. Vinyl and PVC Industry</strong> The PVC industry has faced severe challenges recently but is seeing potential catalysts for recovery. * <strong>Current Pressures:</strong> Both global and Indian PVC demand have been muted, with prices remaining soft due to <strong>abundant imports and global oversupply</strong> [10]. Domestic prices fell sharply after the Ministry of Finance opted not to impose an Anti-Dumping Duty (ADD) despite justification for it [10], [11]. * <strong>Positive Tailwinds:</strong> The outlook is brightening slightly as China announced the removal of a 13% VAT subsidy on PVC effective April 1st, which has already caused prices to inch upward [12]. To further combat predatory pricing, the domestic industry is <strong>aggressively lobbying the government to implement a Minimum Import Price (MIP)</strong> and Quality Control Orders (QCOs) to regulate the quality of PVC used in potable products [13], [14].</p>
+<p><strong>3. Sugar and Ethanol Industry</strong> * <strong>Sugar:</strong> The global sugar supply for the 2025-26 season is expected to see a <strong>surplus of 3.2 million metric tonnes</strong>, largely driven by an anticipated 2.2 million metric tonne surplus in India [11]. The Indian sugar season is projected to end with a hefty stock of 6.2 million metric tonnes [11]. While sugarcane recovery levels have improved slightly compared to the previous year, <strong>profit margins are expected to be lower</strong> at current prices due to increasing costs of production [15], [16], [17]. * <strong>Ethanol:</strong> Allocations for ethanol derived from sugarcane have dropped significantly to 28% (down from 34% last year), with grain-based feedstocks now taking the lead [18]. To ensure the viability of sugar mills, the industry is urgently requesting government support through an <strong>increase in the sugar Minimum Support Price (MSP)</strong> and higher ethanol blending targets [18].</p>
+<p><strong>4. Agri-Inputs and Seeds</strong> The agricultural sector has experienced mixed fortunes largely dictated by weather patterns. * <strong>Farm Solutions:</strong> This segment is seeing <strong>healthy revenue growth and sustained momentum</strong>. There is particularly strong market leadership and record sales in research wheat seeds, alongside strong farmer acceptance of new crop protection and specialty plant nutrition products [19], [20]. * <strong>Bioseed:</strong> The outlook here was dampened by an extended monsoon and heavy rainfall during the Kharif season. This reduced farmers’ overall profitability, directly leading to <strong>reduced spending in the Rabi season</strong> [21]. To save money, many farmers opted to use saved seeds for crops like wheat and mustard instead of purchasing new ones, though crops like corn and paddy still witnessed good growth [21].</p>
+<p><strong>5. Fenesta Building Systems (Windows, Doors, and Facades)</strong> This consumer-facing industry is actively evolving from a simple product provider into a comprehensive <strong>“lifestyle partner”</strong> [22]. The segment continues to report <strong>healthy volume growth</strong>, though profit margins have temporarily normalized into the single digits [22], [23]. This margin compression is not seen as a long-term structural issue, but rather the result of a changing product mix and heavy current investments in growing new revenue platforms, such as the facade business and aluminum extrusions [24], [25]. As these new investments scale and operational efficiencies kick in, margins are expected to stabilize and inch back up to around 14% [25], [26].</p>
+<p><em><a href="footnote/Diversified.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

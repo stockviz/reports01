@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-05-15" />
+
+<title>Public Sector Bank</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Public Sector Bank</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">May 15, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/PublicSectorBank.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/PublicSectorBank.fan.CAP_WT.png" /></p>
+<p><img src="plots/PublicSectorBank.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/PublicSectorBank.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/PublicSectorBank.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/PublicSectorBank.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/PublicSectorBank.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-211fecddbb7c7da3ac5e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-211fecddbb7c7da3ac5e">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-3.42%","-6.13%"],["-2.83%","-6.87%"],["-4.36%","-7.11%"],["-0.66%","1.04%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/PublicSectorBank.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/PublicSectorBank.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a372aa9fc7a241380339" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a372aa9fc7a241380339">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BANKBARODA.html\" target=\"_blank\">BANKBARODA<\/a>","<a href=\"/reports02/eq-in/risk/in.BANKINDIA.html\" target=\"_blank\">BANKINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.CANBK.html\" target=\"_blank\">CANBK<\/a>","<a href=\"/reports02/eq-in/risk/in.CENTRALBK.html\" target=\"_blank\">CENTRALBK<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIANB.html\" target=\"_blank\">INDIANB<\/a>","<a href=\"/reports02/eq-in/risk/in.IOB.html\" target=\"_blank\">IOB<\/a>","<a href=\"/reports02/eq-in/risk/in.MAHABANK.html\" target=\"_blank\">MAHABANK<\/a>","<a href=\"/reports02/eq-in/risk/in.PNB.html\" target=\"_blank\">PNB<\/a>","<a href=\"/reports02/eq-in/risk/in.PSB.html\" target=\"_blank\">PSB<\/a>","<a href=\"/reports02/eq-in/risk/in.SBIN.html\" target=\"_blank\">SBIN<\/a>","<a href=\"/reports02/eq-in/risk/in.UCOBANK.html\" target=\"_blank\">UCOBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.UNIONBANK.html\" target=\"_blank\">UNIONBANK<\/a>"],[269.2,170.16,113.52,40.45,551.78,17.72,40.56,114.82,18.09,541.73,25.21,152.09],[18.81,11.05,18.22,5.32,9.460000000000001,4.48,3.93,19.3,1.71,71.62,3.79,14.83],[283.9,179.73,119.39,42.01,558.96,18.09,41.09,118.16,19.21,561.24,25.89,158.77],[52.1,52.02,46.83,57.84,46.9,45.74,37.19,51.91,60.21,48.29,52.2,49.95],[2.04,2.26,2.08,2.7,2.23,1.54,1.6,3.19,2.6,1.57,2.41,3.06],[2.51,2.34,2.03,2.63,2.91,2.94,3.48,2.18,2.31,2.52,2.8,2.52],[0.57,0.6,0.45,0.45,0.15,0.24,0.15,0.32,0.74,0.39,0.36,0.51],[1.09,0.96,1.16,1.01,1.3,1.28,1.86,1.06,0.79,1.19,0.83,1.35],[13.75,13.22,19.04,13.28,16.26,15.67,22.52,15.02,9.869999999999999,16.24,9.109999999999999,16.56],[0.9947994056463597,0.8459685002350729,1.152572233967583,0.8556242274412854,1.507394251332053,1.908577878103838,1.935404339250493,0.9111653022121583,1.331122166943062,1.80883465933214,1.009520031733439,1.08422644486817]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>ABVPS<\/th>\n      <th>ASSETS_LAKH_CR<\/th>\n      <th>BVPS<\/th>\n      <th>EFFICIENCY<\/th>\n      <th>GNPA_PCT<\/th>\n      <th>NIM<\/th>\n      <th>NNPA_PCT<\/th>\n      <th>ROA<\/th>\n      <th>ROE<\/th>\n      <th>BV_MULTIPLE<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":12,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":5,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":6,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":7,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":8,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":9,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":10,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4,5,6,7,8,9,10]},{"name":"SYMBOL_LINK","targets":0},{"name":"ABVPS","targets":1},{"name":"ASSETS_LAKH_CR","targets":2},{"name":"BVPS","targets":3},{"name":"EFFICIENCY","targets":4},{"name":"GNPA_PCT","targets":5},{"name":"NIM","targets":6},{"name":"NNPA_PCT","targets":7},{"name":"ROA","targets":8},{"name":"ROE","targets":9},{"name":"BV_MULTIPLE","targets":10}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render","options.columnDefs.4.render","options.columnDefs.5.render","options.columnDefs.6.render","options.columnDefs.7.render","options.columnDefs.8.render","options.columnDefs.9.render"],"jsHooks":[]}</script>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8dbb96a3e78940282710" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8dbb96a3e78940282710">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.SBIN.html\" target=\"_blank\">SBIN<\/a>","<a href=\"/reports02/eq-in/risk/in.BANKBARODA.html\" target=\"_blank\">BANKBARODA<\/a>","<a href=\"/reports02/eq-in/risk/in.UNIONBANK.html\" target=\"_blank\">UNIONBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.PNB.html\" target=\"_blank\">PNB<\/a>","<a href=\"/reports02/eq-in/risk/in.CANBK.html\" target=\"_blank\">CANBK<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIANB.html\" target=\"_blank\">INDIANB<\/a>","<a href=\"/reports02/eq-in/risk/in.BANKINDIA.html\" target=\"_blank\">BANKINDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.IOB.html\" target=\"_blank\">IOB<\/a>","<a href=\"/reports02/eq-in/risk/in.MAHABANK.html\" target=\"_blank\">MAHABANK<\/a>","<a href=\"/reports02/eq-in/risk/in.UCOBANK.html\" target=\"_blank\">UCOBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.CENTRALBK.html\" target=\"_blank\">CENTRALBK<\/a>","<a href=\"/reports02/eq-in/risk/in.PSB.html\" target=\"_blank\">PSB<\/a>"],[0.6319802961318403,0.07721472687861879,0.04949113291889305,0.05606648478717921,0.0685791546740037,0.04552475450971942,0.02720533954855524,0.007656180879705948,0.02487299418444709,0.004489660350888794,0.005283616397516914,0.001635658738631592],[0.5050521813066693,0.07732674268231303,0.07024268293410434,0.06714061131092192,0.06628780438301821,0.06233989957069788,0.03661798824335704,0.0362755787839728,0.03375565838552456,0.01778986276946517,0.0176459542113559,0.009525035418599868]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":12,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a1f1931d5bdca0c878a8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a1f1931d5bdca0c878a8">{"x":{"filter":"none","vertical":false,"data":[[]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":0,"columnDefs":[{"name":"SYMBOL","targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[0,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f11a8af4bd2a3b6870a3" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f11a8af4bd2a3b6870a3">{"x":{"filter":"none","vertical":false,"data":[[]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":0,"columnDefs":[{"name":"SYMBOL","targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[0,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time" class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over time?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The banking sector has witnessed a significant evolution in its operational landscape, transitioning from managing legacy asset quality issues to navigating a highly dynamic, technology-driven, and intensely competitive environment.</strong> Over time, the challenges and opportunities have shifted structurally, driven by macroeconomic policies, changing consumer behaviors, and rapid technological advancements.</p>
+<div id="evolving-challenges" class="section level9">
+<p class="heading"><strong>Evolving Challenges</strong></p>
+<p><strong>1. Structural Shifts in Deposit Mobilization and Consumer Behavior</strong> Historically, banks relied heavily on traditional savings and current accounts for low-cost funds. However, <strong>there has been a structural change in consumer behavior, with depositors increasingly shifting their funds toward alternative, higher-yielding investment modes</strong> [1]. This has created a persistent industry-wide challenge in mobilizing Current Account and Savings Account (CASA) deposits [2]. Banks are facing muted deposit growth relative to rapid credit expansion, forcing them to rely more on expensive bulk deposits and term deposits, which inherently puts pressure on their cost of funds [1, 3, 4].</p>
+<p><strong>2. Margin Compression Due to Interest Rate Cycles</strong> Protecting the Net Interest Margin (NIM) has become increasingly difficult in a fluctuating rate environment. <strong>The transmission of repo rate cuts (such as the recent 125 basis points reduction) impacts loan yields immediately because a large portion of the loan book is linked to external benchmarks (like RLLR), whereas term deposits take six months to a year to reprice</strong> [5-7]. This lag creates short-to-medium-term margin compression, forcing banks to dynamically manage their Liquidity Coverage Ratios (LCR) and aggressively seek lower-cost funding alternatives [7, 8].</p>
+<p><strong>3. Stringent Regulatory and Provisioning Requirements</strong> Regulatory compliance has introduced new cost pressures over time. <strong>The impending transition to the Expected Credit Loss (ECL) framework requires banks to make substantial forward-looking provisions</strong> [9, 10]. For example, transitioning Stage 2 assets under ECL norms requires provisioning to jump significantly, prompting banks to proactively build thousands of crores in buffers well ahead of the implementation deadlines [10, 11]. Additionally, rising insurance costs, such as the retrospective increase in DICGC (Deposit Insurance and Credit Guarantee Corporation) premiums [12], and the financial impact of adopting new national Labour Codes [13], continue to add to operating expenses.</p>
+<p><strong>4. Emerging Cybersecurity Risks</strong> With the pivot to digital banking, operational risks have evolved from traditional physical fraud to sophisticated cyber threats. <strong>Banks are increasingly battling cyber frauds and the proliferation of “mule accounts”</strong> [14]. To combat this, institutions have had to invest heavily in multi-layered defense mechanisms, including Enterprise Fraud Risk Management systems, negative registries for mobile numbers, and migrating account activation exclusively to centralized back-office systems [14].</p>
+<hr />
+</div>
+<div id="evolving-opportunities" class="section level9">
+<p class="heading"><strong>Evolving Opportunities</strong></p>
+<p><strong>1. Strategic Pivot to the RAM Sector</strong> To counteract the risks of lumpy corporate defaults and margin pressures, <strong>banks have deliberately shifted their focus toward the Retail, Agriculture, and MSME (RAM) segments</strong> [15-17]. The RAM sector now constitutes a dominant portion (often 60% to 75%) of total advances for many institutions [18, 19]. This granular approach not only disperses risk but also provides significantly better yields—often around 8.8% to 9.2%—compared to highly competitive, low-yielding corporate loans [20]. Within retail, vehicle loans, housing loans, and gold loans (growing at over 30% for some banks) have emerged as massive growth engines [21-23].</p>
+<p><strong>2. Accelerated Digital Transformation and AI Integration</strong> The digital evolution has transitioned from being a mere support function to the core driver of business acquisition and operational efficiency. <strong>Banks are now deploying “Straight Through Processing” (STP) for digital loan journeys, processing hundreds of thousands of loans instantly without manual intervention</strong> [24, 25]. The opportunity set has expanded into cutting-edge technologies: * <strong>Agentic AI and Machine Learning:</strong> AI is being utilized for predictive modeling, default prediction, lead nurturing, personal finance management, and automated grievance redressal [26, 27]. * <strong>Innovative Customer Touchpoints:</strong> The launch of virtual ATMs, WhatsApp banking (offering services in multiple regional languages), and integrated “Super Apps” has drastically improved customer stickiness and onboarding speed [25, 28, 29].</p>
+<p><strong>3. Growth in the “New Economy” and Green Finance</strong> As the broader economy evolves, so do the avenues for corporate lending. Banks are finding lucrative opportunities in emerging sectors rather than traditional heavy industries. <strong>There is robust credit demand in Green Finance—including electric vehicles (EVs), solar panel manufacturing, and renewable energy—which is growing at rates as high as 60%</strong> [30-32]. Additionally, investments in modern infrastructure, such as data centers, logistics, and warehouse development, are providing healthy corporate credit pipelines [30, 31].</p>
+<p><strong>4. Synergistic Cross-Selling and Fee-Based Income</strong> To combat tightening interest margins, banks have heavily optimized their fee-based income streams. Using advanced business analytics and data scrubbing, <strong>banks are highly focused on cross-selling multiple products—such as credit cards, mutual funds, Demat accounts, and life insurance—to their existing CASA customers</strong> [33-36]. Joint ventures and subsidiaries in the insurance and asset management spaces are being leveraged to generate hundreds of crores in supplementary income [35].</p>
+<p><strong>5. Robust and Diversified Recovery Mechanisms</strong> While asset quality was historically a major challenge, the evolution of recovery frameworks has turned this into an ongoing opportunity for boosting the bottom line. <strong>With the maturation of tools like the NCLT (National Company Law Tribunal), DRTs, SARFAESI, and aggressive One-Time Settlement (OTS) schemes, banks are consistently recovering thousands of crores from written-off accounts and bad loans</strong> [37, 38]. These recoveries now frequently exceed fresh slippages, fundamentally transforming balance sheet health [39].</p>
+<p><em><a href="footnote/Public%20Sector%20Bank.1.txt">sources</a> </em></p>
+</div>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the headwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Margin Compression from Rate Cuts</strong> A significant headwind across the banking industry is the pressure on Net Interest Margins (NIM) driven by recent monetary policy easing [1-3]. The Reserve Bank of India (RBI) implemented repo rate cuts totaling 125 basis points [1, 2]. Because a large portion of the banks’ loan books (often up to 49% or 60%) is linked to the external benchmark lending rate (RLLR/EBLR), these rate cuts are passed on to borrowers immediately [2, 4, 5]. However, there is a time lag of 6 to 12 months for the corresponding repricing of term deposits [5, 6]. This timing mismatch between immediate asset repricing and delayed liability repricing has led to NIM contraction for multiple lenders [4, 5].</p>
+<p><strong>Deposit Mobilization and Changing Customer Behavior</strong> Banks are experiencing a distinct mismatch between aggressive credit growth and slower deposit mobilization [7-9]. Growing Current Account Savings Account (CASA) deposits is specifically cited as an “industry challenge” [10]. This difficulty is attributed to a structural change in customer behavior, as depositors are increasingly shifting their funds toward alternative, higher-yielding modes of investment [11]. As a result, system liquidity is tight, and banks are being forced to rely on bulk deposits, which have seen interest rates increase by 20 to 30 basis points, further elevating the overall cost of funds [11, 12].</p>
+<p><strong>Muted Corporate Lending and Pricing Constraints</strong> Corporate loan growth is lagging behind Retail, Agriculture, and MSME (RAM) sectors due to intense competition and tight pricing [13, 14]. Banks are finding it difficult to lend profitably to highly-rated corporates, as the market rates for these loans (sometimes as low as 6% to 6.5%) do not offer sufficient spreads to protect net interest margins or justify the capital requirements [15-17]. Consequently, some banks are actively shedding lower-yielding corporate exposures or refusing to onboard clients where the pricing is not competitive [17-19]. Furthermore, the demand for corporate credit has been hampered by stress in government finances and sluggish private capital expenditure (CAPEX) [20, 21].</p>
+<p><strong>Regulatory Transition to Expected Credit Loss (ECL)</strong> The impending regulatory shift to the Expected Credit Loss (ECL) framework is forcing banks to set aside substantial preemptive provisions, impacting short-term profitability [22-24]. For example, one bank estimates that the transition to ECL could require an additional provision of ₹10,000 crores to cover Stage 1 default rates, which will likely need to be amortized over a period of up to four years [25, 26]. This transition requires banks to build significant financial buffers even for standard assets [23, 27].</p>
+<p><strong>Geopolitical Uncertainties and Treasury Yield Hardening</strong> Macroeconomic disturbances, including global geopolitical tensions, potential US tariffs, and international sanctions, are creating an uncertain business environment [28, 29]. While banks note that India’s strong domestic consumption helps cushion the blow against export-related shocks, it remains an overarching concern for the broader economy [30-32]. Additionally, banks are facing headwinds in their treasury operations due to the hardening of yields on Government Securities (G-Secs) and State Development Loans (SDLs) [33, 34]. This hardening of bond yields limits the potential for treasury income and profit from the sale of investments [35, 36].</p>
+<p><em><a href="footnote/Public%20Sector%20Bank.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry" class="section level3">
+<h3><strong>What are the key things to understand about this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>1. Divergence Between Robust Credit Growth and Sluggish Deposit Mobilization</strong> A defining characteristic of the current banking landscape is the substantial mismatch between credit demand and deposit accumulation. Banks are experiencing robust credit growth, often comfortably achieving year-on-year advances growth in the high double digits—such as 19.48% for Central Bank of India [1], roughly 15-16% for Punjab &amp; Sind Bank [2], and a projected 24-25% for Indian Overseas Bank (IOB) [3, 4].</p>
+<p>In contrast, deposit growth is lagging significantly behind, creating systemic liquidity tightness [5]. For instance, UCO Bank reported an impressive 10.73% credit growth over nine months against a mere 5.63% deposit growth [6]. This disparity has driven Credit-Deposit (CD) ratios to the higher bands, with IOB reporting a CD ratio of 84.45% (or 81% excluding overseas centers) [4, 7] and Indian Bank reporting 80.77% [8, 9]. To sustain this credit momentum without straining liquidity, banks are heavily relying on maintaining comfortable Liquidity Coverage Ratios (LCR) [10, 11], raising funds via infrastructure or Tier II bonds [12, 13], and occasionally borrowing against liquid securities [14].</p>
+<p><strong>2. Strategic Pivot Towards the RAM Segment (Retail, Agriculture, and MSME)</strong> Public sector banks are deliberately rebalancing their portfolios to heavily favor the RAM (Retail, Agriculture, and MSME) segment over large corporate lending. The RAM segment now constitutes a dominant portion of the overall credit mix across the industry, reaching 76% at IOB [15, 16], 72% at Central Bank of India [17], 66.06% at Indian Bank [8], and over 61% at Bank of Baroda [18]. Punjab &amp; Sind Bank has set a forward-looking guidance to increase its RAM share to 70% by FY27 [19].</p>
+<p>This pivot is driven by several distinct advantages: * <strong>Higher Yields and Profitability:</strong> RAM advances typically offer superior margins, with banks reporting yields around 8.5% to over 9% on retail, vehicle, and MSME products [20-22]. Gold loans, a rapidly growing retail product, also provide highly secured yields around 8.70% to 9% [23]. * <strong>Capital Optimization and Risk Mitigation:</strong> Retail and MSME loans require lower capital allocations and spread the risk across a highly granular customer base, avoiding the volatility associated with large-ticket corporate defaults [24, 25]. * <strong>Corporate Lending Selectivity:</strong> Corporate loan growth is purposely kept muted or selective by several banks due to pricing issues. Banks are refusing to lend at unviable low rates (e.g., 6% to 6.5%), preferring to sacrifice corporate volume to protect their net interest margins [11, 24, 26]. When corporate lending is pursued, it is strictly directed toward highly rated clients (AA and AAA) or emerging infrastructure sectors like renewable energy and data centers [11, 27, 28].</p>
+<p><strong>3. Structural Pressures on CASA and Net Interest Margins (NIM)</strong> Banks are grappling with intense pressure on their Current Account Savings Account (CASA) ratios and, consequently, their Net Interest Margins (NIM). Industry executives note a structural change in consumer behavior, where depositors are shifting funds from low-yielding savings accounts into alternative investment modes or higher-yielding term deposits [29, 30]. For example, Central Bank of India observed a reduction in the delta between savings deposit rates and fresh term deposit rates [31]. Furthermore, the rising cost of bulk deposits is exacerbating the cost of funds [32, 33].</p>
+<p>To counter this, banks are deploying targeted strategies to mobilize low-cost deposits: * Running specialized campaigns, such as Central Bank’s “Aagaz” campaign, which targets distinct segments like pensioners, defense personnel, and RERA-specific accounts to raise bulk CASA funds [34-36]. * Aggressively pursuing institutional and government salary accounts, including defense sector packages and state government tie-ups [37, 38]. * Enhancing customer “stickiness” by cross-selling multiple products (credit cards, mutual funds, Demat accounts) alongside standard deposit accounts [38-40].</p>
+<p><strong>4. Substantial Improvement in Asset Quality and Robust Recovery Mechanisms</strong> The industry has witnessed a dramatic clean-up of legacy bad loans, showcasing historically low non-performing assets (NPAs). Gross NPAs have dropped significantly, with Indian Bank reaching 2.23% [8], Central Bank improving by 116 bps to 2.70% [41], Punjab &amp; Sind Bank at 2.60% [2], and Bank of Maharashtra hitting an impressive 1.60% [42]. Net NPAs are consistently dropping below 1%, with Indian Bank boasting a Net NPA of just 0.15% [43] and Central Bank at 0.45% [41].</p>
+<p>This structural improvement is fueled by: * <strong>Enhanced Underwriting:</strong> Banks have revamped their underwriting standards by centralizing decision-making through specialized Retail, Agri, and MSME hubs, ensuring better loan origination quality [44]. Central Bank, for instance, implemented a “GoNoGo” technological app to rigorously screen potential retail and MSME loans before they enter the origination system [45, 46]. * <strong>Early Warning Systems (EWS):</strong> Automated software tracking hundreds of scenarios (IOB tracks 144 scenarios) generates early alerts to prevent slippages [47]. * <strong>Strong Recoveries:</strong> Recoveries and upgrades are consistently outpacing new slippages. Banks are heavily leveraging tools like NCLT (National Company Law Tribunal), DRT, SARFAESI, and Lok Adalats, while also recovering massive sums from previously technically written-off (TWO) accounts [48-51].</p>
+<p><strong>5. Massive Capital Deployment in Digital Transformation</strong> Technology and digitalization have shifted from support functions to core business drivers, involving heavy capital expenditure. IOB increased its IT budget to Rs. 1,600 crores [52], UCO Bank plans to spend Rs. 400-500 crores annually [53, 54], Canara Bank spends around Rs. 1,000 crores annually [55], and Punjab &amp; Sind Bank has deployed Rs. 900 crores over the last three years [38].</p>
+<p>Key technological initiatives include: * <strong>Straight-Through Processing (STP):</strong> End-to-end digital loan sanctions are accelerating growth. UCO Bank built a Rs. 15,000 crore book digitally [56], and Punjab &amp; Sind Bank sanctions over 50% of its car loans and 40% of housing loans via digital or digitally-assisted journeys [57]. * <strong>Artificial Intelligence (AI) and Analytics:</strong> Banks are adopting “agentic AI,” machine learning, and advanced analytics for lead generation, customer onboarding, personal finance management, and suspicious transaction tracking [40, 58, 59]. * <strong>Cybersecurity:</strong> Significant investments are being made in Enterprise Fraud Risk Management Services, integrating with platforms like 14C and Mule Hunter to combat rising cyber fraud [57].</p>
+<p><strong>6. Consolidation of Regional Rural Banks (RRBs)</strong> A major administrative restructuring within the industry is the government-mandated amalgamation of Regional Rural Banks. Under the “One State-One RRB” initiative (effective May 1, 2025), multiple RRBs sponsored by major public sector banks are being merged into single entities within respective states. Examples include the consolidation of RRBs sponsored by Bank of Baroda in Gujarat, Uttar Pradesh, and Rajasthan [60, 61], the amalgamation of RRBs to form the Andhra Pradesh Grameena Bank sponsored by Union Bank of India [62], and the formation of Karnataka Grameena Bank sponsored by Canara Bank [63].</p>
+<p><strong>7. Continued Mandate for Financial Inclusion and Priority Sector Lending</strong> Public sector banks remain the primary engines for government-led financial inclusion schemes. They consistently exceed the regulatory National Goal of directing 40% of Adjusted Net Bank Credit (ANBC) to the Priority Sector. For example, Indian Bank achieved 43.75% [8], Punjab National Bank reached 42.68% [64], and Bank of Baroda hit 45.25% [65]. Furthermore, they maintain massive volumes of accounts under the Pradhan Mantri Jan Dhan Yojana (PMJDY) and are driving enrollments in micro-insurance and pension schemes like PMJJBY, PMSBY, and APY [66-68].</p>
+<p><em><a href="footnote/Public%20Sector%20Bank.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the tailwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The Indian economy’s strong macroeconomic performance</strong> is a primary tailwind for the banking industry, with external agencies projecting India to remain the fastest-growing economy, expanding in the range of 6.5% to 7% [1-3]. A robust, consumption-driven domestic market is providing a strong buffer against global geopolitical tensions and external trade tariffs [2, 4].</p>
+<p><strong>Robust and broad-based credit growth</strong> is actively driving the industry forward, particularly within the RAM (Retail, Agriculture, and MSME) segments, which are consistently posting double-digit growth [5-7]. Banks are witnessing massive traction in retail lending; for instance, the home loan market holds massive potential due to ongoing urbanization and development, while vehicle loan portfolios at some institutions are growing by as much as 40% to 70% [8, 9].</p>
+<p><strong>Emerging sectors and renewed infrastructure spending</strong> are creating massive new credit opportunities. Banks are seeing strong demand for credit in emerging areas such as renewable energy, green finance (including electric vehicles and solar power plant manufacturing), lease rental discounting (LRD), road infrastructure, and data centers [10, 11]. Additionally, the logistics sector, warehouse development, and new capital expenditure (capex) programs by state government entities in the power sector are generating extensive corporate credit leads across the country [11, 12].</p>
+<p><strong>Structural improvements in asset quality and strong recoveries</strong> have significantly strengthened bank balance sheets. Across the sector, Gross Non-Performing Assets (GNPA) and Net NPAs have experienced steep declines, while slippage ratios have been contained to industry-best lows [13-17]. This improvement is backed by stringent, automated credit underwriting standards and early warning signal (EWS) systems that prevent defaults before they happen [18-20]. Furthermore, banks are utilizing robust recovery mechanisms—including the National Company Law Tribunal (NCLT), Debt Recovery Tribunals (DRT), SARFAESI, Lok Adalats, and aggressive One Time Settlement (OTS) schemes—to successfully recover thousands of crores even from technically written-off accounts [21-23].</p>
+<p><strong>Digital transformation and the integration of Artificial Intelligence</strong> are drastically reducing operational costs while accelerating customer acquisition. Banks have deployed hundreds of straight-through processing (STP) digital journeys for retail, MSME, and agriculture loans, allowing them to digitally source tens of thousands of crores in business [24-26]. To capitalize on this, banks are establishing dedicated AI and data science verticals to deploy machine learning models for fraud prevention, default prediction, hyper-personalized cross-selling, and automated lead generation [27-30]. Features like virtual ATMs, WhatsApp banking, and the Unified Lending Interface (ULI) are deeply enhancing the customer experience [31-33].</p>
+<p><strong>The resurgence of Public Sector Banks (PSBs)</strong> is altering competitive dynamics, as these institutions are successfully grabbing market share and reclaiming corporate clients from private sector banks [34, 35]. This shift is being driven by sweeping improvements in PSB operational efficiency, modernized state-of-the-art IT infrastructure, centralized processing hubs that improve turnaround times, and an improved brand perception of PSBs as agile, customer-friendly decision-makers [36-38].</p>
+<p><em><a href="footnote/Public%20Sector%20Bank.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry" class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The banking industry, particularly the Public Sector Bank (PSB) segment, is currently experiencing a robust period of resurgence characterized by historic high profits, aggressive credit growth, and structural improvements in asset quality.</strong> Despite some short-term challenges related to deposit mobilization and margin compression from shifting interest rates, the overarching outlook is highly positive and expansionary.</p>
+<p>Here is a detailed breakdown of the general outlook of the industry:</p>
+<p><strong>1. Aggressive Credit Growth Driven by the RAM Sector</strong> The industry is witnessing tremendous business growth, with several banks tracking toward a 15% to 25% annualized credit growth, ranking as some of the highest figures in the banking space [1-3]. This expansion is primarily being fueled by a strategic pivot toward the <strong>RAM segments—Retail, Agriculture, and MSME</strong> [4-7]. * <strong>Retail loans</strong> (especially housing and vehicle loans) are seeing explosive traction, regularly achieving 20% to over 30% year-on-year growth rates [4, 7-9]. * Banks are deliberately shifting their portfolio mix, aiming for the RAM sector to constitute between 60% to 70% of their total loan books [10-12]. * Conversely, <strong>corporate credit growth is being approached more selectively</strong>. Banks are shedding lower-yielding corporate accounts to protect their margins, only onboarding corporate clients that offer acceptable pricing and carry strong credit ratings [12-15].</p>
+<p><strong>2. Improved Asset Quality and Robust Recovery Mechanisms</strong> Asset quality across the sector has improved dramatically. <strong>Gross Non-Performing Assets (GNPA) and Net Non-Performing Assets (NNPA) are on a continuous decline</strong>, with some banks driving their NNPA down to as low as 0.15% to 0.24% [7, 16-19]. * Slippage ratios (the rate at which new loans turn bad) are contained at historically low levels, often remaining below 1% [7, 16, 20, 21]. * Banks have built highly resilient balance sheets, maintaining <strong>Provision Coverage Ratios (PCR) that frequently exceed 95%</strong> [19, 22-24]. * Recoveries and upgradations are consistently outpacing new slippages, driven by aggressive measures through the NCLT, Debt Recovery Tribunals (DRT), and One Time Settlement (OTS) schemes [25-28]. * The industry is also proactively preparing for the impending <strong>Expected Credit Loss (ECL) framework</strong> slated for implementation by 2027. Banks are already setting aside forward-looking buffer provisions so that the eventual transition to ECL norms will not heavily disrupt their profitability or capital adequacy [29-34].</p>
+<p><strong>3. Navigating Margin Compression and Deposit Challenges</strong> While lending is growing rapidly, the industry is grappling with temporary pressures on Net Interest Margins (NIM) and deposit growth [35-37]. * <strong>Interest Rate Mismatch:</strong> Recent repo rate cuts (amounting to 125 basis points over recent periods) have immediately reduced the yields on repo-linked loans, which form a massive part of bank portfolios [35, 36, 38-40]. However, the cost of term deposits reprices with a lag of 6 to 12 months, leading to a temporary squeeze on margins [35, 36, 40]. * <strong>Shifting Customer Behavior:</strong> Banks note a structural change in the market, with retail funds migrating toward alternative investment avenues, making deposit mobilization challenging and putting pressure on Current Account Savings Account (CASA) ratios [41, 42]. * To counteract these pressures, banks are relying on the higher yields generated by RAM advances (often yielding between 8.5% and 9.28%) and are launching aggressive campaigns to capture corporate salary accounts and government deposits [39, 43-47].</p>
+<p><strong>4. Massive Push for Digital Transformation and IT Modernization</strong> Technology is no longer viewed merely as support infrastructure; it is driving customer acquisition and cost reduction [27, 48-50]. * <strong>Soaring IT Budgets:</strong> Banks are making massive capital and operational expenditures on technology, with annual IT budgets ranging from ₹800 crore to ₹2,000 crore per institution [51-53]. * These investments are being used to establish completely digital, straight-through processing (STP) loan journeys, robotic process automation (RPA), and omni-channel customer experiences [49, 54-58]. * <strong>Artificial Intelligence (AI)</strong> is rapidly being integrated for advanced use cases such as predictive default monitoring, fraud prevention, automated grievance redressal, and personalized cross-selling algorithms [57-61].</p>
+<p><strong>5. Competitive Resurgence and Macroeconomic Tailwinds</strong> Public Sector Banks are experiencing a “complete resurgence” and are successfully grabbing market share and corporate clients back from private sector banks [62-65]. Their improved turnaround times, aggressive technological adoption, and vast branch networks are elevating their brand image [66-69]. Furthermore, despite geopolitical tensions globally, bank managements note that India’s strong domestic consumption economy effectively insulates them from major shocks, offering a highly stable runway for future growth [70-72].</p>
+<p><em><a href="footnote/Public%20Sector%20Bank.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-05-15" />
+
+<title>Asset Management Company</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Asset Management Company</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">May 15, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/AssetManagementCompany.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/AssetManagementCompany.fan.CAP_WT.png" /></p>
+<p><img src="plots/AssetManagementCompany.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/AssetManagementCompany.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/AssetManagementCompany.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/AssetManagementCompany.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/AssetManagementCompany.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-0f3d95bd2e1d2bdc54e0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0f3d95bd2e1d2bdc54e0">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-0.77%","-0.35%"],["5.78%","7.16%"],["6.16%","8.11%"],["5.78%","7.62%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/AssetManagementCompany.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/AssetManagementCompany.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-96add5656af7e1cb1959" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-96add5656af7e1cb1959">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.ICICIAMC.html\" target=\"_blank\">ICICIAMC<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCAMC.html\" target=\"_blank\">HDFCAMC<\/a>","<a href=\"/reports02/eq-in/risk/in.NAMINDIA.html\" target=\"_blank\">NAM-INDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.ABSLAMC.html\" target=\"_blank\">ABSLAMC<\/a>","<a href=\"/reports02/eq-in/risk/in.UTIAMC.html\" target=\"_blank\">UTIAMC<\/a>","<a href=\"/reports02/eq-in/risk/in.CRAMC.html\" target=\"_blank\">CRAMC<\/a>","<a href=\"/reports02/eq-in/risk/in.IVC.html\" target=\"_blank\">IVC<\/a>"],[0.1140844869305219,0.5571861246131959,0.1967479295747134,0.07871321095834288,0.04146537624180041,0.0106123475315044,0.001190524149921007],[0.4056090388784999,0.2941761825870439,0.1768172130771253,0.07842572625756197,0.03184972591793016,0.01250414383326515,0.0006179694485736072]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":7,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-15f3fa535d22326d766b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-15f3fa535d22326d766b">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.HDFCAMC.html\" target=\"_blank\">HDFCAMC<\/a>","<a href=\"/reports02/eq-in/risk/in.NAMINDIA.html\" target=\"_blank\">NAM-INDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.ABSLAMC.html\" target=\"_blank\">ABSLAMC<\/a>","<a href=\"/reports02/eq-in/risk/in.UTIAMC.html\" target=\"_blank\">UTIAMC<\/a>","<a href=\"/reports02/eq-in/risk/in.IVC.html\" target=\"_blank\">IVC<\/a>"],[48.80063844899113,17.83080912426826,14.75597887802538,7.190073907990215,0.0141739189552999],[48.43800403916104,18.81773939808349,15.11254525719263,7.494171454018513,0.3686585090618112],[47.05338430567559,23.96620401602978,17.17012819493591,11.80886966524923,0.001413818109484346]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-55be54956b92ecf63335" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-55be54956b92ecf63335">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.HDFCAMC.html\" target=\"_blank\">HDFCAMC<\/a>","<a href=\"/reports02/eq-in/risk/in.NAMINDIA.html\" target=\"_blank\">NAM-INDIA<\/a>","<a href=\"/reports02/eq-in/risk/in.ABSLAMC.html\" target=\"_blank\">ABSLAMC<\/a>","<a href=\"/reports02/eq-in/risk/in.UTIAMC.html\" target=\"_blank\">UTIAMC<\/a>","<a href=\"/reports02/eq-in/risk/in.IVC.html\" target=\"_blank\">IVC<\/a>"],[38.60575360067371,20.23860611086952,17.75660933124425,18.70845823090301,9.11427389462482e-05],[30.45670807404443,24.20161145956309,20.31969331884489,20.37306199569689,null],[39.00650434896244,24.90979343112446,17.83011107502415,18.25091281302407,0.002678331864875862]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":5,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time" class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over time?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The Evolution of Challenges in the Asset Management Sector</strong></p>
+<p>Over time, asset management companies have had to navigate an evolving landscape of regulatory, operational, and financial hurdles.</p>
+<p><strong>Regulatory and Tax Policy Shifts</strong> A major challenge has been adapting to changing government regulations and tax policies. The implementation of the four New Labour Codes in India, which became effective on November 21, 2025, consolidated twenty-nine existing labour laws into a unified framework [1-4]. This required companies to reassess their employee benefit obligations under a revised definition of wages, resulting in incremental expenses and exceptional item charges for past service costs related to gratuity obligations [1, 2, 4, 5]. Additionally, changes brought about by the Finance (No.2) Act of 2024 altered the taxation rates for capital gains and withdrew indexation benefits for calculating long-term capital gains on investments [6, 7]. For some entities, this led to a significant increase in their Deferred Tax Liability, such as an additional charge of ₹69.75 crore impacting the Profit After Tax [6, 7].</p>
+<p><strong>Human Capital and Restructuring Costs</strong> Managing human capital and restructuring has also presented notable financial challenges. Implementing Voluntary Retirement Schemes (VRS) to optimize the workforce has led to substantial short-term expenses [8]. For instance, providing VRS for 184 employees resulted in a massive ₹104.28 crore exceptional charge due to immediate full and final settlements, which included early gratuity and immediate pension payouts [2, 8]. Furthermore, revising family pension benefits for eligible employees has required companies to recognize significant incremental liabilities based on actuarial valuations [9, 10].</p>
+<p><strong>Revenue Stability and Going Concern Risks</strong> Some firms have faced acute challenges regarding their financial continuity. Reductions in fee revenues have occurred when the extended terms of managed or advised funds approached their end without immediate new fund raises to replace them [11-13]. This lack of revenue generation has created material uncertainty regarding the ability of certain groups to operate as a “going concern,” forcing management to rely heavily on existing liquid assets to meet current and future obligations over 12-month horizons [11, 12, 14-17]. Further compounding these issues are parent-company crises; for example, the IL&amp;FS Board’s ongoing resolution plan has involved inviting public Expressions of Interest to sell off its stakes, creating structural uncertainties for its subsidiaries [16, 18-21].</p>
+<p><strong>The Evolution of Opportunities in the Asset Management Sector</strong></p>
+<p>Despite these challenges, the industry has aggressively capitalized on technological, geographical, and alternative investment opportunities to drive growth.</p>
+<p><strong>Digital Transformation and Automation</strong> The widespread acceptance and adoption of digital platforms has revolutionized customer acquisition and servicing. Firms have leveraged sophisticated technology, such as Salesforce marketing automation and data cloud analytics, to offer personalized, scalable communications and cross-selling opportunities [22-25]. This has resulted in online platforms driving upwards of 95% of total quarterly gross sales [26]. Digital innovations like the chatbot “UNO”, WhatsApp interfaces, and 24x7 paperless KYC processes using Aadhaar and DigiLocker have drastically simplified investing, contributing to a 20% year-over-year growth in digital Systematic Investment Plan (SIP) transactions [23, 27-30].</p>
+<p><strong>Alternative Investments and Private Credit</strong> Asset managers are increasingly looking beyond traditional equities by expanding into private credit, real estate, and distressed asset investing [31, 32]. A major opportunity lies in India’s mid-market corporate sector, which is fundamentally strong but structurally underserved by traditional financing [33, 34]. The private credit market in India is projected to expand massively, growing from USD 19 billion in 2023 to between USD 60 billion and USD 70 billion by 2028 [35]. To capture this, firms like HDFC AMC have partnered with global institutions like the International Finance Corporation (IFC) to launch Structured Credit Funds with a targeted corpus of INR 1,500 crore, aiming to provide bespoke, flexible capital to mid-sized enterprises while generating superior risk-adjusted returns [33, 36-38].</p>
+<p><strong>Geographic and Market Penetration</strong> Firms are finding significant growth opportunities by pushing into historically underpenetrated geographical markets. Domestically, expanding networks into “B30” (Beyond Top 30) cities has been highly lucrative, providing economies of scale in distribution and marketing [39, 40]. Assets gathered from B30 cities tend to be stickier in nature and offer comparatively higher profit margins [40]. Internationally, companies are setting up operations in major global financial hubs like Singapore, London, Dubai, Paris, and New York, and are actively registering with global bodies like the US SEC to capture offshore capital [41-44]. Furthermore, incorporating subsidiaries within the IFSC GIFT City provides tax-efficient gateways for international funds [4, 45].</p>
+<p><strong>Sustained AUM Growth and Pension Fund Management</strong> Overall Asset Under Management (AUM) has shown resilient growth across the industry. Entities report robust double-digit growth, such as Canara Robeco’s 12% year-over-year total AUM increase to ₹1,198.77 billion and UTI’s 11.44% increase to a total group AUM of ₹23.14 lakh crore [46-48]. Additionally, managing pension corpuses has become a major pillar of growth. Firms operating as licensed Pension Fund Regulatory and Development Authority (PFRDA) managers are capturing significant portions of the National Pension System (NPS) industry—in some cases managing nearly a quarter (24.42%) of the total industry AUM by overseeing both government and non-government corpuses [31, 43].</p>
+<p><em><a href="footnote/Asset%20Management%20Company.1.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the headwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The asset management industry is currently facing several headwinds, spanning tax revisions, regulatory overhauls, and operational challenges:</p>
+<p><strong>Tax Revisions on Capital Gains</strong> The enactment of the Finance (No.2) Act 2024 in August 2024 altered the tax rates for capital gains and completely withdrew the indexation benefit used while calculating long-term capital gains on investments [1]. This has negatively impacted financial results by increasing the Deferred Tax Liabilities that companies must recognize on the fair value gains of their investments, resulting in additional charges on their Profit After Tax [1].</p>
+<p><strong>Impact of New Labour Codes</strong> The Government of India notified the implementation of four New Labour Codes, effective November 21, 2025, which consolidate and rationalize various existing labor laws into a unified framework [2, 3]. This regulatory shift has forced companies to rigorously re-evaluate their employee benefit obligations [3]. As a result, several asset managers have had to recognize incremental charges and exceptional items in their statements of profit and loss to account for increased pension, past service costs, and gratuity obligations [3, 4].</p>
+<p><strong>Fund Maturation and Stagnant Fund Raising</strong> Firms are facing operational headwinds when existing funds they manage or advise approach the end of their extended terms [5-7]. When this occurs alongside a lack of immediate new fund raises, it results in a significant reduction in fee revenue and lowers estimates for future project revenues [8, 9]. For some companies, this severe drop in fee generation has created material uncertainty regarding their ability to continue as a going concern [8, 9].</p>
+<p><strong>Profitability Pressures and Rising Expenses</strong> Despite broader industry growth in Assets Under Management (AUM), individual firms are facing profitability constraints due to rising operational and employee costs. For instance, UTI AMC reported a 24% year-over-year decline in EBITDA and a 27% decline in Profit After Tax (PAT) [10]. This margin compression was heavily driven by increased employee benefit expenses and significant exceptional items, such as Voluntary Retirement Scheme (VRS) ex-gratia payments and actuarial impacts on pensions [11, 12].</p>
+<p><strong>Legal and Investigative Uncertainties</strong> Ongoing investigations by regulatory and government bodies act as a severe headwind for specific corporate groups. For example, the Serious Fraud Investigation Office (SFIO) under the Ministry of Corporate Affairs is actively investigating Infrastructure Leasing &amp; Financial Services Limited (IL&amp;FS) and its subsidiaries [13-15]. These ongoing investigations and the receipt of official summaries of charges create significant material uncertainty for the affected entities, impairing operational continuity and resulting in qualified audit conclusions [14-16].</p>
+<p><em><a href="footnote/Asset%20Management%20Company.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry" class="section level3">
+<h3><strong>What are the key things to understand about this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The asset management and mutual fund industry</strong> primarily operates by providing investment management services for mutual funds, portfolio management, alternative investment funds (AIFs), pension funds, and other advisory services [1-4].</p>
+<p>Here are the key things to understand about how this industry functions, its growth drivers, and its strategic focus areas:</p>
+<p><strong>1. Market Growth and Retail Participation</strong> The industry is currently experiencing a long-term growth trajectory that is heavily supported by India’s strong economic fundamentals and the growing aspiration for financial independence among individuals [5]. The investor base is highly retail-driven; for instance, individual investors can make up as much as 87% of an asset management company’s (AMC) client mix [6]. This increasing participation and trust from retail investors is a cornerstone of the industry’s expansion [5].</p>
+<p><strong>2. Focus on “B30” (Beyond Top 30) Cities</strong> Geographical penetration is a major strategic priority, specifically expanding into “B30” cities (cities beyond the top 30 financial centers). Expanding into these regions provides significant economies of scale [7]. Furthermore, <strong>assets gathered from B30 cities are highly valued because they tend to be “stickier” (investors stay invested longer) and offer comparatively higher profit margins</strong> for the AMCs [7]. For some major players, B30 cities account for around 20% to 24% of their total Assets Under Management (AUM) [6, 7].</p>
+<p><strong>3. Extensive Distribution Networks</strong> To capture the retail market, AMCs rely on massive, diversified distribution networks. This includes partnering with Mutual Fund Distributors (MFDs), banks, national distributors, and financial technology (fin-tech) platforms [2]. Top firms boast tens of thousands of partners, with networks ranging from over 55,000 to nearly 78,000 MFDs and district associates across the country [2, 6, 8].</p>
+<p><strong>4. Digital Transformation and “Phygital” Ecosystems</strong> The industry is aggressively leveraging digital adoption to drive sales and reduce operational friction [9]. <strong>Digital platforms account for a massive portion of new business</strong>, with some firms reporting that over 45% of their gross sales for equity and hybrid funds are mobilized digitally [10]. Key digital initiatives include: * <strong>24x7 Digital Channels:</strong> Offering seamless investment and tracking through mobile apps, revamped websites, and conversational investing via chatbots and WhatsApp [11, 12]. * <strong>Frictionless Onboarding:</strong> Implementing paperless, contactless digital KYC processes powered by Aadhaar and DigiLocker [13]. * <strong>Digital SIPs:</strong> A strong focus on growing Systematic Investment Plan (SIP) books digitally, with features like real-time SIP activation and one-time mandate (OTM) registrations [10, 13]. * <strong>Partner Enablement:</strong> Providing digital “office-on-the-go” apps and API integrations for distributor partners to track AUM and initiate transactions instantly [12].</p>
+<p><strong>5. Rise of Alternative Investments and Private Credit</strong> While traditional equity and debt mutual funds remain the core, the industry is increasingly leaning into Alternative Investment Funds (AIFs) [2, 14]. A rapidly growing segment is <strong>private credit for mid-market corporate enterprises</strong>. Traditional financing often falls short for mid-market companies, creating a vast opportunity for private credit platforms to offer tailored, flexible, and well-structured debt financing [15-17]. This specific segment is projected to see explosive growth, expanding from USD 19 billion in 2023 to an estimated USD 60–70 billion by 2028 [18]. AMCs are launching special situation funds, real estate credit, and distress credit funds to capture this yield [19, 20].</p>
+<p><strong>6. Embedding ESG and Stewardship</strong> Environmental, Social, and Governance (ESG) principles are becoming deeply embedded into investment decision-making processes [21, 22]. AMCs use sector-specific ESG frameworks to evaluate the long-term sustainable performance of companies [11, 22]. <strong>They act as stewards of client capital by actively engaging with company management, issuing risk surveys, and exercising proxy voting</strong> to safeguard investor interests [11].</p>
+<p><strong>7. Strict Regulatory and Governance Frameworks</strong> The industry is heavily regulated to protect investors. * <strong>Domestic Regulation:</strong> Operations are tightly monitored by the Securities and Exchange Board of India (SEBI) [23, 24]. Non-compliance with critical SEBI regulations results in severe penal actions, including the freezing of promoter demat accounts, hefty fines, and the suspension of trading [25, 26]. Trustee Boards are mandated to oversee asset management activities, fund performance, and internal controls [2, 27]. * <strong>International Regulation:</strong> Entities operating in the International Financial Services Centres (IFSC) or GIFT City are regulated by the IFSCA [28]. Firms expanding their footprint globally are also regulated by top-tier global bodies like the SEC (USA), the Monetary Authority of Singapore (MAS), and the FCA (UK) [29, 30].</p>
+<p><strong>8. Revenue Model Vulnerabilities</strong> The primary revenue stream for an AMC is the management fee charged on the funds it manages [31, 32]. The financial health of an AMC is directly tied to its ability to retain and grow its AUM. If existing funds reach the end of their terms and the AMC fails to raise new funds, it can lead to a significant reduction in fee revenue, which can threaten the firm’s continuity as a going concern [31-33].</p>
+<p><em><a href="footnote/Asset%20Management%20Company.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the tailwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>India’s strong economic growth trajectory and robust economic fundamentals</strong> are creating long-term growth opportunities for the mutual fund and asset management industry [1, 2]. The industry is benefiting from several structural tailwinds and emerging opportunities across different market segments:</p>
+<ul>
+<li><strong>Shifting Investor Aspirations and SIP Growth:</strong> There is an <strong>increasing aspiration for financial independence among retail investors</strong>, which is driving greater participation and trust in mutual funds [1]. This is highly visible in the consistent growth of Systematic Investment Plans (SIPs), which act as a structural tailwind for the industry. <strong>SIPs remain the “cornerstone for AUM performance,”</strong> providing highly stable, long-term inflows, with a vast majority of SIP books possessing tenures of more than 5 to 10 years [3].</li>
+<li><strong>Surging Demand for Private Credit:</strong> The mid-market corporate segment is recognized as one of the most dynamic pillars of the Indian economy, yet it remains structurally underserved by traditional financing [4]. There is a <strong>growing demand for bespoke, flexible, and well-structured alternative debt financing</strong> to help these growth-stage companies scale their operations [5, 6]. This presents a massive commercial opportunity for private credit platforms, with <strong>India’s private credit market projected to expand from USD 19 billion in 2023 to USD 60–70 billion by 2028</strong> [2]. This growth is further supported by the government’s focus on economic resilience, strengthening manufacturing, and advancing the “Viksit Bharat” vision [4, 7].</li>
+<li><strong>Digital Adoption and Technological Enablers:</strong> The <strong>growing acceptance of digital and online transactions</strong> is significantly accelerating industry growth [8]. Asset management companies are heavily leveraging 24x7 digital channels, including mobile apps, websites, chatbots, and WhatsApp interfaces, to facilitate seamless investing [9]. Furthermore, the use of <strong>data analytics and automated marketing capabilities allows firms to capitalize on cross-selling and up-selling opportunities</strong> at scale, leading to strong growth in digital SIP transactions and overall online gross sales [8, 10, 11].</li>
+<li><strong>Geographic Expansion into Underpenetrated Markets:</strong> There is a distinct growth opportunity in <strong>B30 (Beyond Top 30) cities</strong>, which remain heavily underpenetrated [12]. Establishing a strong distribution footprint in these regional markets allows companies to attract new client bases and achieve economies of scale [12, 13]. Additionally, <strong>investments originating from B30 cities are highly beneficial as they are “stickier in nature and offer comparatively higher margins”</strong> for asset management companies [13].</li>
+</ul>
+<p><em><a href="footnote/Asset%20Management%20Company.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry" class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The general outlook for the asset management and private credit industry in India is highly positive, driven by robust economic fundamentals, rising investor aspirations, and significant technological adoption.</strong> The industry is poised for substantial long-term growth across multiple segments, particularly in mutual funds, private credit, and digital investment platforms.</p>
+<p><strong>Mutual Fund Industry Growth and Retail Participation</strong> The mutual fund sector expects sustained long-term growth, fueled by India’s strong economic trajectory and a growing desire for financial independence among individuals [1]. The industry is witnessing <strong>increasing participation and trust from retail investors</strong>, which asset management companies are actively nurturing through product innovation and enhanced digital initiatives [1].</p>
+<p><strong>Expansion into Underpenetrated Markets</strong> A major growth catalyst for the industry is the strategic expansion into <strong>B30 (Beyond Top 30) cities</strong> [2]. By establishing a strong presence in these historically underpenetrated regions, asset management companies are well-positioned to attract new clients and capitalize on future regional growth [2]. Penetrating these markets also provides companies with valuable economies of scale in areas such as distribution, marketing, and back-office operations [2].</p>
+<p><strong>Surge in Private Credit and Mid-Market Financing</strong> The outlook for the private credit ecosystem is exceptionally strong, with <strong>India’s private credit market projected to expand from USD 19 billion in 2023 to between USD 60 billion and USD 70 billion by 2028</strong> [3]. This surge is largely centered around India’s mid-market corporate segment, which is described as one of the most dynamic pillars of the economy but remains structurally underserved by traditional financing [4]. * There is a significant opportunity to provide tailored alternative debt financing to these mid-sized enterprises, helping them scale operations, boost innovation, and create jobs [5-7]. * This growth is further supported by the country’s solid economic fundamentals, a robust pipeline of companies across sectors, and the government’s renewed focus on advancing manufacturing and the “Viksit Bharat” vision [4, 8].</p>
+<p><strong>Digital Transformation and Ecosystem Evolution</strong> The future of the industry is deeply intertwined with digitalization [9]. There is a growing acceptance of online transactions and digital ecosystems among investors [9]. To capture this growth, the industry is increasingly relying on <strong>data-first strategies, leveraging analytics, robotic process automation, and personalized marketing</strong> to enhance customer engagement and streamline direct-to-customer offerings [10, 11]. Asset managers are actively upgrading their 24x7 digital channels—including mobile apps, AI chatbots, and WhatsApp interfaces—to provide seamless, secure, and convenient investment experiences [12].</p>
+<p><em><a href="footnote/Asset%20Management%20Company.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

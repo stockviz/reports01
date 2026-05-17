@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-05-15" />
+
+<title>Breweries &amp; Distilleries</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Breweries &amp; Distilleries</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">May 15, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/BreweriesDistilleries.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/BreweriesDistilleries.fan.CAP_WT.png" /></p>
+<p><img src="plots/BreweriesDistilleries.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/BreweriesDistilleries.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/BreweriesDistilleries.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/BreweriesDistilleries.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/BreweriesDistilleries.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-7bf8ba57f007829c06db" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-7bf8ba57f007829c06db">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-1.28%","-1.55%"],["5.99%","3.04%"],["2.46%","1.8%"],["-3.42%","-0.84%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/BreweriesDistilleries.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/BreweriesDistilleries.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-0eab7bda703f9adee750" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0eab7bda703f9adee750">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.UNITDSPR.html\" target=\"_blank\">UNITDSPR<\/a>","<a href=\"/reports02/eq-in/risk/in.RADICO.html\" target=\"_blank\">RADICO<\/a>","<a href=\"/reports02/eq-in/risk/in.UBL.html\" target=\"_blank\">UBL<\/a>","<a href=\"/reports02/eq-in/risk/in.ABDL.html\" target=\"_blank\">ABDL<\/a>","<a href=\"/reports02/eq-in/risk/in.TI.html\" target=\"_blank\">TI<\/a>","INDIAGLYCO","<a href=\"/reports02/eq-in/risk/in.PICCADIL.html\" target=\"_blank\">PICCADIL<\/a>","<a href=\"/reports02/eq-in/risk/in.GLOBUSSPR.html\" target=\"_blank\">GLOBUSSPR<\/a>","<a href=\"/reports02/eq-in/risk/in.GMBREW.html\" target=\"_blank\">GMBREW<\/a>","<a href=\"/reports02/eq-in/risk/in.SDBL.html\" target=\"_blank\">SDBL<\/a>","<a href=\"/reports02/eq-in/risk/in.ASALCBR.html\" target=\"_blank\">ASALCBR<\/a>","<a href=\"/reports02/eq-in/risk/in.SULA.html\" target=\"_blank\">SULA<\/a>","<a href=\"/reports02/eq-in/risk/in.BCLIND.html\" target=\"_blank\">BCLIND<\/a>","<a href=\"/reports02/eq-in/risk/in.IFBAGRO.html\" target=\"_blank\">IFBAGRO<\/a>","COMFINTE","<a href=\"/reports02/eq-in/risk/in.RKDL.html\" target=\"_blank\">RKDL<\/a>"],[0.410728144797979,0.2978666333876974,0.1097287152058775,0.03238672936642888,0.04666092679995142,0.02663277671013467,0.01647568305017368,0.01462291847902057,0.005556331697169378,0.01223167676217986,0.006564393557068047,0.0114299082504627,0.004389784627360413,0.002996619539737513,0.001296068652063335,0.0004326891166956113],[0.4072874169043557,0.2051608474179449,0.1618127096818854,0.06813871488730913,0.04672557857760451,0.03206498710989634,0.02589872483431576,0.01193724567563146,0.009066149798568705,0.00811249817572075,0.007503067655076963,0.006069129050506191,0.004407899581088164,0.004402652711463176,0.001184954799761378,0.0002274231388714116]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":16,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,16,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ae47ea287ab4983305b3" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ae47ea287ab4983305b3">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.UNITDSPR.html\" target=\"_blank\">UNITDSPR<\/a>","<a href=\"/reports02/eq-in/risk/in.RADICO.html\" target=\"_blank\">RADICO<\/a>","<a href=\"/reports02/eq-in/risk/in.UBL.html\" target=\"_blank\">UBL<\/a>","<a href=\"/reports02/eq-in/risk/in.ABDL.html\" target=\"_blank\">ABDL<\/a>","<a href=\"/reports02/eq-in/risk/in.TI.html\" target=\"_blank\">TI<\/a>","INDIAGLYCO","<a href=\"/reports02/eq-in/risk/in.PICCADIL.html\" target=\"_blank\">PICCADIL<\/a>","<a href=\"/reports02/eq-in/risk/in.GLOBUSSPR.html\" target=\"_blank\">GLOBUSSPR<\/a>","<a href=\"/reports02/eq-in/risk/in.GMBREW.html\" target=\"_blank\">GMBREW<\/a>","<a href=\"/reports02/eq-in/risk/in.SDBL.html\" target=\"_blank\">SDBL<\/a>","<a href=\"/reports02/eq-in/risk/in.ASALCBR.html\" target=\"_blank\">ASALCBR<\/a>","<a href=\"/reports02/eq-in/risk/in.SULA.html\" target=\"_blank\">SULA<\/a>","<a href=\"/reports02/eq-in/risk/in.BCLIND.html\" target=\"_blank\">BCLIND<\/a>","<a href=\"/reports02/eq-in/risk/in.IFBAGRO.html\" target=\"_blank\">IFBAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.RKDL.html\" target=\"_blank\">RKDL<\/a>"],[2.5738500994396,36.5278046390272,0.3873440316393116,21.92726334352345,8.607246021252415,7.389426486910718,2.979477253017559,2.223278752600296,0.07575695786522926,4.709100283581191,1.68099264318985,1.56394811593097,3.780730530965089,0.06261754719532162,0.002836998430559485],[2.094417372033674,28.89248316620887,0.1824167677484698,19.90609443205667,7.511072429567553,7.358890223424535,5.374362804153367,null,0.065490985692057,3.214242606591966,1.779458067102652,1.73290533692949,4.040904572073524,0.05958943366936081,0.003322368232825933],[91.70659053482848,0.2762842885408752,0.1169396197296359,0.1401959407990605,0.05539740393679726,5.928595932972726,0.04995712600299716,0.03637259739439249,0.06531939078820455,0.02463338958434666,0.02266197222380243,1.514726377850906,0.03243967795851999,0.02986342819980312,2.231918944854052e-05]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":15,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,15,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-df0ca90374b659fbf387" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-df0ca90374b659fbf387">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.UNITDSPR.html\" target=\"_blank\">UNITDSPR<\/a>","<a href=\"/reports02/eq-in/risk/in.RADICO.html\" target=\"_blank\">RADICO<\/a>","<a href=\"/reports02/eq-in/risk/in.UBL.html\" target=\"_blank\">UBL<\/a>","<a href=\"/reports02/eq-in/risk/in.ABDL.html\" target=\"_blank\">ABDL<\/a>","<a href=\"/reports02/eq-in/risk/in.TI.html\" target=\"_blank\">TI<\/a>","INDIAGLYCO","<a href=\"/reports02/eq-in/risk/in.PICCADIL.html\" target=\"_blank\">PICCADIL<\/a>","<a href=\"/reports02/eq-in/risk/in.GLOBUSSPR.html\" target=\"_blank\">GLOBUSSPR<\/a>","<a href=\"/reports02/eq-in/risk/in.GMBREW.html\" target=\"_blank\">GMBREW<\/a>","<a href=\"/reports02/eq-in/risk/in.SDBL.html\" target=\"_blank\">SDBL<\/a>","<a href=\"/reports02/eq-in/risk/in.ASALCBR.html\" target=\"_blank\">ASALCBR<\/a>","<a href=\"/reports02/eq-in/risk/in.SULA.html\" target=\"_blank\">SULA<\/a>","<a href=\"/reports02/eq-in/risk/in.BCLIND.html\" target=\"_blank\">BCLIND<\/a>","<a href=\"/reports02/eq-in/risk/in.IFBAGRO.html\" target=\"_blank\">IFBAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.RKDL.html\" target=\"_blank\">RKDL<\/a>"],[1.326774626234513,47.96636449736569,0.4606077256002566,18.2247224912374,3.169532508180006,8.525044719750561,1.111492950929601,3.410098619641514,0.06015800273878713,2.840787590357909,0.9440283207212812,0.8889998297497953,2.841069527300967,0.07641635470295774,0.05235100532296781],[0.9365649078927412,50.08932613115764,0.2384500766938974,16.04608888714255,2.447504739406684,6.577289555107369,1.55208235766067,null,0.04528008884644365,2.718990081310147,1.042688306838425,1.052675825147748,3.039398580311392,0.04860909952265568,0.06208232930892255],[82.57226409369824,0.5965530735322215,0.2571334721244699,0.2234863511521254,0.06050476032741327,14.20123805372216,0.0228125397441715,0.1072133808932529,0.08262138973710276,0.03715620539307558,0.01529885495179902,1.725927993910033,0.04470253373424207,0.05218614157206428,0.0009011555076329106]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":15,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,15,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time" class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over time?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The Evolution of Challenges</strong></p>
+<p>The alcoholic beverages and chemicals industries have faced a dynamic and increasingly complex set of challenges over time, ranging from global macroeconomic instability to localized regulatory and environmental hurdles.</p>
+<ul>
+<li><strong>Geopolitical and Macroeconomic Instability:</strong> Companies describe the current global landscape as a “roller coaster ride” characterized by profound uncertainties, including the impacts of foreign wars, changing political administrations (such as Mr. Trump), and drastic, frequent changes in tariffs [1, 2]. Globally, the chemical space has faced structural overcapacity and soft pricing, with the U.S. and European Union markets demonstrating noticeable weakness [3, 4]. The EU, in particular, is navigating significant challenges due to high energy costs, strict regulations, a lack of investments, and ongoing geopolitical uncertainty [5, 6].</li>
+<li><strong>Trade Agreements and Intense Market Competition:</strong> The signing of Free Trade Agreements (FTAs) has introduced stiff competition. For example, the Australia FTA dramatically altered the wine market by dropping the minimum import price by around 40% and reducing customs duties, applying Most Favored Nation (MFN) status that makes foreign wines much cheaper [7-10]. Domestically, the wine market suffers from “unsustainable discounting” where competitors offer extreme promotions like “buy one, get two” free, putting immense pressure on profitability, particularly in the cheaper wine segments [11-16]. Furthermore, the import business has become highly fragmented and largely unprofitable as large retailers and new importers flood the market [17-20]. In the spirits sector, the Extra Neutral Alcohol (ENA) market has become fiercely competitive, resulting in significantly lower margins compared to ethanol production [21-24]. Additionally, there is a notoriously high mortality rate for newly launched premium brands in India [25, 26].</li>
+<li><strong>Raw Material Costs and Supply Chain Constraints:</strong> Businesses frequently battle fluctuating raw material costs, such as a 5% to 6% rise in barley prices and a 3% to 4% increase in glass bottle costs [27, 28]. Additionally, segments like Bio Pharma face persistent cost pressures on feedstocks and volatility in Western export markets [29, 30].</li>
+<li><strong>Technical and Infrastructure Limitations:</strong> As the push for ethanol blending increases, moving beyond a 20% ethanol-to-petrol blend presents significant technical challenges; because ethanol is hydrophilic (absorbs moisture) and petrol is hydrophobic, higher blends risk causing corrosion and require substantial vehicle modifications and infrastructure upgrades [31-34].</li>
+<li><strong>Regulatory and Environmental Hurdles:</strong> The industry is highly sensitive to state regulations, such as the complete prohibition on the trade, consumption, and manufacture of alcoholic beverages in Bihar [35, 36]. Furthermore, excise policies often fix prices only once a year, making it impossible for companies to pass sudden raw material cost increases on to consumers [37, 38]. Environmentally, the industry is vulnerable to unpredictable weather; extended rains in South India and unusually severe cold conditions in North India have caused steep volume declines in beer consumption [39-44]. Unseasonal weather has also threatened vital agricultural inputs, such as grape harvest damages reported in the Nashik belt [13, 16].</li>
+</ul>
+<p><strong>The Evolution of Opportunities</strong></p>
+<p>Despite these headwinds, the industry has aggressively pivoted to capitalize on shifting consumer demographics, expanding markets, and technological innovations.</p>
+<ul>
+<li><strong>Premiumisation and Changing Consumer Preferences:</strong> A massive shift is underway as India’s rapidly evolving, globally exposed consumer base increasingly prioritizes quality over quantity [45-47]. This is driven by a younger demographic with higher disposable incomes who show a strong demand for artisanal, craft, and small-batch spirits [46, 47]. Companies are focusing on “experiential drinking,” creating luxury brandies, single malts, and process-led innovations (like unusual aging processes) to cater to special-occasion consumption, heavily fueled by the HORECA (Hotel, Restaurant, and Café) channel [47-49]. Brands are even creating highly specialized, city- and state-specific premium editions intended to appeal to tourists and the Indian diaspora [50-53].</li>
+<li><strong>Expansion into New Markets and Sales Channels:</strong> Companies are successfully expanding their footprint in highly reliable institutional channels, noting significant double-digit growth and rapid registrations in the CSD (Canteen Stores Department) and paramilitary markets [54-59]. <strong>Wine tourism</strong> is another booming opportunity, delivering exceptional performance with massive footfall increases, prompting companies to allocate the lion’s share of their capital expenditure toward adding resort rooms and expanding tourism infrastructure [60-63].</li>
+<li><strong>Export and Trade Opportunities:</strong> Shifting macroeconomic tides have created new export viability. Easing raw material prices and a depreciating Indian Rupee against the dollar have made Indian ENA highly competitive globally, opening up lucrative export markets and allowing domestic players to replace imported industrial alcohol [64, 65]. Furthermore, new Free Trade Agreements with the U.S. and EU are viewed as significant opportunities to scale the export of premium India Made Foreign Liquor (IMFL) [66-69].</li>
+<li><strong>Sustainability and Green Innovation:</strong> Sustainability is no longer a buzzword but a core growth engine, encompassing safe-by-design manufacturing, decarbonization, and the circular economy [5, 6, 70, 71]. Companies are heavily investing in bio-based ingredients and partnering to develop “carbon-smart” products, green hydrogen, and green ammonia [72-79]. To ensure energy security and support the farm sector, there is a strategic shift toward utilizing alternative, less water-intensive agricultural feedstocks—such as corn and broken rice—for ethanol production, rather than relying solely on sugarcane molasses [80-83]. Looking forward, companies are also preparing for massive future investments in emerging green technologies like sustainable aviation fuel and isobutanol [84, 85].</li>
+</ul>
+<p><em><a href="footnote/Breweries%20&amp;%20Distilleries.1.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the headwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Adverse Weather and Climate Conditions</strong> Unseasonably cold weather and extended rains have significantly disrupted the industry, creating an environment that is not conducive to beverage consumption, particularly for beer [1, 2]. For example, North Indian markets saw heavy declines due to cold conditions, while markets in South India faced extended rains that lasted well into the winter months [1, 3-5]. Extreme weather has also impacted agriculture; an extended six-month monsoon heavily damaged the grape harvest, particularly in early-pruned plots, which negatively affected the supply of grapes for the wine sector [6, 7].</p>
+<p><strong>Regulatory and Legal Hurdles</strong> The industry operates in a highly regulated environment, creating multiple layers of complexity: * <strong>Excise Policies:</strong> Annual excise policies finalize pricing once a year, making it impossible for companies to pass sudden raw material cost increases on to consumers through multiple price hikes [8, 9]. * <strong>State-Level Bans and Disruptions:</strong> Companies have been impacted by sudden government interventions, such as the Bihar State Government’s ban on the trade, consumption, and manufacture of alcoholic beverages [10, 11]. Other disruptions include the suspension of manufacturing licenses by state excise departments [12]. * <strong>Compliance and Environmental Scrutiny:</strong> Facilities have faced notices for alleged violations of the Water Act and the Air Act, adding compliance pressures [13]. Furthermore, ongoing legal proceedings and potential penalties from the Competition Commission of India (CCI) and NCLAT have created financial uncertainties for some major players [14, 15]. * <strong>New Labour Codes:</strong> The Government of India’s notification of four new Labour Codes has revised the definition of “wages,” leading to increased past service costs related to gratuity and leave encashment for companies [10, 16, 17].</p>
+<p><strong>Raw Material and Input Cost Pressures</strong> Fluctuating agricultural and packaging costs have directly squeezed gross margins [18, 19]. For instance, companies reported that barley prices rose by 5% to 6%, while the cost of glass bottles increased by 3% to 4% quarter-to-quarter [18, 19]. In the wine segment, damage to table grapes caused prices to double or triple, threatening the supply and margins of cheaper wine variants [20, 21]. The biopharma and chemical segments have similarly struggled with cost pressures on feedstocks [22, 23].</p>
+<p><strong>Supply-Demand Imbalances and Oversupply</strong> The industry is currently grappling with overcapacity and shifts in demand: * <strong>Ethanol and ENA Markets:</strong> Ethanol demand has remained subdued due to an industry-wide oversupply and lower-than-anticipated allocations from Oil Marketing Companies (OMCs) [24, 25]. Because of this, companies with flexible manufacturing have shifted production to Extra Neutral Alcohol (ENA) [24, 25]. This sudden shift has flooded the market with ENA, making it extremely competitive and driving prices down significantly [26-29]. * <strong>Chemicals Sector:</strong> The global chemical space is also facing soft pricing and structural overcapacity, limiting rapid growth and enforcing cautious optimism [30, 31]. Additionally, the biodiesel sector across India is currently struggling with viability [32, 33].</p>
+<p><strong>Intense Market Competition and Geopolitical Factors</strong> Companies are navigating severe market fragmentation and aggressive competitor behavior. In the domestic wine market, producers are facing “unscrupulous” and “unsustainable discounting”—such as “buy one, get two” schemes—which has heavily impacted the cheaper wine segments [34-37].</p>
+<p>On a macroeconomic level, the industry is vulnerable to geopolitical uncertainties, wars, and drastic changes in global tariffs [38, 39]. Specifically, impending Free Trade Agreements (FTAs) with the European Union are looming; significant duty reductions on EU wines are expected to bring fierce competition from imported brands, requiring domestic producers to invest heavily in quality and branding to hold their market share [40-43].</p>
+<p><em><a href="footnote/Breweries%20&amp;%20Distilleries.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry" class="section level3">
+<h3><strong>What are the key things to understand about this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>India’s alcohol market is surging and ranks among the fastest-growing globally, driven by urbanization, lifestyle shifts, and a burgeoning middle class</strong> [1, 2]. More than 88% of individuals under the age of 25 either buy or consume alcoholic beverages, benefiting from India’s massive demographic advantage where 67.45% of the population is between 15 and 64 years old [1, 3]. Furthermore, cultural ties that link alcohol to social events and celebrations propel overall market growth [2].</p>
+<p><strong>A defining trend in the industry is the rapid shift towards premiumisation and experiential drinking</strong> [4-6]. Consumers, particularly younger demographics and urban millennials, are increasingly prioritizing quality over quantity, showing a strong preference for artisanal, craft, and small-batch spirits [4, 6]. This includes a rising demand for differentiated products like premium single malts, craft gins, and luxury wines [6-8]. In response, companies are aggressively expanding their premium and luxury portfolios to capitalize on these higher-margin segments and elevate their brand positioning [9-13].</p>
+<p><strong>The industry heavily relies on agricultural feedstocks, making margins vulnerable to raw material price volatility</strong> [14-17]. Companies utilize varied feedstocks such as barley, rice, maize, jawar, and sugarcane [3, 18, 19]. To mitigate risks, many firms employ an integrated business model where they manufacture Extra Neutral Alcohol (ENA) and ethanol for captive consumption, B2B sales, or supply to Oil Marketing Companies (OMCs) [18-22]. The ability to seamlessly switch between producing ENA and ethanol provides critical operational flexibility [21, 22]. Additionally, by-products like DDGS (Dried Distillers Grains with Solubles) are sold as protein for veterinary and poultry use, adding an important supplementary revenue stream [23, 24].</p>
+<p><strong>The alcohol industry operates under a highly fragmented and strictly regulated state-by-state framework</strong> [25]. Companies must navigate up to 25 different value chains and Maximum Retail Prices (MRPs) across Indian states [25]. <strong>Pricing flexibility is highly constrained, as excise policies often lock in prices once a year</strong>, meaning sudden increases in raw material costs (such as barley or glass bottles) cannot be immediately passed on to consumers [15, 17]. Regulatory risks are severe, highlighted by actions like the Bihar state government’s complete ban on the manufacture, trade, and consumption of alcoholic beverages [26, 27]. Furthermore, the industry structure is impacted by high import customs duties, although potential free trade agreements could lower tariffs and alter the competitive landscape [11, 13, 25, 28].</p>
+<p><strong>Sales volumes and profitability do not accrue evenly throughout the year due to the highly seasonal nature of the business</strong> [29-32]. Weather conditions strictly dictate consumption occasions; for example, extended cold conditions or unseasonal rains can severely depress the demand for beer and other beverages [33-36].</p>
+<p><strong>Because direct advertising is severely restricted in the alcohol sector, companies must find alternative ways to build brand visibility</strong> [37, 38]. To overcome this limitation, players focus heavily on strategic distribution channels like the Canteen Stores Department (CSD) and paramilitary canteens [39-41]. Additionally, companies are heavily investing in experiential marketing, such as establishing distillery experience centers and wine tourism resorts to engage consumers directly [37, 38, 42-44]. In standard retail channels, companies face high selling and distribution expenses, often having to offer substantial discounting schemes—such as “buy one, get one” or “buy one, get two”—to secure retailer listings and push product volume [25, 45, 46]</p>
+<p><em><a href="footnote/Breweries%20&amp;%20Distilleries.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the tailwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The Indian alcoholic beverage industry is currently experiencing robust growth, supported by a combination of favorable demographic, economic, and consumer-driven tailwinds.</p>
+<p><strong>Favorable Demographics and a Massive Consumer Base</strong> India’s demographic dividend is one of the most significant catalysts for the industry, as the country is home to one of the largest young populations globally, with 67.45% of its people falling within the 15 to 64 age range [1]. This youthful consumer base exerts a powerful influence on the market, highlighted by the fact that more than 88% of individuals under the age of 25 in India either buy or consume alcoholic beverages [1, 2]. Ultimately, the various segments of the industry—including spirits, beer, and wine—are capitalizing on a massive overall consumer base of 1.3 billion people [3].</p>
+<p><strong>Urbanization, Rising Incomes, and Lifestyle Shifts</strong> Rapid urbanization and rising disposable incomes are significantly expanding the market and shifting consumer habits [1]. The emergence of a burgeoning middle class and accelerated urban development have been accompanied by improved accessibility to products and highly effective advertising [1, 4]. Furthermore, broader lifestyle shifts have strengthened cultural ties that link alcohol consumption to social events, celebrations, and festivals, propelling the overall market forward [4]. The Indian market is broadly registering high single- or double-digit growth, a trend that is expected to continue as consumer incomes and manufacturing capabilities expand [5].</p>
+<p><strong>The Premiumization Megatrend</strong> There is a highly discernible trend toward product premiumization across the Indian market [6]. Driven particularly by younger consumers, there is a distinct shift toward prioritizing quality over quantity, which leads to a preference for more refined drinking experiences [7]. Urban millennials and the growing middle class are increasingly favoring premium and luxury spirits, alongside an elevated demand for wine and craft beer [3, 6]. Consequently, premium spirits are consistently outperforming standard, lower-tier beverage categories [7].</p>
+<p><strong>Demand for Craft, Artisanal, and Innovative Spirits</strong> Consumers are actively seeking out craft and small-batch spirits, largely driven by perceptions of authenticity, superior craftsmanship, and unique taste profiles [7]. To cater to these evolving preferences, there is a strong demand for ingredient and process-led innovation [7, 8]. Consumers are highly attracted to spirits that utilize unique ingredients, contemporary flavors, innovative distillation methods, and unusual aging processes [8, 9]. The industry is also seeing strong momentum from a new generation of consumers who are embracing craft-led offerings, cocktail experimentation, and flavor-forward profiles that offer elevated visual appeal [9].</p>
+<p><strong>Experiential Drinking and the HORECA Channel</strong> Alcohol consumption is increasingly viewed as an experience rather than just a product, prompting a rise in experiential drinking for social and special occasions [10]. A major beneficiary and driver of this trend is the HORECA (Hotels, Restaurants, and Cafés) channel, which fuels premium spirits growth by offering curated selections in hospitality settings [10]. Consumers are eager to pay for quality experiences when dining or going out, allowing the HORECA segment to contribute significantly to on-trade revenues [10].</p>
+<p><strong>Global Exposure and International Recognition</strong> The modern Indian spirits consumer is evolving rapidly and moving toward categories that reflect their global exploration and exposure [11, 12]. Additionally, Indian spirits are increasingly winning prestigious international awards, and this global recognition heavily influences domestic consumer choices by establishing trustworthiness and reinforcing perceptions of premium quality [10].</p>
+<p><em><a href="footnote/Breweries%20&amp;%20Distilleries.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry" class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>India’s alcohol and beverage industry is currently experiencing a robust expansion, positioning the country as the third-largest market for alcoholic beverages globally</strong> [1, 2]. The general outlook is highly optimistic, driven by a combination of favorable demographics, shifting consumer preferences, and lucrative adjacencies in the biofuels sector, though the industry must still navigate regulatory and environmental volatilities.</p>
+<p><strong>Favorable Demographics and Cultural Shifts</strong> The industry’s growth is heavily propelled by accelerated urban development, a burgeoning middle class, and rising disposable incomes [1, 3]. India possesses an unmatched demographic dividend, being home to one of the largest young populations globally, with 67.45% of the population falling between the ages of 15 and 64 [1]. Remarkably, <strong>more than 88% of individuals in India under the age of 25 either buy or consume alcoholic beverages</strong> [1, 4]. Deep-rooted cultural ties that link alcohol consumption to social events, celebrations, and religious festivals are further accelerating market penetration [3].</p>
+<p><strong>The Premiumisation Megatrend</strong> A dominant force shaping the industry’s future is the rapid shift towards premiumisation [2, 5]. Consumers—particularly urban millennials—are evolving their preferences to prioritize quality over quantity, seeking out refined and experiential drinking [2, 6, 7]. * <strong>Craft and Artisanal Demand:</strong> There is a strong, growing demand for artisanal, small-batch, and craft spirits, which are valued for their authenticity, unique taste profiles, and innovative distillation processes [2, 6, 8]. * <strong>HORECA Influence:</strong> The HORECA (Hotel, Restaurant, and Cafe) channel is significantly fueling this segment, contributing heavily to the growth of premium spirits by offering curated selections and enhancing social drinking experiences [7, 9]. * <strong>Shift to Value-Added Products:</strong> In response, companies are strategically pivoting their revenue profiles away from lower-margin, bulk commodity-based sales toward higher-margin, branded Indian Made Foreign Liquor (IMFL) products [10]. * <strong>Rise of Indian Single Malts:</strong> Indian single malts, in particular, are seeing massive domestic and international acceptance. They are winning prestigious global awards, prompting consumers to aggressively upgrade from standard blended whiskies to premium malts [9, 11, 12].</p>
+<p><strong>Category Dynamics: Whisky, Wine, and Beer</strong> * <strong>Spirits:</strong> Whisky remains the undisputed leader in the Indian market, expected to account for a massive 65% of the industry’s volume split between 2023 and 2028, followed by Brandy at 20% and Rum at 12% [13]. * <strong>Wine:</strong> While wine and craft beer are seeing increased demand [2, 8], the domestic wine industry is bracing for potential disruption from impending free trade agreements. Expected reductions in import duties on European Union wines (potentially dropping to 20%-30%) will massively intensify competition, forcing domestic producers to proactively enhance their quality, branding, and import portfolios to remain relevant [14-16]. * <strong>Beer:</strong> The beer segment remains highly susceptible to environmental and seasonal changes, where unusual weather patterns—such as extended cold waves or unseasonal rains—can severely depress consumption and impact corporate margins [17, 18].</p>
+<p><strong>Lucrative Expansion into Ethanol and Biofuels</strong> Beyond traditional beverages, the industry is experiencing a massive tailwind from the ethanol and biofuels sector. The industry is undergoing a structural shift toward grain-based ethanol, utilizing feedstocks like FCI rice and maize, allowing companies to flexibly optimize production [19, 20]. * <strong>Government Policies:</strong> The outlook for ethanol is exceptionally bright, driven by the government’s E20 (20% ethanol blending) targets, the introduction of flex-fuel vehicles, and the broader agenda to increase farm sector incomes while reducing reliance on imported energy [21-23]. * <strong>Future Innovations:</strong> The government and auto manufacturers are currently evaluating blending rates beyond 20% via committees like NITI Aayog, and there is vast future potential to convert ethanol into Sustainable Aviation Fuel (SAF) [21, 22, 24, 25]. While profitability in this sector relies heavily on state policy, feedstock prices, and byproduct (DDGS) valuations, it is generally expected to remain a range-bound, protected, and strategic cash-cow for distilleries [26-28].</p>
+<p><strong>Macro Context and Operational Challenges</strong> On a macro level, Asia continues to be the primary growth engine for the chemical and alcohol space, contrasting with Western markets like the EU, which currently face headwinds from high energy costs and geopolitical uncertainties [29, 30]. However, Indian operators must still navigate several inherent challenges. These include structural overcapacities in certain supply segments, pricing pressures, and volatility in raw material costs (such as barley, maize, and glass bottles) [29, 31]. Additionally, the industry operates under strict, fragmented state-level regulatory and excise policies that limit the ability to quickly pass increased input costs onto consumers, requiring companies to rely heavily on operational efficiency, hedging, and volume growth to protect their margins [32].</p>
+<p><em><a href="footnote/Breweries%20&amp;%20Distilleries.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

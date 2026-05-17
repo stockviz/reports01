@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-05-15" />
+
+<title>Tea &amp; Coffee</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Tea &amp; Coffee</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">May 15, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/TeaCoffee.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/TeaCoffee.fan.CAP_WT.png" /></p>
+<p><img src="plots/TeaCoffee.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/TeaCoffee.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/TeaCoffee.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/TeaCoffee.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/TeaCoffee.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-54e0928d1a78da0de775" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-54e0928d1a78da0de775">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["1.4%","5.67%"],["6.84%","10.5%"],["6.72%","8.8%"],["5.84%","10.1%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/TeaCoffee.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/TeaCoffee.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ee180a298a2f365be224" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ee180a298a2f365be224">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.TATACONSUM.html\" target=\"_blank\">TATACONSUM<\/a>","<a href=\"/reports02/eq-in/risk/in.CCL.html\" target=\"_blank\">CCL<\/a>","<a href=\"/reports02/eq-in/risk/in.MCLEODRUSS.html\" target=\"_blank\">MCLEODRUSS<\/a>","<a href=\"/reports02/eq-in/risk/in.UNITEDTEA.html\" target=\"_blank\">UNITEDTEA<\/a>","<a href=\"/reports02/eq-in/risk/in.JAYSREETEA.html\" target=\"_blank\">JAYSREETEA<\/a>","<a href=\"/reports02/eq-in/risk/in.ROSSELLIND.html\" target=\"_blank\">ROSSELLIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DTIL.html\" target=\"_blank\">DTIL<\/a>","<a href=\"/reports02/eq-in/risk/in.GANGESSECU.html\" target=\"_blank\">GANGESSECU<\/a>","<a href=\"/reports02/eq-in/risk/in.NORBTEAEXP.html\" target=\"_blank\">NORBTEAEXP<\/a>","BNALTD","<a href=\"/reports02/eq-in/risk/in.GROBTEA.html\" target=\"_blank\">GROBTEA<\/a>"],[0.8995546552553749,0.08824423721033642,0.006508756632889184,0.001318938820670752,0.001461564437555238,0.0005797299329234826,0.0004943830592891295,0.0004804277045932728,0.0006565137592938784,0.0004877476026422751,0.0002130455844314663],[0.8783180056140969,0.1072596602696298,0.004513610049304447,0.001941537637889227,0.001939294256966548,0.001527670041218144,0.001041724786515167,0.0009556079059348931,0.0009443186341949581,0.0008082684363034321,0.0007503023679464577]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":11,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ec10e776683d5bf3f99b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ec10e776683d5bf3f99b">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.TATACONSUM.html\" target=\"_blank\">TATACONSUM<\/a>","<a href=\"/reports02/eq-in/risk/in.CCL.html\" target=\"_blank\">CCL<\/a>","<a href=\"/reports02/eq-in/risk/in.MCLEODRUSS.html\" target=\"_blank\">MCLEODRUSS<\/a>","<a href=\"/reports02/eq-in/risk/in.UNITEDTEA.html\" target=\"_blank\">UNITEDTEA<\/a>","<a href=\"/reports02/eq-in/risk/in.JAYSREETEA.html\" target=\"_blank\">JAYSREETEA<\/a>","<a href=\"/reports02/eq-in/risk/in.ROSSELLIND.html\" target=\"_blank\">ROSSELLIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DTIL.html\" target=\"_blank\">DTIL<\/a>","<a href=\"/reports02/eq-in/risk/in.GANGESSECU.html\" target=\"_blank\">GANGESSECU<\/a>","<a href=\"/reports02/eq-in/risk/in.NORBTEAEXP.html\" target=\"_blank\">NORBTEAEXP<\/a>","<a href=\"/reports02/eq-in/risk/in.GROBTEA.html\" target=\"_blank\">GROBTEA<\/a>"],[87.11509231171169,18.33587323281499,-0.09565481273189863,1.269923312651611,0.02081940718560154,0.01234778953515539,-2.919000883395816,-0.2280885738995065,-0.006019896548665624,-0.8835629284670117],[82.01734249198505,13.8950148644592,null,0.8387849866118491,0.008176168318405426,0.007751071131782793,-1.288380024143049,0.0279281700443445,-0.002569096698143854,0.02431432748483472],[99.88614309311119,0.21756760716455,-0.1259855285185504,0.02580107869851628,0.000480823342737672,0.008802010988483506,-0.01945872442616798,0.001418674179108141,-0.000263618757196889,0.003778044883758057]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":10,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f354b04e7a97cf7e2274" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f354b04e7a97cf7e2274">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.TATACONSUM.html\" target=\"_blank\">TATACONSUM<\/a>","<a href=\"/reports02/eq-in/risk/in.CCL.html\" target=\"_blank\">CCL<\/a>","<a href=\"/reports02/eq-in/risk/in.MCLEODRUSS.html\" target=\"_blank\">MCLEODRUSS<\/a>","<a href=\"/reports02/eq-in/risk/in.UNITEDTEA.html\" target=\"_blank\">UNITEDTEA<\/a>","<a href=\"/reports02/eq-in/risk/in.JAYSREETEA.html\" target=\"_blank\">JAYSREETEA<\/a>","<a href=\"/reports02/eq-in/risk/in.ROSSELLIND.html\" target=\"_blank\">ROSSELLIND<\/a>","<a href=\"/reports02/eq-in/risk/in.DTIL.html\" target=\"_blank\">DTIL<\/a>","<a href=\"/reports02/eq-in/risk/in.GANGESSECU.html\" target=\"_blank\">GANGESSECU<\/a>","<a href=\"/reports02/eq-in/risk/in.NORBTEAEXP.html\" target=\"_blank\">NORBTEAEXP<\/a>","<a href=\"/reports02/eq-in/risk/in.GROBTEA.html\" target=\"_blank\">GROBTEA<\/a>"],[79.9704171174124,16.09293581792839,0.06910328064741533,0.2070010308080137,0.06427074958685415,0.01451328671578907,1.385947605506638,0.05139607013390853,0.01177074111103669,0.03111835824903857],[71.90247091497717,21.90306005881221,null,0.3286495264726852,0.05662861224609285,0.01299347873423928,2.359442547041424,0.1481386941726831,0.02488603132698398,0.2828194814815211],[99.63627793638817,0.2082698130752633,0.05212916982425288,0.008800267908347469,0.04678316580182066,0.01117879948735132,0.02536975283244718,0.001810157780992718,0.0003953657647344332,0.006181493747201876]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":10,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time" class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over time?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p>The challenges and opportunities across the coffee, tea, and consumer products sectors have evolved significantly over time, transitioning from periods of severe market volatility and financial distress to phases of strategic restructuring, aggressive product innovation, and targeted market expansion.</p>
+<p><strong>Evolution of Business Challenges</strong></p>
+<p><strong>1. Raw Material Volatility and Supply Chain Pressures:</strong> Historically, volatile raw material costs have created tough market environments. For instance, in the coffee sector, green coffee prices surged to maximum levels a year ago, creating a highly choppy and challenging market [1-3]. This volatility traditionally forced companies to hold larger inventories to secure stock, which heavily pressured working capital [4-9]. Furthermore, agricultural uncertainties, such as crop losses owing to adverse weather conditions, have directly impacted production volumes and overall corporate performance in the tea industry [10, 11].</p>
+<p><strong>2. Severe Financial Distress and Debt Burdens:</strong> Certain companies have faced prolonged, existential financial challenges. McLeod Russel India Limited, for example, has endured severe financial distress, where its current liabilities substantially exceeded its current assets and continuous operational losses significantly eroded its net worth [12-17]. A major contributing factor was massive Inter-Corporate Deposits (ICDs) given to promoter groups and other entities in earlier years, which became doubtful for recovery and required provisions exceeding Rs. 1,01,039 lakhs [18-24]. Due to lenders cutting back against sales proceeds, the funds generated from operations became highly insufficient to meet the company’s statutory, employee, and debt obligations, causing unpaid liabilities to accumulate [11, 25-29]. The company was also hit with an arbitration award of Rs. 50,896 lakhs related to loans obtained by promoter entities [27, 30-33].</p>
+<p><strong>3. Regulatory and Category-Specific Hurdles:</strong> Companies have had to adapt to evolving regulatory landscapes and shifting consumer preferences. The implementation of New Labour Codes by the Government of India required companies to reassess employee benefit obligations, forcing them to recognize new financial liabilities and provisions for past service costs like gratuity and leave encashment [34-38]. On the operational side, some diversification attempts failed; for instance, CCL Products had to shut down its plant-based meat category entirely to cut losses when the segment failed to evolve as expected [39-42]. Additionally, expanding specific product lines geographically has presented hurdles, such as the inability to supply popular 3-in-1 coffee mixes in Europe due to strict restrictions on imported dairy [43-46].</p>
+<p><strong>Evolution of Opportunities and Strategic Shifts</strong></p>
+<p><strong>1. Strategic Financial Restructuring and Rationalization:</strong> To combat debt and liquidity issues, companies have drastically evolved their financial strategies: * <strong>Debt Resolution:</strong> McLeod Russel is actively restructuring its debt through the National Asset Reconstruction Company Limited (NARCL), which involves agreeing to pay a sustainable debt of Rs. 1,050 crores by 2029 and converting unsustainable debt into a 10% equity stake for NARCL [47-52]. The company is also pursuing legal action through the High Court to recover its overdue ICDs [19, 21, 24, 53, 54]. * <strong>Asset Monetization:</strong> To improve profitability and rationalize operations, companies like Dhunseri Tea and Jay Shree Tea have actively sold off specified assets, land, and underperforming estates (such as the Deohall and Dali Tea Estates, and a closed fertilizer unit in Haryana) [55-60]. * <strong>Working Capital Optimization:</strong> CCL Products evolved its financial strategy by shifting toward a cash-flow-oriented approach, successfully reducing its gross debt from Rs. 2,000 crores to Rs. 1,448 crores despite significant volume increases, largely by renegotiating contracts to reduce credit periods and taking advantage of softening coffee prices [61-68].</p>
+<p><strong>2. Product Innovation and Premiumization:</strong> A core evolutionary opportunity has been moving beyond traditional commodities into value-added, innovative products. * Tata Consumer Products has capitalized heavily on innovation, releasing 15 new products in a single quarter focused on Health &amp; Wellness, Convenience, and Premiumization, leading to massive momentum in their Ready-to-Drink (RTD) and Tata Sampann portfolios [69-73]. * CCL Products has consistently stayed ahead of the curve by introducing freeze-dried coffee to India, pioneering instant cold brew, and experimenting with specialty coffees and micro-grounds [74-79]. They are also branching out into traditional Indian snacks under the “Malgudi” brand to further penetrate the FMCG market [40, 42, 80, 81].</p>
+<p><strong>3. Market Expansion and Strategic Investments:</strong> Opportunities have also expanded through targeted distribution and sustainability investments: * <strong>E-commerce and Retail Penetration:</strong> CCL Products has seen its domestic branded retail sales grow by 40% to 50%, capturing double-digit market shares on rapid e-commerce and modern retail platforms like Amazon, Blinkit, and Reliance [82-89]. Tata Consumer Products has also seen excellent physical expansion, with Tata Starbucks crossing the 500-store milestone [90]. * <strong>Capacity Expansion for New Formats:</strong> Recognizing high demand in growing economies (like India and Africa), CCL is expanding its manufacturing capacity specifically for small, unit-priced pouches (LUPs), which are currently running at near full capacity [91-94]. * <strong>Acquisitions and Sustainable Energy:</strong> Inorganic growth continues to be a lever, with The Grob Tea Company signing an agreement to acquire the Bazaloni Group, and another entity purchasing the Ohoedaam Tea Estate to expand operations [95, 96]. Furthermore, CCL Products is investing Rs. 12.12 crores to acquire a 26% stake in Mukkonda Renewables Private Limited, securing captive wind and solar energy to reduce costs and enhance operational stability [97-99].</p>
+<p><em><a href="footnote/Tea%20&amp;%20Coffee.1.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the headwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>Adverse Weather Conditions and Crop Losses</strong> The agricultural foundations of this industry make it highly vulnerable to climatic factors. Companies have reported <strong>loss of crops owing to unpredictable weather conditions</strong>, which directly diminishes the volume of operations and significantly impacts overall corporate performance [1, 2]. Furthermore, the inherent <strong>seasonal nature of tea and coffee cultivation</strong> means that financial performance remains volatile and fluctuates heavily from quarter to quarter [3].</p>
+<p><strong>Sluggish Markets and Lower Price Realizations</strong> The tea segment has been battling a <strong>sluggish market environment resulting in lower price realizations</strong> [4, 5]. These depressed market conditions have constrained revenues, leading to operational losses and making it difficult for certain subsidiaries to service their bank debts, statutory dues, and other liabilities [4, 5].</p>
+<p><strong>Raw Material Price Volatility and Speculation</strong> In the coffee sector, companies have historically faced severe headwinds from <strong>choppy and surging green coffee prices</strong> [6, 7]. This volatility often triggers speculative holding of inventory by aggregators and farmers, which disrupts supply chains and working capital [8, 9]. Even when prices begin to stabilize, the market remains highly sensitive to regional factors, such as farmers withholding stock after the Vietnamese Tet holidays, which can instantly reintroduce price volatility [10].</p>
+<p><strong>Regulatory Changes and Escalating Labour Costs</strong> The Government of India’s introduction of the <strong>New Labour Codes</strong>, which consolidated 29 existing labour laws, has emerged as a significant financial hurdle [11, 12]. The revised definition of wages under these codes has forced companies to reassess their employee benefit obligations, leading to <strong>immediate incremental liabilities for past service costs, gratuity, and leave encashment</strong> [12-14]. For example, some companies have had to book substantial additional charges to their Profit and Loss accounts solely to accommodate these newly mandated employee benefits [12, 14].</p>
+<p><strong>Prolonged Financial Distress and Debt Burdens</strong> Parts of the industry are suffering from severe and prolonged financial distress. A combination of operational losses, reduced sales realizations, and cut-backs against sale proceeds has led to <strong>highly insufficient funds to meet day-to-day obligations</strong> [15, 16]. This liquidity crisis has prevented some companies from servicing short and long-term debts, paying statutory dues (like provident funds), and settling employee liabilities [15-17]. Consequently, significant portions of the industry are currently undergoing complex debt restructuring, asset monetization, and dealing with Corporate Insolvency and Resolution Processes (CIRP) [17-19].</p>
+<p><strong>Geopolitical Trade Barriers and Logistics</strong> International expansion and sourcing face distinct regional hurdles. For instance, the highly profitable 3-in-1 coffee mix category is <strong>difficult to supply to European markets because local regulations prohibit the import of dairy from other countries</strong> [20]. On the supply side, while companies have the flexibility to source green coffee globally, relying on regions like Brazil significantly increases logistics and transit times compared to sourcing locally or from nearby Asian markets [21].</p>
+<p><em><a href="footnote/Tea%20&amp;%20Coffee.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry" class="section level3">
+<h3><strong>What are the key things to understand about this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>Seasonality and Weather Dependence</strong> One of the most defining characteristics of the tea and coffee industry is its heavy reliance on agricultural cycles. <strong>The cultivation, manufacture, and sale of tea is inherently seasonal in nature</strong> [1-7]. Because of this seasonality, a company’s performance can vary significantly from quarter to quarter, meaning that the financial results of a single quarter are not indicative of the expected annual performance [1-7]. Furthermore, crop yields are highly vulnerable to environmental factors, and adverse weather conditions can lead to crop losses that negatively impact the volume of operations and overall financial performance [8, 9].</p>
+<p><strong>Raw Material Price Volatility and Sourcing</strong> The cost of materials consumed primarily consists of purchasing green tea leaves and green coffee beans from external growers, alongside managing biological assets like unplucked leaves [1, 7, 10-12]. <strong>Green coffee prices are notably volatile and are heavily influenced by global crop yields and regional market behaviors</strong> [13-16]. For example, favorable crop news from major producers like Brazil can stabilize prices, while regional holidays in major exporting countries like Vietnam can trigger selling tendencies or speculative holding by farmers and aggregators, leading to price fluctuations [13, 15, 17, 18]. To combat supply chain bottlenecks, larger export-oriented companies maintain immense flexibility to source raw materials from various geographies—such as Brazil, Africa, or Vietnam—depending on crop quality and price stability [19-22].</p>
+<p><strong>Business Models and Margin Protection</strong> To shield themselves from the volatility of raw material prices, successful instant coffee manufacturers often utilize a <strong>“cost-plus model”</strong> [23-25]. In this model, product pricing is determined based on the raw green coffee prices, ensuring that the company’s per-kilo profit margins (EBITDA) remain intact regardless of whether global coffee prices rise or fall [23-25]. Because revenue can artificially inflate or deflate based purely on raw material costs, the true markers of growth in this sector are volume growth and EBITDA growth rather than mere price-driven revenue changes [24, 26].</p>
+<p><strong>High Labor Intensity and Regulatory Impacts</strong> The industry, especially the plantation and cultivation side, is highly labor-intensive and heavily regulated. <strong>A major current factor impacting the industry in India is the government’s implementation of the “New Labour Codes,”</strong> which consolidate 29 existing labor legislations into four unified codes: the Code on Wages, the Industrial Relations Code, the Code on Social Security, and the Occupational Safety, Health and Working Conditions Code [27-35]. Companies across the industry are continuously evaluating these codes to ascertain their financial impact on past service costs, gratuity liabilities, and overall employee benefit obligations [27, 34-37].</p>
+<p><strong>Consumer Trends: Premiumization, Convenience, and Health</strong> Consumer demand is rapidly evolving, forcing companies to adapt their product portfolios. <strong>The key trends driving the modern beverage and foods market are Health &amp; Wellness, Convenience, and Premiumization</strong> [38, 39]. Key developments include: * <strong>Ready-to-Drink (RTD) and Cold Brews:</strong> There is robust growth in the RTD segment and innovations like instant cold brew coffee, catering to consumers looking for immediate consumption [40-43]. * <strong>Regional Preferences (3-in-1 Coffee):</strong> 3-in-1 and 2-in-1 coffee mixes are massively popular in Southeast Asian countries (like Vietnam, Singapore, and Indonesia) due to historical milk shortages [44, 45]. While milk-surplus markets like India and Europe are slower to adopt these, they are gaining traction among students and single-office demographics [46, 47]. * <strong>Small Packaging Formats:</strong> There is a very high and growing demand for small unit price pouches (LUPs) in developing economies like India and Africa, prompting companies to rapidly expand their small-pack production capacities [48-51]. * <strong>Product Diversification:</strong> Companies are relying heavily on continuous innovation, expanding beyond traditional tea and coffee into specialty instant coffees, premium sauces, rock salts, and even traditional plant-based snacks to capture a wider FMCG market share [52-56].</p>
+<p><strong>Dichotomy of Financial Health: Growth vs. Distress</strong> The industry features a stark contrast between rapidly expanding packaged consumer goods companies and struggling traditional plantation businesses. On one hand, companies focused on branded retail, outsourced instant coffee, and premium consumer products are reporting double-digit volume growth, expanding market shares, and opening hundreds of retail stores [42, 57-61].</p>
+<p>On the other hand, <strong>some traditional tea cultivation companies are facing prolonged financial distress</strong> [8, 9]. For instance, companies have reported severe financial constraints caused by operational losses, inadequate funds to meet statutory and employee obligations (such as provident fund arrears), and the initiation of Corporate Insolvency and Resolution Processes (CIRP) [8, 9, 62-65]. To survive, these distressed entities are undertaking drastic measures like selling off specific tea estates, pursuing one-time settlements (OTS) with lenders, and undergoing debt assignment to Asset Reconstruction Companies (ARCs) [66, 67]</p>
+<p><em><a href="footnote/Tea%20&amp;%20Coffee.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the tailwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>A Shift Towards Convenience and Instant Formats</strong> The consumer beverage industry is experiencing strong growth driven by a rising consumer preference for convenient, ready-to-consume products. The Ready-to-Drink (RTD) business has proven robust, delivering consecutive quarters of double-digit revenue growth as brands expand their presence in this segment with differentiated products like slim-care and fruit teas [1, 2]. Similarly, there is a growing trend of consumers in emerging economies adopting instant coffee formats over traditional brews [3]. This shift is being capitalized on through the introduction of smaller, unit-priced packaging; the demand for small packs and Low Unit Price (LUP) sachets is very high and rapidly growing in economies across Africa and India, prompting manufacturers to expand their capacities for these specific SKUs [4].</p>
+<p><strong>Premiumization and a Focus on Health &amp; Wellness</strong> Consumer product portfolios are successfully riding the tailwinds of premiumization and health-consciousness [5]. Companies are seeing accelerated growth by innovating within the Health &amp; Wellness space, introducing products like green tea with matcha, millet muesli, and specialized rock salts [2, 5, 6]. In international markets, specialty teas and premium coffee blends are capturing significant market share, with brands becoming the fastest-growing in their respective regions [7]. Coffee manufacturers are continuously innovating to meet premium tastes by introducing high-end formats like freeze-dried coffee, instant cold brews, micro-grounds, and specialty instant coffees that were previously restricted to the roasted bean market [8, 9].</p>
+<p><strong>Stabilization of Input Costs and Improved Working Capital</strong> Favorable commodity pricing dynamics are directly improving profitability and operational efficiency. In the tea sector, companies have seen margins return to a normative range because the benefits of lower input costs could be passed directly to consumers [1]. In the coffee segment, green coffee prices have become far more stable compared to previous periods of extreme volatility [10]. This price stability provides customers with the confidence to commit to long-term purchasing contracts rather than buying on a wait-and-watch basis, translating to higher, more predictable volume growth [11, 12]. Furthermore, a stable or softening price environment means manufacturers no longer need to hoard speculative green coffee inventory to protect against sudden price surges, which significantly frees up working capital and helps reduce overall corporate debt levels [13, 14].</p>
+<p><strong>Expansion Through E-Commerce and Quick Commerce</strong> Digital sales channels have emerged as a massive tailwind, allowing companies to efficiently bypass traditional distribution hurdles. By aggressively driving sales on e-commerce and quick-commerce platforms (such as Blinkit and Amazon), beverage companies are capturing double-digit market shares online [15, 16]. This strategy is particularly effective for penetrating new, non-traditional regional markets (such as North, East, and West India for historically South-dominant brands) because it is less manpower-intensive and can reach a vast consumer base quickly [15, 16].</p>
+<p><strong>Continuous Product Innovation and Strategic Diversification</strong> Innovation remains a primary growth engine, with companies frequently rolling out new products to stimulate demand [17]. For instance, rapid product launches across various categories—spanning foods, premium sauces, and beverages—ensure continuous market momentum [5, 6]. To further leverage their distribution networks, beverage companies are experimenting with diversification by introducing complementary food items, such as traditional snacks that pair well with coffee, to deepen their FMCG market penetration [18, 19]. Additionally, physical retail and café formats are being buoyed by strategic beverage collaborations, continuous food program innovations, and enhanced seasonal gifting portfolios [20].</p>
+<p><em><a href="footnote/Tea%20&amp;%20Coffee.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry" class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p>The general outlook for the beverage industry—specifically coffee and tea—presents a divided landscape, with robust growth and stabilizing conditions in the coffee sector contrasting with operational and environmental challenges in the tea sector.</p>
+<p><strong>Coffee Industry: Price Stability and Strong Demand</strong> The outlook for the coffee industry is highly positive, driven by stabilizing raw material costs and shifting consumer habits. * <strong>Stabilizing Green Coffee Prices:</strong> The market is currently experiencing much better stability compared to the severe volatility and price surges seen a year ago [1]. A promising crop outlook from Brazil has contributed significantly to this stabilization [2]. However, the industry remains slightly cautious, monitoring whether farmers in major producing nations like Vietnam will hold onto their stock after local holidays, which could introduce minor price fluctuations [2]. * <strong>Shift to Long-Term Contracts:</strong> Because green coffee prices are far more stable, customer confidence has returned to the market [3]. Buyers are moving away from speculative holding and short-term buying, and are increasingly committing to long-term supply contracts [3, 4]. * <strong>Surge in Emerging Markets and Small Packaging:</strong> While the global instant coffee market generally grows at a lower single-digit rate, companies are successfully capturing greater market share by targeting growing economies [5, 6]. There is a <strong>massive and growing demand for small, unit-priced packaging</strong> (such as sachets and pouches), which are responding exceptionally well in emerging markets like India and Africa [7]. Additionally, 2-in-1 and 3-in-1 instant coffee mixes remain highly popular in Southeast Asian countries that historically face milk shortages [8]. * <strong>Booming Domestic Retail:</strong> The branded retail coffee segment within India is experiencing explosive growth, with some companies reporting revenue growth rates between 40% and 50% [9, 10].</p>
+<p><strong>Tea Industry: Sluggish Markets and Environmental Headwinds</strong> The outlook for the tea industry is more challenging, heavily influenced by its seasonal nature and external pressures [11, 12]. * <strong>Low Realisations and Financial Stress:</strong> Tea producers have faced prolonged financial distress due to sluggish market conditions and lower sales realisations [13, 14]. * <strong>Weather-Related Crop Losses:</strong> Although tea prices and realisations have improved to a certain extent recently, the industry has been severely impacted by adverse weather conditions [15, 16]. These poor weather patterns have led to significant crop losses, which directly constrain production volumes and overall operational performance [15, 16].</p>
+<p><strong>Broader Consumer Trends: Innovation, Premiumization, and Convenience</strong> Across the wider food and beverage sector, <strong>continuous product innovation remains the primary engine for growth</strong> [17]. Companies are aggressively expanding their portfolios to align with modern consumer preferences, focusing heavily on three areas: 1. <strong>Health and Wellness:</strong> Introducing products tailored to health-conscious consumers [18]. 2. <strong>Convenience:</strong> There is strong momentum in the Ready-to-Drink (RTD) segment and instant beverage mixes that cater to fast-paced lifestyles [10, 18]. 3. <strong>Premiumization and Specialty Products:</strong> To outpace standard market growth, companies are investing in premium offerings. In the coffee space, this includes moving beyond traditional spray-dried coffee to offer freeze-dried coffee, instant cold brews, and micro-ground specialty coffees [19-21].</p>
+<p>Overall, while the tea sector navigates climatic and pricing headwinds, the coffee and broader packaged beverage industries are positioned for sustained volume-led growth through strategic premiumization, aggressive expansion into emerging markets, and improved supply chain stability [17, 22].</p>
+<p><em><a href="footnote/Tea%20&amp;%20Coffee.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-05-15" />
+
+<title>Private Sector Bank</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Private Sector Bank</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">May 15, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/PrivateSectorBank.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/PrivateSectorBank.fan.CAP_WT.png" /></p>
+<p><img src="plots/PrivateSectorBank.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/PrivateSectorBank.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/PrivateSectorBank.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/PrivateSectorBank.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/PrivateSectorBank.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-01352c53edf978899310" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-01352c53edf978899310">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-0.99%","-2.16%"],["2.7%","-2.2%"],["1.53%","-7.06%"],["6.41%","-9.02%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/PrivateSectorBank.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/PrivateSectorBank.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-577a834f0850870a6f1f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-577a834f0850870a6f1f">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.AXISBANK.html\" target=\"_blank\">AXISBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.BANDHANBNK.html\" target=\"_blank\">BANDHANBNK<\/a>","<a href=\"/reports02/eq-in/risk/in.CSBBANK.html\" target=\"_blank\">CSBBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.CUB.html\" target=\"_blank\">CUB<\/a>","<a href=\"/reports02/eq-in/risk/in.DCBBANK.html\" target=\"_blank\">DCBBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.DHANBANK.html\" target=\"_blank\">DHANBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.FEDERALBNK.html\" target=\"_blank\">FEDERALBNK<\/a>","<a href=\"/reports02/eq-in/risk/in.HDFCBANK.html\" target=\"_blank\">HDFCBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.ICICIBANK.html\" target=\"_blank\">ICICIBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.IDBI.html\" target=\"_blank\">IDBI<\/a>","<a href=\"/reports02/eq-in/risk/in.IDFCFIRSTB.html\" target=\"_blank\">IDFCFIRSTB<\/a>","<a href=\"/reports02/eq-in/risk/in.INDUSINDBK.html\" target=\"_blank\">INDUSINDBK<\/a>","<a href=\"/reports02/eq-in/risk/in.JKBANK.html\" target=\"_blank\">J&KBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.KARURVYSYA.html\" target=\"_blank\">KARURVYSYA<\/a>","<a href=\"/reports02/eq-in/risk/in.KOTAKBANK.html\" target=\"_blank\">KOTAKBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.KTKBANK.html\" target=\"_blank\">KTKBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.RBLBANK.html\" target=\"_blank\">RBLBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.SOUTHBANK.html\" target=\"_blank\">SOUTHBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.TMB.html\" target=\"_blank\">TMB<\/a>","<a href=\"/reports02/eq-in/risk/in.YESBANK.html\" target=\"_blank\">YESBANK<\/a>"],[595.13,145.68,256.69,127.43,166.48,32,138.04,329.06,424.22,62.18,52.43,789.1799999999999,null,130.49,124.34,306.61,250.61,39.01,590.0599999999999,15.47],[17.52,1.96,0.54,0.88,0.82,0.2,3.67,40.89,21.91,4.23,3.93,5.25,1.34,1.36,7.3,1.2,1.57,1.38,0.71,4.26],[611.73,154.38,270.85,133.76,185.84,35.91,142.38,336.85,432.24,62.57,54.09,831.59,null,132.39,125.84,332.92,259.8,40.64,596.38,15.68],[46.98,57.24,59.97,48.56,61.84,79.78,53.92,40.92,40.77,56.61,73.31,63.2,63.71,42.49,48.28,58.72,66.3,57.24,44.4,69.90000000000001],[1.4,3.33,1.96,2.17,2.72,2.36,1.72,1.24,1.53,2.57,1.69,3.56,7.25,0.71,1.3,3.32,1.88,2.67,0.91,1.5],[3.26,5.48,3.39,3.41,3.05,3.05,2.89,3.19,4,3.04,5.59,3.47,3.76,3.66,4.14,2.64,4.21,2.54,3.66,2.32],[0.42,0.99,0.67,0.78,1.1,1.11,0.42,0.42,0.37,0.18,0.53,1.04,2.08,0.19,0.31,1.31,0.55,0.45,0.2,0.3],[1.49,0.11,1.18,1.53,0.91,0.47,0.29,0.48,2.11,1.83,0.51,0.12,0.92,2.05,0.48,0.92,0.55,1.09,1.97,0.9],[13.67,3.31,12.99,13.39,12.36,6.74,11.88,14.4,14.64,11.51,4.32,1,null,21.57,11.01,9.24,5.34,14.08,14.46,7.74],[2.10811083292726,1.366282262493135,1.37909540691106,1.936749588009103,1.087998558385392,1.0021875,2.030208635178209,2.33863125265909,2.937155249634623,1.148279189449984,1.307266831966432,1.150434628348412,null,2.222392520499655,3.081872285668329,0.8054205668438732,1.345516938669646,0.986670084593694,1.129291936413246,1.434389140271493]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>ABVPS<\/th>\n      <th>ASSETS_LAKH_CR<\/th>\n      <th>BVPS<\/th>\n      <th>EFFICIENCY<\/th>\n      <th>GNPA_PCT<\/th>\n      <th>NIM<\/th>\n      <th>NNPA_PCT<\/th>\n      <th>ROA<\/th>\n      <th>ROE<\/th>\n      <th>BV_MULTIPLE<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":20,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":5,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":6,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":7,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":8,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":9,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":10,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4,5,6,7,8,9,10]},{"name":"SYMBOL_LINK","targets":0},{"name":"ABVPS","targets":1},{"name":"ASSETS_LAKH_CR","targets":2},{"name":"BVPS","targets":3},{"name":"EFFICIENCY","targets":4},{"name":"GNPA_PCT","targets":5},{"name":"NIM","targets":6},{"name":"NNPA_PCT","targets":7},{"name":"ROA","targets":8},{"name":"ROE","targets":9},{"name":"BV_MULTIPLE","targets":10}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,20,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render","options.columnDefs.4.render","options.columnDefs.5.render","options.columnDefs.6.render","options.columnDefs.7.render","options.columnDefs.8.render","options.columnDefs.9.render"],"jsHooks":[]}</script>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-92a5fd076080e843d7bd" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-92a5fd076080e843d7bd">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.HDFCBANK.html\" target=\"_blank\">HDFCBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.ICICIBANK.html\" target=\"_blank\">ICICIBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.AXISBANK.html\" target=\"_blank\">AXISBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.KOTAKBANK.html\" target=\"_blank\">KOTAKBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.IDBI.html\" target=\"_blank\">IDBI<\/a>","<a href=\"/reports02/eq-in/risk/in.INDUSINDBK.html\" target=\"_blank\">INDUSINDBK<\/a>","<a href=\"/reports02/eq-in/risk/in.YESBANK.html\" target=\"_blank\">YESBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.FEDERALBNK.html\" target=\"_blank\">FEDERALBNK<\/a>","<a href=\"/reports02/eq-in/risk/in.IDFCFIRSTB.html\" target=\"_blank\">IDFCFIRSTB<\/a>","<a href=\"/reports02/eq-in/risk/in.BANDHANBNK.html\" target=\"_blank\">BANDHANBNK<\/a>","<a href=\"/reports02/eq-in/risk/in.KARURVYSYA.html\" target=\"_blank\">KARURVYSYA<\/a>","<a href=\"/reports02/eq-in/risk/in.RBLBANK.html\" target=\"_blank\">RBLBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.CUB.html\" target=\"_blank\">CUB<\/a>","<a href=\"/reports02/eq-in/risk/in.JKBANK.html\" target=\"_blank\">J&KBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.TMB.html\" target=\"_blank\">TMB<\/a>","<a href=\"/reports02/eq-in/risk/in.SOUTHBANK.html\" target=\"_blank\">SOUTHBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.KTKBANK.html\" target=\"_blank\">KTKBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.CSBBANK.html\" target=\"_blank\">CSBBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.DCBBANK.html\" target=\"_blank\">DCBBANK<\/a>","<a href=\"/reports02/eq-in/risk/in.DHANBANK.html\" target=\"_blank\">DHANBANK<\/a>"],[0.3853707669108997,0.2922603558507018,0.1177689639333498,0.09229473157915508,0.001311320977496387,0.019554920338936,0.01276176930258383,0.02262160470627329,0.01488929200013798,0.005814661757468484,0.008956085509956543,0.006677194766180493,0.005822668436402435,0.001925836410272436,0.002557411609243854,0.003293725762422075,0.003053687785205344,0.001155489068343516,0.00158178012519415,0.0003277331697769034],[0.3533202221747569,0.2667917728140516,0.1162841866180559,0.1136738801521793,0.0229267086728287,0.02108896168300849,0.02078859142174623,0.02065127572622728,0.01762387559177721,0.009581976132173096,0.008354079740861638,0.006234817396796591,0.005463077440169614,0.004335323343059707,0.003126326559825452,0.003012595143449187,0.002786526983761959,0.001835351013015715,0.0017431178263255,0.0003773335659298345]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":20,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,20,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f69e1c3859f39628204e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f69e1c3859f39628204e">{"x":{"filter":"none","vertical":false,"data":[[]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":0,"columnDefs":[{"name":"SYMBOL","targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[0,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2126e64e1c70af6e6fb0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2126e64e1c70af6e6fb0">{"x":{"filter":"none","vertical":false,"data":[[]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":0,"columnDefs":[{"name":"SYMBOL","targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[0,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time" class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over time?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The banking sector has witnessed a significant evolution in its challenges and opportunities over time, transitioning from managing traditional operational risks and legacy asset quality issues to capitalizing on digital transformation, macroeconomic shifts, and demographic expansions.</strong></p>
+<div id="evolving-challenges-over-time" class="section level9">
+<p class="heading"><strong>Evolving Challenges Over Time</strong></p>
+<p><strong>1. Persistent Operational and Fraud Risks:</strong> Despite the rise of sophisticated digital banking, traditional operational risks remain a significant challenge. For instance, IDFC First Bank recently faced a major fraud incident at a Chandigarh branch involving a discrepancy of approximately INR 490 crores, later found to include an additional INR 100 crores [1-4]. <strong>This was not a digital breach but one of the oldest forms of banking fraud—forged physical cheques facilitated by the collusion of bank employees with external parties</strong> [5, 6]. This event deeply disturbed the bank, as it disrupted a sterling 10-year record of operational excellence without a single similar incident [7-10]. The challenge of employee collusion highlights that human risk factors require continuous monitoring, prompting banks to reconsider staff transfer policies and deeply study employee conduct and transaction patterns [11, 12].</p>
+<p><strong>2. Legacy Asset Quality and Legal Hurdles:</strong> Banks have had to continuously navigate the fallout from historical crises and legacy asset issues. YES Bank, for example, is still managing the legal complexities stemming from its March 2020 moratorium and reconstruction scheme, specifically the contentious write-down of its Additional Tier 1 (AT-1) Bonds [13, 14]. <strong>Aggrieved bondholders have filed numerous writ petitions across the country, leading to ongoing litigations in the Supreme Court and various High Courts</strong> [15-17]. Similarly, J&amp;K Bank has faced challenges requiring impairment provisions of INR 87.47 crores due to the amalgamation of J&amp;K Grameen Bank with Ellaquai Dehati Bank, an entity carrying negative value because of accumulated losses [18-20]. J&amp;K Bank has also had to manage localized macroeconomic disruptions, such as regional floods and disturbances that disrupted the local economy [21, 22].</p>
+<p><strong>3. Regulatory Changes and Compliance Costs:</strong> Evolving regulatory landscapes introduce new financial burdens. <strong>The Government of India’s notification of the four New Labour Codes has forced banks to reassess their employee benefit obligations</strong> [23, 24]. For example, RBL Bank reported that its net profit was impacted by a one-off expense of INR 32 crores (pre-tax) due to the revised definition of wages under these new codes [25]. YES Bank also estimated an incremental liability of INR 162 crores towards gratuity resulting from these changes [23, 26]. Additionally, competitive intensity remains consistently high across the sector, and stricter provisioning rules mean some banks are now operating at 15% to 20% higher provisioning levels than in the past [27, 28].</p>
+</div>
+<div id="evolving-opportunities-over-time" class="section level9">
+<p class="heading"><strong>Evolving Opportunities Over Time</strong></p>
+<p><strong>1. AI-Driven Technological Transformation:</strong> The very challenges banks face are driving rapid technological innovation. In response to its physical cheque fraud, <strong>IDFC First Bank is leveraging Artificial Intelligence (AI) to fundamentally upgrade its controls, implementing AI systems to conduct initial signature checks on physical cheques before human authorization</strong> [29-31]. They are also instituting mandatory, verified digital confirmations via the customer’s mobile app for high-value branch transactions [30, 32-34].</p>
+<p>Other banks are heavily leaning into digital overhauls to boost efficiency. Tamilnad Mercantile Bank (TMB) has rolled out AI-enabled call centers, automated internal workflow systems, and allowed the activation of dormant accounts via Video-based Customer Identification Processes (V-CIP) [35-38]. Axis Bank has expanded its digital footprint immensely, reporting a 146% YoY growth in UPI transaction value and achieving 97% of its financial transactions through digital channels [39]. Axis has also pioneered “Express Banking Digital Points” with Hitachi to offer a full range of banking services in a compact, 24x7 automated format [40].</p>
+<p><strong>2. Macroeconomic Tailwinds and Trade Shifts:</strong> Global trade dynamics are creating lucrative avenues for localized growth. <strong>Tamilnad Mercantile Bank noted that constructive US-India trade engagements are generating significant opportunities for export-oriented MSMEs</strong> [41, 42]. Because Tamil Nadu has a strong presence in textiles, engineering, and electronics, the bank is seeing early signs of heightened demand for working capital, trade finance, and forex solutions from these enterprises [41, 43].</p>
+<p><strong>3. Granularization and “Bharat” (Rural) Expansion:</strong> Banks are actively shifting their focus from concentrated corporate lending to granular, retail, and rural markets. * <strong>CSB Bank</strong> is transitioning from its traditional 100-year-old roots to function as a new-age private bank, gearing up for a “Scale Phase” where retail growth is expected to be a crucial game-changer [44, 45]. * <strong>Karur Vysya Bank (KVB)</strong> has successfully maintained a growth trajectory by overhauling its senior management, granularizing its loan book in favor of retail, agri, and commercial segments, and introducing digital underwriting [46]. * <strong>Axis Bank</strong> is heavily betting on “Bharat Banking,” aiming to capture market share in Rural and Semi-Urban (RuSu) markets by digitizing processes like tractor loans and utilizing a vast network of Common Service Centers [47-49].</p>
+<p><strong>4. Strategic Partnerships and ESG Commitments:</strong> Institutions are forming strategic alliances to secure long-term capital and operational growth, such as Federal Bank receiving a strategic minority investment from Blackstone [50, 51]. Furthermore, Environmental, Social, and Governance (ESG) initiatives have evolved into major strategic opportunities. Axis Bank has committed to financing INR 60,000 crores to sectors with positive social and environmental outcomes by 2030, planting 8 million trees, and increasing the penetration of electric vehicle (EV) loans [52-54].</p>
+<p><em><a href="footnote/Private%20Sector%20Bank.1.txt">sources</a> </em></p>
+</div>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the headwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The banking industry is currently navigating a variety of macroeconomic, regulatory, operational, and localized headwinds.</p>
+<p><strong>Geopolitical and Macroeconomic Instability</strong> The sector is exposed to significant global geopolitical tensions that complicate the economic landscape [1]. Major headwinds include the ongoing war between Russia and Ukraine, the conflict between Israel and Hamas, and escalations involving Iran and the U.S. [1]. Additionally, strikes by the Houthi group on international ships in the Red Sea, alongside lingering diplomatic and military tensions between India and both Pakistan and China, contribute to a volatile environment [1-3]. The prevailing crisis in West Asia has been specifically cited as an ongoing challenge [4]. These geopolitical risks are further compounded by macroeconomic threats, including inflation, deflation, and unanticipated turbulence in interest rates, equity prices, and foreign exchange rates [1, 5].</p>
+<p><strong>Liquidity and Funding Pressures</strong> Banks are operating within a tight liquidity environment [4]. This has been exacerbated by seasonal pressures such as year-end advance tax outflows, which typically drain systemic liquidity [4]. Furthermore, institutions have had to navigate the reduction of interest rates on Savings Accounts, which have been cut by 50 to 200 basis points in key buckets, potentially impacting deposit mobilization and customer sentiment [4].</p>
+<p><strong>Regulatory and Compliance Costs</strong> Changes in government regulations are directly impacting bank profitability. The Government of India’s notification of four “New Labour Codes” (The Code on Wages 2019, The Industrial Relations Code 2020, The Code on Social Security 2020, and the Occupational Safety, Health and Working Conditions Code 2020) has forced banks to reassess their employee costs [6, 7]. Multiple banks have had to absorb one-time financial hits or make incremental provisions to account for these revised wage definitions [6-9]. Additionally, compliance with new Reserve Bank of India (RBI) circulars, such as those concerning Project Finance and Upper Layer Regulations, has required some institutions to make one-time catch-up provisions [10].</p>
+<p><strong>Operational Risks and Fraud</strong> The industry faces ongoing operational headwinds, particularly concerning internal controls and fraud. For example, a significant discrepancy estimated between INR 490 crores and INR 590 crores was recently identified at a specific bank branch [11, 12]. This incident involved fraudulent debit instructions from government-linked accounts, executed through the collusion of bank employees with external parties [13-15]. Such events not only create immediate financial liabilities but also necessitate costly forensic audits, legal action, and the urgent implementation of stricter technological controls, such as mandatory digital confirmations for high-value transactions [16-18].</p>
+<p><strong>Localized and Environmental Disruptions</strong> Certain banks also face regional headwinds that disrupt local economies and asset quality. These include severe natural disasters like floods, specific regional disturbances (such as the events of April 22), and the need to allocate impairment provisioning for associated regional entities like Grameen Bank [19, 20].</p>
+<p><em><a href="footnote/Private%20Sector%20Bank.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry" class="section level3">
+<h3><strong>What are the key things to understand about this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Robust Business Growth and Profitability</strong> The banking industry is currently experiencing strong growth momentum across core fundamentals, specifically in advances (lending) and deposits [1], [2], [3], [4]. Banks are consistently reporting double-digit year-on-year growth in total business, driven heavily by retail, agriculture, and MSME (Micro, Small, and Medium Enterprises) sectors [5], [6], [7], [8], [9]. <strong>MSME lending, in particular, remains a core growth driver</strong>, supported by stronger engagement in trade-linked and manufacturing clusters [1], [10], [11]. Financial metrics such as Net Interest Income (NII), Net Interest Margins (NIM), and Operating Profits are reaching all-time highs for various institutions, reflecting resilience, disciplined execution, and improved operating leverage [1], [12], [13], [14], [8], [15].</p>
+<p><strong>Enhancing Asset Quality and Risk Discipline</strong> A defining characteristic of the current banking landscape is the sustained improvement in asset quality, which has reached decadal lows for some institutions [8], [16]. Banks are reporting significant reductions in both Gross Non-Performing Assets (GNPA) and Net Non-Performing Assets (NNPA) [5], [17], [18], [4], [19], [20]. <strong>To safeguard against future defaults, the industry is maintaining highly robust Provision Coverage Ratios (PCR)</strong>, often exceeding 70% to 90%, ensuring that potential credit losses are adequately buffered [17], [21], [4], [16], [19], [20].</p>
+<p><strong>Accelerating Digital Transformation</strong> The sector is undergoing a massive technology transformation that is translating directly into operational benefits, improved turnaround times, and enhanced customer experiences [10], [12], [22]. <strong>Key technological advancements include the rollout of advanced Loan Origination Systems (LOS) and Loan Management Systems (LMS), state-of-the-art AI call centers, and API developer portals</strong> [23], [24], [25], [26], [13]. Digital penetration is exceedingly high; for instance, some large private banks report that up to 97% of individual customer financial transactions are now conducted digitally [27], [28]. Banks are also leveraging digital channels to acquire retail term deposits, activate dormant accounts through Video-based Customer Identification Processes (V-CIP), and implement seamless omni-channel and WhatsApp banking [23], [24], [29], [27], [26], [30].</p>
+<p><strong>Strengthening the Liability Franchise</strong> Banks are highly focused on building a stable and granular liability franchise. <strong>A high Current Account and Savings Account (CASA) ratio is a vital indicator of a bank’s ability to access low-cost funds</strong> [5], [3], [31], [18], [16], [32]. To sustain this, institutions are targeting granular retail deposits (e.g., deposits under ₹3 crore) rather than relying exclusively on bulk wholesale deposits [32], [33]. In response to tight liquidity environments, banks are strategically adjusting their savings account interest rates to lower their overall cost of funds, allowing them to expand their lending capabilities profitably [34], [35].</p>
+<p><strong>Navigating Regulatory Compliance and Governance</strong> The industry operates under strict regulatory oversight, primarily dictated by the Reserve Bank of India (RBI). <strong>Banks are required to maintain strict adherence to Basel III Capital Regulations, ensuring high Capital Adequacy Ratios (CRAR), Liquidity Coverage Ratios (LCR), and Net Stable Funding Ratios (NSFR)</strong> [5], [36], [37], [38], [39]. Regulatory breaches result in direct financial consequences; for example, the RBI actively imposes monetary penalties on banks for non-compliance issues, such as exceeding the 75% Loan-to-Value (LTV) threshold on gold loans, or violating guidelines related to Business Correspondent (BC) arrangements and account maintenance charges [40], [41], [42]. Furthermore, shifting macroeconomic policies, such as the implementation of the New Labour Codes, require banks to act prudently by making incremental financial provisions for increased employee benefit obligations like gratuity [43], [44], [45].</p>
+<p><strong>Managing Operational Risks and Fraud</strong> Despite advanced digital security, physical and operational risks remain a critical challenge. <strong>Employee collusion and physical forgery represent some of the most significant vulnerabilities</strong>, bypassing traditional maker-checker-authorizer controls [46], [47], [48], [49], [50], [51]. An isolated but severe example is a recent fraud involving approximately ₹490 crores of state government deposits, executed through forged physical cheques and the connivance of multiple branch employees and external parties [52], [53], [54], [55]. To combat this, <strong>banks carry “employee dishonesty” insurance policies to mitigate financial losses and are introducing new, stringent verification controls</strong> [56], [57]. These new controls include mandating that customers use verified digital apps to explicitly approve high-value, branch-based physical transactions before they can be cleared [58], [59], [60], [61].</p>
+<p><strong>Commitment to ESG and Sustainability</strong> Finally, there is a growing emphasis on Environmental, Social, and Governance (ESG) criteria within the sector. Modern banks are actively seeking ESG ratings from registered providers to validate their ethical banking models [30], [62]. Industry leaders are pioneering dedicated ESG Committees at the Board level, investing in sustainable livelihoods, scaling internal renewable energy (like solar power capacities), maintaining strong female workforce representation, and funding large-scale CSR initiatives [63], [64].</p>
+<p><em><a href="footnote/Private%20Sector%20Bank.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the tailwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Technological Advancements and Digital Adoption</strong> A major tailwind driving the banking industry is the rapid integration of technology and digital-first initiatives. Ongoing technology transformations are translating directly into operational benefits [1, 2]. The implementation of advanced digital lending platforms, loan management systems, and enterprise solutions—such as Oracle-based systems—is significantly improving turnaround times, risk assessment, and overall productivity while enhancing the customer experience [3-6].</p>
+<p>Additionally, the widespread adoption of digital transaction channels is scaling tremendously. For instance, Unified Payments Interface (UPI) transactions have seen year-over-year growth rates as high as 146% in transaction value, and digital transactions now account for up to 97% of total financial transactions for individual customers at some institutions [7-9]. Banks are also seeing strong initial traction in digital lending driven by the Account Aggregator (AA) network [10]. Furthermore, the arrival of Artificial Intelligence (AI) is being leveraged to introduce additional security controls for transaction clearing and to establish state-of-the-art call centers with AI calling capabilities [4, 11].</p>
+<p><strong>Strong Momentum in MSME and Export-Oriented Sectors</strong> Micro, Small, and Medium Enterprises (MSME) lending remains a core growth driver across the industry [12]. This momentum is heavily supported by stronger engagement in trade-linked and manufacturing clusters [12]. Favourable macroeconomic developments, such as constructive US-India trade engagements, are providing a significant boost to export-oriented MSMEs [1, 13]. This is particularly evident in sectors like textiles, engineering, and electronics, generating early signs of improved demand from these enterprises for working capital, trade finance, and forex solutions [1, 2].</p>
+<p><strong>Focus on Retail and Rural (“Bharat”) Expansion</strong> Banks are increasingly viewing granular retail growth as a “crucial game changer” [6]. Accelerated credit growth is being driven by a focused expansion into retail, agriculture, and MSME portfolios, supported by a broader improvement in credit appetite [14].</p>
+<p>There is also a strong strategic push into Rural and Semi-Urban (RuSu) markets, often referred to as “Bharat Banking” [15]. Financial institutions are successfully driving higher business growth and increasing their market share in these regions through asset-led liability models, which in turn comprehensively supports Priority Sector Lending (PSL) strategies [15]. To support this, banks are making a calibrated shift in their asset mix toward secured retail loan segments—such as housing, auto, and gold loans—to deliver stable and superior risk-adjusted returns [16-19].</p>
+<p><strong>Improving Asset Quality and Profitability Metrics</strong> The industry is experiencing a strengthening of underlying fundamentals, characterized by sustained margin expansions, disciplined cost management, and improving profitability trajectories [20, 21]. Profitability is being bolstered by a steady reduction in funding costs and an expected continued decline in credit costs alongside improving Net Interest Margins (NIM) [21-24].</p>
+<p>Simultaneously, asset quality is demonstrating remarkable stability and improvement. Multiple banks report that their Gross Non-Performing Assets (GNPA) and Net Non-Performing Assets (NNPA) have declined to decadal or multi-year lows, underscoring sustained risk discipline and healthy recovery rates [24-26]. For instance, certain banks have reported significant year-over-year drops in GNPA by up to 100 to 163 basis points, signaling an overall healthier credit environment [27-29].</p>
+<p><em><a href="footnote/Private%20Sector%20Bank.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry" class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The general outlook for the banking industry is highly positive and is characterized by robust business momentum, improving profitability, strong asset quality, and a focus on digital transformation.</p>
+<p><strong>Robust Business Growth and Credit Demand</strong> The industry is experiencing a strong growth trajectory, driven by healthy momentum in both advances and deposits [1-3]. Banks are seeing accelerated credit growth fueled by strategic focus areas such as Retail, Micro, Small and Medium Enterprises (MSME), Agriculture, and Commercial and Corporate banking segments [4-6]. There are early signs of improved demand for working capital, trade finance, and forex solutions [7, 8]. This demand is supported by constructive macro factors, such as US-India trade engagements that are particularly favorable for export-oriented MSMEs in sectors like textiles, engineering, and electronics [7-9]. On the liability side, deposit growth remains robust, with a strong emphasis on securing granular, retail deposits and healthy Current Account Savings Account (CASA) inflows [10-12]. Institutions anticipate this growth to strengthen further, moving from transformation phases into stronger growth cycles in the coming fiscal years [13-15].</p>
+<p><strong>Expanding Profitability and Margins</strong> Profitability across the sector is highly resilient and on an upward trajectory, with multiple banks reporting their highest-ever quarterly net profits and looking forward to record annual profits [2, 16]. This financial health is supported by stronger core incomes, operational leverage, and stable or expanding Net Interest Margins (NIM) [2, 10, 17]. The improved margins are largely driven by favorable asset repricing, better liability mixes, and faster repricing of deposits [17, 18]. Furthermore, several banks have reported declining funding costs and anticipate that recent revisions in savings account rates will further reduce the cost of funds, enabling them to confidently expand their lending franchises [3, 4, 10, 19].</p>
+<p><strong>Strengthening Asset Quality and Risk Discipline</strong> Asset quality in the industry continues to improve steadily, with key metrics like Gross Non-Performing Assets (GNPA) and Net Non-Performing Assets (NNPA) reaching multi-year or decadal lows for some institutions [2, 4]. This sustained improvement is credited to disciplined execution, robust enterprise-wide risk management practices, and a strategic intent to onboard fresh advances with a low-risk profile [4, 20, 21]. As a result of this stability, credit costs are remaining benign and are expected to keep coming down [2, 22-24]. Banks are also maintaining highly comfortable Provision Coverage Ratios (PCR), often exceeding 70% to 90%, which provides a strong buffer against unforeseen credit defaults [20, 25-27].</p>
+<p><strong>Digital Transformation and Future-Ready Initiatives</strong> The industry is heavily prioritizing “digital-first” and future-ready capabilities [28, 29]. Banks are integrating advanced digital lending platforms, enterprise systems, and Artificial Intelligence (AI) to revolutionize branch banking, improve turnaround times, and enhance productivity [7, 13, 28, 30]. This technological shift is actively translating into operational benefits and superior customer experiences, setting a new standard for inclusive and efficient banking [7, 28, 30].</p>
+<p><strong>Navigating Headwinds and Regulatory Adjustments</strong> While the core operating engine of the industry remains robust, banks have successfully navigated various external headwinds, including tight liquidity environments, regional geopolitical crises, and localized economic disruptions caused by natural events [16, 19]. Furthermore, the industry is absorbing one-time incremental expenses related to regulatory updates, specifically the “New Labour Codes” that consolidate existing labor laws and impact the definition of wages and employee benefit obligations [2, 31-33]. Despite these challenges, the banking sector remains well-capitalized with strong Capital Adequacy Ratios (CAR) and liquidity buffers, positioning it comfortably to absorb risks and support calibrated, sustainable business expansion [26, 34, 35].</p>
+<p><em><a href="footnote/Private%20Sector%20Bank.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

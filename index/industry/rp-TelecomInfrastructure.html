@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-05-15" />
+
+<title>Telecom - Infrastructure</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Telecom - Infrastructure</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">May 15, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/TelecomInfrastructure.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/TelecomInfrastructure.fan.CAP_WT.png" /></p>
+<p><img src="plots/TelecomInfrastructure.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/TelecomInfrastructure.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/TelecomInfrastructure.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/TelecomInfrastructure.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/TelecomInfrastructure.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-b9e0799cbef83b6c4f84" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b9e0799cbef83b6c4f84">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["10.11%","8.24%"],["24.43%","10.5%"],["30.77%","11.53%"],["27.58%","19.67%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/TelecomInfrastructure.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/TelecomInfrastructure.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-398b7fc9a7bf1a6580e4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-398b7fc9a7bf1a6580e4">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.INDUSTOWER.html\" target=\"_blank\">INDUSTOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.HFCL.html\" target=\"_blank\">HFCL<\/a>","PACEDIGITK","<a href=\"/reports02/eq-in/risk/in.VINDHYATEL.html\" target=\"_blank\">VINDHYATEL<\/a>","<a href=\"/reports02/eq-in/risk/in.GTLINFRA.html\" target=\"_blank\">GTLINFRA<\/a>","<a href=\"/reports02/eq-in/risk/in.SUYOG.html\" target=\"_blank\">SUYOG<\/a>"],[0.7342216656052949,0.2086506197906149,0.01649070709771254,0.0117597008905788,0.0229796994095817,0.005897607206217153],[0.7778265436410541,0.1621036752653371,0.02804168749706052,0.01333547008174804,0.01231645011766632,0.006376173397133853]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2669aaf6fb7f1fc58122" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2669aaf6fb7f1fc58122">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.INDUSTOWER.html\" target=\"_blank\">INDUSTOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.HFCL.html\" target=\"_blank\">HFCL<\/a>","PACEDIGITK","<a href=\"/reports02/eq-in/risk/in.VINDHYATEL.html\" target=\"_blank\">VINDHYATEL<\/a>","<a href=\"/reports02/eq-in/risk/in.GTLINFRA.html\" target=\"_blank\">GTLINFRA<\/a>","<a href=\"/reports02/eq-in/risk/in.SUYOG.html\" target=\"_blank\">SUYOG<\/a>"],[83.41344367829451,-72.03137635147912,31.71286831887868,18.04979875764392,-1.378051559703762,4.666515241815659],[37.71183848990212,-6.265614753849766,45.53912648686939,18.33643471417818,-1.189011801976388,null],[92.91261552097676,4.590195965579597,2.747184596937981,0.04543175626778091,-0.317212994056297,0.02178515429418681]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-c9ce7a4b2bfb27287f97" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c9ce7a4b2bfb27287f97">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.INDUSTOWER.html\" target=\"_blank\">INDUSTOWER<\/a>","<a href=\"/reports02/eq-in/risk/in.HFCL.html\" target=\"_blank\">HFCL<\/a>","PACEDIGITK","<a href=\"/reports02/eq-in/risk/in.VINDHYATEL.html\" target=\"_blank\">VINDHYATEL<\/a>","<a href=\"/reports02/eq-in/risk/in.GTLINFRA.html\" target=\"_blank\">GTLINFRA<\/a>","<a href=\"/reports02/eq-in/risk/in.SUYOG.html\" target=\"_blank\">SUYOG<\/a>"],[10.96796169636657,36.93253997792849,10.1794381451103,33.91678525656739,0.1626271929830214,1.612674473830952],[7.614280156005554,32.91598188152755,17.29297470562192,37.55092821964459,0.131206922989253,null],[59.96188695802574,36.64514887542413,2.88334064203617,0.3561144609658366,0.1286851108012389,0.02482395274688332]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time" class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over time?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The landscape of opportunities in the telecommunications, infrastructure, and energy sectors has expanded significantly, transitioning from basic connectivity solutions to advanced, high-capacity networks, artificial intelligence infrastructure, and green energy integration.</strong> Concurrently, the operational and financial challenges have also shifted, moving from standard deployment hurdles to complex issues involving government funding delays, customer financial stability, and regulatory transitions.</p>
+<div id="the-evolution-of-opportunities" class="section level9">
+<p class="heading"><strong>The Evolution of Opportunities</strong></p>
+<p><strong>1. Advancements in Network Technology and Connectivity</strong> Historically, the telecommunications infrastructure focused heavily on traditional Ground Based Towers (GBTs) and Roof Top Towers (RTTs) [1]. Over time, <strong>the demand for higher capacity and coverage within limited spaces has driven the industry toward innovative solutions like smart poles, microsites, small cells, and fiberized connectivity</strong> [1]. Looking toward the future, the global telecommunications ecosystem is rapidly evolving toward 6G, quantum communication systems, and ultra-low-latency applications [2]. To support this, <strong>companies are developing next-generation optical technologies such as hollow-core fiber</strong>, which dramatically reduces energy consumption and transmission latency compared to conventional solid-core fibers [2, 3]. Furthermore, the ongoing transition to 5G is massive; global 5G subscriptions are projected to reach 6.4 billion by 2031, accounting for roughly two-thirds of all mobile connections, while India is expected to see 5G account for approximately 79% of its total mobile subscriptions by the same year [4].</p>
+<p><strong>2. The AI Boom and Data Center Expansion</strong> The rapid technological advancements and <strong>the increasing adoption of Artificial Intelligence (AI) by hyperscalers have fundamentally shifted the infrastructure market</strong> [2, 5]. As hyperscale computing demand accelerates, massive investments in AI-driven data centers are generating strong, sustained global connectivity requirements [2, 5]. This shift has been further catalyzed by supportive government policies, such as the Union Budget 2026, which introduced significant tax relief measures specifically for data centers to enhance the nation’s digital ecosystem [6].</p>
+<p><strong>3. Integration of Renewable Energy and Battery Energy Storage Systems (BESS)</strong> A major evolutionary leap is the convergence of digital infrastructure with sustainable energy. <strong>The rapid scale-up in renewable energy is driving a structural, grid-scale need for Battery Energy Storage Systems (BESS) to ensure grid stability</strong> [7]. Companies are actively expanding their in-house BESS manufacturing capacities (for example, scaling from 2.5 GWh to 10 GWh) and developing fully integrated cell-to-container capabilities to cater to both commercial and utility-scale projects [8-10]. This shift not only supports the global energy transition but provides long-term operating assets and predictable cash flows through Engineering, Procurement, and Construction (EPC) and Operations &amp; Maintenance (O&amp;M) contracts [11, 12].</p>
+<p><strong>4. Geographic and Vertical Expansion</strong> Opportunities are no longer confined to the domestic market. <strong>Companies are actively establishing an international presence by creating subsidiaries to target high-potential African markets</strong> (such as Nigeria, Uganda, and Zambia) and the Middle East, while also setting up investment holding companies in locations like GIFT City, Gujarat [13-15]. Vertically, telecom infrastructure companies are also diversifying into high-growth, strategic sectors like defense manufacturing, supported by favorable government initiatives [16, 17].</p>
+<hr />
+</div>
+<div id="the-evolution-of-challenges" class="section level9">
+<p class="heading"><strong>The Evolution of Challenges</strong></p>
+<p><strong>1. Execution Delays and Working Capital Constraints</strong> While government-led infrastructure programs provide massive opportunities, they have recently introduced severe financial bottlenecks. <strong>The EPC segment has faced notable execution-related delays leading to lower revenue recognition, primarily caused by funding-linked disbursement delays under key government programs</strong>, such as the Uttar Pradesh Jal Jeevan Mission (UP-JJM) [5, 18]. These funding delays have drastically increased working capital requirements, resulting in surging receivables and negatively impacting profitability due to higher interest costs [5, 18].</p>
+<p><strong>2. Customer Financial Instability and Debt Restructuring</strong> A persistent and evolving risk within the shared infrastructure model is the deep reliance on the financial health of telecom operators. <strong>Certain infrastructure companies have faced significant going-concern uncertainties due to the financial distress of their largest customers</strong> [19, 20]. This requires companies to critically monitor their clients’ ability to generate cash flow to settle liabilities [21, 22]. Furthermore, some companies have experienced fully eroded net worths and ongoing cash losses, forcing them into Joint Lenders’ Forums to negotiate One-Time Settlements (OTS) or bilateral debt settlements [23-25].</p>
+<p><strong>3. Operational, Environmental, and Regulatory Hurdles</strong> On the operational front, managing vast, dispersed physical assets remains difficult. <strong>Companies face unique ground-level challenges, including the dismantling of telecom sites by disgruntled landowners and miscreants, leading to a direct loss of assets</strong> [25]. Additionally, the industry has had to contend with the volatility of raw material prices and general global uncertainty [6].</p>
+<p>From a regulatory standpoint, transitions in government policy can create sudden financial impacts. For instance, <strong>the implementation of the new Labour Codes by the Government of India resulted in significant one-time incremental expenses related to past service costs and enhanced gratuity liabilities</strong> [18, 24, 26]. As these businesses grow rapidly in scale, they also continually face the challenge of upgrading their internal control systems to mitigate risks commensurate with their expanding operations [21, 27]. Finally, the high cost of power and fuel dependency historically posed a severe challenge, prompting the necessary (but capital-intensive) shift toward solar-powered sites, low-diesel consumption models, and the deployment of advanced Lithium and VRLA batteries [28-30].</p>
+<p><em><a href="footnote/Telecom%20-%20Infrastructure.1.txt">sources</a> </em></p>
+</div>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the headwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Funding Delays and Increased Working Capital Costs</strong> A major headwind in the engineering, procurement, and construction (EPC) segment is <strong>execution-related delays caused by funding-linked disbursement hold-ups in key government infrastructure programs</strong> [1]. For example, projects under schemes like the Uttar Pradesh Jal Jeevan Mission (UP-JJM) have experienced significant funding bottlenecks [1], [2]. These delays directly result in lower revenue recognition and force companies to tie up more of their own cash to keep operations running [1]. Consequently, <strong>profitability is dragged down by higher interest costs stemming from this increased working capital deployment</strong>, with unpaid receivables ballooning to substantial amounts [1], [2].</p>
+<p><strong>Customer Financial Instability</strong> The telecommunications infrastructure industry relies heavily on a concentrated group of large telecom operators, making <strong>the financial health of these major customers a critical risk factor</strong> [3], [4]. Infrastructure providers have substantial trade receivables and unbilled revenue tied up with key customers whose financial conditions frequently cast doubt on their ability to settle liabilities [5], [6], [7]. These customers must continuously raise additional funds or negotiate with lenders and the government for support—such as the restructuring of adjusted gross revenue (AGR) dues into deferred annual installments—just to maintain cash flows and meet their operational obligations [8], [3], [4]. Infrastructure providers are therefore forced to constantly monitor these clients to ensure they can recover their assets and receivables in the normal course of business [9], [10].</p>
+<p><strong>Regulatory and Compliance Burdens</strong> Recent changes in labor and tax regulations have created significant financial hurdles: * <strong>New Labour Codes:</strong> Effective November 21, 2025, the Government of India consolidated multiple existing labor laws into a unified framework of four New Labour Codes [11], [12]. This legislative shift has required companies to <strong>recognize past service costs immediately, resulting in sudden, one-time increases in employee benefit expenses and incremental gratuity liabilities</strong> [1], [11], [12], [13]. * <strong>Tax Credit Disputes:</strong> The industry has faced ongoing litigation regarding Input Tax Credits (ITC). Challenges and show-cause notices from tax authorities over the disallowance of CENVAT/ITC credits on passive infrastructure and telecom towers have required companies to retroactively decapitalize massive sums from their property, plant, and equipment assets and reverse associated depreciation [14], [15], [16].</p>
+<p><strong>Macroeconomic and Supply Chain Volatility</strong> Broader economic conditions continue to strain the industry. Companies must navigate <strong>ongoing global uncertainty alongside significant volatility in raw material prices</strong> [17]. Business strategies and future earnings are constantly threatened by intense market competition, shifting pricing environments, and the challenge of maintaining reliable supply chain sources [18].</p>
+<p><strong>Operational Disruptions and Asset Vandalism</strong> On the ground, infrastructure providers face severe physical and operational challenges. A critical headwind for some operators is the <strong>dismantling of various telecom sites by disgruntled landowners and miscreants, leading to a direct loss of physical assets</strong> [19]. When combined with sustained cash losses and fully eroded net worth, these extreme operational disruptions cast material uncertainty on the ability of certain companies to even continue as a going concern [19].</p>
+<p><em><a href="footnote/Telecom%20-%20Infrastructure.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry" class="section level3">
+<h3><strong>What are the key things to understand about this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Infrastructure sharing is the foundational business model of the telecommunications tower industry.</strong> The sector is highly competitive globally, and the focus of operators has been to develop an affordable mass-market service model for both urban and rural areas [1]. It is far more economical for telecommunications service providers to lease tower infrastructure rather than build their own captive towers [1]. Consequently, sharing infrastructure has become the industry norm to optimize resource utilization, reduce operational costs, and navigate local regulatory restrictions on new tower installations [1].</p>
+<p><strong>The industry relies on a clear division between passive and active infrastructure.</strong> Tower companies provide the passive infrastructure, which includes the steel towers, shelter rooms, diesel generators, battery banks, and power regulation equipment [2]. Telecom operators own and supply the active infrastructure, such as radio antennas, cell sites, and cables [2]. The financial stability of tower companies is secured through <strong>long-term Master Service Agreements (MSAs)</strong> with these operators, which set non-discriminatory terms, incorporate annual price escalations, and provide highly visible, assured future revenues and cash flows [3-5]. Furthermore, the requirement for large-scale, nationwide operations creates significant entry barriers that protect established players [4].</p>
+<p><strong>Data consumption, 5G expansion, and Artificial Intelligence are massive growth drivers.</strong> The industry’s continued growth is fueled by surging data consumption, network densification, and fiberization [6]. The rapid deployment of 5G technology is a major catalyst, with global 5G subscriptions projected to reach 6.4 billion by 2031, accounting for roughly 79% of all mobile connections in domestic markets [7]. Furthermore, the evolution toward 6G networks, hyperscale computing, and AI-driven data centers is generating strong, sustained global demand for ultra-low-latency optical infrastructure and high-capacity connectivity [8, 9].</p>
+<p><strong>Next-generation technological solutions are transforming physical networks.</strong> To meet the high-capacity demands of 4G and 5G within limited spaces, companies are expanding beyond traditional Ground Based Towers (GBTs) and Roof Top Towers (RTTs) to deploy innovative solutions like <strong>smart poles, microsites, small cells, and feather sites</strong> [1]. In the optical fiber space, the development of <strong>Hollow-Core Fiber (HCF) technology</strong> represents a critical frontier [8]. HCF significantly cuts transmission latency and energy consumption compared to conventional solid-core fiber, emerging as the necessary backbone for 6G, quantum networks, and latency-sensitive AI workloads [8, 10]. Additionally, the industry is exploring <strong>active network sharing</strong> (such as shared Transport Networks and Radio Access Networks), which has the potential to drastically reduce Capital Expenditure (Capex) by 33-35% and Operational Expenditure (Opex) by 25-33% [2].</p>
+<p><strong>Government initiatives and a favorable regulatory environment provide significant tailwinds.</strong> The government is evolving from a regulator to a facilitator within a largely deregulated market, expecting the telecom sector’s contribution to the national GDP to rise from 12-14% to 20% over the next decade [11]. Infrastructure providers are critical enablers of the government’s “Digital India” and “Digital Economy” missions [2]. Favorable policies, including the “Make-in-India” initiative, the National Electricity Policy 2026, and specific tax relief measures for data centers in the Union Budget 2026, are strengthening the digital infrastructure ecosystem and encouraging domestic manufacturing [6, 12].</p>
+<p><strong>The convergence of digital infrastructure and renewable energy is a strategic priority.</strong> As networks expand, there is a structural need for grid-scale Battery Energy Storage Systems (BESS) to ensure grid stability amidst the rapid scale-up of renewable energy [6]. Infrastructure providers are heavily investing in solar-powered sites, energy efficacy programs, and integrated BESS manufacturing platforms to reduce dependency on diesel generators, lower carbon footprints, and improve overall energy security [5, 13, 14].</p>
+<p><strong>There are operational challenges tied to public funding in the EPC sector.</strong> While public spending drives massive infrastructure expansion in areas like rural water supply and power distribution, companies operating in the Engineering, Procurement, and Construction (EPC) segments can face execution hurdles [9]. Continued funding delays and slow disbursements from government authorities on key projects can negatively impact execution timelines, increase working capital requirements, and temporarily strain cash flows [9].</p>
+<p><em><a href="footnote/Telecom%20-%20Infrastructure.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the tailwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Technological Advancements and the Rise of AI</strong> The industry is experiencing a massive push from <strong>rapid technological advancements, specifically the increasing adoption of artificial intelligence (AI) and substantial investments in AI-driven data centers</strong> [1]. As hyperscalers race to build these data centers, there is a surging need for ultra-low-latency optical infrastructure and next-generation technologies like hollow-core fiber to handle massive AI workloads and hyperscale computing demands [2, 3]. Telecom operators are also capitalizing on this by forming strategic partnerships, such as Bharti Airtel teaming up with IBM to scale enterprise AI workloads on the cloud, and partnering with Google to establish India’s first AI hub [4].</p>
+<p><strong>5G Proliferation and 6G Preparedness</strong> The aggressive expansion of 5G networks is a major structural demand driver. The number of installed 5G Base Transceiver Stations (BTS) in India has reached nearly 520,000, and domestic 5G subscriptions are projected to cross the 1 billion mark by 2031, accounting for roughly 79% of all mobile subscriptions [5]. Simultaneously, state-led operators like BSNL are rolling out tens of thousands of 4G sites with immediate options to upgrade to 5G technology [6]. The industry is already looking ahead, actively developing infrastructure capable of supporting the evolution toward <strong>6G networks and quantum communication systems</strong>, which guarantees strong and sustained long-term connectivity requirements globally [1-3].</p>
+<p><strong>Supportive Government Policies and Favorable Regulations</strong> A highly supportive regulatory environment is accelerating deployment speeds and lowering barriers to entry. The sector is now largely deregulated and highly competitive, with the government acting primarily as a facilitator to <strong>raise the telecom sector’s contribution to the national GDP to 20% over the next decade</strong> [6]. Key policy tailwinds include: * <strong>The Right of Way (RoW) Rules, 2024:</strong> These rules resolve long-standing interpretational challenges, simplifying and standardizing the rollout of telecom infrastructure across states and union territories [7]. * <strong>Union Budget 2026 and Tax Relief:</strong> The latest Union Budget has introduced significant tax relief measures specifically for data centers to enhance the country’s digital infrastructure ecosystem [8]. * <strong>Domestic Manufacturing Incentives:</strong> Government initiatives like the <strong>Production Linked Incentive (PLI) scheme, Make-in-India initiatives, and the National Electricity Policy 2026</strong> are actively enabling and incentivizing domestic manufacturing and integrated execution models [8, 9]. * <strong>Public Infrastructure Spending:</strong> An overarching emphasis on government-led infrastructure—particularly in rural water supply, power distribution, and renewable energy—is positioning Engineering, Procurement, and Construction (EPC) divisions for a major boom [1].</p>
+<p><strong>Renewable Energy and Battery Energy Storage Systems (BESS)</strong> The rapid scale-up of renewable energy adoption is creating a <strong>structural need for grid-scale Battery Energy Storage Systems (BESS) to ensure grid stability</strong> [9]. BESS requirements are projected to accelerate sharply between 2027 and 2032, marking a highly lucrative next phase in India’s energy transition [9]. This presents a massive tailwind for integrated infrastructure providers participating in the renewable energy and digital infrastructure value chains [8, 9].</p>
+<p><strong>Network Densification and Infrastructure Sharing</strong> To support escalating data consumption, the industry is seeing robust demand for <strong>network densification and fiberization</strong> [9]. Tower companies are expanding beyond traditional ground-based and rooftop towers into innovative solutions like <strong>smart poles, microsites, and fiberized connectivity</strong> to meet the high-capacity requirements of 5G and enhance city aesthetics [10, 11]. Furthermore, <strong>infrastructure sharing</strong> has become the industry norm, allowing telecom operators to reduce capital and operational expenditures by sharing passive and active infrastructure, thereby providing a steady, reliable revenue stream for infrastructure providers in the Industry 4.0 era [10, 11].</p>
+<p><em><a href="footnote/Telecom%20-%20Infrastructure.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry" class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The general outlook for the telecommunications, digital infrastructure, and renewable energy industries is highly positive</strong>, characterized by rapid expansion, technological advancement, and strong government support. The industry is currently experiencing favorable tailwinds across several interconnected segments [1].</p>
+<p><strong>Telecommunications and 5G Expansion</strong> The demand for telecom infrastructure continues to be robust, supported by exponential data growth, network densification, and rapid fiberisation [2]. <strong>The widespread rollout and adoption of 5G technology is a primary catalyst for this growth.</strong> Domestically, 5G subscriptions are projected to cross the 1 billion mark by 2031, ultimately accounting for approximately 79% of all mobile subscriptions [3]. To accommodate the higher capacity requirements of 5G and prepare for future technologies, the industry is moving beyond traditional telecom towers to deploy innovative infrastructure solutions, including smart poles, microsites, small cells, and enhanced fiberized connectivity [4]. Furthermore, public sector players like BSNL are accelerating the rollout of tens of thousands of 4G sites with built-in options to upgrade to 5G technology [5].</p>
+<p><strong>Artificial Intelligence and Data Center Connectivity</strong> The industry is expected to benefit significantly from rapid technological advancements, particularly the increasing adoption of Artificial Intelligence (AI) [6]. <strong>Substantial global investments in AI-driven data centers are generating a strong and sustained requirement for high-capacity connectivity and Optical Fibre Cables (OFC)</strong> [6]. Telecom operators are also actively forming strategic partnerships with major technology companies—such as Google and IBM—to build domestic AI hubs and augment cloud computing infrastructure, aiming to scale AI workloads and accelerate digital adoption for enterprises [7].</p>
+<p><strong>Government Initiatives and Public Spending</strong> Strong policy tailwinds are significantly bolstering the industry’s prospects. <strong>The sector is benefiting from the government’s transition into a facilitator role, with the telecommunications sector expected to increase its contribution to the national GDP from the current 12–14% to 20% over the next decade</strong> [5]. The Union Budget’s emphasis on government-led infrastructure, alongside specific tax relief measures for data centers, is actively enhancing the digital infrastructure ecosystem [1, 6]. Additionally, “Make-in-India” initiatives and the National Electricity Policy 2026 are enabling domestic manufacturing and supporting integrated execution models [2].</p>
+<p><strong>Renewable Energy and Battery Energy Storage Systems (BESS)</strong> Alongside digital connectivity, the transition towards renewable energy is creating massive new infrastructure opportunities. <strong>The rapid scale-up of renewable energy sources is driving a structural need for grid-scale Battery Energy Storage Systems (BESS) to ensure grid stability</strong> [2]. The requirements for BESS are projected to accelerate sharply between 2027 and 2032, marking the crucial next phase of the country’s energy transition [2]. Consequently, companies are experiencing strong order pipelines led by the energy segment, pointing to sustained long-term demand for power distribution, renewable energy solutions, and related public infrastructure expansion [1, 6, 8].</p>
+<p><em><a href="footnote/Telecom%20-%20Infrastructure.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

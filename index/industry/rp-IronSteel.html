@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-05-15" />
+
+<title>Iron &amp; Steel</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Iron &amp; Steel</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">May 15, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/IronSteel.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/IronSteel.fan.CAP_WT.png" /></p>
+<p><img src="plots/IronSteel.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/IronSteel.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/IronSteel.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/IronSteel.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/IronSteel.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4208edb627bd91bbca7d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4208edb627bd91bbca7d">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["1.88%","2.83%"],["10.36%","7.82%"],["12.24%","10.91%"],["13.08%","17.54%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/IronSteel.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/IronSteel.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8c163759abdd462a070b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8c163759abdd462a070b">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.JSWSTEEL.html\" target=\"_blank\">JSWSTEEL<\/a>","<a href=\"/reports02/eq-in/risk/in.TATASTEEL.html\" target=\"_blank\">TATASTEEL<\/a>","<a href=\"/reports02/eq-in/risk/in.JINDALSTEL.html\" target=\"_blank\">JINDALSTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.SAIL.html\" target=\"_blank\">SAIL<\/a>","<a href=\"/reports02/eq-in/risk/in.JSL.html\" target=\"_blank\">JSL<\/a>","<a href=\"/reports02/eq-in/risk/in.SARDAEN.html\" target=\"_blank\">SARDAEN<\/a>","<a href=\"/reports02/eq-in/risk/in.NSLNISP.html\" target=\"_blank\">NSLNISP<\/a>","<a href=\"/reports02/eq-in/risk/in.JAIBALAJI.html\" target=\"_blank\">JAIBALAJI<\/a>","<a href=\"/reports02/eq-in/risk/in.PRAKASH.html\" target=\"_blank\">PRAKASH<\/a>","<a href=\"/reports02/eq-in/risk/in.MANAKSTEEL.html\" target=\"_blank\">MANAKSTEEL<\/a>","SCANSTL"],[0.2916441994370885,0.4368832396716661,0.1111652993573442,0.06892068590561713,0.05730023051642471,0.01241749619140513,0.01251641288808793,0.005207407052271205,0.003469890253627201,0.0002458493274052348,0.0002292893990625548],[0.3494445516421084,0.3031224284161402,0.1406583699269622,0.09046008457261083,0.06787108395971701,0.0218671276065952,0.01462552984985653,0.00835452153180446,0.002887128871251296,0.0004576620056701756,0.0002515116172836363]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":11,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-6d07769aee5b5c69185a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-6d07769aee5b5c69185a">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.JSWSTEEL.html\" target=\"_blank\">JSWSTEEL<\/a>","<a href=\"/reports02/eq-in/risk/in.TATASTEEL.html\" target=\"_blank\">TATASTEEL<\/a>","<a href=\"/reports02/eq-in/risk/in.JINDALSTEL.html\" target=\"_blank\">JINDALSTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.SAIL.html\" target=\"_blank\">SAIL<\/a>","<a href=\"/reports02/eq-in/risk/in.JSL.html\" target=\"_blank\">JSL<\/a>","<a href=\"/reports02/eq-in/risk/in.SARDAEN.html\" target=\"_blank\">SARDAEN<\/a>","<a href=\"/reports02/eq-in/risk/in.NSLNISP.html\" target=\"_blank\">NSLNISP<\/a>","<a href=\"/reports02/eq-in/risk/in.JAIBALAJI.html\" target=\"_blank\">JAIBALAJI<\/a>","<a href=\"/reports02/eq-in/risk/in.PRAKASH.html\" target=\"_blank\">PRAKASH<\/a>","<a href=\"/reports02/eq-in/risk/in.MANAKSTEEL.html\" target=\"_blank\">MANAKSTEEL<\/a>"],[0.4924825135990741,41.51938557122892,21.54507551319837,16.06437390219757,10.48439736265891,8.754319871402574,-4.158211802078387,1.259292198033761,0.02172612610640736,0.0824172490536064],[0.3230391496707162,54.96751091749442,15.08746275397211,8.847881578022985,10.07598180453927,6.20460440138144,-2.828817752180544,0.6612833902084381,0.00874939098128279,0.06892652012353385],[18.62038943842933,54.10636320613779,9.016718692339545,7.066518217259951,7.426326030452143,5.321517344424504,-2.05779813885431,0.4930458527979005,0.006294434607472342,0.0006249224056809928]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":10,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-bcfbb0472edf5cc8608d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bcfbb0472edf5cc8608d">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.JSWSTEEL.html\" target=\"_blank\">JSWSTEEL<\/a>","<a href=\"/reports02/eq-in/risk/in.TATASTEEL.html\" target=\"_blank\">TATASTEEL<\/a>","<a href=\"/reports02/eq-in/risk/in.JINDALSTEL.html\" target=\"_blank\">JINDALSTEL<\/a>","<a href=\"/reports02/eq-in/risk/in.SAIL.html\" target=\"_blank\">SAIL<\/a>","<a href=\"/reports02/eq-in/risk/in.JSL.html\" target=\"_blank\">JSL<\/a>","<a href=\"/reports02/eq-in/risk/in.SARDAEN.html\" target=\"_blank\">SARDAEN<\/a>","<a href=\"/reports02/eq-in/risk/in.NSLNISP.html\" target=\"_blank\">NSLNISP<\/a>","<a href=\"/reports02/eq-in/risk/in.JAIBALAJI.html\" target=\"_blank\">JAIBALAJI<\/a>","<a href=\"/reports02/eq-in/risk/in.PRAKASH.html\" target=\"_blank\">PRAKASH<\/a>","<a href=\"/reports02/eq-in/risk/in.MANAKSTEEL.html\" target=\"_blank\">MANAKSTEEL<\/a>"],[0.4936459332229132,58.01829689791636,7.506598371319598,16.27320544890151,5.410027107931128,1.521322960586264,1.82206732413497,0.7817744049701938,0.01020062210363656,0.1114143472065199],[0.3398485017996282,62.82184125555857,7.115822210385526,15.3097953832149,6.114942338840999,1.528898280877713,1.222678269321085,0.7474713286129849,0.006062278279610204,0.08373422059740239],[20.82107337858724,52.33206705362181,5.834503969091999,12.70748090023093,4.861004371492188,1.319582852858485,1.464848750805267,0.6543173053889949,0.003956421272458959,0.001164996650632177]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":10,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time" class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over time?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The global and Indian steel industries have witnessed a dynamic evolution over time, navigating complex operational and market-driven challenges while simultaneously unlocking massive opportunities through capacity expansions, strategic integrations, policy support, and sustainable technological advancements.</p>
+<p><strong>Evolution of Industry Challenges</strong></p>
+<ul>
+<li><strong>Volatility in Global Pricing and Trade Flows:</strong> The global landscape has been heavily influenced by fluctuating economic trends and trade dynamics. Recently, steel prices hit multi-year, five-year lows before experiencing a sharp 10% to 15% recovery driven by improving sentiment and tighter domestic supply [1-6]. A significant global challenge has been China’s steel production contraction; as their domestic demand fell, their exports surged by 7.5% to approximately 119 million tons, which heavily disrupted global trade flows and pricing dynamics [7-10].</li>
+<li><strong>Input Cost Pressures and Fuel Shortages:</strong> Companies have had to constantly adapt to cost-push pressures, primarily driven by the consistently high prices of raw materials like coal [11-16]. Additionally, broader shortages in traditional fuels like natural gas, LPG, and propane have threatened production stability [17].</li>
+<li><strong>Operational and Maintenance Hurdles:</strong> At a plant level, companies have faced ongoing mechanical and logistical challenges. For instance, SAIL experienced production impacts due to tube leakages in converters at its Bokaro and Bhilai plants, though these issues were subsequently rectified to achieve near 100% capacity utilization [18-21]. Furthermore, mismatched capacities between plants—such as Rourkela’s Hot Strip Mill relying on excessive in-process stock from Bokaro—have historically caused negative impacts on saleable steel volumes [22-25].</li>
+<li><strong>Energy Generation Headwinds:</strong> For integrated steel and power companies like Sarda Energy &amp; Minerals, seasonal factors (like lower hydro generation in certain quarters) combined with necessary but disruptive maintenance shutdowns of thermal and captive power units have temporarily suppressed profitability and generation volumes [2, 3, 5, 6, 26, 27].</li>
+</ul>
+<p><strong>Evolution of Industry Opportunities</strong></p>
+<ul>
+<li><strong>Robust Domestic Demand and Export Rebounds:</strong> In stark contrast to global contractions, <strong>India’s crude steel production impressively grew by over 10%</strong>, supported by steady manufacturing activity and sustained infrastructure spending [7, 9]. Domestic consumption grew by roughly 7% [11, 14], and companies successfully targeted new retail consumers, leading to massive sales volume growth [28, 29]. Furthermore, the imposition of safeguard duties successfully altered trade dynamics, shifting India back into a net exporter after six consecutive quarters of being a net importer [8, 10].</li>
+<li><strong>Strategic Capacity Expansions and Consolidation:</strong> To meet rising demand, major players are aggressively scaling up. SAIL is expecting its EBITDA per ton to jump from Rs. 6,000–7,000 to over Rs. 10,000 following its IISCO Steel Plant expansion, targeting 23 million tons of hot metal capacity by 2027-2028 [30-33]. JSW Steel has grown to a 35.9 MTPA capacity and aims to reach 43.4 MTPA in the next three years [34]. Simultaneously, corporate restructuring, such as the amalgamation of NINL into Tata Steel, is creating massive business synergies, optimizing operational costs through order pooling, and improving crucial raw material (iron ore) security [35-37].</li>
+<li><strong>Supply Chain and Operational Transformation:</strong> Companies are evolving their business models to maximize profitability. SAIL is increasingly utilizing conversion contracts to push more finished products into the market rather than semi-finished goods [38, 39]. <strong>Jindal Stainless achieved a paradigm shift by moving 70% of its operations from a “Made to Order” to a “Made to Anticipation” strategy.</strong> This data-driven transformation reduced lead times by over one-third, significantly reduced inventory pipelines, improved debtor days, and strengthened cash flows [40].</li>
+<li><strong>Penetration into Progressive New Markets:</strong> Stainless steel is now the fastest-growing metal globally, with India’s consumption expected to double from 3.6 MTPA in FY22 to 7.4 MTPA by FY30 [41, 42]. This growth is fueled by new applications in high-tech and sustainable sectors, including green hydrogen storage, ethanol processing, nuclear power plants, defense (e.g., ballistic applications), and modern infrastructure like railway station redevelopment [43-47].</li>
+<li><strong>Green Steel and the Decarbonization Revolution:</strong> The most profound evolutionary opportunity is the shift toward sustainability:
+<ul>
+<li><strong>Coal Gasification:</strong> To combat fuel shortages and reliance on imported coking coal, <strong>Jindal Steel established India’s first coal gasification-based Direct Reduced Iron (DRI) plant.</strong> By converting <em>swadeshi</em> (domestic) coal into syngas, they successfully injected it into blast furnaces and galvanizing lines, reducing carbon emissions and ensuring energy self-reliance [17, 48].</li>
+<li><strong>Government Policy Support:</strong> The Indian government’s National Coal Gasification Mission [48] and a targeted Union Budget allocation of INR 20,000 crores for carbon capture, utilization, and storage are actively incentivizing companies to adopt greener technologies [1, 4, 49, 50].</li>
+<li><strong>Net Zero Commitments:</strong> Industry leaders are proactively reshaping their carbon footprints. JSW Steel aims to reduce CO2 emissions by 42% by 2030 and achieve net neutrality by 2050, powering operations via renewable energy [34]. Jindal Stainless is heavily utilizing electric arc furnaces and scrap recycling to minimize greenhouse gas emissions while targeting Net Zero by 2050 [51-53].</li>
+</ul></li>
+</ul>
+<p><em><a href="footnote/Iron%20&amp;%20Steel.1.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the headwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Volatile Input Costs and Surging Coal Prices</strong> A primary headwind for the steel and metals industry is the significant volatility and sharp increase in raw material costs, most notably coking coal. Spot prices for imported coal surged to $251, creating a substantial cost push for manufacturers [1-4]. Companies have had to carefully navigate these range-bound but high coal prices, which directly impact profitability and operating margins, even though some stability has been observed recently [5-8]. The broader industry continues to face overarching volatility on the input cost front, requiring stringent cost discipline and operational leverage to sustain profitability [9].</p>
+<p><strong>Subdued Market Dynamics and Pricing Pressures</strong> The industry has grappled with periods of depressed metal and energy prices. Notably, <strong>steel prices touched five-year lows earlier in the year</strong>, which directly hampered revenue and EBITDA generation [10-13]. The market conditions were widely described as “subdued” through the months of September to November, only starting to see an uptick in late December [14, 15]. Furthermore, specific regional markets have experienced targeted slumps; for example, Tata Steel reported lower year-over-year deliveries in the UK due to subdued market dynamics [16]. Companies are also forced to operate in a <strong>highly competitive pricing environment</strong>, which puts additional pressure on maintaining healthy profit margins [9].</p>
+<p><strong>Operational Disruptions and Maintenance Shutdowns</strong> Unexpected operational incidents and planned maintenance shutdowns have negatively impacted production volumes and capacity utilization across multiple major players: * <strong>Steel Authority of India Limited (SAIL)</strong> faced tube leakages in its converters at the Bokaro Steel Plant, which significantly impacted its Quarter 2 performance [17-20]. Additionally, recent incidents at the Bhilai plant physically impacted operations and halted production for around 15 to 16 days [17, 19, 21, 22]. * <strong>Sarda Energy &amp; Minerals Limited</strong> experienced lower generation volumes and profitability due to the annual maintenance shutdown of its Independent Power Plant (IPP) and the shutdown of a captive power plant unit for equipment replacement [11, 13, 23, 24]. Hydro power generation also suffered from seasonal dips [11, 13]. * <strong>JSW Steel</strong> had to shut down Blast Furnace-3 (BF-3) at Vijayanagar for capacity upgradation starting in September 2025, which dragged down crude steel production and overall capacity utilization rates for its Indian operations [25].</p>
+<p><strong>Structural, Labor, and Competitive Disadvantages</strong> Some legacy steelmakers grapple with structural cost disadvantages compared to their industry peers. For instance, SAIL noted a <strong>sizable cost disadvantage regarding margins and basic costs</strong>, a gap it hopes to eventually narrow through future incremental volumes from massive expansion projects [26, 27]. Labor costs are another significant factor, with companies managing large rosters of legacy employees—such as SAIL’s workforce of around 50,000 personnel—though this burden is gradually being reduced through natural attrition [28, 29]. Furthermore, impending mandatory salary and wage revisions, along with changing discount rates for employee benefits, add layers of financial unpredictability to operating costs [28-31].</p>
+<p><strong>Broader Macroeconomic and Regulatory Risks</strong> Looking at the broader risk landscape, the industry remains cautious of macroeconomic threats including potential reductions in overall demand for steel and power, time and cost overruns on major fixed-price contracts, and intense competition that threatens existing cost advantages [32, 33]. Other highlighted forward-looking risks include potential <strong>wage increases across India, the withdrawal of governmental fiscal incentives, and political instability</strong>, all of which could disrupt operational stability, alter trade flows, and hinder long-term growth trajectories [32].</p>
+<p><em><a href="footnote/Iron%20&amp;%20Steel.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry" class="section level3">
+<h3><strong>What are the key things to understand about this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The global and domestic steel industry is currently shaped by a combination of macroeconomic trends, evolving trade policies, and an aggressive push toward sustainability and technological advancement</strong> [1, 2]. While global markets have faced headwinds, the Indian steel sector is experiencing a period of significant growth and transformation.</p>
+<p>Here are the key aspects to understand about the industry:</p>
+<p><strong>1. Strong Domestic Growth Defying Global Contractions</strong> India stands out positively in the global steel market. While major producers like China have seen steel production fall to multi-year lows, India’s crude steel production recently grew by over 10% [3, 4]. Indian steel consumption is robust, supported by sustained infrastructure spending and steady manufacturing activity, with crude steel production growth outpacing consumption [1, 2, 5, 6]. Furthermore, the imposition of safeguard duties has meaningfully altered trade dynamics, helping India transition back into a net exporter after six consecutive quarters of being a net importer [5, 6].</p>
+<p><strong>2. The Rise of Stainless Steel as the “Green Wonder Metal”</strong> Stainless steel is currently the fastest-growing metal globally, boasting a 5.4% growth rate compared to carbon steel’s 2.5% [7]. It is highly valued for being a low-maintenance, aesthetically pleasing, and highly durable metal with excellent corrosion resistance and recyclability, earning it the title of a “Green Wonder Metal” [8]. <strong>India’s per capita consumption of stainless steel is only 3.3 kg, which is well below the global average of 5.5–6 kg and China’s 20.1 kg</strong> [9]. This gap highlights a massive runway for exponential growth, with domestic stainless steel consumption projected to grow at a Compound Annual Growth Rate (CAGR) of 8% to 9% leading up to 2030 [10].</p>
+<p><strong>3. Diverse Applications and Policy-Driven Demand</strong> The industry supplies a wide array of sectors, heavily weighted toward Architecture Building Construction (ABC), Automobile, Railway &amp; Transport (ART), Process &amp; Engineering, and Consumer Durables [11]. <strong>Government initiatives are acting as massive catalysts for steel demand.</strong> Key developments include: * <strong>Infrastructure Mandates:</strong> The Ministries of Road Transport and Highways (MoRTH) and Railways now explicitly require the use of stainless steel for reinforced bridges in marine and coastal areas to prevent corrosion and ensure long-term structural integrity [12]. * <strong>Mega Projects:</strong> The development of 100 PM GatiShakti Cargo terminals for multimodal logistics and massive investments in railway station redevelopment (e.g., 1,275 stations) are driving massive volume requirements [13, 14]. * <strong>Emerging Sectors:</strong> There is progressive potential in new applications like green hydrogen storage tanks, nuclear fission reactors, and aerospace infrastructure [13, 15].</p>
+<p><strong>4. Aggressive Push for Decarbonization and ESG Goals</strong> The steel industry is heavily energy-intensive, and <strong>the transition to “green steel” is a paramount focus for future viability.</strong> * <strong>Government Support:</strong> The Union Budget has allocated INR 20,000 crores toward carbon capture, utilization, and storage to support the adoption of greener technologies in the steel and cement sectors [16, 17]. * <strong>Corporate Commitments:</strong> Major players are adopting electric arc furnaces that utilize steel scrap, allowing for recyclability without compromising quality while significantly lowering greenhouse gas emissions [18, 19]. Companies like JSW Steel have committed to powering their steel-making operations entirely by renewable energy by 2030, aiming for a 42% reduction in CO2 emissions by 2030, and targeting net-neutral carbon emissions by 2050 [20].</p>
+<p><strong>5. Operational Optimization and Industry Consolidation</strong> To remain competitive and meet surging demand, companies are investing heavily in both capacity expansion and operational efficiency [21, 22]. * <strong>Maximizing Finished Goods:</strong> Manufacturers are actively shifting their product mix to maximize the output of finished products over semi-finished goods (semis) through conversion contracts and the commissioning of new finishing mills [23, 24]. * <strong>Mergers and Acquisitions (M&amp;A):</strong> Strategic consolidations are occurring to secure raw materials and achieve business synergies. For example, Tata Steel’s amalgamation with NINL allows it to absorb fully mechanized captive iron ore mines, which improves raw material security, reduces order management costs, and optimizes production planning [25-27]. * <strong>Strategic Market Balancing:</strong> Companies maintain a deliberate balance between feeding domestic demand and servicing export markets to preserve long-term relationships and ensure market price stability, despite the longer payment cycles (typically around 21 days) associated with international trade [28-31].</p>
+<p><em><a href="footnote/Iron%20&amp;%20Steel.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the tailwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Robust Domestic Demand and Infrastructure Spending</strong> The Indian steel industry is currently experiencing exceptionally strong domestic demand, driven by sustained government investments in construction and infrastructure activities [1]. Domestic steel consumption has grown by nearly 7% over the previous year, reaching approximately 160 million tons, while India’s crude steel production has expanded by over 10%, standing out positively even as global markets like China have recorded contractions [2-6]. This demand is heavily supported by a massive Union Budget infrastructure allocation of INR 12 lakh crores [7, 8]. Key mega-projects acting as major tailwinds include the transformation of 508 railway stations under the Amrit Bharat Station Scheme with a ₹25,000 crore investment, the completion of 25,000 kilometers of national highways, and the addition of 50 new airports [9]. Furthermore, the construction of 8 million houses under the Awas Yojna plan, ₹10,000 crore earmarked for urban infrastructure in Tier 2 and Tier 3 cities, and the development of 100 PM GatiShakti Cargo terminals will require massive volumes of steel [9, 10].</p>
+<p><strong>Favorable Trade Dynamics and Government Policies</strong> The implementation of safeguard duties has meaningfully altered trade dynamics, shifting India back to being a net exporter of steel after six consecutive quarters of net imports [4, 6]. Driven by these protective duties, steel exports surged by around 33% to 4.8 million tonnes, while imports dropped by about 37% [11, 12]. Going forward, the signing of free trade agreements with major global markets, including the European Union and the United States, is expected to further support export volumes and enhance broader economic activity over the medium term [13, 14].</p>
+<p><strong>Regulatory Support for Specialized Steel Categories</strong> There is a growing regulatory push that specifically benefits the stainless steel and value-added steel segments. The Ministries of Road Transport and Railways have introduced mandates requiring the use of stainless steel for reinforced bridges in marine and government projects to prevent corrosion and maintain long-term structural strength [15]. Additionally, the Indian Railway Standard Code of Practice for General Bridge Construction has been updated to allow the use of high-strength deformed stainless steel bars and wires as concrete reinforcement, particularly in coastal areas and extreme environmental conditions [15].</p>
+<p><strong>Green Transition and Technological Incentives</strong> Sustainability initiatives and decarbonization efforts are unlocking new opportunities and efficiencies for steelmakers. The Union Budget allocated INR 20,000 crores toward carbon capture, utilization, and storage (CCUS) projects, which will incentivize technological upgrades and the adoption of greener technologies in energy-intensive sectors like steel [16-19]. Furthermore, forward-looking policies such as the National Coal Gasification Mission are accelerating the adoption of clean coal technologies [20]. These policies allow steel producers to utilize domestic “swadeshi” coal reserves to produce synthesis gas (syngas), directly replacing imported coking coal, lowering carbon emissions per tonne, and significantly boosting export competitiveness and energy self-reliance [20-23].</p>
+<p><strong>Expansion of Manufacturing and Automotive Sectors</strong> The continued expansion of India’s broader manufacturing base is acting as a steady pillar of support for economic activity and steel consumption [24, 25]. In particular, government policies aimed at replacing old, polluting municipal and government vehicles will stimulate the automotive manufacturing sector [10]. This anticipated boom in auto manufacturing will, in turn, directly translate into increased demand for flat steel and specialized automotive steel products across the country [10].</p>
+<p><em><a href="footnote/Iron%20&amp;%20Steel.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry" class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The general outlook for the steel industry is highly optimistic, particularly within the Indian market, which is demonstrating significant resilience and growth despite a contracting global landscape.</strong> Globally, economic certainties and volatilities are stabilizing, with steady inflation and improved GDP projections forecasting a resilient global growth rate of 3.3% in 2026 and 3.2% in 2027 [1, 2]. Against this backdrop, the Indian steel sector is experiencing a sustained boom driven by domestic demand, infrastructure spending, and favorable policy shifts.</p>
+<p><strong>Robust Domestic Demand and Production Growth</strong> In calendar year 2025, India stood out positively against global markets by growing its crude steel production by over 10%, even as countries like China saw production fall to a 6-year low [3, 4]. The Indian economy’s projected growth rate has been revised upwards to between 6.4% and 7.3%, translating into massive industrial activity [1, 2].</p>
+<p><strong>The Indian steel industry continues to enjoy robust demand</strong>, with nine-month consumption growing by almost 7% [5, 6]. Overall domestic consumption reached approximately 160 million tons, heavily supported by sustained government infrastructure spending—including a massive INR 12 lakh crore push for construction and infrastructure—and steady manufacturing activity [7-12]. This momentum has led to a crude steel production growth of around 9.5%, which successfully <strong>turned India back into a net exporter of steel</strong> after several consecutive quarters of being a net importer, with exports growing by 33% to 4.8 million tonnes [7, 9, 13, 14].</p>
+<p><strong>Pricing Dynamics and Input Costs</strong> While steel prices touched multi-year lows earlier in the year, they saw a sharp recovery of 10% to 15% towards the end of December due to improving market sentiment and tighter domestic supply conditions [15-18].</p>
+<p>On the cost front, steelmakers are facing a push from rising imported coking coal prices, which surged to a spot index price of around $251 per ton [19-22]. Despite this cost inflation, <strong>industry margins and profitability are expected to remain positive and healthy.</strong> The rising costs are being effectively nullified by higher production volumes, improved operational efficiencies, inventory reductions, and concurrent increases in steel sales prices [23-28]. Furthermore, industry experts anticipate that international coal prices will eventually stabilize and taper down as supply conditions improve [29, 30].</p>
+<p><strong>Exponential Growth in the Stainless Steel Segment</strong> The outlook for value-added and specialized products, such as stainless steel, is particularly exceptional. <strong>India’s stainless steel consumption is poised for exponential growth, projected to rise at a CAGR of 8-9%</strong> to reach 7.4 million tonnes per annum by 2030 [31]. Historically, stainless steel consumption grows at a significant multiplier to GDP growth (estimated at 1.6x for India) [32].</p>
+<p>This surge is being driven by massive demand across diversified sectors such as Architecture, Building &amp; Construction (ABC), Automobile, Railway &amp; Transport (ART), and Process Industries [33]. Furthermore, new territories for consumption are rapidly opening up. Infrastructure projects like foot over bridges, road over bridges, railway stations, and airports are increasingly adopting stainless steel for its corrosion resistance and low life-cycle cost [34, 35]. Emerging green sectors, including ethanol production (targeted at 20% blending by 2025), green hydrogen, water treatment, and nuclear energy, will require massive volumes of stainless steel, acting as a major catalyst for future demand [36-38].</p>
+<p><strong>Sustainability and Clean Technology Shift</strong> A defining trend for the future of the industry is the aggressive pivot toward sustainability, decarbonization, and clean energy. <strong>The Union Budget has allocated INR 20,000 crores toward carbon capture, utilization, and storage</strong>, reinforcing long-term policy commitments to greener technologies in energy-intensive sectors like steel [15, 17].</p>
+<p>Major steel players are actively transitioning to lower-carbon metal production. This includes scaling up electric arc furnaces (EAF) that utilize scrap metal to significantly lower greenhouse gas emissions, and committing to Net Zero carbon emission targets by 2045-2050 [39-43]. Additionally, government policies such as Production Linked Incentives (PLI) for solar modules and the mandatory replacement of old, polluting municipal vehicles are expected to directly boost the domestic manufacturing sector and, consequently, the demand for steel [44].</p>
+<p>In summary, the industry outlook is highly positive, characterized by an imminent scale-up in domestic infrastructure, a transition toward high-margin specialized products, and a strategic transformation toward sustainable, green steelmaking.</p>
+<p><em><a href="footnote/Iron%20&amp;%20Steel.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

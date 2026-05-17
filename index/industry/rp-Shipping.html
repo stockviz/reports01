@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-05-15" />
+
+<title>Shipping</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Shipping</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">May 15, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Shipping.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Shipping.fan.CAP_WT.png" /></p>
+<p><img src="plots/Shipping.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Shipping.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Shipping.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Shipping.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Shipping.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-0d34611a6cfabc747d72" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0d34611a6cfabc747d72">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-1.65%","1.06%"],["6.91%","8.31%"],["10.84%","18.92%"],["16.7%","33.41%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Shipping.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Shipping.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-b45583bfeb9919aac2df" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b45583bfeb9919aac2df">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.GESHIP.html\" target=\"_blank\">GESHIP<\/a>","<a href=\"/reports02/eq-in/risk/in.SCI.html\" target=\"_blank\">SCI<\/a>","<a href=\"/reports02/eq-in/risk/in.SHREEJISPG.html\" target=\"_blank\">SHREEJISPG<\/a>","<a href=\"/reports02/eq-in/risk/in.SEAMECLTD.html\" target=\"_blank\">SEAMECLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.ESSARSHPNG.html\" target=\"_blank\">ESSARSHPNG<\/a>","<a href=\"/reports02/eq-in/risk/in.TRANSWORLD.html\" target=\"_blank\">TRANSWORLD<\/a>"],[0.6641970117684981,0.2502492406905724,0.03083338474702877,0.04450511695791982,0.00600972120095913,0.004205524635021795],[0.4427216636530135,0.3189210414553054,0.1422111520557524,0.07871624614870101,0.01056380063883624,0.006866096048391491]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-bec89b5ed94f552a371f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bec89b5ed94f552a371f">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.GESHIP.html\" target=\"_blank\">GESHIP<\/a>","<a href=\"/reports02/eq-in/risk/in.SCI.html\" target=\"_blank\">SCI<\/a>","<a href=\"/reports02/eq-in/risk/in.SHREEJISPG.html\" target=\"_blank\">SHREEJISPG<\/a>","<a href=\"/reports02/eq-in/risk/in.SEAMECLTD.html\" target=\"_blank\">SEAMECLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.ESSARSHPNG.html\" target=\"_blank\">ESSARSHPNG<\/a>","<a href=\"/reports02/eq-in/risk/in.TRANSWORLD.html\" target=\"_blank\">TRANSWORLD<\/a>"],[88.674774135466,0.4145367462247621,4.890767747714924,0.03989922224541936,1.081689136781131,0.007654746433779084],[93.38148348944733,0.158141840701032,3.911917054479183,0.03185768062052287,0.2770367589866669,null],[98.80737607360319,0.2345473341330628,0.6304060525034786,0.0447510341183697,0.2844521091551434,-0.001532603513242709]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-bf1e0bf4ec45cd489f68" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bf1e0bf4ec45cd489f68">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.GESHIP.html\" target=\"_blank\">GESHIP<\/a>","<a href=\"/reports02/eq-in/risk/in.SCI.html\" target=\"_blank\">SCI<\/a>","<a href=\"/reports02/eq-in/risk/in.SHREEJISPG.html\" target=\"_blank\">SHREEJISPG<\/a>","<a href=\"/reports02/eq-in/risk/in.SEAMECLTD.html\" target=\"_blank\">SEAMECLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.ESSARSHPNG.html\" target=\"_blank\">ESSARSHPNG<\/a>","<a href=\"/reports02/eq-in/risk/in.TRANSWORLD.html\" target=\"_blank\">TRANSWORLD<\/a>"],[89.55119966761406,0.9881074228756389,6.262030431725962,0.08170380543467604,-1.765397553562915,0.03989372460187911],[92.81743280680563,0.4897768821538203,5.981646532268321,0.08292274923997887,-1.261490306496566,null],[99.69318147384071,0.5443182333085109,1.01491101947896,0.08030873688686313,-1.377010411847215,0.04429094833216897]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time" class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over time?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The challenges and opportunities in the shipping and offshore logistics industry have evolved significantly over time, transitioning from a period of prolonged downturn and low rates to a current environment characterized by strong demand, tight supply, and high asset prices.</p>
+<p><strong>Evolution of Opportunities</strong></p>
+<ul>
+<li><strong>Market Recovery from a Low Base:</strong> For a long time, charter rates in segments like offshore support vessels (OSVs) were extremely low [1, 2]. However, over the past few years, these rates have doubled and held steady, driven by a constrained supply of vessels and a renewed demand for offshore oil exploration [1-4]. Similarly, the jack-up rig market is recovering; for example, Saudi Aramco, which suspended contracts for several rigs two years ago, is now calling them back, tightening the market and improving utilization rates [5-10].</li>
+<li><strong>Shifting Global Trade Dynamics:</strong> Trade routes and demand drivers have evolved. Increased oil production from South American countries like Guyana and Brazil—which produced about 1 million barrels a day more year-over-year—has boosted the crude tanker market [11, 12]. Additionally, U.S. LPG exports have shifted toward Southeast Asia via the Panama Canal, increasing travel distances (ton-miles) and thereby driving up spot earnings [13, 14].</li>
+<li><strong>Capitalizing on Geopolitical Inefficiencies:</strong> The Russia-Ukraine war and subsequent sanctions initially removed Russian trade and vessels from the international fleet [15, 16]. Recently, as sanctions have tightened on vessels, individuals, and refineries, Russian crude has struggled to find destinations, forcing international buyers to source oil from the Middle East and South America, which has further lifted the crude tanker market [17-20].</li>
+<li><strong>Domestic Resilience and Diversification:</strong> While global container freight markets have seen a 33% decline in spot rates year-over-year, the Indian coastal container trade has remained resilient due to stable domestic consumption and infrastructure initiatives [21]. Companies are also finding new growth avenues by diversifying into port-led services like floating cranes [22], expanding into long-term mine developer and operator contracts [23], and transitioning toward green shipping by contracting Methanol Dual Fuel vessels [24].</li>
+</ul>
+<p><strong>Evolution of Challenges</strong></p>
+<ul>
+<li><strong>The Aging Fleet and High Replacement Costs:</strong> Due to historically low ordering of new ships and minimal scrapping over the past decade (only 8% to 12% of the fleet scrapped over a 10-year period), the global fleet has aged significantly [25-30]. This presents a major operational challenge. For instance, vessels approaching 30 years of age suffer from recurring machinery and structural issues, leading to extended layups and sharply rising maintenance costs that erode company reserves [31]. In the offshore sector, vessels often face strict operational age limits of 15 to 21 years [32, 33].</li>
+<li><strong>The “Catch-22” of Capital Deployment:</strong> While older ships urgently need replacing, the current high asset prices make doing so commercially unviable [31]. Ship prices have surged heavily compared to five years ago, meaning companies risk massive capital depreciation if they buy at today’s peak prices and the market subsequently drops [34, 35]. Furthermore, the second-hand market suffers from low liquidity, making it difficult to find suitable, modern vessels [36-39].</li>
+<li><strong>Financial Drag from Cash Hoarding:</strong> Because of the unviability of buying new vessels at peak prices, companies that sold older assets have accumulated massive cash reserves (e.g., over $500 million) [40, 41]. While this protects against market downturns, holding large amounts of cash earning low interest acts as a significant drag on overall return ratios compared to the 10%+ current yields that active ships are generating [42-47].</li>
+<li><strong>Macroeconomic and Financial Distress:</strong> The broader market environment remains fragile due to uneven consumer spending and geopolitical tensions, which heavily impacts container freight [48]. Additionally, prolonged industry volatility has left some companies with severely eroded net worths, forcing them to sell off core assets and investments to settle debts and survive ongoing legal and liquidation proceedings [49-51].</li>
+</ul>
+<p><em><a href="footnote/Shipping.1.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the headwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Macroeconomic and Geopolitical Uncertainties</strong> The broader global shipping environment remains fragile, heavily influenced by macroeconomic uncertainties in major economies, uneven consumer spending patterns, and ongoing geopolitical tensions [1]. Furthermore, international sanctions—particularly tighter restrictions on Russian trade that target vessels, individuals, and refineries—have disrupted international trading fleets and forced a re-routing of crude oil, causing trade inefficiencies [2-5].</p>
+<p><strong>Freight Rate Volatility and Supply Gluts</strong> Certain shipping segments are experiencing significant volatility and downward pressure on rates [1]. In the container freight market, box rates have dropped substantially over the past year, with benchmarks like the Shanghai Containerized Freight Index (SCFI) experiencing a 33% decline year-over-year [6-8]. Looking ahead, a strong influx of new fleet supply in the container sector threatens to push tonnage rates and asset values down even further [9, 10].</p>
+<p><strong>Aging Fleets and Escalating Operational Costs</strong> The industry is dealing with a massive “scrapping overhang.” Scrapping has been minimal for the last 10 years, with only about 8% to 12% of the fleet being scrapped during that entire period [11-14]. For companies operating older vessels—such as container ships approaching 30 years of age—this translates to severe operational headwinds. These aging fleets necessitate enhanced maintenance, causing direct operating expenses to rise very sharply [15]. Recurring machinery and structural issues have caused severe service disruptions and forced vessels into extended layups, which heavily erodes financial reserves through high repair costs [15].</p>
+<p><strong>Prohibitive Replacement Costs and Capital Constraints</strong> Despite the urgent need to replace aging fleets, exorbitant ship prices are making fleet modernization and capacity expansion commercially unviable [15]. Both secondhand and newbuilding prices are highly inflated; for instance, new LNG ships can cost up to $250 million each [16, 17]. Because asset prices are currently so high, the yield or return on investment for purchasing ships at today’s rates is poor, making operators extremely hesitant to deploy capital [18-21]. Furthermore, acquiring suitable modern assets in specialized sectors, such as offshore vessels, is highly constrained due to a severe lack of new ship deliveries over the last 7 to 8 years [22, 23].</p>
+<p><strong>Strict Regulatory and Seasonal Challenges</strong> Older vessels must undergo expensive statutory surveys to continue trading [24, 25]. Specialized offshore vessels face even stricter age limits (typically restricted to 15 to 21 years globally) and high safety requirements due to the complex and sensitive nature of their operations [26-29]. Additionally, regional operations suffer from seasonal headwinds, such as lower revenues during the first half of the financial year due to monsoon-related restrictions at certain ports [30].</p>
+<p><strong>Severe Corporate Financial Distress</strong> At an individual corporate level, some operators are facing existential financial headwinds characterized by eroded net worth, consecutive operational losses, and current liabilities vastly exceeding current assets [31-34]. Issues such as the termination of key management agreements that served as major revenue streams, combined with pending legal proceedings and the inability to pay creditors, actively jeopardize their ability to maintain operations as a going concern [31-34].</p>
+<p><em><a href="footnote/Shipping.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry" class="section level3">
+<h3><strong>What are the key things to understand about this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Segment-Specific Market Dynamics</strong> The shipping industry is currently experiencing distinct trends across its various sub-sectors: * <strong>Crude and Product Tankers:</strong> The crude tanker market has been strong, largely driven by OPEC opening its taps and an influx of oil production from non-OPEC regions like South America (specifically Guyana and Brazil) [1]. Much of this non-OPEC oil has been going into inventory or floating storage [1]. Product tanker markets have also seen recoveries, with vessels occasionally switching between product and crude trades (e.g., LR2 vessels switching to Aframax trades), which tightens the supply and pushes up rates [1, 2]. * <strong>Dry Bulk:</strong> This segment has demonstrated resilience and strength, particularly for Capesize and Handysize vessels [3, 4]. The strength is supported by tighter vessel availability and healthy cargo movements of commodities like iron ore, fertilizers, and grains into countries like China and India [3-5]. * <strong>Container Freight:</strong> Global container markets are highly volatile and currently fragile, influenced by geopolitical tensions, uneven consumer spending, and macroeconomic uncertainties [6]. Benchmarks like the Shanghai Containerized Freight Index (SCFI) have seen significant year-over-year declines [6]. However, certain regional pockets, such as the Indian coastal container trade, remain resilient due to strong domestic consumption and infrastructure growth [6].</p>
+<p><strong>Supply Constraints: Aging Fleets, Low Order Books, and Scrapping</strong> * <strong>Low Order Books:</strong> The industry is dealing with historically low new vessel orders. While the order book is slowly creeping up (currently around 17% for crude tankers, 19% for product tankers, 12.5% for dry bulk, and 29% for LPG), it remains relatively low compared to past cycle peaks [3, 5, 7, 8]. In the offshore space, the order book is exceptionally low, with very few ships delivered since 2016 [9-11]. * <strong>Minimal Scrapping:</strong> Scrapping rates are exceptionally low, with only about 8% to 12% of the fleet being scrapped over a 10-year period [8]. Shipowners tend to keep older vessels running and pay for expensive mandatory surveys (dry docking) because the strong freight rates easily cover these operating costs [12, 13]. * <strong>Aging Fleets and Asset Prices:</strong> Due to low scrapping and limited new vessel deliveries, a significant portion of the global fleet is old (e.g., 24% of the crude tanker fleet is over 20 years old) [8, 14]. Operating vessels approaching 30 years of age results in sharply rising maintenance costs, structural issues, and service disruptions [15]. However, replacing aging vessels is currently difficult because second-hand asset prices are very high, making acquisitions commercially unviable for some operators [15]. As a result, some cash-rich companies prefer to hold their reserves and wait for a market downturn to invest, rather than buying expensive assets at the peak of the cycle [16-19].</p>
+<p><strong>Geopolitical Impacts and the “Dark Fleet”</strong> Geopolitical events, particularly the war involving Russia and subsequent sanctions, have fundamentally altered global shipping [20, 21]. Stricter sanctions have forced Russian crude to find new destinations, causing international trading fleets to cover the gap with longer voyages (higher ton-miles) from alternative regions [22, 23]. Furthermore, these sanctions have created a parallel market where older tankers are absorbed into sanctioned trades (often referred to as the “dark fleet”), keeping older vessels highly active instead of being scrapped [20, 24].</p>
+<p><strong>The Offshore Sector</strong> The offshore support vessel and jack-up rig markets are experiencing a strong tightening of supply [25, 26]. * <strong>Healthy Utilization:</strong> Market utilization for offshore vessels is around 65% to 66%, and jack-up rigs are at about 84% to 85%, which are considered very healthy levels close to historical peaks [27-29]. This demand is driven by a renewed focus on offshore oil exploration as onshore shale oil production begins to plateau [30-32]. Major players like Saudi Aramco have also started recalling previously suspended rigs, further tightening the market [25, 33-35]. * <strong>High Barriers to Entry:</strong> Entering the offshore business is complex and capital-intensive. Vessels perform highly specialized and sensitive activities, requiring specific equipment, a proven track record to win tenders, and strict adherence to safety standards and age limits (often restricted to 15 to 21 years) [11, 36-39].</p>
+<p><strong>Operational and Future Trends</strong> * <strong>Green Shipping:</strong> The industry is beginning to transition toward alternative, environmentally friendly fuels. For example, Indian shipping companies are constructing Methanol Dual Fuel Platform Supply Vessels to support green shipping under initiatives like the National Green Hydrogen Mission [40]. * <strong>Seasonality and Maintenance:</strong> Shipping operations are subject to seasonal fluctuations, such as monsoon-related port restrictions that can impact revenues during certain parts of the year [41]. Additionally, vessels must undergo routine statutory drydocking, which temporarily removes them from active service and requires strategic planning [42].</p>
+<p><em><a href="footnote/Shipping.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the tailwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The crude and product tanker markets</strong> are experiencing several significant tailwinds driven by shifts in global oil production and geopolitical factors: * <strong>Increased Oil Production and Cargo Volumes:</strong> The market has been lifted by OPEC opening its taps, which has resulted in a higher volume of crude cargoes needing transport [1, 2]. Additionally, South American nations, specifically Guyana and Brazil, have boosted their production by approximately 1 million barrels per day, introducing a massive new supply of oil into the international market that requires shipping [1-4]. * <strong>Geopolitical Sanctions and Trade Inefficiencies:</strong> Tighter sanctions on Russian oil and refineries have disrupted traditional trade flows [5, 6]. Because some Russian crude is struggling to find a destination—partly due to pressure on countries like India to reduce their intake—the resulting supply gap must be met by the international trading fleet sourcing oil from the Middle East and South America [3-6]. This displacement creates inefficiencies and longer voyages, significantly tightening the market and driving up freight rates [7-10]. * <strong>Constrained Vessel Supply:</strong> The order book for new crude and product tankers remains historically low, hovering around 16% to 19% [11-14]. At the same time, scrapping of older vessels has been very minimal over the last decade, leading to a restricted supply of available modern ships [12, 14-16].</p>
+<p><strong>The dry bulk shipping sector</strong> is benefiting from robust commodity demand and regional market tightness: * <strong>Surge in Iron Ore and Grain Trades:</strong> The market has seen unseasonal strength, particularly in the Capesize sector, driven by a substantial growth in iron ore shipments [17, 18]. China imported approximately 40 million more tons of iron ore, much of which was used to aggressively stock up port inventories [17-20]. The global grain trade has also seen healthy growth, leading to marginally higher asset prices for bulk carriers [19, 20]. * <strong>Regional Coastal Demand:</strong> On the Indian coast, the dry bulk segment—particularly the Baltic Handysize Index (BHSI)—has sustained an upward trajectory [21]. This is supported by tighter vessel availability and strong cargo movements driven by increased demand for fertilizers, food grains, and minor bulk commodities [21].</p>
+<p><strong>The LPG (Liquefied Petroleum Gas) shipping market</strong> is being bolstered by changing trade routes: * <strong>Increased Ton-Miles:</strong> While overall trade volumes saw a dip, spot earnings have remained strong due to an increase in “ton-miles” [19, 20]. United States LPG exports are increasingly being routed to Southeast Asia rather than going to China via the Panama Canal [19, 20]. This routing requires vessels to travel significantly longer distances, keeping ships tied up for longer periods and supporting high earnings [19, 20].</p>
+<p><strong>The offshore support vessel (OSV) and jack-up rig industry</strong> is currently in a highly lucrative cycle characterized by a widening demand-supply gap: * <strong>The Peaking of Onshore Shale Oil:</strong> Over the last decade, the massive growth in US onshore shale oil absorbed much of the world’s incremental oil demand, suppressing offshore exploration [22, 23]. However, shale oil production is now peaking out, and attempts to replicate the shale boom in other countries have largely failed [24, 25]. With global oil demand continuing to hold strong, oil majors are being forced to return to offshore fields to meet the supply gap, creating a massive resurgence in demand for offshore vessels and rigs [24-27]. * <strong>Return of Major Players like Saudi Aramco:</strong> Following a period where Saudi Aramco suspended contracts for numerous rigs, the company has reversed its policy and is actively calling back suspended rigs and contracting additional jack-up rigs [28-33]. This has pushed jack-up rig utilization rates to around 84-85%, close to historical peaks [34, 35]. * <strong>Severe Supply-Side Constraints:</strong> The offshore fleet is aging, and there has been virtually no new shipbuilding in the sector for the last 7 to 10 years [36-41]. Furthermore, out of the existing fleet, between 500 and 700 ships are sitting in “cold layup” (long-term storage) [42, 43]. Because it would require astronomical capital to refurbish and reactivate these older, laid-up ships, they are effectively removed from the operational supply pool, keeping the active fleet heavily constrained and utilization rates high [42-45]. * <strong>High Barriers to Entry:</strong> Because the market lacks liquidity for modern secondhand ships, new competitors cannot easily buy their way into the market [38, 41, 46, 47]. Additionally, private charterers prioritize incumbent operators with proven safety and operational track records, further insulating existing players from new competition [46-49].</p>
+<p><strong>The Indian coastal container trade</strong> is experiencing localized tailwinds: * <strong>Domestic Growth and Policy Support:</strong> This specific segment is demonstrating resilience due to stable domestic consumption, strong momentum in infrastructure development, and specific regulatory initiatives that are actively encouraging a modal shift of freight toward coastal shipping [21].</p>
+<p><em><a href="footnote/Shipping.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry" class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The general outlook for the shipping and logistics industry is <strong>steady yet cautiously optimistic, characterized by strength in crude, dry bulk, and offshore segments, alongside volatility and fragility in the global container market</strong> [1]. Market dynamics are heavily influenced by shifting geopolitical trade routes, constrained vessel supply, and specific regional demand [1-4].</p>
+<p><strong>Crude and Product Tankers</strong> The outlook for the crude tanker market is <strong>strong, driven by increased cargo movements and market tightness</strong> [5, 6]. OPEC’s decision to open taps, along with increased oil production from South American countries like Guyana and Brazil, has led to more crude cargoes being carried and stored [5, 7]. Furthermore, <strong>tightening sanctions on Russian oil have altered traditional trade routes</strong>, forcing buyers to source oil from the international trading fleet (such as the Middle East and South America), which has significantly lifted the market [3, 6, 8]. On the supply side, the order book for crude tankers sits at around 16% to 17%, while 24% of the existing fleet is old, indicating a constrained supply [9, 10]. Scrapping remains very minimal as strong rates encourage owners to maintain older vessels [10-12].</p>
+<p>Product tankers have also seen a recovery [5]. The market has tightened further due to the <strong>switching of certain vessels (like LR2s) from the product trade to the more lucrative crude Aframax trade</strong>, pushing up rates for the remaining product tankers [13].</p>
+<p><strong>Dry Bulk</strong> The dry bulk segment has demonstrated <strong>surprising and continued strength, supported by tighter vessel availability and healthy cargo movements</strong> [4, 9]. The Capesize sector experienced unusual strength even during historically weak seasonal quarters [9]. This growth is fueled by substantial increases in iron ore imports into China (largely for inventory stocking) and a growth in the grain trade [9, 14]. The Baltic Handysize Index (BHSI) sustained an upward trajectory due to the movement of commodities like fertilizers, food grains, and minor bulk, which improved vessel utilization levels and firmed up rates [4]. Companies operating in the dry bulk space expect <strong>strong performance to continue, supported by long-term contracts and diverse service offerings</strong> that help manage seasonal fluctuations [15].</p>
+<p><strong>Offshore Support Vessels (OSVs) and Jack-up Rigs</strong> The offshore market is experiencing a <strong>solid recovery due to a significant demand-supply gap</strong> [16, 17]. On the demand side, major players like Saudi Aramco are returning to the market to procure more jack-up rigs, which is tightening the market and increasing utilization [16, 18-20]. Market utilization for jack-up rigs is strong at around 84% to 85% [21].</p>
+<p>For Offshore Support Vessels, <strong>supply is relatively constrained due to a very low order book and an aging fleet</strong> [22, 23]. There has been little to no major capacity expansion in recent years, and a large number of vessels in “cold layup” are unlikely to return to operations without substantial investments [22, 24-26]. As a result, OSV utilization is at a healthy 65% to 66% (compared to historical peaks of 70% to 72%), and <strong>charter rates have remained strong and stable</strong> [27-29].</p>
+<p><strong>Container Shipping</strong> The global container shipping market faces a <strong>fragile and volatile environment</strong> [1]. The Shanghai Containerized Freight Index (SCFI) saw a 33% year-over-year decline by the end of 2025 [4]. While there has been intermittent rate support on Transpacific routes due to year-end U.S. import demand and port bottlenecks in East Asia, the broader market is pressured by geopolitical tensions, uneven consumer spending, and macroeconomic uncertainties [1]. While charter rates paid to tonnage providers by major liners have remained unusually strong recently, the <strong>future fleet supply on the container side is very strong</strong>, which could potentially drive rates and asset values down in the future [30, 31].</p>
+<p>However, the <strong>Indian coastal container trade has shown notable resilience</strong>, supported by stable domestic consumption, strong infrastructure momentum, and regulatory initiatives encouraging coastal shipping [4].</p>
+<p><strong>LPG / Gas Carriers</strong> The LPG sector has seen <strong>strong spot earnings, primarily driven by increased ton-miles</strong> rather than raw volume growth [14]. U.S. exports have increasingly routed to Southeast Asia instead of taking the shorter path to China via the Panama Canal, which increases the distance traveled and supports earnings [14]. Asset prices in this sector remain flat but at very high levels, though the <strong>future order book is exceptionally high at 29%</strong>, which is a unique metric compared to other shipping segments [10, 32].</p>
+<p><em><a href="footnote/Shipping.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

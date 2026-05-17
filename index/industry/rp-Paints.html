@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-05-15" />
+
+<title>Paints</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Paints</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">May 15, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Paints.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Paints.fan.CAP_WT.png" /></p>
+<p><img src="plots/Paints.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Paints.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Paints.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Paints.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Paints.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-988ff186422c5753ca50" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-988ff186422c5753ca50">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["3.24%","5.1%"],["9.68%","11.83%"],["2.2%","5.97%"],["-6.19%","3.92%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Paints.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Paints.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f37e36150f67a09366d1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f37e36150f67a09366d1">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.ASIANPAINT.html\" target=\"_blank\">ASIANPAINT<\/a>","<a href=\"/reports02/eq-in/risk/in.BERGEPAINT.html\" target=\"_blank\">BERGEPAINT<\/a>","<a href=\"/reports02/eq-in/risk/in.KANSAINER.html\" target=\"_blank\">KANSAINER<\/a>","<a href=\"/reports02/eq-in/risk/in.JSWDULUX.html\" target=\"_blank\">JSWDULUX<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIGOPNTS.html\" target=\"_blank\">INDIGOPNTS<\/a>","<a href=\"/reports02/eq-in/risk/in.SIRCA.html\" target=\"_blank\">SIRCA<\/a>","<a href=\"/reports02/eq-in/risk/in.SHALPAINTS.html\" target=\"_blank\">SHALPAINTS<\/a>","<a href=\"/reports02/eq-in/risk/in.KAMOPAINTS.html\" target=\"_blank\">KAMOPAINTS<\/a>"],[0.8091248795430672,0.1050712054430239,0.03052712928153307,0.03463138956753961,0.01471078033892215,0.004596260300764231,0.0007234575380693034,0.0006148979870804486],[0.711343903700332,0.1782681000767931,0.05070178221884652,0.03789301693725812,0.01319304270895358,0.006884821628886905,0.001202906084923127,0.0005124266440066396]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-76dc9776e729260134aa" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-76dc9776e729260134aa">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.ASIANPAINT.html\" target=\"_blank\">ASIANPAINT<\/a>","<a href=\"/reports02/eq-in/risk/in.BERGEPAINT.html\" target=\"_blank\">BERGEPAINT<\/a>","<a href=\"/reports02/eq-in/risk/in.KANSAINER.html\" target=\"_blank\">KANSAINER<\/a>","<a href=\"/reports02/eq-in/risk/in.JSWDULUX.html\" target=\"_blank\">JSWDULUX<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIGOPNTS.html\" target=\"_blank\">INDIGOPNTS<\/a>","<a href=\"/reports02/eq-in/risk/in.SIRCA.html\" target=\"_blank\">SIRCA<\/a>","<a href=\"/reports02/eq-in/risk/in.SHALPAINTS.html\" target=\"_blank\">SHALPAINTS<\/a>","<a href=\"/reports02/eq-in/risk/in.KAMOPAINTS.html\" target=\"_blank\">KAMOPAINTS<\/a>"],[51.14007802780048,17.40874837126613,9.68298870037518,11.49183967720944,2.495894752574024,0.7168394729715437,-0.5080209697700403,0.07757691613494241],[60.99215026738864,12.94746605906963,7.631030719449821,8.806067811065899,1.635798551725627,0.757932462616931,-0.4495138844083859,0.06089493894953701],[70.79952421699168,18.24474419582109,10.47388858846469,1.235008763504153,0.02579983349238293,0.01040414965346445,-0.7902479137720161,0.0008781658445443436]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-fafc46d2dc22a87f46ce" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-fafc46d2dc22a87f46ce">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.ASIANPAINT.html\" target=\"_blank\">ASIANPAINT<\/a>","<a href=\"/reports02/eq-in/risk/in.BERGEPAINT.html\" target=\"_blank\">BERGEPAINT<\/a>","<a href=\"/reports02/eq-in/risk/in.KANSAINER.html\" target=\"_blank\">KANSAINER<\/a>","<a href=\"/reports02/eq-in/risk/in.JSWDULUX.html\" target=\"_blank\">JSWDULUX<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIGOPNTS.html\" target=\"_blank\">INDIGOPNTS<\/a>","<a href=\"/reports02/eq-in/risk/in.SIRCA.html\" target=\"_blank\">SIRCA<\/a>","<a href=\"/reports02/eq-in/risk/in.SHALPAINTS.html\" target=\"_blank\">SHALPAINTS<\/a>","<a href=\"/reports02/eq-in/risk/in.KAMOPAINTS.html\" target=\"_blank\">KAMOPAINTS<\/a>"],[44.20023967648913,18.16899926024929,12.24234429342625,12.4182612193737,2.141789557847161,0.3196415496714242,0.8459236964537062,0.3399000856825974],[53.67590049772853,15.3556597926255,10.43115492512257,10.03373585455203,1.628208416696815,0.4493541578662893,0.7507526711845927,0.3065747989156908],[62.29481288652957,21.03605200872735,14.21079238163027,1.350138839066318,0.02454854707342514,0.00824651661574758,1.070865891353057,0.00454292900425872]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":8,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time" class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over time?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The Evolution of Challenges</strong></p>
+<p>The paint and construction materials industry has faced a multifaceted set of headwinds over the past few years, ranging from subdued macroeconomic conditions to intense competitive disruptions and unpredictable weather patterns:</p>
+<ul>
+<li><strong>Prolonged Demand Slump:</strong> Over the past 1.5 to 2 years, the industry witnessed a broad demand slump that affected consumer products across the board, accompanied by slower construction activity and weaker consumer sentiment [1-3].</li>
+<li><strong>Heightened Competitive Intensity:</strong> The entry of large conglomerates and three new major players significantly intensified market competition, particularly in the decorative segment [4-6]. This resulted in severe margin pressures, especially at the bottom-of-the-pyramid economy segments, and caused a portion of overall industry growth to be captured by these newer, aggressive entrants [7, 8]. However, the pace of this competitive disruption is reportedly beginning to stabilize as new entrants settle into their market positioning [9, 10].</li>
+<li><strong>Weather and Calendar Disruptions:</strong> In the most recent financial quarters, companies were hit by an extended monsoon withdrawal combined with an early Diwali [3, 11-13]. This anomaly drastically compressed the traditional pre-festive purchasing and renovation window, leading to a temporary, yet significant, setback in retail sales and project execution [11, 13, 14].</li>
+<li><strong>Geopolitical and Global Macro Risks:</strong> Volatility in foreign exchange rates, geopolitical uncertainties, and disturbed political scenarios in international markets (such as Nepal) have continued to pose near-term margin risks and impacted export demand [15-17].</li>
+</ul>
+<p><strong>The Evolution of Opportunities</strong></p>
+<p>Despite the challenges, the structural opportunities in the market have evolved to offer substantial long-term growth avenues, driven by government policies, shifting consumer preferences, and strategic market expansion:</p>
+<ul>
+<li><strong>Government Initiatives and Infrastructure Push:</strong> Massive government capital investment outlays (such as INR 11 lakh crores) and programs like the Smart Cities Mission and Pradhan Mantri Awas Yojana are acting as primary growth drivers [18, 19]. While steel is required at the start of construction, paint acts as a downstream beneficiary during the finishing stages of these projects [20]. Furthermore, enormous government spending is opening vast opportunities for industrial liquid coatings in railways, pre-engineered buildings, bridges, airports, and coil coatings [21, 22].</li>
+<li><strong>Tax Reliefs and Economic Tailwinds:</strong> Recent income tax reliefs for the middle class, multiple rounds of interest rate reductions by the RBI, and GST cuts (particularly in automobiles) have improved disposable incomes, encouraging consumers to upgrade and beautify their homes [19, 23].</li>
+<li><strong>Automotive Sector Boom:</strong> The automotive coatings segment is experiencing robust growth spurred by GST rate cuts [24]. The opportunity here is expanding in three key ways: automotive OEMs are projected to heavily expand their production capacities by 2030 [25, 26]; a consumer shift toward larger vehicles (like SUVs and 7-seaters) means a significantly larger paintable surface area per vehicle [27, 28]; and India is increasingly establishing itself as a major export hub for vehicles [29, 30].</li>
+<li><strong>Premiumization of Portfolios:</strong> To protect margins and counter down-trading trends, companies have increasingly focused on climbing the value chain. This includes successfully pushing premium emulsions, high-margin wood finishes, PU enamels, and specialty metallic or designer textures [31-36].</li>
+<li><strong>Waterproofing and Construction Chemicals:</strong> Driven by India’s harsh weather conditions, heavy rainfall, and temperature variations, structural deterioration is a common issue [37, 38]. Consequently, the repair and maintenance sector is expanding rapidly, turning waterproofing and construction chemicals—once a negligible category—into a phenomenal growth segment contributing significantly to overall revenues [37, 39, 40].</li>
+<li><strong>Furniture Manufacturing &amp; Localized Technology:</strong> India’s furniture manufacturing industry is poised for sustained growth due to rising domestic consumption and global outsourcing, driving the demand for premium acrylic and waterborne PU systems [41, 42]. Companies are capitalizing on this by extending partnerships with international entities (like Italian manufacturers) to transfer technical know-how for local manufacturing, thereby improving supply chain efficiency and margins [43].</li>
+<li><strong>Strategic Network Expansion:</strong> Companies are evolving their distribution by shifting from a purely rural or Tier 3/4 focus to aggressively penetrating metros and Tier 1/2 cities [44, 45]. This is being achieved through the rapid deployment of active tinting machines, the rollout of exclusive immersive brand stores (like Indigo Colour Canvas), and deeper strategic retail partnerships [46-48].</li>
+</ul>
+<p><em><a href="footnote/Paints.1.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the headwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Weather and Seasonal Disruptions</strong> A significant short-term headwind for the paint industry has been the unfavorable alignment of weather and festive calendars. Specifically, <strong>the delayed withdrawal of monsoons extended well into October, which, coupled with an unusually early Diwali festival, severely compressed the traditional pre-festive sales and renovation window</strong> [1-3]. Because Diwali shifted to around October 20th (compared to October 31st the previous year), consumers had a much shorter timeframe to purchase paint and conduct home renovations [2]. This temporal squeeze negatively impacted October sales volumes, temporarily dampening retail demand and project execution across multiple companies in the industry [4-6].</p>
+<p><strong>Intensified Competition and Market Fragmentation</strong> The industry is currently navigating a highly challenging operating environment characterized by elevated competitive intensity and the entry of new, well-funded conglomerates [3, 7, 8]. This dynamic has created several operational headwinds: * <strong>Pricing and Margin Pressures:</strong> The influx of new competitors has caused turmoil in the market regarding pricing and trade discounts, placing downward pressure on profit margins [9-11]. * <strong>Fragmented Growth:</strong> While the overall paint industry continues to grow, a portion of this growth is being aggressively captured by smaller players and new entrants [12, 13]. As a result, established listed companies are reporting slightly lower organic growth rates than they might have otherwise [13]. * <strong>Resource Allocation:</strong> The intense competitive pressure, particularly in the decorative paints segment, is demanding massive management bandwidth and requiring companies to significantly increase their investments in brand-building, dealer incentives, and promotional activities just to maintain their market share [14, 15].</p>
+<p><strong>Subdued Consumer Demand and Construction Slowdown</strong> Beyond competitive pressures, <strong>the industry has been grappling with weaker consumer demand sentiment and a noticeable slowdown in construction activities</strong> [16-19]. Paint demand has experienced a broader slump over the past two years, reflecting a wider downturn across various consumer product categories [20]. Although some companies are seeing early signs of a measured, gradual recovery, the overall demand environment remains subdued [6, 18, 21]. Consequently, paint manufacturers are being forced to rely heavily on internal efficiency initiatives, aggressive network expansions, and targeted marketing to stimulate growth rather than relying on natural market buoyancy [6, 19, 21].</p>
+<p><strong>Macroeconomic and Geopolitical Risks</strong> At a macroeconomic level, <strong>ongoing foreign exchange (forex) volatility and geopolitical uncertainties continue to pose near-term risks</strong> to the industry’s profitability and raw material cost stability [18, 22].</p>
+<p><strong>Regulatory and Statutory Compliance Costs</strong> A notable regulatory headwind affecting the financial bottom line of almost all major players is the <strong>Government of India’s notification of four new Labour Codes</strong> (which consolidate 29 existing labour laws) [23, 24]. The impending implementation of these codes has forced numerous companies to account for increased employee benefit obligations [25]. Specifically, the revised definition of wages has resulted in a sudden increase in liabilities for compensated absences and gratuity [23, 26]. Many firms have had to book substantial one-time exceptional expenses to provision for these past service costs, directly impacting their reported quarterly and nine-month profits [27-29]. While some smaller players have noted that their existing wage structures align with the new codes, minimizing their individual impact [30], it remains a significant financial headwind for the broader industry [23, 25, 27]</p>
+<p><em><a href="footnote/Paints.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry" class="section level3">
+<h3><strong>What are the key things to understand about this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The Indian paint and coatings industry is a dynamic and rapidly evolving sector characterized by strong long-term growth fundamentals, intensifying but stabilizing competition, and distinct segment behaviors.</p>
+<p>Here are the key things to understand about the industry:</p>
+<p><strong>1. Macroeconomic Growth Drivers</strong> The industry is projected to grow at a Compound Annual Growth Rate (CAGR) of around 9.4% through 2030 [1]. This robust expansion is fueled by structural tailwinds, including <strong>rapid urbanization, higher disposable incomes, and an increasing consumer interest in home decor and premium, eco-friendly products</strong> [1, 2]. Furthermore, massive government initiatives—such as a ₹11 lakh crore capital investment outlay for infrastructure, the Smart Cities Mission, and the Pradhan Mantri Awas Yojana—are significantly boosting construction activity and downstream paint demand [1, 3].</p>
+<p><strong>2. Evolving Competitive Landscape</strong> The market has witnessed severe competitive intensity recently due to the entry of well-funded conglomerates (such as Grasim/Birla Opus and JSW’s acquisition of AkzoNobel) [4-7]. This influx disrupted pricing structures, increased dealer discounting, and pressured margins as new entrants heavily invested to capture market share [8-10].</p>
+<p>However, <strong>the competitive environment has largely stabilized</strong> [11, 12]. Market leaders note that the initial aggressive, market-wide disruption has peaked, and the market is settling into a phase where established players are relying on their entrenched brand equity, proprietary technology, and premiumization strategies to protect their positions rather than engaging in a pure price war [13-15].</p>
+<p><strong>3. Distinct Market Segments with Different Dynamics</strong> The industry is broadly split into decorative paints and industrial/automotive coatings, each with unique drivers and barriers to entry:</p>
+<ul>
+<li><strong>Decorative Paints:</strong> This segment is highly consumer-facing and sensitive to seasonal factors. Demand is largely driven by repainting rather than new construction [16]. However, <strong>sales are heavily influenced by weather and the timing of festivals.</strong> For example, the industry faced a temporary but severe setback recently due to a delayed withdrawal of the monsoons combined with an early Diwali, which drastically compressed the traditional pre-festival sales window [17-19]. To combat volume fluctuations, companies are increasingly pushing the premium end of emulsions, where value growth routinely outpaces volume growth [20, 21].</li>
+<li><strong>Industrial &amp; Automotive Coatings:</strong> Unlike the decorative side, industrial paints are <strong>performance-driven rather than purely price-driven</strong> [6]. Success requires a rigorous supply chain, constant on-site technical support for customers, global track records, and advanced value-engineering capabilities [6, 22, 23]. Because of these high barriers to entry, it is difficult for new competitors to disrupt this segment quickly [22, 24]. Growth here is particularly strong, driven by heavy government spending on railways, airports, and pre-engineered buildings [25, 26]. The automotive paint segment is uniquely supported by India’s emergence as an export hub, automakers doubling their production capacities by 2030, and a <strong>consumer shift toward larger vehicles (like SUVs), which inherently require a larger paintable surface area per vehicle</strong> [27-32].</li>
+</ul>
+<p><strong>4. High-Growth Adjacent Categories</strong> Beyond traditional paints, companies are aggressively expanding into highly profitable adjacent niches such as <strong>construction chemicals, waterproofing, and premium wood coatings</strong> [33-36]. * Waterproofing products are growing at a phenomenal rate, becoming a significant contributor to top-line revenues [34]. * Construction chemicals represent a massive untapped opportunity; current surveys indicate that only about 3 out of 10 homes use them, implying nearly a 3x growth potential [33, 37]. * India’s harsh, tropical weather causes frequent structural deterioration and leakage, expanding the repair and maintenance market significantly [33, 37].</p>
+<p><strong>5. Go-to-Market Strategies: Tinting Machines and Influencers</strong> To maintain growth, paint companies are focusing on a 360-degree approach to distribution and marketing: * <strong>Network Extraction over Expansion:</strong> While expanding into underserved Tier II, III, and rural markets remains important, a major focus is on improving the “throughput” of existing dealers [34, 38, 39]. This is primarily achieved by <strong>deploying more automated tinting machines at retail counters</strong>, which reduces supply chain friction, lowers inventory costs, and allows for on-demand color creation [34, 40, 41]. * <strong>Influencer Engagement:</strong> Companies are deliberately moderating traditional television advertising in favor of direct influencer engagement [42, 43]. The actual decision-makers in the paint industry are often <strong>painters, contractors, and architects</strong>. Paint brands are investing heavily in these groups through loyalty programs, specialized training (like business development skills for contractors), and health benefits to ensure they recommend their products to end-consumers [44-47].</p>
+<p><strong>6. Short-Term Headwinds and Regulatory Changes</strong> While the long-term outlook is positive, the industry currently navigates several near-term challenges. Geopolitical uncertainty and forex volatility continue to pose risks to raw material costs and margins [48, 49]. Additionally, <strong>regulatory changes are impacting bottom lines</strong>—specifically, the Government of India’s notification of new Labour Codes has forced several paint companies to recognize significant exceptional expenses due to increased employee benefit obligations, such as higher gratuity and leave liabilities [50-53].</p>
+<p><em><a href="footnote/Paints.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the tailwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Massive government investments in infrastructure and housing</strong> are serving as primary growth drivers for the industry. The government’s heavy spending on infrastructure projects—including pre-engineered buildings, railway network upgrades, bridges, and airports—is providing a substantial boost to the industrial and liquid coatings segment [1]. Furthermore, a significant INR 11 lakh crores capital investment outlay announced in the Union Budget is expected to heavily drive construction activity [2]. Initiatives such as the Smart Cities Mission and Pradhan Mantri Awas Yojana are directly fueling demand in the decorative paint segment [3], while continued government support for rural development is opening up new avenues for growth in the hinterlands [4, 5].</p>
+<p><strong>Macroeconomic relief measures and rising disposable incomes</strong> are helping to revive overall consumer sentiment. Successive interventions, including significant income tax relief for the middle class and multiple rounds of interest rate reductions by the RBI, have eased financial pressures on the common man and spurred an uptick across the consumer product basket [6]. This improved disposable income is encouraging consumers to invest more in upgrading and beautifying their homes [3].</p>
+<p><strong>Favorable demographic shifts and changing consumer habits</strong> are naturally expanding the market. Rapid urbanization is a major factor, especially considering that approximately 70% of India’s urban population resides in Tier II and Tier III cities, creating vast, underserved markets [7, 8]. Additionally, the industry is benefiting from a <strong>reduced repainting cycle</strong> as consumers update their homes more frequently [9]. There is also a distinct <strong>rising consumer interest in home decor, premium finishes, and eco-friendly products</strong>, driving a trend of product premiumization that helps companies climb the value chain and improve their profit margins [3, 9].</p>
+<p><strong>A booming automotive sector</strong> is creating distinct tailwinds for industrial paint providers. <strong>Recent GST rate cuts on automobiles</strong> triggered a significant spurt in vehicle production and sales across various OEM categories, directly translating to higher paint sales [10-12]. Moreover, <strong>a distinct shift in consumer preference towards SUVs and larger vehicles</strong> over small cars means there is a significantly larger paintable surface area per vehicle, pushing paint consumption growth higher than actual vehicle production growth [13, 14]. <strong>India’s emergence as an export hub</strong> for major auto OEMs provides an additional, sustained volume driver for automotive coatings [14].</p>
+<p><strong>Expansion in niche segments and adjacent industries</strong> is providing new growth pools. The Indian furniture manufacturing industry is experiencing sustained growth driven by both rising domestic consumption and an increase in global outsourcing, which is heavily boosting the demand for premium Polyurethane (PU) and wood coatings [15]. Similarly, the construction chemicals and maintenance segment is expanding rapidly; due to India’s harsh tropical weather and heavy rainfall, there is a growing necessity for structural repair, waterproofing, and leakage solutions [16].</p>
+<p><em><a href="footnote/Paints.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry" class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The general outlook for the Indian paint and coatings industry is highly optimistic, characterized by a transition from a measured recovery into a phase of robust, long-term expansion [1, 2]. <strong>The industry is projected to grow at a Compound Annual Growth Rate (CAGR) of approximately 9.4% through the year 2030</strong>, offering massive opportunities for expansion [3]. Overall paint demand is expected to be positively driven by healthy growth in infrastructure, core sectors, real estate, and the automobile industry [4]. While the broader market recently faced subdued demand and high competitive intensity, signs of a steady and progressive demand improvement are now widely visible across the sector [5-8].</p>
+<p>A convergence of favorable macroeconomic factors is stimulating this industry revival. <strong>Rapid urbanization, higher disposable incomes, and the easing of inflation are structurally supporting consumer spending</strong> [9]. Additionally, recent government interventions, including income tax relief, interest rate reductions by the RBI, and GST cuts in adjacent sectors like automobiles, have collectively provided financial relief to the middle class, freeing up capital for home improvement and repainting [10-13]. On the institutional side, ambitious government programs such as the Smart Cities Mission, the Pradhan Mantri Awas Yojana, and an INR 11 lakh crore capital investment outlay for infrastructure are acting as massive catalysts for both the decorative and industrial paint segments [3, 14]. Paint demand, particularly at the finishing stages of these infrastructure projects, is poised to be a major downstream beneficiary [15].</p>
+<p>In the decorative paints segment, the industry is recovering from temporary setbacks caused by extended monsoons, shorter festive purchasing windows, and a general slowdown in consumer spending over the past two years [16-19]. <strong>Furthermore, the competitive intensity in the decorative space has been exceptionally high due to the recent entry of large conglomerates investing heavily to capture market share</strong> [20, 21]. However, the market is beginning to stabilize as this intense competition reaches a more settled phase, allowing established companies to return to double-digit value growth [22-24]. To navigate this, companies are aggressively focusing on <strong>“premiumization”</strong>, shifting consumer preferences toward high-value, eco-friendly products, and designer finishes, which yield better margins and higher average selling prices [25-28].</p>
+<p>The industrial and automotive coatings segments present some of the strongest growth narratives within the industry. <strong>Automotive paint demand is expected to remain exceptionally robust, supported by OEM projections that vehicle production capacity in India will double by 2030</strong> [29, 30]. This growth is further amplified by a distinct consumer shift toward larger vehicles, such as SUVs and seven-seaters, which significantly increases the paintable surface area per vehicle and drives higher volume consumption [31, 32]. Furthermore, India’s rising status as an export hub for major automotive OEMs provides an additional, sustained growth lever [33, 34]. Beyond automotive, massive government spending on national infrastructure is creating highly lucrative opportunities in liquid and powder industrial coatings for railways, airports, pre-engineered buildings, and coil coatings [35-37].</p>
+<p>There is also substantial untapped potential in specialized adjacent segments. <strong>Construction chemicals and waterproofing are expanding at a phenomenal rate, yet remain vastly underpenetrated.</strong> Current estimates suggest that only about three out of ten homes or buildings currently utilize construction chemicals, indicating a potential to nearly triple this market as awareness and new construction requirements rise [38, 39]. Repair and maintenance applications are also surging due to the structural wear-and-tear caused by India’s harsh tropical weather [38, 39]. Additionally, the premium wood and polyurethane (PU) coatings market is set for sustained momentum, driven by a booming domestic furniture manufacturing industry and increasing global outsourcing trends [40].</p>
+<p>Despite the overwhelmingly positive trajectory, the industry remains vigilant regarding near-term headwinds. While raw material prices have largely stabilized, <strong>volatility in foreign exchange rates and geopolitical uncertainties continue to pose risks to operating margins</strong> [4, 6]. Moreover, smaller players and aggressive new entrants capturing incremental growth at the bottom of the pyramid continue to place pressure on pricing and trade discounting dynamics across the sector [23, 24, 41]. However, with disciplined cost management, expanded distribution networks into Tier II and III cities, and a sharp focus on technological innovation, the paint industry is well-positioned to leverage the economic tailwinds and sustain profitable growth [7, 28, 42].</p>
+<p><em><a href="footnote/Paints.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

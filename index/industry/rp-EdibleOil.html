@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-05-15" />
+
+<title>Edible Oil</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<script src="rmdlib/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Edible Oil</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">May 15, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns">Annual Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns">Cumulative Returns and Drawdowns</a></li>
+<li><a href="#sma-scenarios">SMA Scenarios</a></li>
+<li><a href="#rolling-returns">Rolling Returns</a></li>
+<li><a href="#fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/EdibleOil.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/EdibleOil.fan.CAP_WT.png" /></p>
+<p><img src="plots/EdibleOil.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/EdibleOil.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/EdibleOil.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/EdibleOil.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/EdibleOil.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e557789deb05bdbed8c6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e557789deb05bdbed8c6">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["0.58%","2.88%"],["6.18%","5.4%"],["5.71%","3.85%"],["-0.47%","2.31%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/EdibleOil.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/EdibleOil.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-9a1e682826da68f4256b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9a1e682826da68f4256b">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.MARICO.html\" target=\"_blank\">MARICO<\/a>","<a href=\"/reports02/eq-in/risk/in.PATANJALI.html\" target=\"_blank\">PATANJALI<\/a>","<a href=\"/reports02/eq-in/risk/in.AWL.html\" target=\"_blank\">AWL<\/a>","<a href=\"/reports02/eq-in/risk/in.GOKULAGRO.html\" target=\"_blank\">GOKULAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.SUNDROP.html\" target=\"_blank\">SUNDROP<\/a>","<a href=\"/reports02/eq-in/risk/in.KNAGRI.html\" target=\"_blank\">KNAGRI<\/a>","<a href=\"/reports02/eq-in/risk/in.KRITINUT.html\" target=\"_blank\">KRITINUT<\/a>","<a href=\"/reports02/eq-in/risk/in.GOKUL.html\" target=\"_blank\">GOKUL<\/a>","HALDER","<a href=\"/reports02/eq-in/risk/in.MKPL.html\" target=\"_blank\">MKPL<\/a>","<a href=\"/reports02/eq-in/risk/in.ROML.html\" target=\"_blank\">ROML<\/a>","<a href=\"/reports02/eq-in/risk/in.NKIND.html\" target=\"_blank\">NKIND<\/a>"],[0.5966921528664827,0.2097637978522182,0.1506707402249186,0.0249762687526883,0.01048885680457848,0.002030512254000222,0.001816397894512393,0.001547486700041898,0.0009679856857237361,0.0006646329485437997,0.000235465509753066,0.0001457025065385301],[0.556226138492054,0.2505228377792961,0.13364357770014,0.03675759337463241,0.01292483639065539,0.002470843352685494,0.002263294148125366,0.002156936051926079,0.001469880144299135,0.001000502783727488,0.0003569314272161723,0.0002066283552423849]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":12,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-69f8b9a82d50dd940033" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-69f8b9a82d50dd940033">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.MARICO.html\" target=\"_blank\">MARICO<\/a>","<a href=\"/reports02/eq-in/risk/in.PATANJALI.html\" target=\"_blank\">PATANJALI<\/a>","<a href=\"/reports02/eq-in/risk/in.AWL.html\" target=\"_blank\">AWL<\/a>","<a href=\"/reports02/eq-in/risk/in.GOKULAGRO.html\" target=\"_blank\">GOKULAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.SUNDROP.html\" target=\"_blank\">SUNDROP<\/a>","<a href=\"/reports02/eq-in/risk/in.KNAGRI.html\" target=\"_blank\">KNAGRI<\/a>","<a href=\"/reports02/eq-in/risk/in.KRITINUT.html\" target=\"_blank\">KRITINUT<\/a>","<a href=\"/reports02/eq-in/risk/in.GOKUL.html\" target=\"_blank\">GOKUL<\/a>","HALDER","<a href=\"/reports02/eq-in/risk/in.MKPL.html\" target=\"_blank\">MKPL<\/a>","<a href=\"/reports02/eq-in/risk/in.ROML.html\" target=\"_blank\">ROML<\/a>","<a href=\"/reports02/eq-in/risk/in.NKIND.html\" target=\"_blank\">NKIND<\/a>"],[1.09912738658774,61.72096484674115,16.54746428892195,4.995298879496894,0.2875128560624183,null,0.9409332330620772,0.7169115440315716,null,0.439356163293571,0.1644822685542693,-0.04447879930159732],[1.020860252746269,46.3852884614324,27.52067362955296,11.13832675186454,0.06770442921148652,null,1.439605431362931,0.7040358496675395,null,0.3673581576448178,0.1611250694262919,-0.1339981832093013],[62.49308155154921,0.4534688807331309,35.20161330829632,0.1148986393971849,0.3913946778311865,1.310830491081276,0.01193163413816622,0.007267996191828548,0.01197541316684123,0.003270386588892117,0.001557218074127109,-0.001290197048166108]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":12,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-02d418ae341648a267ab" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-02d418ae341648a267ab">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.MARICO.html\" target=\"_blank\">MARICO<\/a>","<a href=\"/reports02/eq-in/risk/in.PATANJALI.html\" target=\"_blank\">PATANJALI<\/a>","<a href=\"/reports02/eq-in/risk/in.AWL.html\" target=\"_blank\">AWL<\/a>","<a href=\"/reports02/eq-in/risk/in.GOKULAGRO.html\" target=\"_blank\">GOKULAGRO<\/a>","<a href=\"/reports02/eq-in/risk/in.SUNDROP.html\" target=\"_blank\">SUNDROP<\/a>","<a href=\"/reports02/eq-in/risk/in.KNAGRI.html\" target=\"_blank\">KNAGRI<\/a>","<a href=\"/reports02/eq-in/risk/in.KRITINUT.html\" target=\"_blank\">KRITINUT<\/a>","<a href=\"/reports02/eq-in/risk/in.GOKUL.html\" target=\"_blank\">GOKUL<\/a>","HALDER","<a href=\"/reports02/eq-in/risk/in.MKPL.html\" target=\"_blank\">MKPL<\/a>","<a href=\"/reports02/eq-in/risk/in.ROML.html\" target=\"_blank\">ROML<\/a>","<a href=\"/reports02/eq-in/risk/in.NKIND.html\" target=\"_blank\">NKIND<\/a>"],[0.1215749413747155,28.0323384678232,46.44311216014271,11.13525857312202,0.3984441072657857,null,0.4594062679848745,1.031625454385885,null,0.1587052571178119,0.04719673785162454,0.004223496682680813],[0.1201321575402871,22.42226909566331,51.96834061557236,16.72283498423347,0.3255187822689931,null,0.6304962355255133,1.594518089431588,null,0.1429045157040927,0.05992383407853754,0.007220342810149484],[14.53292654070285,0.4343170995662919,79.87688797911207,0.2607496495669211,1.302610405042833,3.529776146425014,0.009678961475775202,0.04384860563453319,0.003245709272021639,0.004179989424303554,0.001585855333408693,0.0001930584439698642]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":12,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time" class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over time?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>Evolving Challenges</strong></p>
+<p>Over time, companies have had to adapt to a variety of persistent and newly emerging hurdles, ranging from volatile commodity markets to shifting consumer expectations and geopolitical disruptions.</p>
+<ul>
+<li><strong>Commodity Price Volatility:</strong> Fluctuating raw material costs have been a continuous pressure point. Patanjali Foods experienced significant volatility in palm oil prices, which at one point surged by 35% year-over-year, creating pricing pressures [1], before later dropping by 12.63% [2]. Sundrop Brands faced margin erosion and volume declines in its staples business [3]. Additionally, a sharp drop in commodity olive oil prices forced Sundrop to pass the price benefits to consumers, leading to a temporary value decline in its Italian business, despite stimulating volume growth [4-6]. Marico also reported an upward bias in the prices of vegetable oils and crude-sensitive materials [7].</li>
+<li><strong>Intensifying Competition &amp; Shifting Consumer Preferences:</strong> Legacy brands have had to play catch-up with rapidly changing consumer tastes. Sundrop’s spreads and peanut butter business lost market share in modern trade and e-commerce because its innovation lagged behind new-age competitors; while Sundrop was positioned around family immunity, the market rapidly shifted toward high-protein offerings [8-10]. Sundrop’s flagship ACT II popcorn also faces new competitive intensity following Marico’s acquisition of rival brand ‘4700 BC’ [11-13]. Furthermore, AWL Agri Business reported challenges from the continued influx of cheaper refined oil imports from neighboring SAARC countries [14].</li>
+<li><strong>Regulatory and Geopolitical Headwinds:</strong> Structural economic transitions and global events have created localized challenges. Patanjali observed a moderation in demand across wholesale and retail markets due to the GST transition phase, and its beverage sales were temporarily hindered by label revisions and pre-GST inventory clearance [15, 16]. Internationally, Marico’s business in the Gulf region was negatively impacted by the ongoing geopolitical headwinds in the Middle East [17, 18].</li>
+</ul>
+<p><strong>Evolving Opportunities</strong></p>
+<p>To combat these challenges, companies are heavily pivoting toward new distribution channels, premiumization, and strategic operational synergies to unlock future growth.</p>
+<ul>
+<li><strong>The Rise of Quick Commerce and E-commerce:</strong> The explosion of quick commerce (Q-commerce) platforms has created a massive new growth avenue. AWL reported a 46% year-over-year growth in Q-commerce, which now contributes to 32% of their alternate channel volumes [19]. Sundrop is also experiencing near 50% growth in quick commerce, leveraging the channel not just for core products, but to push larger pack sizes, test new westernized popcorn flavors for younger audiences, and build out future categories like oats and breakfast cereals [20-22].</li>
+<li><strong>Premiumization and Health-Focused Innovations:</strong> As urban consumers become more health-conscious, companies are successfully driving margins through premium, value-added products. AWL launched ‘Fortune Atta with Multigrains’ and ‘Fortune Premio’ edible oils (such as cold-pressed mustard and olive oil) to target health-focused households [19, 23, 24]. Sundrop actively fought back against market share loss by launching dark chocolate, high-protein peanut butter to directly target fitness-oriented consumers [25-27]. Patanjali has similarly found success by introducing targeted nutritional solutions like its ‘Renal Health Care’ category [28].</li>
+<li><strong>Rural Market Expansion:</strong> While urban markets have faced inflationary pressures, rural India has shown resilient growth. Patanjali reported that rural demand has consistently outpaced urban demand over recent quarters [29, 30]. Capitalizing on this, AWL added approximately 120,000 new general trade outlets—predominantly in rural markets—and is setting up micro-fulfillment centers across 60,000+ villages to drive its next phase of growth [19].</li>
+<li><strong>Strategic Acquisitions, Tech Integration, and Synergies:</strong> Companies are increasingly looking outward and restructuring internally to build long-term value. Halder Venture Limited is acquiring a 52% stake in InQube Technologies to deploy cloud-based Agri-ERP platforms, which will improve supply chain efficiency and open new revenue streams in the commercialization of carbon credits [31-33]. Sundrop is leveraging the complementary strengths of its merged entities, utilizing Del Monte’s established B2B and HoReCa (Hotel, Restaurant, and Cafe) network to push ACT II popcorn into untapped institutional spaces [34-37]. Meanwhile, Patanjali achieved a major upstream milestone by expanding its oil palm plantation footprint past 100,000 hectares to secure its supply chain [38-40].</li>
+</ul>
+<p><em><a href="footnote/Edible%20Oil.1.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the headwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p>Based on the provided sources, the FMCG, packaged foods, and edible oil industries are facing several notable headwinds, ranging from commodity price volatility and geopolitical tensions to intense competition and regulatory transitions.</p>
+<p>Here are the primary challenges affecting the industry:</p>
+<p><strong>1. Commodity Price Volatility and Input Cost Pressures</strong> * <strong>Margin Compression:</strong> The industry is operating in a challenging environment marked by overall margin compression [1]. * <strong>Rising Raw Material Costs:</strong> Vegetable oils and crude-sensitive materials are exhibiting a pronounced upward price bias [2]. For example, a tightening of the global vegetable oil supply caused palm oil prices to surge by 35% year-over-year in Q2FY26 [3]. Additionally, elevated prices for other raw materials like sugar and milk have directly impacted operating EBITDA margins [4, 5]. * <strong>Deflationary Impacts in Specific Categories:</strong> Conversely, a sharp decline in olive oil commodity prices forced companies to pass the price corrections down to consumers, which resulted in a notable decline in overall value growth for the Italian culinary segment [6, 7].</p>
+<p><strong>2. Geopolitical and Macroeconomic Instability</strong> * <strong>Middle East Tensions:</strong> The evolving geopolitical situation and ongoing headwinds in the Middle East have negatively impacted international business momentum, specifically in the Gulf region [8, 9]. * <strong>Global Oil Markets:</strong> These broader macroeconomic changes have also caused temporary blips and instability in international oil prices [10].</p>
+<p><strong>3. Intense Competition and Shifting Consumer Preferences</strong> * <strong>Threat from New-Age Brands:</strong> Legacy brands are losing market share in modern trade and e-commerce channels to agile, new-age players. For instance, companies like Sundrop faced pressure in their peanut butter business from competitors like MyFitness and Pintola because they lagged in innovating high-protein offerings, while the market rapidly shifted toward protein-led consumption [11-14]. * <strong>Consolidation and Big-Player Entry:</strong> The entry of major FMCG giants into niche categories—such as Marico’s acquisition of the popcorn brand 4700 BC—has heightened competitive intensity, forcing existing market leaders to significantly ramp up their marketing and backend investments to safeguard their market share [15-18]. * <strong>Cheap Imports:</strong> Domestic edible oil portfolios continue to face challenges from the import of cheaper refined oils from neighboring SAARC countries [19].</p>
+<p><strong>4. Regulatory and Structural Market Shifts</strong> * <strong>GST Transitions:</strong> The transition phase surrounding GST rate rationalization temporarily led to demand moderation across both wholesale and retail markets [20]. * <strong>Export Consolidation:</strong> Certain business segments, such as Food &amp; FMCG, have experienced flat growth due to the structural consolidation of institutional private-label rice exports [21].</p>
+<p><em><a href="footnote/Edible%20Oil.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry" class="section level3">
+<h3><strong>What are the key things to understand about this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p>The Fast-Moving Consumer Goods (FMCG) and packaged food industry is rapidly evolving to cater to modern consumers seeking joyful, innovative, delicious, and convenient food solutions [1, 2]. Based on the sources, understanding this industry requires looking at demand dynamics, commodity pricing impacts, shifting consumer preferences, distribution channel strategies, and regulatory changes.</p>
+<p><strong>Macroeconomic Demand Drivers</strong> Overall market consumption is heavily influenced by macroeconomic factors such as inflation, taxation, and agricultural output. Urban demand in the industry is strengthening due to easing inflation and the positive impacts of revised direct and indirect taxation measures [3, 4]. Simultaneously, rural demand continues to grow steadily, fueled by positive Kharif (monsoon crop) output, lower inflation, and various government welfare schemes that enhance disposable income [4, 5]. The transition to GST 2.0 reforms is also expected to eventually aid consumption, driven by price cuts in larger packs and grammage additions in smaller packs [3, 6].</p>
+<p><strong>Commodity Cycles and Pricing Strategies</strong> A significant portion of the industry is anchored in the edible oils segment, which is highly vulnerable to global commodity price fluctuations [7, 8]. * <strong>Value vs. Volume Dynamics:</strong> The cost of raw materials directly dictates whether a category grows by volume or value. For instance, when global palm oil prices saw a 35% year-over-year increase, it created pricing pressure [9]. Conversely, when olive oil commodity prices softened, companies passed the benefits directly to consumers; this stimulated massive volume growth (e.g., up to 34%) but resulted in a decline in overall sales value [10-13]. In other segments, a 35% correction in copra (coconut) prices from its peak has allowed companies to selectively pass value to consumers to drive volume growth while improving gross margins [14, 15]. * <strong>Price-Point Protection:</strong> In general trade, maintaining accessible price points is a crucial moat against competitors [16, 17]. Rather than increasing prices during inflationary periods, companies often employ a strategy of altering the grammage (product weight) to protect highly attractive, fixed price points, such as the ₹10 packs of snacks or small edible oil pouches [18-23].</p>
+<p><strong>The Shift Toward Health, Wellness, and Premiumization</strong> Consumer preferences are markedly shifting toward health-conscious, high-protein, and premium offerings. * <strong>Nutritional Upgrades:</strong> Consumers are moving beyond conventional staples to nutritionally enhanced alternatives. For example, the industry is seeing strong growth in multigrain atta (flour) infused with prebiotics, soy, oats, and psyllium husk to support gut health [24, 25]. Companies are also expanding their premium portfolios with cold-pressed oils and olive oils [26]. * <strong>Competitive Innovation:</strong> In categories like spreads and dips, legacy brands initially lost market share to new-age, digital-first competitors (like MyFitness and Pintola) because the market shifted toward high-protein offerings while older brands were still positioned around general family immunity [27-32]. To survive, companies are now launching highly targeted innovations, such as dark chocolate high-protein peanut butter, combining better-for-you nutrition with improved taste profiles [33-38].</p>
+<p><strong>Distribution and Sales Channels</strong> The industry relies on a complex mix of traditional, digital, and institutional channels to drive penetration and market share: * <strong>E-Commerce and Quick Commerce:</strong> Alternate channels are experiencing explosive growth, often growing upwards of 30% to 50% year-over-year [39-41]. Quick commerce platforms are highly effective for testing new innovations and are driving the demand for larger pack sizes and newer, westernized flavor profiles before these products are rolled out to traditional retail [42-49]. * <strong>General Trade (GT) and Sales Force Automation:</strong> Expanding numeric distribution in traditional general trade, particularly in rural towns and villages, remains the primary method for gaining new user penetration [26, 50-53]. To improve efficiency in GT, companies are heavily investing in Sales Force Automation (SFA) tools via mobile interfaces to map hundreds of thousands of outlets, track purchasing frequencies, and measure per-outlet productivity [54-59]. * <strong>Institutional and HoReCa:</strong> The Hotel, Restaurant, and Cafe (HoReCa) and broader B2B institutional sectors represent a massive, largely untapped market for bulk staple foods, specialized bakery fats, and oleochemicals [26, 60-64].</p>
+<p><strong>Regulatory and Labor Environment</strong> Finally, players in this industry must adapt to significant regulatory shifts. The Government of India has consolidated 29 existing labor laws into four new unified Labour Codes (covering Wages, Social Security, Industrial Relations, and Occupational Safety), which became effective in November 2025 [65-68]. This transition forces companies to continuously evaluate and account for the financial impacts of new regulations on wage definitions, gratuity, and compensated employee absences [69].</p>
+<p><em><a href="footnote/Edible%20Oil.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry" class="section level3">
+<h3><strong>What are the tailwinds affecting this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>Favorable Macroeconomic Conditions and Reforms</strong> * <strong>GST 2.0 Reforms:</strong> The introduction of GST 2.0 reforms is expected to act as a significant tailwind by boosting overall consumption. These reforms will lead to price cuts in larger product packs and grammage additions in smaller packs, resulting in improved affordability for consumers [1-3]. * <strong>Easing Inflation:</strong> A sharp decline in retail inflation—which fell to 1.54% in September 2025 (the lowest since June 2017)—has eased price pressures across major consumption segments [4, 5]. This moderation has been largely driven by declining vegetable and fuel prices, supported by a favorable base effect [1, 5]. * <strong>Input Cost Corrections:</strong> The prices of certain key raw materials have softened, allowing companies to improve gross margins or pass value onto consumers. For example, copra prices have corrected by approximately 35% from their peak [6].</p>
+<p><strong>Strong Rural and Urban Demand</strong> * <strong>Rural Market Momentum:</strong> Rural demand continues to outpace urban demand and is poised to sustain its growth trajectory. This is fueled by positive Kharif crop outputs, lower inflation, and government welfare schemes that are enhancing disposable income [7, 8]. Companies are increasingly expanding their distribution into rural markets, viewing them as the primary driver for the next phase of growth [9]. * <strong>Urban Market Recovery:</strong> Urban demand is anticipated to strengthen in the coming quarters, supported by the easing of inflation and the positive impacts of revised direct and indirect taxation measures [7, 8].</p>
+<p><strong>Shifting Consumer Preferences</strong> * <strong>Health and Nutrition Consciousness:</strong> There is a growing consumer trend prioritizing health, immunity, and nutritional quality in everyday foods [10, 11]. This has created a boom for value-added, “better-for-you” categories, such as high-protein peanut butters and multigrain alternatives that replace conventional staples [10, 12]. * <strong>Emergence of Westernized Tastes:</strong> A younger consumption audience is increasingly open to trying new, westernized flavors and formats, which is driving growth and innovation in ready-to-eat and snack categories [13]. Overall, there are very strong consumer trends supporting the growth of the packaged food industry as a whole [14, 15].</p>
+<p><strong>Boom in Alternate Sales Channels</strong> * <strong>E-commerce and Quick Commerce:</strong> The rapid expansion of alternate sales channels is a massive growth driver. Companies are reporting strong double-digit growth in these areas, with quick commerce specifically growing at rates around 46% to 50% [9, 16]. This growth is being aided by tech-enabled execution, localized demand generation, and focused marketing spends [9, 17].</p>
+<p><strong>International Trade Opportunities</strong> * <strong>India-UK Free Trade Agreement (FTA):</strong> A landmark Free Trade Agreement between India and the United Kingdom is set to unlock billions in trade and investment opportunities [18]. Nearly 99% of Indian goods exported to the UK will enjoy zero-duty access, eliminating existing tariffs of 4% to 16% [19]. This will significantly reduce trade barriers and help Indian companies expand their presence and competitiveness in the UK market [20].</p>
+<p><em><a href="footnote/Edible%20Oil.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry" class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>Macroeconomic Drivers and Demand Outlook</strong> The general outlook for the FMCG, edible oil, and agri-business industry is marked by stable demand sentiment and a gradual improvement in consumption trends, supported by highly favorable macroeconomic tailwinds [1-3]. <strong>Inflation fell sharply to 1.54% in September 2025, reaching its lowest level since June 2017</strong>, largely driven by a drop in vegetable and fuel prices [3-5].</p>
+<p>For the past seven consecutive quarters, <strong>rural demand has consistently outpaced urban demand</strong> [6]. This sustained rural growth momentum is fueled by positive Kharif crop output, lower overall inflation, and various government welfare schemes that enhance disposable income for rural consumers [2, 7]. Urban demand, which saw early “green shoots” of recovery toward the end of the September quarter, is also anticipated to strengthen significantly in the coming quarters [2, 4, 7]. This urban revival is being supported by easing inflation and the positive impacts of revised direct and indirect taxation measures [2, 7]. Overall, the volume expansion for packaged food categories across the country is hovering around a healthy 6% to 8% [8, 9].</p>
+<p><strong>Impact of GST Reforms</strong> A major structural catalyst for the industry is the introduction of GST 2.0 rate rationalization. <strong>Industry leaders view this transition as a highly progressive reform that will drive higher efficiency and stimulate long-term consumption</strong> [10, 11]. The reforms are expected to directly aid consumer purchasing power by allowing companies to implement price cuts on larger packs and increase grammage (volume) in smaller product packs [2, 3, 7, 12]. Notably, the core edible oil segment remains entirely unaffected by these GST changes, providing stability to that specific market [2, 7].</p>
+<p><strong>Edible Oils and Commodity Pricing</strong> The pricing scenario for the edible oil and commodity sectors has seen significant volatility, but the long-term outlook remains focused on value growth and margin protection. Key trends include: * <strong>Palm Oil Volatility:</strong> Palm oil prices initially surged by 35% year-over-year during the September 2025 quarter, before dropping considerably by 12.63% in the December quarter [5, 13]. However, a temporary dip in international oil prices is expected to ease, and prices are set to firm up again soon [3]. * <strong>Supply Pressures:</strong> Pricing pressure is likely to continue for the foreseeable future due to a tightening of the global vegetable oil supply [12]. Furthermore, vegetable oils and crude-sensitive materials continue to exhibit a pronounced upward pricing bias [14]. * <strong>Copra and Regional Imports:</strong> Copra prices have corrected by about 35% from their recent peaks and are expected to remain rangebound [14]. Additionally, imports of cheaper refined oils from neighboring SAARC countries continue to enter the market, though at lower levels compared to earlier quarters [15].</p>
+<p><strong>Evolving Consumer Preferences</strong> There is a distinct industry-wide shift towards <strong>premiumization and health-conscious consumption</strong>. * <strong>Nutritional Upgrades:</strong> Urban and semi-urban consumers are moving away from conventional staples toward nutritionally enhanced alternatives [16, 17]. For example, the multigrain atta (flour) segment is witnessing robust growth as consumers seek everyday foods that are high in protein, fiber, and gut-friendly prebiotics without compromising on traditional tastes [17]. * <strong>Premium Oils and High-Protein Snacks:</strong> There is rising demand for premium cooking options like Olive Oil and Cold Press Mustard Oil [18]. In the packaged food space, the market is shifting rapidly toward high-protein offerings (such as high-protein peanut butter) and newer, westernized flavor profiles to cater to a younger consumption audience [19-22].</p>
+<p><strong>Distribution and Channel Expansion</strong> Sales channel dynamics are evolving rapidly, with companies heavily prioritizing high-growth alternate networks. <strong>E-commerce, Modern Trade, and particularly Quick Commerce (Q-com) are delivering explosive double-digit growth</strong> [18, 23-25]. Quick commerce channels are growing at nearly 50% year-over-year, significantly aiding brand penetration and product discoverability through tech-enabled execution and localized marketing [18, 23, 25, 26]. E-commerce platforms are also proving to be the ideal launchpad for large pack sizes and experimental new flavors [20, 22]. Simultaneously, companies are expanding their direct reach in General Trade (GT) by targeting deep rural markets through micro-fulfillment centers, which are expected to drive the next phase of numeric distribution growth [4, 18].</p>
+<p><strong>Regulatory Landscape: New Labour Codes</strong> On the regulatory front, the industry is currently adapting to a major governmental overhaul. The Government of India has consolidated 29 existing labor laws into four unified frameworks: the Code on Wages 2019, the Industrial Relations Code 2020, the Code on Social Security 2020, and the Occupational Safety, Health and Working Conditions Code 2020 [27-40]. <strong>These New Labour Codes were made effective on November 21, 2025</strong> [33-37]. Companies across the sector are actively monitoring the finalization of Central and State rules to assess the incremental financial impacts, particularly the increased obligations related to gratuity and compensated absences stemming from changes in wage definitions [30, 31, 40-42].</p>
+<p><em><a href="footnote/Edible%20Oil.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
