@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-07-17" />
+
+<title>Restaurants</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.9/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Restaurants</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">July 17, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns" id="toc-annual-returns">Annual
+Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns"
+id="toc-cumulative-returns-and-drawdowns">Cumulative Returns and
+Drawdowns</a></li>
+<li><a href="#sma-scenarios" id="toc-sma-scenarios">SMA
+Scenarios</a></li>
+<li><a href="#rolling-returns" id="toc-rolling-returns">Rolling
+Returns</a></li>
+<li><a href="#fundamental-ratios"
+id="toc-fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares"
+id="toc-constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries" id="toc-ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/Restaurants.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/Restaurants.fan.CAP_WT.png" /></p>
+<p><img src="plots/Restaurants.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/Restaurants.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/Restaurants.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/Restaurants.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/Restaurants.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-b2d6101d48ac3e47f0e4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b2d6101d48ac3e47f0e4">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-1.28%","-1.84%"],["5.48%","0.16%"],["13.13%","0.74%"],["10.3%","-7.53%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/Restaurants.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/Restaurants.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f10b6c67b3db8c0b2f7e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f10b6c67b3db8c0b2f7e">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.JUBLFOOD.html\" target=\"_blank\">JUBLFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.TRAVELFOOD.html\" target=\"_blank\">TRAVELFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.DEVYANI.html\" target=\"_blank\">DEVYANI<\/a>","<a href=\"/reports02/eq-in/risk/in.WESTLIFE.html\" target=\"_blank\">WESTLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.SAPPHIRE.html\" target=\"_blank\">SAPPHIRE<\/a>","<a href=\"/reports02/eq-in/risk/in.RBA.html\" target=\"_blank\">RBA<\/a>","<a href=\"/reports02/eq-in/risk/in.UFBL.html\" target=\"_blank\">UFBL<\/a>","<a href=\"/reports02/eq-in/risk/in.COFFEEDAY.html\" target=\"_blank\">COFFEEDAY<\/a>","<a href=\"/reports02/eq-in/risk/in.SPECIALITY.html\" target=\"_blank\">SPECIALITY<\/a>"],[0.4458634660841143,0.06353796421608413,0.1265595317898852,0.08530312602046397,0.1153547506857666,0.09554604299082654,0.04264119484137924,0.01687756534215427,0.008316358029325729],[0.3455489081944252,0.2109499798826662,0.1684690036488762,0.09058354483591548,0.07201590834135017,0.06046591460208884,0.03580835277085648,0.008395225768950363,0.00776316195487095]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":9,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1261423aeb90832ff2fb" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1261423aeb90832ff2fb">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.JUBLFOOD.html\" target=\"_blank\">JUBLFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.TRAVELFOOD.html\" target=\"_blank\">TRAVELFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.DEVYANI.html\" target=\"_blank\">DEVYANI<\/a>","<a href=\"/reports02/eq-in/risk/in.WESTLIFE.html\" target=\"_blank\">WESTLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.SAPPHIRE.html\" target=\"_blank\">SAPPHIRE<\/a>","<a href=\"/reports02/eq-in/risk/in.RBA.html\" target=\"_blank\">RBA<\/a>","<a href=\"/reports02/eq-in/risk/in.UFBL.html\" target=\"_blank\">UFBL<\/a>","<a href=\"/reports02/eq-in/risk/in.COFFEEDAY.html\" target=\"_blank\">COFFEEDAY<\/a>","<a href=\"/reports02/eq-in/risk/in.SPECIALITY.html\" target=\"_blank\">SPECIALITY<\/a>"],[97.5453721300603,61.81459645091297,0.2051238076872283,0.6900843338911415,-0.2242031889155434,-13.04505282483783,-4.653206292815905,-5.657376999533517,0.2084350308605402],[73.08002230828038,81.0863914879998,-4.248590898301258,-2.120205949597617,-2.951396236483221,-21.35916510015645,-6.762730522183982,-8.902187146591613,1.099661247840579],[138.8291080457439,108.4394523844413,-5.421986553550544,-0.01613316551026912,-0.8544530221883768,-29.94361780676492,-5.22883818640427,-106.2213859775277,0.4178542817607915],[128.666170639051,61.81653330123999,-4.072893038044195,-0.04025922385646072,-1.554121013799582,-23.58768015801853,-5.991293836514439,-55.59362291300212,0.357166242944353]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n      <th>2026-03-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":9,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3},{"name":"2026-03-31","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-51cd288ce8aca1512ef5" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-51cd288ce8aca1512ef5">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.JUBLFOOD.html\" target=\"_blank\">JUBLFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.TRAVELFOOD.html\" target=\"_blank\">TRAVELFOOD<\/a>","<a href=\"/reports02/eq-in/risk/in.DEVYANI.html\" target=\"_blank\">DEVYANI<\/a>","<a href=\"/reports02/eq-in/risk/in.WESTLIFE.html\" target=\"_blank\">WESTLIFE<\/a>","<a href=\"/reports02/eq-in/risk/in.SAPPHIRE.html\" target=\"_blank\">SAPPHIRE<\/a>","<a href=\"/reports02/eq-in/risk/in.RBA.html\" target=\"_blank\">RBA<\/a>","<a href=\"/reports02/eq-in/risk/in.UFBL.html\" target=\"_blank\">UFBL<\/a>","<a href=\"/reports02/eq-in/risk/in.COFFEEDAY.html\" target=\"_blank\">COFFEEDAY<\/a>","<a href=\"/reports02/eq-in/risk/in.SPECIALITY.html\" target=\"_blank\">SPECIALITY<\/a>"],[28.07029311079274,4.441534847175989,17.42796811990949,8.553680937980902,11.16768984089295,9.463528931967257,3.529611113328934,2.477265463626399,0.6637853661518395],[35.84973451224593,3.138278940157784,17.54733067932287,8.461390174036772,9.919525958697296,9.041622942675158,4.04595544457729,3.132157797176851,0.4688709929036446],[41.68948289744655,5.413837193112189,12.28420000346704,0.5867884466313885,6.942083624310621,6.266937041177663,1.553728207731022,25.15735300702159,0.105589579101929],[42.58653324234334,3.678766432326399,12.52783753626329,0.5861663949043825,6.977387534609286,6.301649768868104,2.325747543399105,24.9095376300718,0.1063739172142879]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n      <th>2026-03-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":9,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3},{"name":"2026-03-31","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time"
+class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over
+time?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The restaurant and quick-service restaurant (QSR) industry has
+undergone a significant transformation, with challenges and
+opportunities evolving from traditional dine-in struggles during the
+pandemic to a highly digitized, multi-brand, and efficiency-driven
+landscape today.</p>
+<p><strong>The Evolution of Industry Challenges</strong></p>
+<ul>
+<li><strong>Pandemic Disruptions and Consolidation:</strong> The
+COVID-19 pandemic severely impacted traditional dine-in networks. For
+example, Speciality Restaurants had to shut down around 32 restaurants
+and consolidate its operations in major cities like Bombay and Calcutta
+[1, 2].</li>
+<li><strong>Macroeconomic and Dine-in Pressures:</strong> More recently,
+the broader industry has faced periods of negative same-store sales
+growth (SSSG) [3, 4]. Driving consistent weekday dine-in traffic remains
+a hurdle, with Mondays and Tuesdays historically being the weakest days
+[5, 6].</li>
+<li><strong>Pricing and Margin Depletion:</strong> Finding the right
+value proposition has been challenging. Sapphire Foods noted that their
+₹299 EPIC Saver campaign failed to yield desired results, leading to a
+12% decline in Pizza Hut’s SSSG and negative EBITDA margins [7, 8].
+Internationally, Restaurant Brands Asia (Burger King/Popeyes) faced
+margin depletions in Indonesia because they had to rely heavily on
+discounting to promote chicken—a highly commoditized product in that
+market [9-12]. They also faced operational hurdles with Popeyes in
+Indonesia due to a low store count and a lack of a significant marketing
+path [13-16].</li>
+</ul>
+<p><strong>The Evolution of Strategic Opportunities</strong></p>
+<ul>
+<li><strong>The Shift to Digital and Delivery:</strong> The pandemic
+fundamentally altered the social fabric, linking at-home
+“binge-watching” with a habit of ordering food delivery [17, 18]. For
+fine-dining operators like Speciality Restaurants, delivery grew from
+just 5-6% of their business to 24% [19, 20]. QSRs have capitalized on
+this heavily; Jubilant FoodWorks (Domino’s) now processes ~70% of its
+online orders through its own app, boasting 15 million active monthly
+users and utilizing AI to power store operations and ensure 20-minute
+delivery guarantees [21, 22]. Similarly, Burger King now processes 92%
+of its orders digitally via apps and self-ordering kiosks [23, 24].</li>
+<li><strong>Value-to-Premium Menu Stratification:</strong> To combat
+foot traffic challenges, companies are using aggressive entry-level
+pricing to acquire customers, before migrating them to higher-margin
+items. Sapphire Foods successfully pivoted to a ₹99 Krisper Chicken
+Burger meal to drive transactions [7]. Burger King has leveraged its
+strong value pillar to introduce consumers to the brand and is now
+aggressively communicating its core and premium “deluxe” burger ranges
+to boost margins [23, 25-27]. Domino’s utilizes a multi-platform
+approach—creating distinct, ₹1,000 Crore opportunities across chicken,
+cheese, and breakfast categories [21].</li>
+<li><strong>Laser-Focus on Unit-Level Economics:</strong> Operators are
+intensely focused on cutting costs to improve profitability. Burger King
+has overhauled its supply chain by bringing food closer to its
+restaurants and introducing new suppliers, drastically reducing
+transportation costs and helping push gross margins toward 70% [28-31].
+They also designed a new broiler in-house that reduces utility expenses
+[32-35]. Furthermore, restaurant operators are moving away from the
+steep delivery discounts of the past, focusing instead on targeted,
+profitable engagement strategies [36-39].</li>
+<li><strong>Optimizing Store Formats:</strong> The era of massive dining
+rooms is giving way to optimized, smaller footprints. Brands are finding
+that 1,000 to 2,000 square foot locations effectively balance lower
+capex and reduced staffing needs with high revenue potential
+[40-44].</li>
+<li><strong>Diversification and “House of Brands” Expansion:</strong> To
+capture varied consumer preferences, companies are evolving into
+multi-brand platforms. Barbeque Nation is rebranding to “United
+Foodbrands” to seamlessly integrate acquisitions like Toscano and Salt
+alongside indigenous brands like Dum Safar [45-47]. Devyani
+International acquired Sky Gate Hospitality (Biryani By Kilo and Goila
+Butter Chicken) to expand its Indian cuisine portfolio and realize
+operational synergies through amalgamation [48-50].</li>
+<li><strong>Capturing Untapped Micro-Markets:</strong> There is a
+massive push into non-traditional, strategic locations. Companies are
+heavily expanding into airports, highways, metro stations, colleges, and
+hospitals [51-53]. Travel Food Services, for example, has rapidly scaled
+to 494 Travel QSR outlets across major travel hubs, integrating tech to
+allow seamless bank-to-lounge access for travelers [54-56].</li>
+<li><strong>Strong Demographic Tailwinds:</strong> Ultimately, the
+long-term opportunities are buoyed by India’s favorable demographics.
+With 65% of the population under 35, rising per capita income, and
+eating-out frequency projected to grow from 60-65 times to 90-95 times
+annually by 2030, the underlying market for food services is expected to
+reach $80 billion by 2028 [57, 58].</li>
+</ul>
+<p><em><a href="footnote/Restaurants.1.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry"
+class="section level3">
+<h3><strong>What are the headwinds affecting this
+industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>Based on the provided sources, the food services and restaurant
+industry is currently navigating several significant headwinds, ranging
+from macroeconomic pressures to intense competition and operational
+disruptions.</p>
+<p>Here are the primary challenges affecting the industry:</p>
+<p><strong>1. Industry-Wide Negative Same-Store Sales Growth
+(SSSG)</strong> The industry has experienced a broader slowdown, with
+negative sales reporting observed at the industry level over the past
+three to four quarters, a sharp contrast to the 6% to 7% positive SSSG
+seen in the past [1, 2]. Specific brands have directly felt this impact;
+for instance, Barbeque Nation reported lower year-over-year revenues due
+to negative SSSG and sluggish store expansion [3, 4], while Sapphire
+Pizza Hut witnessed a 12% decline in SSSG alongside negative restaurant
+EBITDA [5].</p>
+<p><strong>2. Intense Competition and Aggressive Pricing
+Pressures</strong> High competitive intensity is forcing companies to
+continually adjust their pricing and discount strategies, which can
+squeeze profit margins: * <strong>Price Wars:</strong> Competitors are
+becoming highly aggressive with value combos. For example, McDonald’s
+slashed its meal combo prices from INR 119 down to INR 99, putting
+pressure on competitors to maintain value gaps [6, 7]. * <strong>Failed
+Campaigns and Pivots:</strong> Some premium value campaigns have failed
+to yield desired results (such as a ₹299 EPIC Saver campaign), forcing
+brands to pivot to cheaper alternatives like a ₹99 burger meal to
+attract new customers and drive transactions [8]. *
+<strong>Commoditization of Menu Items:</strong> In international markets
+like Indonesia, staple items like chicken are treated as commodities,
+leading to heavy discounting to capture market share, which in turn
+causes severe gross margin depletion [9, 10].</p>
+<p><strong>3. Rising Operating Costs and Regulatory Changes</strong>
+Labor costs and changing government regulations are directly impacting
+restaurant profitability: * <strong>Wage Increases:</strong> Significant
+hikes in minimum wages have eaten into EBITDA margins in markets like
+Sri Lanka [11]. * <strong>Labor Codes:</strong> Companies have reported
+one-time financial impacts due to changes in labor codes [12]. *
+<strong>Service Charge Regulations:</strong> The industry is dealing
+with the impact of government directives stating that service charges
+are not compulsory and cannot be mandated by companies, potentially
+affecting overall revenue and staff compensation models [13].</p>
+<p><strong>4. Macroeconomic and Geopolitical Uncertainties</strong>
+Broader economic and geopolitical factors remain a concern for consumer
+spending. The industry has had to actively work to recover from the
+lingering impacts of the “larger geopolitical scenario” [14].
+Additionally, there are looming concerns regarding AI-driven job losses
+in the IT sector, which could potentially impact restaurant revenues in
+major tech hubs like Pune and Bangalore—though some fine-dining brands
+have noted that their specific customer base has shielded them from
+immediate impacts so far [13, 15].</p>
+<p><strong>5. Environmental and Operational Disruptions</strong>
+Unforeseen external events continue to disrupt normal business
+operations across different sub-sectors: * <strong>Weather
+Events:</strong> Cyclone-related costs have negatively impacted profit
+margins in certain geographical areas like Sri Lanka [11]. *
+<strong>Aviation Disruptions:</strong> For travel-focused QSRs and
+airport lounges, business volumes suffered a temporary decline due to
+aircraft maintenance issues following a tragic aircraft accident, as
+well as general airline-related disruptions [16].</p>
+<p><strong>6. Financial and Liquidity Crises</strong> Some segments of
+the industry are facing severe financial distress. For example, Coffee
+Day Enterprises Limited reported defaults on interest and principal
+repayments on loans due to an ongoing “Liquidity Crisis” [17].
+Furthermore, brand-specific financial struggles have led to the
+rationalization and closure of loss-making stores, as seen with the
+Pizza Hut brand [18]. Certain international ventures are also struggling
+due to a lack of significant marketing and clear growth paths, such as
+the Popeyes business in Indonesia [19].</p>
+<p><em><a href="footnote/Restaurants.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry"
+class="section level3">
+<h3><strong>What are the key things to understand about this
+industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>India’s food services market is experiencing robust growth
+and is projected to reach $80 billion by 2028, growing at a Compound
+Annual Growth Rate (CAGR) of over 8.1%</strong> [1]. This expansion is
+primarily driven by higher disposable incomes, favorable demographic
+shifts, and the rationalization of taxes such as the GST [1]. Within
+this broader market, the Quick Service Restaurant (QSR) segment is
+exceptionally fast-growing, with projections indicating it will reach
+$11.0 billion by 2028, up from $4.3 billion in 2019 [2]. Despite this
+rapid growth, India is still considered an underserved market with
+massive headroom for further expansion [3].</p>
+<p>To deeply understand this industry, several core operational,
+financial, and strategic dynamics must be examined:</p>
+<p><strong>1. Diverse Business Models and Formats</strong> The industry
+spans multiple specialized segments, including Casual Dining Restaurants
+(CDR), Premium CDR, and Quick Service Restaurants (QSR) [4], [5].
+Operators are maximizing their reach by utilizing a highly diversified
+portfolio of formats such as standalone restaurants, drive-thrus, 24x7
+outlets, food courts, and dessert kiosks [6]. Additionally, there is a
+specialized focus on “Travel QSRs” and lounges located at airports,
+highways, and railway stations to cater to the evolving demands of
+passengers and commuters [7], [8].</p>
+<p><strong>2. The Shift Towards Digitalization and Food Tech</strong>
+Technology is deeply embedded across customer touchpoints and internal
+operations [9]. <strong>For many major players, digital channels
+dominate, with some brands reporting that up to 92% of all their orders
+are serviced digitally through self-ordering kiosks, table ordering, and
+mobile apps</strong> [10]. Leading food-tech companies are leveraging
+Artificial Intelligence (AI) to power store operations, improve network
+expansion, and offer hyper-personalized immersive shopping experiences
+[11], [9]. Companies are increasingly investing in their own proprietary
+apps and loyalty programs—some boasting millions of active monthly
+users—to ensure a higher customer lifetime value and drive
+direct-to-consumer (D2C) sales without relying solely on third-party
+aggregators [9].</p>
+<p><strong>3. Delivery Dynamics and Consumer Habits</strong> The social
+fabric has shifted significantly, with consumer habits like
+“binge-watching” OTT content and avoiding city traffic driving a massive
+surge in food delivery [12]. While some restaurant chains rely on
+third-party aggregators like Zomato and Swiggy—where maintaining a high
+Average Order Value (AOV) is critical for managing commission costs and
+profitability [13], [14]—other industry leaders have built formidable
+in-house logistics. For example, owning a unique last-mile delivery
+capability with dedicated fleets allows certain brands to guarantee
+delivery times as low as 20 minutes while ensuring the product never
+leaves the company’s hands [11]. To ensure delivery remains profitable,
+companies are meticulously tracking data on customer ordering patterns,
+dayparts, and product mixes to optimize discounts and promotions [15],
+[16].</p>
+<p><strong>4. Supply Chain Optimization and Margin Expansion</strong> A
+critical lever for profitability in this industry is the supply chain.
+<strong>Companies are laser-focused on bringing food preparation and
+suppliers geographically closer to their restaurants</strong> [17],
+[18]. By localizing the supply chain and introducing competitive
+supplier bases, brands can significantly reduce transportation costs,
+minimize transit times, and guarantee product freshness, all of which
+directly translate to improved gross margins [19], [18], [20]. Backend
+processes are further strengthened by automated vendor management,
+cloud-based business intelligence tools, and robust ERP systems to
+support immense scale [21].</p>
+<p><strong>5. Unit Economics and Financial Metrics</strong> Success in
+the food services industry relies heavily on strong unit-level economics
+[22], [23]. Key performance indicators include: * <strong>Same Store
+Sales Growth (SSSG):</strong> A vital metric tracking the revenue growth
+of existing, mature stores [24]. While the industry historically enjoyed
+positive SSSG of 6% to 7%, recent quarters have seen overall
+industry-level negative sales reporting, forcing brands to rely on
+strong value propositions and increased foot traffic to maintain
+positive growth [25], [26]. * <strong>Store Payback Period:</strong>
+Well-managed stores typically target a payback period of 2.5 to 4.0
+years, coupled with high Return on Invested Capital (ROIC) ranging from
+34% to nearly 60% depending on the brand format [27]. * <strong>Cost
+Control:</strong> Brands aggressively pursue line-by-line operational
+efficiencies, such as negotiating rent reductions, utilizing solar
+panels, and installing advanced equipment (like energy-efficient
+broilers) to drastically cut utility expenses [28], [23]. Through these
+measures, top operators manage to maintain stable gross margins around
+75% [29].</p>
+<p><strong>6. Customer Centricity and Value Pillars</strong> The
+fundamental pillars of the restaurant system remain Quality, Service,
+Cleanliness, and Value [6]. Customer retention is actively managed
+through sophisticated Customer Relationship Management (CRM) tools that
+deploy targeted offers, redemption coupons, and strategic “value combos”
+to drive frequency and footfall, particularly on historically slower
+days like Mondays and Tuesdays [14], [30]. Gathering real-time
+qualitative feedback and linking employee incentives to a Guest
+Satisfaction Index (GSI) are practices used to ensure continuous
+improvement in the dining experience [21].</p>
+<p><strong>7. Inherent Risks and Vulnerabilities</strong> Despite strong
+growth projections, the industry is sensitive to several external
+variables. Financial performance can be materially impacted by
+macroeconomic conditions, shifting consumer demand, competitive
+intensity, and changes in the financial stability of third-party vendors
+[31], [32]. Furthermore, operators must navigate volatility in commodity
+and input costs, currency exchange rate fluctuations, stringent
+government regulations, taxation changes, and even unpredictable events
+like natural calamities and climatic conditions [31], [32], [33].</p>
+<p><em><a href="footnote/Restaurants.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry"
+class="section level3">
+<h3><strong>What are the tailwinds affecting this
+industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Favorable Macroeconomic Conditions and Rising
+Incomes</strong> The food services industry is heavily supported by a
+strong macroeconomic environment, with India’s GDP projected to grow at
+6.2% in FY2026 and the country being on track to become a $5 trillion
+economy by FY2028 [1]. This economic expansion is driving <strong>rising
+per capita and disposable incomes</strong>, which are further bolstered
+by favorable tax slabs and GST rationalization [1, 2]. As a result of
+these strong economic fundamentals, the Indian food services market is
+projected to experience robust growth at a Compound Annual Growth Rate
+(CAGR) of over 8.1%, eventually reaching an estimated $80 billion by
+2028 [2].</p>
+<p><strong>Massive Headroom for Market Penetration</strong> The Quick
+Service Restaurant (QSR) sector in India is currently highly
+underserved, providing massive headroom for long-term growth [3]. To
+illustrate this potential, if India reaches the per capita income level
+of Thailand, the QSR store count in the country could potentially
+mushroom by up to six times its current size [4]. Specific food
+categories also remain largely untapped; for example, pizza currently
+accounts for less than 1% of the overall food service market [4].
+Furthermore, out of India’s 350 million households, there are only about
+25 million monthly transacting users on food delivery aggregators,
+leaving an enormous runway for new customer acquisition [4].</p>
+<p><strong>Favorable Demographics and Changing Consumer Habits</strong>
+A major tailwind for the industry is the <strong>strong and growing
+demand from younger demographics</strong>, specifically Millennials, Gen
+Z, and Gen Alpha [4]. Because these consumers are highly receptive to
+casual dining models, capturing them early leads to early adoption that
+can lock in customers for a lifetime [4-6].</p>
+<p>Additionally, the social fabric and consumer habits have structurally
+shifted in favor of the industry [7, 8]. The rise of OTT platforms and
+binge-watching has transformed ordering food into a regular habit, which
+has caused delivery sales to surge [7, 8]. For some traditionally
+fine-dining operators, this shift in consumer behavior has caused
+delivery to grow from a mere 5-6% to as much as 24% of their business
+[9, 10].</p>
+<p><strong>Digital Transformation and Customer Engagement</strong>
+Technological integration across the industry is driving both
+operational efficiency and revenue growth. Companies are increasingly
+leveraging <strong>self-ordering kiosks, table ordering, and proprietary
+mobile apps</strong> to service a vast majority of their orders [11]. By
+utilizing these digital tools alongside robust Customer Relationship
+Management (CRM) systems, brands are able to directly engage consumers,
+push profitable app-exclusive deals, and significantly increase the
+frequency of customer visits [12, 13]. Growing monthly active users on
+proprietary apps allows companies to build loyalty and drive targeted
+acquisition and retention strategies [14, 15].</p>
+<p><strong>Travel Infrastructure Expansion</strong> For the specific
+segment of travel QSRs and airport lounges, <strong>recovering passenger
+traffic and extensive infrastructure developments</strong> serve as
+massive growth drivers [16, 17]. The steady rebound in airline passenger
+volumes is being complemented by the upcoming launches of major new
+transit hubs, such as the Navi Mumbai Airport and the Noida Airport,
+which are expected to significantly contribute to the industry’s growth
+momentum moving forward [16].</p>
+<p><em><a href="footnote/Restaurants.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry"
+class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The general outlook for the food service and Quick Service
+Restaurant (QSR) industry is highly optimistic, characterized by robust
+expansion, massive untapped potential, and structural shifts toward
+digital and delivery models.</strong> The industry is poised for a
+multi-year growth trajectory driven by strong macroeconomic
+fundamentals, evolving consumer demographics, and operational maturation
+among key players.</p>
+<p><strong>Strong Macroeconomic and Demographic Drivers</strong> The
+foundational growth of the industry is anchored by India’s robust
+economic outlook, with the GDP projected to grow at 6.2% in FY2026 and
+the country set to become a US$ 5 trillion economy by FY2028 [1]. This
+favorable macroeconomic environment is accompanied by <strong>rising per
+capita income—which grew at a CAGR of 10.9% during FY2025—and higher
+disposable incomes</strong> spurred by tax and GST rationalizations, all
+of which will strongly drive higher discretionary spending [1-3].</p>
+<p>Demographics are acting as a major tailwind. <strong>India has a
+notably young population, with 65% under the age of 35</strong>, and
+early adoption among millennials, Gen Z, and Gen Alpha is locking in
+customers for a lifetime [2, 4]. Furthermore, growing urbanization is
+expected to result in 37% of the population living in urban centers by
+FY2026, contributing 75% to India’s GDP by 2030 [2]. Consequently,
+<strong>the frequency of eating out in India is projected to surge from
+60–65 times annually in FY2023 to 90–95 times by 2030</strong> [2].
+Driven by these factors, India’s broader food services market is
+expected to grow at a robust CAGR of over 8.1%, reaching $80 billion by
+2028 [3].</p>
+<p><strong>Massive Headroom for Growth and Penetration</strong> India
+remains a highly underserved QSR market with significant room for
+penetration [4]. Current data shows India has approximately 55 stores
+per million urban population, which is vastly lower compared to other
+markets globally [4]. Industry projections estimate that <strong>as
+India reaches Thailand’s per capita income level, the QSR store count in
+the country could mushroom up to 6X its current size</strong> [4].
+Additionally, specific categories have vast untapped potential; for
+example, pizza still constitutes less than 1% of the overall food
+service market [4].</p>
+<p><strong>Operational Shifts: Digitalization and Delivery</strong> The
+industry has undergone a permanent structural shift in how consumers
+interact with restaurant brands. * <strong>Digital
+Transformation:</strong> Companies are heavily investing in food-tech
+and digital integration. For some major operators, <strong>up to 92% of
+all orders serviced are now digital</strong>, encompassing app ordering,
+table ordering, and self-ordering kiosks [5]. Monthly active users on
+restaurant apps are growing rapidly—with some brands seeing 21% to 47%
+year-over-year increases—allowing companies to build loyalty and utilize
+direct Customer Relationship Management (CRM) for targeted, profitable
+promotions [6-8]. * <strong>The Stickiness of Delivery:</strong> The
+delivery habit, accelerated by the pandemic and changing social fabrics
+such as “binge-watching” OTT content, has become deeply ingrained [9].
+Even for fine-dining and premium casual dining operators, delivery
+revenue share has skyrocketed from historical levels of 5-6% to around
+24% [10].</p>
+<p><strong>Laser Focus on Profitability and Margins</strong> While
+driving top-line sales, the industry is simultaneously focused on
+expanding bottom-line profitability and unit-level economics [11].
+Companies are achieving this through two main prongs: * <strong>Supply
+Chain Efficiencies:</strong> Operators are successfully expanding their
+gross margins by localizing their supply chains. By <strong>bringing
+food production and suppliers closer to the restaurants</strong>,
+companies are significantly reducing transportation times and costs
+[11-13]. * <strong>Rationalizing Delivery Costs and Store
+Economics:</strong> Profitability is being enhanced by strategically
+reducing delivery discounts and relying on data-driven customer
+engagement instead of blind acquisition costs [13, 14]. At the store
+level, continuous line-by-line cost focus—such as negotiating rent
+reductions and installing energy-efficient equipment like new
+broilers—is actively bringing down utility and operational expenses [11,
+15].</p>
+<p><strong>Aggressive Network Expansion Strategies</strong> To capture
+the rising demand, industry players are charting aggressive expansion
+strategies. Companies are not only deepening their presence in Metro and
+Tier I cities but are also <strong>expanding aggressively into Tier II
+and Tier III markets</strong> [16]. Furthermore, operators are targeting
+high-footfall “white spaces” and alternative channels, building networks
+across <strong>highways, airports, major railway stations, and metro
+interchange stations</strong> [17-19]. Strategic acquisitions,
+introducing new consumer-facing brands, and rationalizing any
+loss-making stores are being actively employed to build larger,
+diversified portfolios capable of industry-leading margins [20-22].</p>
+<p><em><a href="footnote/Restaurants.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

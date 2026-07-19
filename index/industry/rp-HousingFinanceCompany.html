@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-07-17" />
+
+<title>Housing Finance Company</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.9/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Housing Finance Company</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">July 17, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns" id="toc-annual-returns">Annual
+Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns"
+id="toc-cumulative-returns-and-drawdowns">Cumulative Returns and
+Drawdowns</a></li>
+<li><a href="#sma-scenarios" id="toc-sma-scenarios">SMA
+Scenarios</a></li>
+<li><a href="#rolling-returns" id="toc-rolling-returns">Rolling
+Returns</a></li>
+<li><a href="#fundamental-ratios"
+id="toc-fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares"
+id="toc-constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries" id="toc-ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/HousingFinanceCompany.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/HousingFinanceCompany.fan.CAP_WT.png" /></p>
+<p><img src="plots/HousingFinanceCompany.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/HousingFinanceCompany.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/HousingFinanceCompany.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/HousingFinanceCompany.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/HousingFinanceCompany.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-9b74932d76906e351021" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9b74932d76906e351021">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["0.88%","1.36%"],["4.15%","4.31%"],["8.62%","9.66%"],["6.38%","8.58%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/HousingFinanceCompany.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/HousingFinanceCompany.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-bb8dea5b8b41fd47137e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bb8dea5b8b41fd47137e">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJAJHFL.html\" target=\"_blank\">BAJAJHFL<\/a>","<a href=\"/reports02/eq-in/risk/in.LICHSGFIN.html\" target=\"_blank\">LICHSGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.PNBHOUSING.html\" target=\"_blank\">PNBHOUSING<\/a>","<a href=\"/reports02/eq-in/risk/in.AADHARHFC.html\" target=\"_blank\">AADHARHFC<\/a>","<a href=\"/reports02/eq-in/risk/in.SAMMAANCAP.html\" target=\"_blank\">SAMMAANCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.APTUS.html\" target=\"_blank\">APTUS<\/a>","<a href=\"/reports02/eq-in/risk/in.HOMEFIRST.html\" target=\"_blank\">HOMEFIRST<\/a>","<a href=\"/reports02/eq-in/risk/in.CANFINHOME.html\" target=\"_blank\">CANFINHOME<\/a>","<a href=\"/reports02/eq-in/risk/in.AAVAS.html\" target=\"_blank\">AAVAS<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIASHLTR.html\" target=\"_blank\">INDIASHLTR<\/a>","<a href=\"/reports02/eq-in/risk/in.REPCOHOME.html\" target=\"_blank\">REPCOHOME<\/a>","<a href=\"/reports02/eq-in/risk/in.GICHSGFIN.html\" target=\"_blank\">GICHSGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.SRGHFL.html\" target=\"_blank\">SRGHFL<\/a>"],[0.08966671645838682,0.1539231923307188,0.1933728590987284,0.05203693195453162,0.1177259196291249,0.09974084887237886,0.1108022388729414,0.07119844265665919,0.05618667299630393,0.03426480300380991,0.01489162045704084,0.004340523458494195,0.001849230210881216],[0.3041282906692317,0.1269206462458852,0.1208178301154976,0.0953289642461933,0.08025652803289469,0.06355365790573213,0.05411085323944349,0.05070283403358684,0.05036748144034767,0.03772138742254481,0.01064670016573251,0.003413601044334829,0.002031225438575231]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":13,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,13,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-84d2c5991b0d078c5059" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-84d2c5991b0d078c5059">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJAJHFL.html\" target=\"_blank\">BAJAJHFL<\/a>","<a href=\"/reports02/eq-in/risk/in.LICHSGFIN.html\" target=\"_blank\">LICHSGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.PNBHOUSING.html\" target=\"_blank\">PNBHOUSING<\/a>","<a href=\"/reports02/eq-in/risk/in.AADHARHFC.html\" target=\"_blank\">AADHARHFC<\/a>","<a href=\"/reports02/eq-in/risk/in.SAMMAANCAP.html\" target=\"_blank\">SAMMAANCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.APTUS.html\" target=\"_blank\">APTUS<\/a>","<a href=\"/reports02/eq-in/risk/in.HOMEFIRST.html\" target=\"_blank\">HOMEFIRST<\/a>","<a href=\"/reports02/eq-in/risk/in.CANFINHOME.html\" target=\"_blank\">CANFINHOME<\/a>","<a href=\"/reports02/eq-in/risk/in.AAVAS.html\" target=\"_blank\">AAVAS<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIASHLTR.html\" target=\"_blank\">INDIASHLTR<\/a>","<a href=\"/reports02/eq-in/risk/in.REPCOHOME.html\" target=\"_blank\">REPCOHOME<\/a>","<a href=\"/reports02/eq-in/risk/in.GICHSGFIN.html\" target=\"_blank\">GICHSGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.SRGHFL.html\" target=\"_blank\">SRGHFL<\/a>"],[null,null,null,null,null,null,null,null,null,null,null,null,null],[21.41075751959818,30.88288603847406,12.38182362071917,0.08768610622902467,7.811802235468057,4.924626189199859,2.131924277101458,5.078987293758329,2.364567823198425,1.030885089537787,1.907184975104364,0.009589367336252742,0.05299697609875979],[23.33238420835059,28.74601996235968,12.78781561797736,0.07020058389182715,6.8104276254796,4.296985743685233,2.76984724280243,5.26332362684758,2.948499584495486,1.340455531133125,2.218635498317125,0.007410032179697092,0.09491581207576424],[34.22301504667635,37.31572850202295,15.1795951669915,0.07191866161421842,9.488287243999343,0.06198921089241369,0.3492384468336673,0.06602595308981744,0.0431087649098567,0.03290511385444453,3.157411203926377,0.008831645364222793,0.00194503982483444],[43.96968857105972,46.83120882356313,19.5935383489055,0.09378101006400809,-15.07297746134727,0.07988538883212816,0.4668201191200212,0.08598051139615265,0.05543377610488245,0.04308943338864604,3.840402376498506,0.01050116723679394,0.002647935177783319]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-03-31<\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n      <th>2026-03-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":13,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":5,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4,5]},{"name":"SYMBOL","targets":0},{"name":"2025-03-31","targets":1},{"name":"2025-06-30","targets":2},{"name":"2025-09-30","targets":3},{"name":"2025-12-31","targets":4},{"name":"2026-03-31","targets":5}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,13,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render","options.columnDefs.4.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-de6e6bf26acd28631926" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-de6e6bf26acd28631926">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJAJHFL.html\" target=\"_blank\">BAJAJHFL<\/a>","<a href=\"/reports02/eq-in/risk/in.LICHSGFIN.html\" target=\"_blank\">LICHSGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.PNBHOUSING.html\" target=\"_blank\">PNBHOUSING<\/a>","<a href=\"/reports02/eq-in/risk/in.AADHARHFC.html\" target=\"_blank\">AADHARHFC<\/a>","<a href=\"/reports02/eq-in/risk/in.SAMMAANCAP.html\" target=\"_blank\">SAMMAANCAP<\/a>","<a href=\"/reports02/eq-in/risk/in.APTUS.html\" target=\"_blank\">APTUS<\/a>","<a href=\"/reports02/eq-in/risk/in.HOMEFIRST.html\" target=\"_blank\">HOMEFIRST<\/a>","<a href=\"/reports02/eq-in/risk/in.CANFINHOME.html\" target=\"_blank\">CANFINHOME<\/a>","<a href=\"/reports02/eq-in/risk/in.AAVAS.html\" target=\"_blank\">AAVAS<\/a>","<a href=\"/reports02/eq-in/risk/in.INDIASHLTR.html\" target=\"_blank\">INDIASHLTR<\/a>","<a href=\"/reports02/eq-in/risk/in.REPCOHOME.html\" target=\"_blank\">REPCOHOME<\/a>","<a href=\"/reports02/eq-in/risk/in.GICHSGFIN.html\" target=\"_blank\">GICHSGFIN<\/a>","<a href=\"/reports02/eq-in/risk/in.SRGHFL.html\" target=\"_blank\">SRGHFL<\/a>"],[null,null,null,null,null,null,null,null,null,null,null,null,null],[20.24880479584276,35.76329864384751,10.06568642028319,0.06347340483450882,11.07802084575284,2.46524476375384,1.714873655008122,5.089388129375277,1.234090930035295,1.359198008584829,1.527682167661577,0.01879081914737818,0.1467829068820708],[22.95688975493628,35.33496677174389,10.75459126907594,0.05469882820813381,6.903304979526644,2.255364617980874,1.584404385766939,5.30083576410067,1.981337946446494,1.352209282914161,1.898755052383792,0.01373976797435825,0.1926915729765745],[30.83172358620611,41.45073750728609,11.95071741942766,0.0504192462268415,12.76853737637571,0.03031591242658414,0.2617671175336655,0.05930637394111983,0.03730625521742363,0.02072906789024655,2.520339344085968,0.01548395855868439,0.002616834823893974],[31.89504892532728,41.23003357161077,12.15385118362701,0.05248502064780245,11.67025637733253,0.03181122191934952,0.2736148516766291,0.06025485389756329,0.03834940683701312,0.02184232492632865,2.554167728212454,0.01546620193315632,0.002818332052111829]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-03-31<\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n      <th>2026-03-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":13,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":5,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4,5]},{"name":"SYMBOL","targets":0},{"name":"2025-03-31","targets":1},{"name":"2025-06-30","targets":2},{"name":"2025-09-30","targets":3},{"name":"2025-12-31","targets":4},{"name":"2026-03-31","targets":5}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,13,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render","options.columnDefs.4.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time"
+class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over
+time?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The Evolution of Challenges</strong></p>
+<p>Historically, housing finance companies have had to navigate
+significant legacy hurdles, intense regional competition, and
+operational bottlenecks, which have steadily evolved over time:</p>
+<ul>
+<li><strong>Overcoming Legacy Exposures and Legal Hurdles:</strong> Some
+companies have faced prolonged challenges stemming from their past
+leadership and legacy loan books. For example, Sammaan Capital has been
+dealing with a Public Interest Litigation (PIL) filed in 2019 regarding
+alleged quid pro quo transactions involving its erstwhile promoter
+[1-3]. Over the years, the challenge has evolved from an acute crisis to
+a sustained, methodical run-down of this legacy book, which has allowed
+the company to successfully reduce its debt by Rs 76,000 crores and
+distance itself entirely from the former promoter [4-6].</li>
+<li><strong>Legacy Book Run-Downs Masking Growth:</strong> For
+established players like Repco Home Finance, a persistent challenge is
+that high volumes of new loan disbursements are often offset by the
+rapid run-down of their older, mature loan books due to prepayments and
+balance transfers (BT-outs) [7-10]. Because of these continuous
+run-downs, achieving double-digit Asset Under Management (AUM) growth
+remains a structural challenge, even when monthly disbursements reach
+record highs [7, 10].</li>
+<li><strong>Asset Quality and Sticky Stage 2 Assets:</strong> Managing
+stressed assets has required long-term strategic shifts. Previously,
+Stage 2 assets for affordable housing financiers were alarmingly
+high—historically hovering around 14% for Repco [11]. Over time, this
+challenge has been systematically addressed by deploying dedicated
+collection verticals and recovery agencies, effectively bringing these
+assets down to 8%, with a further target of 7.5% [11-13].</li>
+<li><strong>Geographic and Administrative Bottlenecks:</strong>
+Companies have faced hurdles in specific regional markets. For instance,
+growing competitive intensity from rival firms expanding into
+strongholds like Tamil Nadu has forced legacy players to rethink their
+market dominance [14, 15]. Furthermore, local administrative issues,
+such as unresolved e-Khata property documentation problems in Karnataka,
+have actively hindered disbursement speeds and branch growth in those
+specific areas [16, 17].</li>
+</ul>
+<p><strong>The Evolution of Opportunities</strong></p>
+<p>As companies have adapted to macroeconomic shifts and technological
+advancements, their growth opportunities have expanded far beyond
+traditional mortgage lending:</p>
+<ul>
+<li><strong>Transformative Global Investments and
+Diversification:</strong> The influx of massive global capital is
+fundamentally reshaping the sector’s scale. A landmark example is the
+Abu Dhabi-based International Holding Company (IHC) acquiring a 41.5%
+stake in Sammaan Capital for approximately $1 billion [18]. This backing
+provides an opportunity for the company to transition from a pure-play
+mortgage financier into a diversified Non-Banking Financial Company
+(NBFC) [19]. Over the next few years, this enables the expansion of
+their product suite from 4 to over 15 loan products (including MSME,
+personal, business, and gold loans) and scaling their network from 200+
+to 1,500+ branches by FY 2029 [20].</li>
+<li><strong>Technological Automation and AI Integration:</strong> The
+technological landscape has evolved from basic digital record-keeping to
+advanced, enterprise-wide Artificial Intelligence (AI) deployments.
+Aadhar Housing Finance is currently moving beyond pilot programs to
+fully integrate <strong>AI-led underwriting co-pilots</strong>,
+drastically improving their speed, risk management, and governance [21].
+Similarly, Aavas Financiers has utilized its technological
+transformation to cut the turnaround time from loan login to sanction
+down from 13 days to just 6 days [22]. Lenders are also deploying mobile
+applications and APIs for sourcing, field investigations, and digital
+KYC, while still carefully balancing this with the “human touch”
+necessary for assessing low-income, cash-salaried borrowers
+[23-26].</li>
+<li><strong>Favorable Government Policies and Subsidies:</strong>
+Macroeconomic policies have matured to provide robust tailwinds for the
+affordable housing market. The introduction of the <strong>Pradhan
+Mantri Awas Yojana (PMAY) 2.0 Interest Subsidy Scheme</strong> has
+significantly improved housing affordability for first-time buyers in
+the Economically Weaker Section (EWS) and Low-Income Group (LIG)
+segments [27]. Thousands of customers are already receiving these
+interest subsidies, which, alongside the benefits of the GST 2.0
+framework that reduces construction costs, is heavily driving credit
+demand [22, 27].</li>
+<li><strong>Broadened Co-Lending Frameworks:</strong> Regulatory
+evolutions have opened up highly lucrative co-lending opportunities.
+New, more inclusive co-lending regulations allow housing finance
+companies to seamlessly partner with various financial
+entities—including banks and all-India financial institutions—to acquire
+assets [28, 29]. These asset-light models allow companies to cover a
+wider suite of loan products without absorbing the full balance sheet
+risk, heavily boosting operational efficiency and expected cost savings
+[30-32].</li>
+<li><strong>Strategic Geographic Expansion:</strong> To counter regional
+competition, companies are evolving their footprints by heavily
+targeting under-penetrated Tier 2 and Tier 3 markets. Financiers are
+actively shifting their growth focus toward emerging urban regions in
+the Eastern and Western sections of India, specifically targeting states
+like Maharashtra, Madhya Pradesh, Rajasthan, Uttar Pradesh, and
+Uttarakhand [33-37].</li>
+</ul>
+<p><em><a href="footnote/Housing%20Finance%20Company.1.txt">sources</a>
+</em></p>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry"
+class="section level3">
+<h3><strong>What are the headwinds affecting this
+industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>The implementation of the new Labour Codes</strong> is a
+significant regulatory headwind affecting profitability across the
+housing finance industry. Following the Government of India’s
+notification of four new Labour Codes (which consolidate 29 existing
+labor laws), multiple companies have had to estimate and provision for
+increased employee benefit expenses, particularly related to past
+service costs, gratuity, and leave encashment [1-5]. For instance,
+Aadhar Housing Finance reported an incremental impact of Rs. 15.92
+crores towards gratuity and compensated absences [5], while Repco Home
+Finance recognized approximately Rs. 5 crores for similar provisions [1,
+6]. PNB Housing Finance and Aptus Value Housing Finance also cited
+financial impacts and one-time expenses related to these labor code
+changes [2, 4].</p>
+<p><strong>Legacy book rundowns and balance transfer-outs
+(BT-outs)</strong> pose a major structural challenge to maintaining
+strong Asset Under Management (AUM) growth. Older institutions are
+finding that despite logging high new loan disbursements, their net AUM
+growth remains muted because older, maturing loans are being rapidly
+paid down or transferred to competitors. Repco Home Finance noted that
+their monthly rundown is between Rs. 170 crores to Rs. 200 crores, which
+severely offsets their new disbursements [7-10]. Because the company is
+25 years old, a significant portion of its older book has high principal
+appropriation, making the legacy book effect an ongoing structural
+headwind [8, 11, 12]. Similarly, Sammaan Capital continues to direct
+high priority toward managing and running down its legacy loan exposures
+inherited from an earlier era [13-15].</p>
+<p><strong>Intense regional competition</strong> is pressuring
+incumbents to defend their market share and forcing them to pivot their
+growth strategies. The entry and expansion of new players into specific
+geographic strongholds have heightened competitive intensity. For
+example, Repco Home Finance acknowledged growing competition in Tamil
+Nadu due to companies like Aavas expanding their footprint in the region
+[16-19]. To combat this, companies are being forced to aggressively
+focus on expanding into non-traditional states (such as western and
+eastern India) to dilute their regional concentration [17, 19].</p>
+<p><strong>Regional administrative and bureaucratic bottlenecks</strong>
+can unexpectedly stall disbursement targets. Repco Home Finance
+specifically highlighted that its growth in the state of Karnataka has
+been slower than expected due to unresolved “e-Khata” property
+documentation issues [20, 21]. Such localized administrative hurdles
+prevent housing finance companies from achieving their planned
+disbursement volumes in affected states [20, 21].</p>
+<p><strong>Macroeconomic uncertainties and seasonal collection
+volatility</strong> remain persistent risks. Home First Finance noted
+that the industry must navigate global uncertainties arising from trade,
+tariffs, and geopolitics, while also progressing out of a generally
+challenging credit cycle [22, 23]. Aavas Financiers similarly referenced
+operating within an overall “tight macro environment” [24]. Furthermore,
+localized and seasonal factors can disrupt cash flows; Aptus Value
+Housing Finance reported experiencing seasonal volatility in
+collections—particularly around festive periods—which caused a slight
+uptick in early delinquency metrics like 30+ Days Past Due (DPD)
+[25].</p>
+<p><em><a href="footnote/Housing%20Finance%20Company.2.txt">sources</a>
+</em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry"
+class="section level3">
+<h3><strong>What are the key things to understand about this
+industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The housing finance and Non-Banking Financial Company (NBFC) industry
+is undergoing significant transformation, characterized by distinct
+strategic shifts in target demographics, product offerings, technology
+adoption, and funding models. <strong>The key things to understand about
+this industry include:</strong></p>
+<p><strong>1. Focus on Affordable, Low, and Middle-Income
+Segments</strong> The industry is heavily focused on penetrating the
+affordable housing market, specifically targeting first-time homebuyers,
+the Economically Weaker Section (EWS), and Low-Income Groups (LIG)
+[1-3]. Companies are strategically expanding their footprint into
+semi-urban, rural, and Tier 2/3 geographies to capture demand from these
+underserved communities [2-4]. Because a large portion of these
+customers—such as blue-collar workers and cash-salaried individuals—have
+limited access to formal banking credit, housing finance companies fill
+a critical gap in the market [5, 6].</p>
+<p><strong>2. Product Diversification Beyond Pureplay Mortgages</strong>
+While retail mortgages remain the core of the business, companies are
+evolving from pureplay mortgage lenders into diversified NBFCs [7]. To
+enhance their Return on Assets (RoA) and Return on Equity (RoE), lenders
+are broadening their product suites to include mid-market and low-income
+loan assets, such as secured and unsecured MSME financing, personal
+loans, business loans, gold loans, and Loans Against Property (LAP)
+[7-9].</p>
+<p><strong>3. Integration of Advanced Technology vs. “Touch and Feel”
+Underwriting</strong> <strong>Technological adoption is a major growth
+enabler</strong>, with institutions transitioning to digital-first
+operating models [3]. Companies are implementing comprehensive digital
+systems, including AI-led underwriting co-pilots, digital lead
+onboarding, e-KYC, e-payment gateways for disbursals, and the
+utilization of account aggregator data and credit bureau insights [3,
+10, 11]. Some companies execute over 92% of their agreements digitally
+and route more than 94% of collections through digital channels
+[11].</p>
+<p>However, <strong>traditional personal interaction remains critical
+for risk assessment</strong> [5]. Because the target customer base often
+lacks vanilla, easily verifiable salaried profiles, a 100% tech-driven
+approach is not always feasible [5]. The physical “touch and feel” of
+the customer through personal discussions and field investigations is
+essential to properly assess the risk of self-employed and low-income
+borrowers [5, 12].</p>
+<p><strong>4. Asset-Light Models and Diverse Sourcing Channels</strong>
+To scale responsibly, companies are increasingly adopting
+<strong>asset-light strategies and co-lending arrangements</strong> [13,
+14]. Co-lending regulations have become highly inclusive, allowing
+housing finance companies to technically integrate and originate loans
+in partnership with banks, other NBFCs, and financial institutions
+across all loan types [14-16].</p>
+<p>On the origination front, growth is driven by highly diversified
+sourcing channels. Lenders maintain a balanced mix of internal direct
+sales teams, brand sales managers, and third-party empanelments like
+Direct Selling Agents (DSAs) and connectors to drive loan disbursements
+[17-19]. For instance, some firms actively balance their growth to come
+50% from internal teams and 50% from DSA channels [20, 21].</p>
+<p><strong>5. Robust Funding and Asset Liability Management
+(ALM)</strong> Access to diversified funding at competitive pricing is a
+cornerstone of the industry [22]. Companies secure capital through
+various avenues, including bank term loans, National Housing Bank (NHB)
+financing, External Commercial Borrowings (ECB), issuance of
+Non-Convertible Debentures (NCDs), and Pass-Through Certificates (PTCs)
+[3, 23]. Maintaining a stable, well-matched Asset Liability Management
+(ALM) position with adequate liquidity in all maturity buckets is an
+area of high focus to ensure companies can reliably fuel their
+disbursement requirements [24-26].</p>
+<p><strong>6. Stringent Asset Quality and Legacy Book
+Resolution</strong> <strong>Managing asset quality and reducing credit
+costs</strong> are ongoing priorities [27, 28]. Companies dedicate
+significant resources to running down “legacy” loan books—older
+exposures that do not align with their current forward-looking,
+retail-focused strategies [29-31]. To improve portfolio health,
+management teams actively focus on recovering cash and reducing
+non-performing assets (NPAs), specifically targeting the steady
+reduction of sticky “Stage 2” and “Stage 3” bad assets through dedicated
+collection verticals and legal actions like SARFAESI notices [28,
+32-34].</p>
+<p><em><a href="footnote/Housing%20Finance%20Company.3.txt">sources</a>
+</em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry"
+class="section level3">
+<h3><strong>What are the tailwinds affecting this
+industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p><strong>Favorable Macroeconomic Landscape and Formalization</strong>
+The housing finance and NBFC industry is operating within a highly
+resilient Indian economy, which remains one of the fastest-growing major
+economies globally despite global uncertainties stemming from trade,
+tariffs, and geopolitics [1, 2]. Recent macroeconomic developments,
+including progress on India-US trade engagements, have further
+strengthened the country’s economic outlook [3]. Furthermore, the
+increasing formalization of the Indian economy, paired with strong
+regulatory oversight from the Reserve Bank of India (RBI), has
+positioned NBFCs perfectly to advance financial inclusion and bridge the
+gap between traditional banking and rising consumer credit demand
+[2].</p>
+<p><strong>Government Policies and Subsidy Schemes</strong> A highly
+supportive government policy landscape acts as one of the most
+significant tailwinds for the sector, particularly for affordable and
+low-income housing [1, 4]. The government’s Atmanirbhar Union Budget and
+its continued focus on capital expenditure (capex), affordable housing,
+and developing tier-2 and tier-3 markets reinforce a positive structural
+backdrop for Housing Finance Companies (HFCs) and NBFCs [3].</p>
+<p>Crucially, government initiatives like the <strong>Pradhan Mantri
+Awas Yojana (PMAY) 2.0</strong> and its Interest Subsidy Scheme (ISS)
+are playing a massive role in driving consumer demand [4, 5]. By
+providing direct interest subsidies, this scheme has substantially
+improved housing affordability and bolstered sentiment for first-time
+homebuyers, particularly within the Economically Weaker Section (EWS)
+and Low-Income Group (LIG) segments [4, 5]. Furthermore, industry
+leaders anticipate that forthcoming Union Budgets will continue to
+provide additional boosts and thrusts to the housing sector to support
+sustained demand [6, 7].</p>
+<p><strong>Tax Frameworks and Construction Costs</strong> The real
+estate and housing finance market is directly benefiting from the
+ongoing advantages of the <strong>GST 2.0 framework</strong> [4]. This
+optimized tax structure reduces overall construction costs for property
+developers, thereby placing the housing market on a much stronger
+structural footing and encouraging highly resilient buyer sentiment
+[4].</p>
+<p><strong>Conducive Interest Rates and Liquidity</strong> The sector is
+currently experiencing a highly favorable interest rate environment and
+supportive market liquidity, which are collectively improving the
+conditions for robust credit growth [3, 5]. Reductions in overall
+borrowing costs for housing financiers have directly supported margin
+expansion and increased profitability across the industry [6].</p>
+<p><strong>Firm Property Prices and Sustained Demand</strong> Overall
+market dynamics point to sustained housing demand and healthy credit
+growth [6, 7]. This resilient homebuyer sentiment is further backed by
+firm and stable property prices, establishing a strong, low-risk
+foundation for lending activities and sustainable expansion in the
+housing finance sector [3].</p>
+<p><em><a href="footnote/Housing%20Finance%20Company.4.txt">sources</a>
+</em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry"
+class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-16 </em></p>
+<p>The general outlook for the housing finance and Non-Banking Financial
+Company (NBFC) industry is highly positive, driven by strong
+macroeconomic tailwinds, robust credit demand, and highly supportive
+government policies.</p>
+<p><strong>Economic Resilience and the Role of NBFCs</strong> India
+remains one of the world’s fastest-growing major economies,
+demonstrating continued resilience despite global uncertainties arising
+from trade, tariffs, and geopolitics [1, 2]. Within this formalized
+economic landscape, the NBFC sector is playing a pivotal role in
+bridging the gap between traditional banking and the rising demand for
+credit [1]. Bolstered by strong regulatory oversight from the Reserve
+Bank of India, NBFCs and Housing Finance Companies (HFCs) are
+well-positioned to advance financial inclusion and sustain the country’s
+growth momentum [1, 3].</p>
+<p><strong>Supportive Government Policies and Initiatives</strong> The
+policy landscape has turned highly favorable, reinforcing a positive
+structural backdrop for housing finance, especially in the affordable
+housing segment and tier-2 and tier-3 markets [2, 3]. Key government
+drivers include: * <strong>Pradhan Mantri Awas Yojana (PMAY)
+2.0:</strong> The Interest Subsidy Scheme (ISS) under PMAY 2.0 is
+playing a critical role in driving demand across the low-income and
+affordable housing segments [4]. By improving affordability for
+first-time homebuyers—particularly in the Economically Weaker Section
+(EWS) and Low-Income Group (LIG) segments—the scheme continues to
+bolster homebuyer sentiment and drive disbursement growth [4, 5]. *
+<strong>GST 2.0 Framework:</strong> The ongoing benefits of the GST 2.0
+framework are actively reducing construction costs for developers,
+placing the housing market on a very strong footing as the industry
+moves deep into 2026 [4]. * <strong>Union Budget and Capex
+Thrust:</strong> Initiatives from the Atmanirbhar Union Budget, along
+with a continued focus on capital expenditure, are expected to provide
+an additional boost to the housing sector [3, 6]. This continuous
+government thrust is anticipated to support sustained demand and healthy
+credit growth moving forward [6].</p>
+<p><strong>Favorable Liquidity and Interest Rate Environment</strong>
+Recent macroeconomic developments, alongside progress in India-US trade
+engagements, have strengthened India’s overall outlook by supporting
+market liquidity and creating a conducive interest rate environment [3].
+This supportive rate backdrop, combined with firm property prices and
+resilient buyer sentiment, is actively improving the conditions for
+credit growth across the industry [3, 4].</p>
+<p><em><a href="footnote/Housing%20Finance%20Company.5.txt">sources</a>
+</em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-07-17" />
+
+<title>Trading - Metals</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.9/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Trading - Metals</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">July 17, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns" id="toc-annual-returns">Annual
+Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns"
+id="toc-cumulative-returns-and-drawdowns">Cumulative Returns and
+Drawdowns</a></li>
+<li><a href="#sma-scenarios" id="toc-sma-scenarios">SMA
+Scenarios</a></li>
+<li><a href="#rolling-returns" id="toc-rolling-returns">Rolling
+Returns</a></li>
+<li><a href="#fundamental-ratios"
+id="toc-fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares"
+id="toc-constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries" id="toc-ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/TradingMetals.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/TradingMetals.fan.CAP_WT.png" /></p>
+<p><img src="plots/TradingMetals.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/TradingMetals.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/TradingMetals.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/TradingMetals.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/TradingMetals.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-cd3efbd0d4ac7e9b4717" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-cd3efbd0d4ac7e9b4717">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["2.71%","4.8%"],["5.57%","9.61%"],["14.5%","23.88%"],["19.59%","42.22%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/TradingMetals.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/TradingMetals.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-cab7722446124454497f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-cab7722446124454497f">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.LLOYDSENT.html\" target=\"_blank\">LLOYDSENT<\/a>","<a href=\"/reports02/eq-in/risk/in.SGMART.html\" target=\"_blank\">SGMART<\/a>","<a href=\"/reports02/eq-in/risk/in.NRL.html\" target=\"_blank\">NRL<\/a>","<a href=\"/reports02/eq-in/risk/in.BMWVENTLTD.html\" target=\"_blank\">BMWVENTLTD<\/a>","ABANSENT","BONLON","<a href=\"/reports02/eq-in/risk/in.ASHOKAMET.html\" target=\"_blank\">ASHOKAMET<\/a>"],[0.4425152281196907,0.5147766039023635,0.02039963135194606,0.01376245573146421,0.004934913667862856,0.001931042309283988,0.001680124917388725],[0.5578536461132014,0.3704207967659341,0.03478282086864262,0.02333839557712662,0.008876452868937734,0.003069155891702146,0.00165873191445533]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":7,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-463d187faf6922df59e1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-463d187faf6922df59e1">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.LLOYDSENT.html\" target=\"_blank\">LLOYDSENT<\/a>","<a href=\"/reports02/eq-in/risk/in.SGMART.html\" target=\"_blank\">SGMART<\/a>","<a href=\"/reports02/eq-in/risk/in.NRL.html\" target=\"_blank\">NRL<\/a>","<a href=\"/reports02/eq-in/risk/in.BMWVENTLTD.html\" target=\"_blank\">BMWVENTLTD<\/a>","BONLON","<a href=\"/reports02/eq-in/risk/in.ASHOKAMET.html\" target=\"_blank\">ASHOKAMET<\/a>"],[81.24741159964111,null,2.103228823844082,null,null,0.3455403896566062],[67.64501228838196,13.02117017591589,2.457253720763939,7.645574811107693,null,0.791058789021779],[80.16562956960314,19.62054599758592,0.0430380270964617,0.1506279448121505,null,0.0201584609023194],[70.0632336805879,29.80663499252873,0.03219875606205744,0.0740030582680814,0.003414732072107365,0.02051478048113056]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n      <th>2026-03-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3},{"name":"2026-03-31","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-80be2d5c956c6450aa47" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-80be2d5c956c6450aa47">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.LLOYDSENT.html\" target=\"_blank\">LLOYDSENT<\/a>","<a href=\"/reports02/eq-in/risk/in.SGMART.html\" target=\"_blank\">SGMART<\/a>","<a href=\"/reports02/eq-in/risk/in.NRL.html\" target=\"_blank\">NRL<\/a>","<a href=\"/reports02/eq-in/risk/in.BMWVENTLTD.html\" target=\"_blank\">BMWVENTLTD<\/a>","BONLON","<a href=\"/reports02/eq-in/risk/in.ASHOKAMET.html\" target=\"_blank\">ASHOKAMET<\/a>"],[13.2524349924039,null,1.081214095920523,null,null,0.3044441857427567],[8.599010550158118,53.07605616628882,0.8435782607264452,20.31647215081755,null,0.1589446076083799],[13.40106589876074,86.17190457659547,0.02519791212990304,0.3987634554541872,null,0.003068157059697397],[14.48300070625502,85.29243782337993,0.01780716639967487,0.1878717956471748,0.01659806026540705,0.002284448052798967]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n      <th>2026-03-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":6,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3},{"name":"2026-03-31","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time"
+class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over
+time?</strong></h3>
+<p><em>asof: 2026-04-14 </em></p>
+<p>The challenges and opportunities across the featured companies have
+evolved significantly over time, characterized by a strategic shift from
+navigating volatile commodity markets and macro-economic softness toward
+capturing higher-margin, specialized growth sectors.</p>
+<p>Here is a detailed breakdown of how these dynamics have evolved for
+the specific companies mentioned in the sources:</p>
+<p><strong>SG Mart Limited</strong> * <strong>Initial
+Challenges:</strong> In the third quarter of FY’26, SG Mart faced a
+tough macro environment plagued by a slowdown in construction and
+government capital expenditure [1]. This led to softness in demand,
+which resulted in “push sales” and forced the company to offer discounts
+to its customers [2]. Additionally, the company was hit hard by a sharp
+decline in steel prices (dropping by Rs. 2,500 to Rs. 3,000 per ton),
+which caused an inventory loss of approximately Rs. 20 crores as the
+company was carrying 20 to 25 days of inventory [2, 3]. Geopolitical
+tensions also impacted the broader global commodity pricing landscape
+[4, 5]. On an operational level, excessive rains caused a months-long
+delay in the civil work for their upcoming Jaipur service center [6]. *
+<strong>Evolving Opportunities and Mitigations:</strong> *
+<strong>Market Reversal and Risk Management:</strong> By January 2026,
+the correction in steel prices was arrested and prices began to rise,
+allowing the company to pull back customer discounts and restore its
+desired margins in its B2B Metal Trading and Service Centre businesses
+[2, 7, 8]. To mitigate future risks, the company maintains minimum
+inventory levels and operates on a pass-through model linked to domestic
+and international steel prices [5, 9]. * <strong>Scaling Up High-Margin
+Sectors:</strong> To insulate itself from raw material volatility, SG
+Mart is aggressively expanding its higher-margin product lines. The
+company is rapidly scaling its Renewable Structures (solar) business,
+which has amassed an order book of over Rs. 300 crores [10, 11]. They
+are also tripling their solar structure manufacturing capacity with new
+plants in Raipur and Pune [11]. * <strong>New Product Lines and
+Footprint Expansion:</strong> SG Mart successfully launched new,
+high-margin open profile structures under the APL Apollo brand—such as
+solar structures for residential rooftops, cable trays, slotted angles,
+and purlins—which are expected to generate Rs. 6,000 to Rs. 7,000 per
+ton in EBITDA [8, 12-14]. Furthermore, the company is aggressively
+expanding its physical footprint, moving from 5 operational service
+centers to a planned 20 locations across India by FY’28 or early FY’29
+[15-18]. * <strong>Structural Financial Resilience:</strong> Management
+noted that as the company’s absolute EBITDA grows from Rs. 103 crores in
+FY’25 to a targeted Rs. 350 crores in FY’27, the proportional impact of
+steel price fluctuations on the company’s bottom line will become
+increasingly insignificant [19, 20]. To support this long-term growth,
+SG Mart is also amending its Employee Stock Option Scheme (ESOP) to
+extend benefits to employees of its subsidiaries and associate
+companies, aiming to attract and retain the talent necessary for this
+expansion [21].</p>
+<p><strong>BMW Ventures Limited</strong> * <strong>Initial
+Challenges:</strong> Similar to SG Mart, BMW Ventures has had to
+navigate a highly volatile steel price environment in its operations
+[22]. * <strong>Evolving Opportunities and Mitigations:</strong> *
+<strong>Backward Integration as a Competitive Edge:</strong> BMW
+Ventures has turned the challenge of price volatility into an
+opportunity. By utilizing a backward-integrated business model, the
+company provides its clients with superior supply reliability and
+pricing comfort, which has become a decisive factor in winning large
+contracts [22]. * <strong>Transition to Large-Scale Projects:</strong>
+The company is undergoing a structural scale-up by entering the
+large-format industrial and infrastructure market [23, 24]. This is
+highlighted by their recent milestone achievement of securing a ₹36
+crore order for Fabricated Steel Products for the BHEL Project, which is
+part of a broader ₹141 crore project opportunity [23]. * <strong>Margin
+Expansion:</strong> The company is making a calibrated transition toward
+higher-margin fabricated steel products, particularly Pre-Engineered
+Buildings (PEBs) and Railway Steel Girders [25, 26]. Combined with a
+strengthened balance sheet and an ongoing deleveraging strategy, this
+shift toward high-margin products is expected to be a major driver of
+bottom-line growth, allowing the company to target a 30% to 35% growth
+trajectory through FY26 and FY27 [26-28].</p>
+<p><strong>Nupur Recyclers Limited</strong> * <strong>Evolving
+Opportunities:</strong> * <strong>Industry Tailwinds:</strong> Nupur
+Recyclers is benefiting from strong macro tailwinds in the Indian metal
+recycling industry, which is experiencing robust growth driven by rising
+demand for recycled materials and an increase in sustainability
+initiatives [29]. * <strong>Operational Optimization:</strong> Over
+time, the company has successfully improved its profitability through
+disciplined cost management and enhanced operational efficiencies [29].
+* <strong>Strategic Diversification:</strong> The company is
+capitalizing on new opportunities by investing in cutting-edge recycling
+technologies and expanding into related segments, including a strategic
+entry into the auto components manufacturing sector [30]. Furthermore,
+its subsidiary, Nupur Extrusion Private Limited, has opened a new
+manufacturing facility in Haryana specifically designed to supply
+materials to leading businesses engaged in solar plant manufacturing and
+Original Equipment Manufacturer (OEM) operations, further reinforcing
+its footprint in high-growth industries [31].</p>
+<p><em><a href="footnote/Trading%20-%20Metals.1.txt">sources</a>
+</em></p>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry"
+class="section level3">
+<h3><strong>What are the headwinds affecting this
+industry?</strong></h3>
+<p><em>asof: 2026-04-14 </em></p>
+<p><strong>Declining and Volatile Steel Prices</strong> A primary
+headwind affecting the metal trading, fabrication, and downstream
+structures industry is the persistent volatility and sharp correction in
+steel prices [1, 2]. The industry has faced a tough environment with
+steel prices experiencing significant declines over the past two years,
+reaching a near six-year low by the end of December 2025 [3, 4]. This
+downward trend forces companies holding inventory to absorb substantial
+financial hits. For example, SG Mart reported an inventory loss of
+approximately Rs. 20 crores due to holding 20-25 days of inventory
+during a sharp steel price correction of Rs. 2,500 to Rs. 3,000 per ton
+[5]. Navigating this “volatile steel price environment” is a critical
+challenge, making supply reliability and pricing comfort decisive
+factors for clients awarding large project mandates [2].</p>
+<p><strong>Softness in Demand and Margin Pressures</strong> Alongside
+falling prices, the industry is grappling with a general softness in
+demand for steel downstream products [1, 6]. This lack of demand has
+created a challenging sales environment characterized by “push sales,”
+where companies are forced to offer discounts to their customers just to
+move volume [7, 8]. Consequently, these discounts put downward pressure
+on earnings and squeeze the EBITDA margins across both B2B metal trading
+and service center business segments [7-9].</p>
+<p><strong>Slowdown in Construction and Government CAPEX</strong> The
+overall macroeconomic environment is contributing to the weak demand,
+specifically due to an ongoing slowdown in the construction sector [10].
+Furthermore, a noted deceleration in government capital expenditure
+(CAPEX) is directly impacting the pipeline and execution of
+infrastructure and construction-linked projects, which are vital
+end-markets for structural steel and fabricated products [10, 11].</p>
+<p><strong>Sudden Price Hikes Delaying Client Orders</strong> While
+declining prices cause inventory losses, sudden price increases also act
+as a headwind by stalling business momentum. When steel mills abruptly
+increase prices—as seen in January 2026—end-customers often delay their
+purchasing decisions [12]. For instance, solar companies adjusting to
+sudden price hikes have been known to pause their orders for renewable
+energy structures, choosing to wait and see if the pricing trends
+reverse before committing to new purchases [12].</p>
+<p><strong>Geopolitical Tensions</strong> Global geopolitical dynamics,
+particularly the ongoing tensions between the US, the European Union,
+and China, present an additional layer of uncertainty [13]. These
+international conflicts and trade environments impact global commodity
+markets, generally driving up prices and contributing to the overall
+volatility that domestic manufacturers and traders must navigate [14,
+15].</p>
+<p><em><a href="footnote/Trading%20-%20Metals.2.txt">sources</a>
+</em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry"
+class="section level3">
+<h3><strong>What are the key things to understand about this
+industry?</strong></h3>
+<p><em>asof: 2026-04-14 </em></p>
+<p><strong>The metal manufacturing, trading, fabrication, and recycling
+industries are currently navigating a landscape of rapid growth
+opportunities driven by modern infrastructure needs, while
+simultaneously managing the risks of severe commodity price
+volatility.</strong></p>
+<p>Here are the key things to understand about the dynamics, growth
+drivers, and strategic shifts within this sector:</p>
+<p><strong>1. Massive Demand from Renewable Energy and
+Infrastructure</strong> * <strong>The Solar Energy Boom:</strong> The
+renewable energy sector is generating massive demand for structural
+steel. The market for solar structures is expanding rapidly, with
+monthly demand expected to surge from 40,000-50,000 tons to
+70,000-80,000 tons in the next 2-3 years [1, 2]. Metal trading and
+manufacturing companies are capitalizing on this by supplying
+ground-mounted solar structures to Independent Power Producers (IPPs)
+and OEMs [3, 4]. Furthermore, metal recycling companies are also
+stepping in to supply materials to businesses engaged in solar plant
+manufacturing to support their production needs [5]. *
+<strong>Accelerating Infrastructure Development:</strong> The industry
+is experiencing strong traction due to large-scale infrastructure
+projects. There is rising adoption of pre-engineered buildings (PEBs),
+fabricated steel products, and railway steel girders across the
+construction sector [6, 7].</p>
+<p><strong>2. The Shift Toward Higher-Margin and Value-Added
+Products</strong> To improve profitability, <strong>companies are
+undergoing a calibrated transition toward higher-margin fabricated steel
+products</strong> [8, 9]. Instead of relying solely on basic B2B metal
+trading, players are developing specialized open profiles and
+structures. This includes products like cable trays for construction,
+slotted angles for racking systems, purlins for PEB sheds, and
+specialized structures for residential rooftops [10-13]. Because these
+value-added products can be sold through established trade channels
+under strong brand names, they command a significant brand premium and
+yield much higher EBITDA margins [11, 13, 14].</p>
+<p><strong>3. Growth in Sustainability and Metal Recycling</strong> The
+metal recycling segment is experiencing robust growth driven by a rising
+demand for recycled materials and an increased global focus on
+sustainability initiatives [15]. Companies in this space are processing
+ferrous and non-ferrous metal scraps (such as shredded zinc, die-cast
+scraps, and aluminum) and are actively investing in cutting-edge
+recycling technologies [15, 16]. This expansion is allowing them to
+enter new, high-growth sectors like auto components manufacturing [15,
+16].</p>
+<p><strong>4. Navigating Severe Commodity Price Volatility</strong> *
+<strong>Inventory and Profitability Risks:</strong> A major hurdle in
+the steel and metal industry is the fluctuation of raw material prices.
+Sharp corrections and declines in steel prices often lead to a soft
+demand environment, pressure on sales, the need to offer customer
+discounts, and heavy inventory losses [17-20]. * <strong>Geopolitical
+Impacts:</strong> Geopolitical tensions generally impact global
+commodities by driving up the prices of raw materials [21, 22].</p>
+<p><strong>5. Strategic Risk Mitigation and Business Models</strong> To
+combat market volatility, companies in this industry employ several
+strategic models: * <strong>Backward Integration:</strong> In a volatile
+steel price environment, a backward integrated manufacturing model
+provides clients with greater pricing comfort and reliable supply, which
+is increasingly becoming a decisive factor for winning large industrial
+mandates [23]. * <strong>Pass-Through Pricing:</strong> To limit
+exposure to fluctuating domestic and international steel prices,
+companies utilize a pass-through model where their product pricing is
+fully linked to the underlying cost of steel [21, 22]. They also
+mitigate risk by maintaining minimum inventory levels rather than
+speculating on commodity cycles [21, 24]. * <strong>Scaling Absolute
+EBITDA:</strong> As companies grow their absolute earnings by
+diversifying products and expanding capacity, the proportional pinch of
+raw material price fluctuations on their overall P&amp;L is
+significantly reduced [25, 26].</p>
+<p><strong>6. The Importance of Robust Distribution Networks</strong>
+Success in the trade-led metal product segment heavily relies on vast,
+multi-tiered distribution networks. Selling products efficiently
+requires an ecosystem that connects massive dealer networks to tens of
+thousands of retail shops, which in turn supply hundreds of thousands of
+fabricators [27-29]. Having this expansive channel ensures that newly
+launched products can quickly reach high daily sales volumes [4,
+28].</p>
+<p><em><a href="footnote/Trading%20-%20Metals.3.txt">sources</a>
+</em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry"
+class="section level3">
+<h3><strong>What are the tailwinds affecting this
+industry?</strong></h3>
+<p><em>asof: 2026-04-14 </em></p>
+<p><strong>Renewable Energy Expansion and Solar Infrastructure</strong>
+A major tailwind driving the industry is the massive scale-up of
+renewable energy installations, which is creating skyrocketing demand
+for solar structures [1, 2]. Currently, the market demand for solar
+structures sits at approximately 50,000 tons per month, but due to the
+aggressive and “insane” installation plans of India’s top 10 Independent
+Power Producers (IPPs), this is projected to expand to 70,000 to 80,000
+tons per month over the next two to three years [1, 2]. Companies are
+successfully expanding their capacities and product portfolios to supply
+utility-scale OEM sales points as well as structures for residential
+rooftops [3]. As a result, industry players are rapidly securing
+empanelments with major OEMs and IPPs to capture this exponential growth
+[4, 5], alongside supplying materials to businesses engaged in solar
+plant manufacturing [6].</p>
+<p><strong>Accelerating Infrastructure Development and Pre-Engineered
+Buildings</strong> The broader construction and steel fabrication
+sectors are benefiting from accelerating infrastructure development [7].
+There is a pronounced and rising adoption of pre-engineered buildings
+(PEBs) and engineered structural solutions, especially across Eastern
+India [7]. This shift is enabling companies to transition toward
+higher-margin fabricated steel products, large-format industrial
+structures, and railway steel girders [8-10].</p>
+<p><strong>Sustainability and Metal Recycling</strong> The metal
+recycling industry in India is experiencing robust growth [11]. This
+momentum is directly propelled by an increasing overall demand for
+recycled materials and a broader shift towards corporate sustainability
+initiatives [11]. Companies operating in this space are well-positioned
+to leverage these trends by investing in cutting-edge recycling
+technologies and expanding into related segments, such as auto
+components manufacturing [11, 12].</p>
+<p><strong>Favorable Government Trade Policies</strong> Domestic
+companies are benefiting from supportive government policies regarding
+international trade. The Indian government recently imposed anti-dumping
+duties and tariffs on steel imports, which have been extended for the
+next two years [13]. This regulatory protection limits cheap overseas
+imports, ensuring better stability and demand for domestically produced
+materials [13].</p>
+<p><strong>Backward Integration and Supply Chain Reliability</strong>
+Because the global geopolitical environment has created a volatile steel
+price market, clients are increasingly prioritizing supply reliability
+and pricing comfort when awarding large contracts [14]. Consequently,
+companies that operate a backward-integrated model are finding a
+significant competitive advantage, as this integrated ecosystem becomes
+a decisive factor in securing large-scale project mandates [14].</p>
+<p><strong>Brand Premium and New High-Margin Products</strong> Companies
+are successfully introducing new, high-value specialized products—such
+as cable trays for construction, slotted angles for racking systems, and
+purlins for PEB sheds—into the trade market [15, 16]. By pushing these
+products through vast, established distribution networks under strong
+brand names, companies are able to command significant brand premiums,
+resulting in superior EBITDA margins [16-18].</p>
+<p><em><a href="footnote/Trading%20-%20Metals.4.txt">sources</a>
+</em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry"
+class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-14 </em></p>
+<p><strong>The metal recycling industry</strong> in India is
+experiencing strong growth, primarily driven by a rising demand for
+recycled materials and an increased focus on sustainability initiatives
+[1]. Companies within this space are positioning themselves to leverage
+these positive trends by investing in cutting-edge recycling
+technologies and expanding into related segments, including the
+manufacturing of auto components [1, 2].</p>
+<p><strong>The fabricated steel and infrastructure sector</strong> is
+also expected to see continued traction and strong momentum,
+particularly in segments like Pre-Engineered Buildings (PEBs) and
+railway steel girders [3, 4]. This outlook is supported by accelerating
+infrastructure development and the growing adoption of pre-engineered
+structural solutions [3]. Fabricated steel products are anticipated to
+emerge as a major driver of margin expansion and bottom-line growth in
+the coming years [4, 5]. Furthermore, in a volatile steel price
+environment, companies with a backward-integrated model possess a
+distinct advantage; this integration provides clients with greater
+pricing comfort and supply reliability, which is increasingly becoming a
+decisive factor in awarding large mandates [6].</p>
+<p><strong>The renewable energy structures market</strong>, specifically
+for solar projects, is forecasting explosive demand. The current market
+size of approximately 40,000 to 50,000 tons per month is projected to
+surge to 70,000 to 80,000 tons per month over the next two to three
+years [7, 8]. This substantial growth is largely fueled by the
+aggressive installation business plans of India’s top Independent Power
+Producers (IPPs) and solar EPC players [8, 9].</p>
+<p><strong>Macroeconomic Challenges and Steel Pricing:</strong> Despite
+the optimistic growth avenues, the broader macroeconomic environment has
+recently faced some headwinds, such as an ongoing slowdown in
+construction and government capital expenditure (CAPEX) [10, 11]. The
+industry has also had to navigate significant volatility in global
+commodities, specifically a sharp correction in steel prices that
+recently fell to six-year lows, leading to temporary margin pressures
+and inventory losses for downstream companies [12-15].</p>
+<p>To mitigate these risks, industry players are employing several
+strategies: * <strong>Inventory Management:</strong> Maintaining minimum
+inventory levels to avoid speculation on volatile commodity price
+movements [14]. * <strong>Product and Geographic Expansion:</strong>
+Launching new, high-margin products (such as solar structures for
+residential rooftops and cable trays) and opening service centers in new
+locations to acquire new customers without cannibalizing existing
+business [11, 16, 17]. As absolute EBITDA grows through these
+expansions, the financial pinch of steel price fluctuations is expected
+to significantly diminish [18].</p>
+<p><em><a href="footnote/Trading%20-%20Metals.5.txt">sources</a>
+</em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

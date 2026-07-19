@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-07-17" />
+
+<title>Logistics Solution Provider</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.9/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Logistics Solution Provider</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">July 17, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns" id="toc-annual-returns">Annual
+Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns"
+id="toc-cumulative-returns-and-drawdowns">Cumulative Returns and
+Drawdowns</a></li>
+<li><a href="#sma-scenarios" id="toc-sma-scenarios">SMA
+Scenarios</a></li>
+<li><a href="#rolling-returns" id="toc-rolling-returns">Rolling
+Returns</a></li>
+<li><a href="#fundamental-ratios"
+id="toc-fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares"
+id="toc-constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries" id="toc-ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/LogisticsSolutionProvider.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/LogisticsSolutionProvider.fan.CAP_WT.png" /></p>
+<p><img src="plots/LogisticsSolutionProvider.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/LogisticsSolutionProvider.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/LogisticsSolutionProvider.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img
+src="plots/LogisticsSolutionProvider.sma.cumret.EQUAL_WT.png" /></p>
+<p><img
+src="plots/LogisticsSolutionProvider.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ae82334c23541f0f8b9c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ae82334c23541f0f8b9c">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["-0.74%","0.83%"],["1.58%","3.83%"],["6.05%","6.68%"],["3.19%","7.07%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/LogisticsSolutionProvider.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/LogisticsSolutionProvider.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a0d1ff093bec722d8e57" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a0d1ff093bec722d8e57">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.CONCOR.html\" target=\"_blank\">CONCOR<\/a>","<a href=\"/reports02/eq-in/risk/in.DELHIVERY.html\" target=\"_blank\">DELHIVERY<\/a>","SHADOWFAX","<a href=\"/reports02/eq-in/risk/in.BLUEDART.html\" target=\"_blank\">BLUEDART<\/a>","<a href=\"/reports02/eq-in/risk/in.TCI.html\" target=\"_blank\">TCI<\/a>","<a href=\"/reports02/eq-in/risk/in.TVSSCS.html\" target=\"_blank\">TVSSCS<\/a>","<a href=\"/reports02/eq-in/risk/in.VRLLOG.html\" target=\"_blank\">VRLLOG<\/a>","<a href=\"/reports02/eq-in/risk/in.MAHLOG.html\" target=\"_blank\">MAHLOG<\/a>","<a href=\"/reports02/eq-in/risk/in.GATEWAY.html\" target=\"_blank\">GATEWAY<\/a>","<a href=\"/reports02/eq-in/risk/in.TCIEXP.html\" target=\"_blank\">TCIEXP<\/a>","<a href=\"/reports02/eq-in/risk/in.SICALLOG.html\" target=\"_blank\">SICALLOG<\/a>","<a href=\"/reports02/eq-in/risk/in.NAVKARCORP.html\" target=\"_blank\">NAVKARCORP<\/a>","AGL","<a href=\"/reports02/eq-in/risk/in.ALLCARGO.html\" target=\"_blank\">ALLCARGO<\/a>","<a href=\"/reports02/eq-in/risk/in.RIIL.html\" target=\"_blank\">RIIL<\/a>","<a href=\"/reports02/eq-in/risk/in.WCIL.html\" target=\"_blank\">WCIL<\/a>","<a href=\"/reports02/eq-in/risk/in.SVLL.html\" target=\"_blank\">SVLL<\/a>","<a href=\"/reports02/eq-in/risk/in.RITCO.html\" target=\"_blank\">RITCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SNOWMAN.html\" target=\"_blank\">SNOWMAN<\/a>","<a href=\"/reports02/eq-in/risk/in.GLOTTIS.html\" target=\"_blank\">GLOTTIS<\/a>","<a href=\"/reports02/eq-in/risk/in.TREL.html\" target=\"_blank\">TREL<\/a>","<a href=\"/reports02/eq-in/risk/in.AVG.html\" target=\"_blank\">AVG<\/a>","<a href=\"/reports02/eq-in/risk/in.DJML.html\" target=\"_blank\">DJML<\/a>","<a href=\"/reports02/eq-in/risk/in.TIGERLOGS.html\" target=\"_blank\">TIGERLOGS<\/a>","<a href=\"/reports02/eq-in/risk/in.TREJHARA.html\" target=\"_blank\">TREJHARA<\/a>","<a href=\"/reports02/eq-in/risk/in.OMFREIGHT.html\" target=\"_blank\">OMFREIGHT<\/a>","<a href=\"/reports02/eq-in/risk/in.GICL.html\" target=\"_blank\">GICL<\/a>","<a href=\"/reports02/eq-in/risk/in.NECCLTD.html\" target=\"_blank\">NECCLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.JETFREIGHT.html\" target=\"_blank\">JETFREIGHT<\/a>","<a href=\"/reports02/eq-in/risk/in.OBCL.html\" target=\"_blank\">OBCL<\/a>","<a href=\"/reports02/eq-in/risk/in.PATINTLOG.html\" target=\"_blank\">PATINTLOG<\/a>","<a href=\"/reports02/eq-in/risk/in.TOTAL.html\" target=\"_blank\">TOTAL<\/a>","<a href=\"/reports02/eq-in/risk/in.ACCURACY.html\" target=\"_blank\">ACCURACY<\/a>"],[0.2565411432107474,0.4223847137414991,0.04954198395954372,0.04414038227021157,0.03219211802442491,0.02629384413873525,0.02430712341421802,0.02357185183453566,0.02963506101496039,0.009758389564872121,0.007893520335875636,0.007888515140804582,0.00722187020867074,0.01035083979663489,0.009436435031124884,0.004007074074701047,0.003251702228179757,0.004380509654079085,0.004732068488700707,0.002426633841021361,0.00260144709380416,0.00338439924964886,0.002272401939505481,0.002257221843824338,0.003071249607861732,0.00114699781199124,0.001040427588537822,0.00110933610132259,0.0008293864028489949,0.000460698338835726,0.001007278610498316,0.0004479701874581726,0.0004154052503216953],[0.2688880718953552,0.2682882591796119,0.08579488158512844,0.0841127598350879,0.05160631455395837,0.04404989768945308,0.02896632497034051,0.02762640194483868,0.02125846624347449,0.01595761688227254,0.01411176594716429,0.0126133004230451,0.009346391454884521,0.008539976541758263,0.008479754937354081,0.007024336157176461,0.005900159531766969,0.005641944638007598,0.004512074115560166,0.004463674367661241,0.004280519932025084,0.00272814046216619,0.002611049453862322,0.002504133652982247,0.002421842190374386,0.002242533556386477,0.001350021299229282,0.001147281649210031,0.0008348406079405631,0.0007863675579790205,0.000752443912761473,0.0006164974618049537,0.0005419553693781857]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":33,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,33,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d9d50e8135ff3919c85a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d9d50e8135ff3919c85a">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.CONCOR.html\" target=\"_blank\">CONCOR<\/a>","<a href=\"/reports02/eq-in/risk/in.DELHIVERY.html\" target=\"_blank\">DELHIVERY<\/a>","SHADOWFAX","<a href=\"/reports02/eq-in/risk/in.BLUEDART.html\" target=\"_blank\">BLUEDART<\/a>","<a href=\"/reports02/eq-in/risk/in.TCI.html\" target=\"_blank\">TCI<\/a>","<a href=\"/reports02/eq-in/risk/in.TVSSCS.html\" target=\"_blank\">TVSSCS<\/a>","<a href=\"/reports02/eq-in/risk/in.VRLLOG.html\" target=\"_blank\">VRLLOG<\/a>","<a href=\"/reports02/eq-in/risk/in.MAHLOG.html\" target=\"_blank\">MAHLOG<\/a>","<a href=\"/reports02/eq-in/risk/in.GATEWAY.html\" target=\"_blank\">GATEWAY<\/a>","<a href=\"/reports02/eq-in/risk/in.TCIEXP.html\" target=\"_blank\">TCIEXP<\/a>","<a href=\"/reports02/eq-in/risk/in.SICALLOG.html\" target=\"_blank\">SICALLOG<\/a>","<a href=\"/reports02/eq-in/risk/in.NAVKARCORP.html\" target=\"_blank\">NAVKARCORP<\/a>","<a href=\"/reports02/eq-in/risk/in.ALLCARGO.html\" target=\"_blank\">ALLCARGO<\/a>","<a href=\"/reports02/eq-in/risk/in.RIIL.html\" target=\"_blank\">RIIL<\/a>","<a href=\"/reports02/eq-in/risk/in.WCIL.html\" target=\"_blank\">WCIL<\/a>","<a href=\"/reports02/eq-in/risk/in.SVLL.html\" target=\"_blank\">SVLL<\/a>","<a href=\"/reports02/eq-in/risk/in.RITCO.html\" target=\"_blank\">RITCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SNOWMAN.html\" target=\"_blank\">SNOWMAN<\/a>","<a href=\"/reports02/eq-in/risk/in.GLOTTIS.html\" target=\"_blank\">GLOTTIS<\/a>","<a href=\"/reports02/eq-in/risk/in.TREL.html\" target=\"_blank\">TREL<\/a>","<a href=\"/reports02/eq-in/risk/in.AVG.html\" target=\"_blank\">AVG<\/a>","<a href=\"/reports02/eq-in/risk/in.DJML.html\" target=\"_blank\">DJML<\/a>","<a href=\"/reports02/eq-in/risk/in.TIGERLOGS.html\" target=\"_blank\">TIGERLOGS<\/a>","<a href=\"/reports02/eq-in/risk/in.TREJHARA.html\" target=\"_blank\">TREJHARA<\/a>","<a href=\"/reports02/eq-in/risk/in.OMFREIGHT.html\" target=\"_blank\">OMFREIGHT<\/a>","<a href=\"/reports02/eq-in/risk/in.GICL.html\" target=\"_blank\">GICL<\/a>","<a href=\"/reports02/eq-in/risk/in.NECCLTD.html\" target=\"_blank\">NECCLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.JETFREIGHT.html\" target=\"_blank\">JETFREIGHT<\/a>","<a href=\"/reports02/eq-in/risk/in.OBCL.html\" target=\"_blank\">OBCL<\/a>","<a href=\"/reports02/eq-in/risk/in.PATINTLOG.html\" target=\"_blank\">PATINTLOG<\/a>","<a href=\"/reports02/eq-in/risk/in.TOTAL.html\" target=\"_blank\">TOTAL<\/a>","<a href=\"/reports02/eq-in/risk/in.ACCURACY.html\" target=\"_blank\">ACCURACY<\/a>"],[54.63535412239751,22.08122900725607,null,0.325936193569997,0.2796219919969957,2.151611222840307,7.795401906314203,-0.7107637890776637,10.56380284262105,1.96576473536814,-0.01688800261802007,-2.294326427754268,-0.04395113017273249,0.008651674185337813,1.519484150353898,0.2799518175430072,1.010014630657245,0.3981494022844352,null,0.5233751237048867,1.071107393276716,0.3722180687466526,null,null,0.5841649732380041,null,0.2405969785707721,0.2396481322533983,0.1699285236807707,0.2578561996831267,0.5905305805118091,0.1129417162553312],[61.35359601458993,7.65284113946345,null,0.2343940571059654,0.1579762314166792,1.883348434529779,7.046263737109115,-1.010186599154385,6.079726378771388,2.348825146016937,0.002113364872810311,-1.256175386228583,null,0.006284659551493464,1.191587093817095,0.2637733643639686,1.342101217094898,-0.02234180451760096,2.413276612368651,0.938741311881327,0.7318283969366433,0.2942980068226425,null,null,0.3298258378113356,null,0.2364479663159498,0.1848133631246712,0.01375749872392772,0.2108645440269934,0.4445089789430735,0.0572437148060786],[81.17450304923855,1.531285837875298,3.387331876484583,0.1842141070407192,1.979830378180533,3.694387778082153,0.155369120173301,0.934771447268551,0.1399475290243304,5.531864708211914,0.00472730051035499,-0.004737940580362881,-0.3487562307654802,0.00628201393616547,0.2937825357247128,0.002164938445441093,0.02799300391007414,-0.001292161196026735,0.03597334792475933,0.5162648934610713,0.01330786555983542,0.005132254772984064,0.01923287394275588,0.004568914080100548,0.6748622303086841,null,0.005169324971230732,0.00335443997056978,-0.001184983139234925,0.004112168426474163,0.007014915562051442,0.01811726989014775],[76.42152419013352,1.500226797103591,4.230081528989315,0.209071260946837,1.957567823045434,4.342292786668701,0.1498698743800486,3.838756554729269,0.1346241834159881,5.311175704866766,0.0007119285676297219,0.02295234128244594,-0.1485903360093928,0.006638380286242705,0.2487082375565262,0.003297832286092461,0.02253979989391878,8.552572329008713e-05,0.04788591847674194,1.034797319681729,0.01624484263327971,0.006861482669158192,0.01074616097387894,0.005152052597863435,0.5848752494808097,0.002473928198719654,0.005029468870986794,0.00546680989041284,-0.003375861543008169,0.004862802150021822,0.005022019552199675,0.02242339250097323]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n      <th>2026-03-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":32,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3},{"name":"2026-03-31","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,32,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2bcc5d2567c2ab82275d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2bcc5d2567c2ab82275d">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.CONCOR.html\" target=\"_blank\">CONCOR<\/a>","<a href=\"/reports02/eq-in/risk/in.DELHIVERY.html\" target=\"_blank\">DELHIVERY<\/a>","SHADOWFAX","<a href=\"/reports02/eq-in/risk/in.BLUEDART.html\" target=\"_blank\">BLUEDART<\/a>","<a href=\"/reports02/eq-in/risk/in.TCI.html\" target=\"_blank\">TCI<\/a>","<a href=\"/reports02/eq-in/risk/in.TVSSCS.html\" target=\"_blank\">TVSSCS<\/a>","<a href=\"/reports02/eq-in/risk/in.VRLLOG.html\" target=\"_blank\">VRLLOG<\/a>","<a href=\"/reports02/eq-in/risk/in.MAHLOG.html\" target=\"_blank\">MAHLOG<\/a>","<a href=\"/reports02/eq-in/risk/in.GATEWAY.html\" target=\"_blank\">GATEWAY<\/a>","<a href=\"/reports02/eq-in/risk/in.TCIEXP.html\" target=\"_blank\">TCIEXP<\/a>","<a href=\"/reports02/eq-in/risk/in.SICALLOG.html\" target=\"_blank\">SICALLOG<\/a>","<a href=\"/reports02/eq-in/risk/in.NAVKARCORP.html\" target=\"_blank\">NAVKARCORP<\/a>","<a href=\"/reports02/eq-in/risk/in.ALLCARGO.html\" target=\"_blank\">ALLCARGO<\/a>","<a href=\"/reports02/eq-in/risk/in.RIIL.html\" target=\"_blank\">RIIL<\/a>","<a href=\"/reports02/eq-in/risk/in.WCIL.html\" target=\"_blank\">WCIL<\/a>","<a href=\"/reports02/eq-in/risk/in.SVLL.html\" target=\"_blank\">SVLL<\/a>","<a href=\"/reports02/eq-in/risk/in.RITCO.html\" target=\"_blank\">RITCO<\/a>","<a href=\"/reports02/eq-in/risk/in.SNOWMAN.html\" target=\"_blank\">SNOWMAN<\/a>","<a href=\"/reports02/eq-in/risk/in.GLOTTIS.html\" target=\"_blank\">GLOTTIS<\/a>","<a href=\"/reports02/eq-in/risk/in.TREL.html\" target=\"_blank\">TREL<\/a>","<a href=\"/reports02/eq-in/risk/in.AVG.html\" target=\"_blank\">AVG<\/a>","<a href=\"/reports02/eq-in/risk/in.DJML.html\" target=\"_blank\">DJML<\/a>","<a href=\"/reports02/eq-in/risk/in.TIGERLOGS.html\" target=\"_blank\">TIGERLOGS<\/a>","<a href=\"/reports02/eq-in/risk/in.TREJHARA.html\" target=\"_blank\">TREJHARA<\/a>","<a href=\"/reports02/eq-in/risk/in.OMFREIGHT.html\" target=\"_blank\">OMFREIGHT<\/a>","<a href=\"/reports02/eq-in/risk/in.GICL.html\" target=\"_blank\">GICL<\/a>","<a href=\"/reports02/eq-in/risk/in.NECCLTD.html\" target=\"_blank\">NECCLTD<\/a>","<a href=\"/reports02/eq-in/risk/in.JETFREIGHT.html\" target=\"_blank\">JETFREIGHT<\/a>","<a href=\"/reports02/eq-in/risk/in.OBCL.html\" target=\"_blank\">OBCL<\/a>","<a href=\"/reports02/eq-in/risk/in.PATINTLOG.html\" target=\"_blank\">PATINTLOG<\/a>","<a href=\"/reports02/eq-in/risk/in.TOTAL.html\" target=\"_blank\">TOTAL<\/a>","<a href=\"/reports02/eq-in/risk/in.ACCURACY.html\" target=\"_blank\">ACCURACY<\/a>"],[10.46652722928575,25.08374961758434,null,0.2254661440022727,0.1410416659475033,11.99295347509275,4.344485834013675,19.83842373406816,1.693513464380492,1.661022943744766,0.0064713281410387,0.3730931454703099,0.2848752554529857,0.001531348739960558,1.990323166804464,0.2131853159232895,1.396565630297146,0.6670844523628635,null,0.04939989667489617,0.6428215363964515,0.1064301492153624,null,null,0.4406027525768236,null,0.3705326653506911,0.7260499669104656,0.4154862190516755,0.3880677763199624,0.7169669016347187,0.3945644191376868],[13.45561583269785,24.89729458129072,null,0.1466711527158879,0.08224520263644086,12.02972953821215,4.153702441751244,19.32200980749114,2.069771304777699,1.594720936249809,0.004922494077012366,0.5598109867254617,null,0.0009830602362324475,1.992694503063034,0.2901176971313434,1.138218486112848,1.130972151503777,1.184274930903612,0.08114628222465869,0.5805307833536612,0.1256676334894408,null,null,0.6442082907736172,null,0.2907261947719016,0.5617556682207996,0.366727119645466,0.4015453879519149,0.8257926334435509,0.4969101390517867],[22.2070519425708,4.805550909996763,5.657986534479878,0.1469670918327727,1.164031531384186,25.53946359937392,0.07750677289110768,33.06554047027613,0.05398643002381934,2.967794964997096,0.008821591908597661,0.01440829437960022,2.758205377142648,0.00120701370914308,0.4298464155001478,0.004938683936659929,0.0354386323650111,0.02897599848406923,0.02569838056601869,0.05287719954937917,0.01287471086387578,0.002750715452137489,0.0150147577835159,0.002096559394568904,0.6827223739379245,0.005868140598834519,0.007316022821830666,0.01051950502113713,0.008298109477486991,0.008467857367471692,0.01520111796808278,0.1820341576635013],[21.25668878957631,4.920642134610562,5.611653270234013,0.179680370804491,1.151175600762959,25.76137040336563,0.07541614102474806,32.77507070623241,0.05178549438994721,2.897161162016134,0.009029966760947321,0.01608820113292839,3.758194528046445,0.00106342327909725,0.4282814337757145,0.005244238420126364,0.03510070390046494,0.01415043881960376,0.0338360637049164,0.1007958262898376,0.01305067839983811,0.00322859709197872,0.01101123764933903,0.002768763688159478,0.677754869080253,0.004095603141375339,0.007212262173086249,0.01040241026222627,0.008129306712841447,0.008361695838755311,0.01455324257958274,0.1570024362352793]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n      <th>2026-03-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":32,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3},{"name":"2026-03-31","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,32,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time"
+class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over
+time?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>The logistics and supply chain industry has evolved
+significantly over time, transitioning from basic transportation and
+single-segment focuses to highly integrated, technology-driven, and
+diversified operations.</strong> As the industry has matured, companies
+have had to navigate a shifting landscape of macroeconomic headwinds,
+operational bottlenecks, and emerging growth avenues.</p>
+<div id="evolving-challenges" class="section level9">
+<p class="heading"><strong>Evolving Challenges</strong></p>
+<p><strong>Global Trade and Geopolitical Headwinds:</strong> The export
+and EXIM (Export-Import) businesses have faced considerable turbulence
+due to shifting global dynamics. <strong>Companies have had to navigate
+US tariffs, broader geopolitical tensions, and specific business
+constraints in regions like the Gulf</strong> [1, 2]. Looking ahead, the
+broader logistics sector acknowledges that <strong>near-term global
+trade conditions and tariff shifts remain highly dynamic and
+challenging</strong> [3, 4].</p>
+<p><strong>Cost Pressures and Regulatory Shifts:</strong> While some
+broader business cost pressures have stabilized, <strong>labor costs
+have continued on an upward trajectory</strong> [5, 6]. This is largely
+driven by evolving government regulations aimed at regularizing the
+workforce and mandating social security benefits through strict labor
+laws [5, 6].</p>
+<p><strong>Capacity Management and Asset Utilization:</strong> The
+industry has historically grappled with massive inefficiencies in asset
+utilization. For example, <strong>road transportation dominates the
+sector, yet approximately 85% of this capacity belongs to fragmented,
+single-operator industries suffering from chronic under-asset
+utilization</strong> [7, 8]. Additionally, managing sudden network
+capacity spikes remains an operational challenge; <strong>instances
+where e-commerce festive peaks coincide with tax-driven volume surges
+pose acute risks to service quality</strong> [9].</p>
+<p><strong>Margin Dilution from Diversification:</strong> As companies
+expand their service mixes to capture market share, they often face
+margin compression. For instance, businesses shifting from predominantly
+frozen warehousing to including chilled and dry storage have had to
+navigate <strong>lowered overall profit margins exacerbated by broader
+macroeconomic impacts</strong> [10].</p>
+</div>
+<div id="evolving-opportunities" class="section level9">
+<p class="heading"><strong>Evolving Opportunities</strong></p>
+<p><strong>Technological Advancement and Automation:</strong> To combat
+inefficiencies, logistics providers are heavily investing in proprietary
+technology. <strong>There are massive opportunities in automated
+serviceability, capacity management systems, AI-driven agentic
+solutions, and robotics for loading/unloading and warehouse
+sortation</strong> [9, 11]. Furthermore, digital aggregator platforms
+are emerging to <strong>“uberize” the trucking industry</strong>, aiming
+to increase asset utilization for single-fleet operators while creating
+massive entrepreneurship opportunities in Tier 2, 3, and 4 cities [7, 8,
+12, 13].</p>
+<p><strong>Sectoral Diversification:</strong> Logistics players are
+actively moving away from dependency on single legacy industries. A
+major evolution is the strategic push into high-growth, non-core
+sectors. <strong>Key growth areas include renewables and solar energy
+(with dedicated verticals handling specialized solar logistics),
+pharmaceuticals, electronics, electric vehicles (EVs), and
+Direct-to-Consumer (D2C) brands</strong> [14-19]. Some companies have
+also unlocked recurring revenue streams by expanding into adjacent
+markets like record management, mobility, and manpower services [20,
+21].</p>
+<p><strong>Favorable Policy Tailwinds and Multimodal
+Infrastructure:</strong> Changes in government policy, such as the
+reduction of certain tariffs from 25% to 18% and the removal of penalty
+tariffs, have improved the overall business scenario [5, 6]. The
+government’s heavy focus on infrastructure development has opened doors
+for logistics companies to handle large-scale movements in the steel,
+cement, and mining sectors [22, 23]. To optimize this, <strong>the
+industry is aggressively shifting towards multimodal
+transportation—integrating road, rail, and coastal networks to drive
+structural cost efficiencies and improve margin sustainability</strong>
+[22-24].</p>
+<p><strong>Market Consolidation and Inorganic Growth:</strong> The
+maturation of customer supply chain requirements has created a highly
+favorable environment for strategic acquisitions. As <strong>sub-scale
+and inefficient players face operational and financial
+headwinds</strong>, larger integrated companies are leveraging buyouts
+to consolidate the market [25]. This allows established providers to
+seamlessly acquire niche capabilities, increase their geographic
+footprint, and absorb incremental revenues at high margins [20, 25].</p>
+<p><em><a
+href="footnote/Logistics%20Solution%20Provider.1.txt">sources</a>
+</em></p>
+</div>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry"
+class="section level3">
+<h3><strong>What are the headwinds affecting this
+industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>Geopolitical Instability and Global Trade
+Uncertainties</strong> The logistics and freight industry is heavily
+impacted by global geopolitical tensions and trade policy changes.
+Export and EXIM (Export-Import) businesses have faced significant
+turbulence due to the overall geopolitical situation, business
+constraints in the Gulf region, and the ongoing Red Sea crisis [1-3].
+Shifting trade policies and tariff-related uncertainties, particularly
+involving the US, have caused disruptions, leading to a decline in
+European business and reduced trade volumes from Asia to North America
+[4-7]. These factors have culminated in softer global trade activity and
+cautious shipment planning by customers, which directly hampers volume
+growth across key international routes [8].</p>
+<p><strong>Freight Rate Volatility and Excess Capacity</strong>
+Companies are grappling with severe fluctuations and downward pressure
+on freight rates. Recent quarters have seen some of the lowest freight
+levels in years, which directly depresses top-line revenue for logistics
+providers operating on cost-plus models [9-12]. The industry is
+experiencing a normalization of realizations alongside excess capacity
+in certain shipping corridors, leading to heightened rate volatility and
+a highly competitive pricing environment [6, 13].</p>
+<p><strong>Escalating Costs and Regulatory Labor Changes</strong> Rising
+operational costs are a major headwind. The industry is facing
+widespread price inflation, driven heavily by increased toll taxes and
+escalating labor costs [14, 15]. Labor expenses are specifically on an
+upward trend due to government efforts to regularize the workforce and
+mandate social security benefits [16, 17]. For example, the
+implementation of new labor codes requires a minimum base salary of 50%
+of total fixed wages, which triggers both one-time and recurring
+increases in employee-related provisions such as gratuity, leave
+encashment, health insurance, and provident fund contributions [18].
+Furthermore, companies are contending with broader operational
+infrastructure challenges, wage increases in India, and the risk of time
+and cost overruns [19, 20].</p>
+<p><strong>Intense Competition and Margin Compression</strong> The
+logistics sector is highly competitive, leading to intense pricing
+pressures that negatively impact both revenue and margins [20, 21].
+Large institutional clients frequently leverage their size to squeeze
+prices and compress profit margins for service providers [22, 23].
+Concurrently, many players in the market face severe structural
+headwinds, including poor or negative incremental margins, a lack of
+operating leverage, capital constraints, and limited technological
+capabilities [24].</p>
+<p><strong>Sector-Specific Slowdowns and Changing Business
+Mixes</strong> Specific segments within the broader market are also
+experiencing unique challenges: * <strong>Air Cargo:</strong> After
+experiencing a surge during the COVID-19 pandemic, the air cargo
+business is seeing volume growth slow down once again [25, 26]. *
+<strong>Retail and Textiles:</strong> There has been reduced demand in
+the lifestyle, textile, and high-fashion sectors, resulting in fewer
+international purchases and a notable decline in air freight volumes for
+these specific goods [4, 5, 27, 28]. * <strong>Warehousing:</strong>
+Changes in the operational mix, such as an increased proportion of dry
+warehousing compared to specialized frozen or chilled storage, have
+brought down overall warehousing margins, further exacerbated by broader
+microeconomic factors [29, 30].</p>
+<p><em><a
+href="footnote/Logistics%20Solution%20Provider.2.txt">sources</a>
+</em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry"
+class="section level3">
+<h3><strong>What are the key things to understand about this
+industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>The Core Structure and Segments of the Industry</strong> The
+logistics and supply chain industry is a vast, multifaceted ecosystem
+primarily divided into domestic transportation (road, rail, and air),
+cross-border transportation (air and ocean shipping), and warehousing
+and supply chain services [1]. Historically characterized by a large
+number of unorganized players, the industry is rapidly formalizing and
+evolving from basic transportation providers into comprehensive,
+integrated third-party (3PL), fourth-party (4PL), and even fifth-party
+(5PL) logistics solution providers [1-5].</p>
+<p>To serve a diverse client base, companies offer a wide spectrum of
+services, including full truckload (FTL) and part truckload (PTL)
+freight, express parcel transportation, customs clearance, freight
+forwarding, and project logistics for heavy or over-dimensional cargo
+(ODC) [6-9]. Specialized capabilities are also a major component, such
+as temperature-controlled cold-chain logistics for pharmaceuticals and
+perishables, and bonded warehousing where businesses can defer duty
+payments on imported goods [10-13].</p>
+<p><strong>Market Consolidation and Strategic Expansion</strong> The
+Indian logistics market is currently undergoing a period of
+consolidation, driven by increasingly sophisticated customer
+requirements and the financial and operational headwinds faced by
+sub-scale, inefficient players [14]. Larger, integrated logistics
+companies are actively utilizing acquisitions and strategic investments
+to absorb incremental revenues at high margins and build niche
+capabilities [14]. These strategic buyouts target adjacencies like
+robotics, rapid commerce, cross-border e-commerce, and specialized
+domestic air freight [14].</p>
+<p>Furthermore, major domestic companies are increasingly mirroring
+multinational corporations by outsourcing their in-house logistics [15].
+This rising trend of “in-plant logistics” allows logistics providers to
+secure long-term, high-margin business-to-business (B2B) contracts by
+supplying skilled manpower, forklifts, and back-to-back vendor
+management directly at the client’s manufacturing sites [15].</p>
+<p><strong>The Transformative Role of Technology and Automation</strong>
+Technology is arguably the most critical differentiator in the modern
+logistics landscape. Companies are making front-loaded investments in
+digital capabilities, automation, and robotics to create resilient,
+future-ready logistics ecosystems [16-18]. <strong>Key technological
+advancements include:</strong> * <strong>Warehouse and Facility
+Automation:</strong> The deployment of automated storage and retrieval
+systems, mobile robotics, and automated truck loading/unloading
+solutions significantly increases in-facility productivity and handles
+greater sorting complexity [17, 18]. * <strong>Advanced Data and
+AI:</strong> Leading players use proprietary location intelligence (like
+geocoding and address standardization), dynamic pricing, and agentic AI
+algorithms to completely system-direct mid-mile operations, reduce
+delivery return rates, and achieve high-speed dispute resolution [18].
+Enterprise Warehouse Management Systems (WMS) and Transport Management
+Systems (TMS) ensure precise stock handling and real-time fleet tracking
+via GPS and geo-fencing [19, 20]. * <strong>Digital Freight
+Platforms:</strong> Digital aggregator platforms (such as TrucksUp and
+FreightJar) are revolutionizing the heavily fragmented road
+transportation sector, where up to 85% of trucks are owned by single
+operators [21-23]. These platforms function like “Uber for trucks,”
+matching verified load listings with available vehicles to drastically
+reduce the idle time and empty running of trucks, cutting wait times
+from days down to a few hours [23-25].</p>
+<p><strong>Customer Dynamics: Express Services, SMEs, and Pricing
+Power</strong> Customer profiles in this industry generally range from
+massive institutional clients to Small and Medium Enterprises (SMEs)
+[26, 27]. While institutional clients provide volume, they often squeeze
+margins and highly negotiate prices [28, 29]. Consequently, logistics
+firms place a high emphasis on SMEs, supported by government initiatives
+to fund SME growth and create distinct manufacturing clusters [30, 31].
+Maintaining a diversified customer base ensures that companies are not
+overly dependent on a single client [28, 29].</p>
+<p>In segments like Express and PTL delivery, customers are highly
+sensitive to delivery speed, network reach, and quality metrics (such as
+damage-free and short delivery times) rather than just price [6, 32,
+33]. Because of this demand for guaranteed service quality, logistics
+providers possess pricing power; realization per unit has remained
+steady or improved despite intense industry competition, allowing
+companies to successfully execute annual contractual pricing changes [6,
+34, 35].</p>
+<p><strong>Operational Models: Asset-Light vs. Multimodal
+Integration</strong> Logistics providers adopt varied operational models
+to maintain profitability. Many pursue an “asset-light” or “asset-right”
+strategy, completely outsourcing their vehicle fleets [5, 36-39]. This
+provides high flexibility, allowing them to dynamically shift from
+smaller 16-tonne trucks to larger 25-tonne trucks to maximize capacity
+utilization and drive down per-unit costs as demand fluctuates [36,
+37].</p>
+<p>Simultaneously, there is a massive push toward <strong>Multimodal
+Logistics</strong>—building an integrated backbone that seamlessly
+combines road, rail, coastal shipping, and air transport [5, 40, 41].
+Expanding rail-based operations and deeply integrating them with road
+and sea networks drives structural cost efficiencies, improves overall
+asset utilization, and ensures margin sustainability [40].</p>
+<p><strong>High-Growth Sectors and Sustainability Tailwinds</strong> The
+logistics industry is buoyed by robust demand across several specific
+verticals, including automotive, consumer durables, fast-moving consumer
+goods (FMCG), engineering, and defense [42-44]. E-commerce remains a
+massive driver, necessitating massive sort centers capable of handling
+over a million shipments a day through high-efficiency “single-touch”
+workflows for same-day and next-day deliveries [42, 45]. The renewable
+energy sector is another major tailwind; logistics companies are
+experiencing formidable growth by handling the import, heavy lifting,
+and distribution of solar panels, plants, and machinery for large-scale
+solar infrastructure projects [46-50].</p>
+<p>Finally, <strong>Sustainability</strong> has become a central focus
+for the industry [51]. Companies are aggressively introducing
+LNG-powered fleets, utilizing electric vehicle (EV) scooters for
+last-mile delivery, and building Flagship Green Integrated Ground Hubs
+[51-53]. These initiatives reduce emissions, align with global
+environmental standards, and support sustainable, long-term industry
+growth [5, 51, 53].</p>
+<p><em><a
+href="footnote/Logistics%20Solution%20Provider.3.txt">sources</a>
+</em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry"
+class="section level3">
+<h3><strong>What are the tailwinds affecting this
+industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>Macroeconomic and Geopolitical Tailwinds</strong> The
+logistics and transportation industry is benefiting from the
+stabilization of international trade dynamics and the softening of
+previously turbulent geopolitical issues [1, 2]. <strong>The resolution
+of United States tariff matters and the settling of European trade lanes
+are providing a positive boost to export-import (EXIM)
+businesses</strong> [2-4]. The industry is further supported by major
+trade agreements, such as the EU-India Free Trade Agreement and US trade
+deals, which are anticipated to drive significant export traction in
+sectors like handicrafts, textiles, leather, and chemicals [5-7].
+Domestically, sustained consumption momentum is acting as a strong
+catalyst, fueled by rising disposable incomes in Tier 2 and Tier 3
+cities [8, 9]. This growth is supported by a favorable macroeconomic
+environment characterized by low inflation and low interest rates [10].
+Additionally, the reduction of specific tariffs from 25% to 18% and the
+removal of penalty tariffs are expected to revitalize freight movement
+for industries such as lifestyle and textiles [8, 11, 12].</p>
+<p><strong>Government Initiatives and Infrastructure
+Development</strong> <strong>There is a sustained government focus on
+building infrastructure, ports, and logistics networks, which provides
+long-term visibility and constructive fundamentals for the
+sector</strong> [5, 6]. The continued building of roads and heavy
+infrastructure projects is expected to remain a primary governmental
+focus until at least 2029, directly benefiting the logistics of steel,
+cement, and mining [13, 14]. Strategic initiatives like the PM Gati
+Shakti National Master Plan are accelerating multimodal connectivity and
+encouraging the use of innovative, low-carbon transport solutions [15].
+Furthermore, the government has placed a high emphasis on supporting
+Small and Medium Enterprises (SMEs) through dedicated funding in the
+budget, which protects and grows a vital customer base for the express
+logistics segment [16, 17]. Upcoming infrastructure milestones, such as
+the connection of the Dedicated Freight Corridor (DFC) to JNPT, are also
+expected to facilitate the efficient shift of cargo volumes and improve
+double-stacking percentages [18].</p>
+<p><strong>High-Growth End Markets</strong> <strong>The e-commerce
+sector continues to be a massive structural growth driver, with
+expectations of 15% to 20% annual volume growth in the medium
+term</strong> [19]. This surge in online consumption and demand for
+faster deliveries is significantly boosting both ground express and air
+cargo markets [19-22]. The renewable energy sector is another major
+tailwind, specifically driven by the massive expansion of solar and
+electric vehicle (EV) supply chains [8, 23]. The solar industry is
+experiencing large-scale capital expenditure and component demand,
+positioning solar EXIM logistics for multi-year expansion, particularly
+in critical manufacturing nodes like Gujarat [24-27]. Demand also
+remains robust across other diverse manufacturing verticals, including
+the automotive, defense, pharmaceutical, and bulk commodities sectors
+[12, 28, 29].</p>
+<p><strong>Structural Industry Shifts and Modernization</strong>
+<strong>The logistics industry is undergoing a structural transformation
+toward supply-chain formalization and consolidation</strong> [9, 30].
+There is a growing trend of large Indian companies and multinational
+corporations outsourcing their in-house logistics operations to
+specialized third-party (3PL) and in-plant logistics providers, which
+secures long-term contracts and higher margins for the industry [31,
+32]. Additionally, the sector is experiencing consolidation, where
+larger, technology-enabled logistics companies are capturing market
+share from sub-scale or inefficient players who are struggling with
+capital constraints, lack of operating leverage, and poor service
+margins [19, 30].</p>
+<p>The rapid adoption of technology, automation, and data intelligence
+is allowing companies to optimize route planning, better orchestrate
+capacity during peak seasons, and reduce the overall cost of delivery
+[9, 33, 34]. Finally, the transition toward integrated multimodal supply
+chains—combining road, rail, air, and coastal transport—is enhancing
+overall network efficiency and increasing resilience against natural
+calamities and trade disruptions [35-37].</p>
+<p><em><a
+href="footnote/Logistics%20Solution%20Provider.4.txt">sources</a>
+</em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry"
+class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p>The general outlook for the logistics industry is highly positive and
+constructive, driven by a combination of domestic economic growth,
+regulatory tailwinds, and structural industry transformations, despite
+some recent global market volatility.</p>
+<p><strong>Global Trade and Geopolitical Environment</strong> Recently,
+the international and export-import (EXIM) logistics business has
+navigated a turbulent environment marked by global rate volatility,
+excess shipping capacity, US tariff uncertainties, and geopolitical
+constraints in the Gulf region [1-4]. Despite these headwinds, industry
+leaders are bullish about the coming quarters, anticipating favorable
+tailwinds as the US trade lane stabilizes and tariff matters are
+resolved [5, 6]. <strong>Long-term sector visibility is strongly
+supported by the easing of US tariff pressures and the anticipated
+EU–India Free Trade Agreement</strong> [7, 8]. These international trade
+deals are expected to significantly boost export volumes, particularly
+for commodities like handicrafts, textiles, leather, and chemicals [9,
+10]. Additionally, domestic regulatory reliefs, such as the reduction of
+certain tariffs from 25% to 18% and the removal of penalty tariffs, have
+significantly improved the broader business scenario [11, 12].</p>
+<p><strong>Key Domestic Growth Drivers</strong> Within India, the
+logistics sector is poised for substantial growth aided by supply-chain
+formalization, sustained consumption momentum, and widespread
+infrastructure development [13-15]. * <strong>Infrastructure and Core
+Sectors:</strong> The government’s continued focus on developing
+infrastructure, ports, and logistics is acting as a massive catalyst [7,
+8]. Logistics providers view infrastructure-related sectors—such as
+steel, cement, and mining—as primary growth engines expected to dominate
+through at least 2029 [16-19]. * <strong>Renewable Energy:</strong> The
+renewable energy sector, specifically solar, is generating substantial
+specialized logistics demand as companies execute large capital
+expenditures (CAPEX) and import heavy plant machinery [20, 21]. *
+<strong>E-commerce and Tier-2/Tier-3 Expansion:</strong> Driven by
+rising disposable incomes, domestic consumption is expanding rapidly,
+with notable growth originating from Tier-2 and Tier-3 cities [22, 23].
+E-commerce remains a robust growth driver, with parcel volumes projected
+to grow at 15-20% annually over the medium term [24]. * <strong>SME
+Support:</strong> The government is placing high emphasis on Small and
+Medium Enterprises (SMEs), including earmarking special funds to help
+them grow [25-28]. Because SMEs form a critical segment of the Indian
+economy and supply chain, this support directly benefits express
+logistics providers [25, 27].</p>
+<p><strong>Industry Consolidation and Technological
+Transformation</strong> The Indian logistics market is expected to
+undergo significant consolidation over the next several years [29]. As
+customer supply-chain requirements become increasingly sophisticated,
+sub-scale and inefficient players are facing structural headwinds—such
+as escalating costs, negative margins, and capital constraints—allowing
+larger, technologically equipped companies to capture greater market
+share [24, 29].</p>
+<p>To capitalize on this, <strong>logistics providers are fundamentally
+transforming from traditional transporters into comprehensive,
+end-to-end multi-modal supply chain companies</strong> [30, 31]. To
+sustain their growth trajectories and improve profitability, companies
+are making front-loaded investments in resilient network infrastructure,
+digital capabilities, automation, and green logistics ecosystems [13,
+32].</p>
+<p><em><a
+href="footnote/Logistics%20Solution%20Provider.5.txt">sources</a>
+</em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

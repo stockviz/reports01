@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-07-17" />
+
+<title>Holding Company</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.9/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Holding Company</h1>
+<h3 class="subtitle">Industry Metrics</h3>
+<h4 class="date">July 17, 2026</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#annual-returns" id="toc-annual-returns">Annual
+Returns</a></li>
+<li><a href="#cumulative-returns-and-drawdowns"
+id="toc-cumulative-returns-and-drawdowns">Cumulative Returns and
+Drawdowns</a></li>
+<li><a href="#sma-scenarios" id="toc-sma-scenarios">SMA
+Scenarios</a></li>
+<li><a href="#rolling-returns" id="toc-rolling-returns">Rolling
+Returns</a></li>
+<li><a href="#fundamental-ratios"
+id="toc-fundamental-ratios">Fundamental Ratios</a></li>
+<li><a href="#constituent-shares"
+id="toc-constituent-shares">Constituent Shares</a></li>
+<li><a href="#ai-summaries" id="toc-ai-summaries">AI Summaries</a></li>
+</ul>
+</div>
+
+<div id="annual-returns" class="section level2">
+<h2>Annual Returns</h2>
+<p><img src="plots/HoldingCompany.fan.EQUAL_WT.png" /></p>
+<p><img src="plots/HoldingCompany.fan.CAP_WT.png" /></p>
+<p><img src="plots/HoldingCompany.annret.EQUAL_WT.png" /></p>
+<p><img src="plots/HoldingCompany.annret.CAP_WT.png" /></p>
+</div>
+<div id="cumulative-returns-and-drawdowns" class="section level2">
+<h2>Cumulative Returns and Drawdowns</h2>
+<p><img src="plots/HoldingCompany.cumret.png" /></p>
+<p><br />
+</p>
+</div>
+<div id="sma-scenarios" class="section level2">
+<h2>SMA Scenarios</h2>
+<p><img src="plots/HoldingCompany.sma.cumret.EQUAL_WT.png" /></p>
+<p><img src="plots/HoldingCompany.sma.cumret.CAP_WT.png" /></p>
+<p><br />
+</p>
+<div id="current-distance-from-sma" class="section level3">
+<h3>Current Distance from SMA</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-108b4287022b156ccfc9" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-108b4287022b156ccfc9">{"x":{"filter":"none","vertical":false,"data":[["EQUAL_WT","CAP_WT"],["0.5%","-0.13%"],["3.87%","2.84%"],["6.72%","2.99%"],["0.26%","-2.51%"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>WT<\/th>\n      <th>SMA_20<\/th>\n      <th>SMA_50<\/th>\n      <th>SMA_100<\/th>\n      <th>SMA_200<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":30,"ordering":false,"columnDefs":[{"name":"WT","targets":0},{"name":"SMA_20","targets":1},{"name":"SMA_50","targets":2},{"name":"SMA_100","targets":3},{"name":"SMA_200","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,25,30,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="rolling-returns" class="section level2">
+<h2>Rolling Returns</h2>
+<p><img src="plots/HoldingCompany.roll.EQUAL_WT.png" /></p>
+<p><img src="plots/HoldingCompany.roll.CAP_WT.png" /></p>
+<p><br />
+<br />
+</p>
+</div>
+<div id="fundamental-ratios" class="section level2">
+<h2>Fundamental Ratios</h2>
+<p><br />
+<br />
+</p>
+</div>
+<div id="constituent-shares" class="section level2">
+<h2>Constituent Shares</h2>
+<p><br />
+</p>
+<div id="market-cap" class="section level3">
+<h3>Market Cap</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2532a6908874e94afdb2" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2532a6908874e94afdb2">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJAJFINSV.html\" target=\"_blank\">BAJAJFINSV<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHLDNG.html\" target=\"_blank\">BAJAJHLDNG<\/a>","<a href=\"/reports02/eq-in/risk/in.CHOICEIN.html\" target=\"_blank\">CHOICEIN<\/a>","<a href=\"/reports02/eq-in/risk/in.JMFINANCIL.html\" target=\"_blank\">JMFINANCIL<\/a>","<a href=\"/reports02/eq-in/risk/in.EDELWEISS.html\" target=\"_blank\">EDELWEISS<\/a>","<a href=\"/reports02/eq-in/risk/in.RANEHOLDIN.html\" target=\"_blank\">RANEHOLDIN<\/a>","<a href=\"/reports02/eq-in/risk/in.BFINVEST.html\" target=\"_blank\">BFINVEST<\/a>","BLIL","<a href=\"/reports02/eq-in/risk/in.AFSL.html\" target=\"_blank\">AFSL<\/a>","<a href=\"/reports02/eq-in/risk/in.MAXIND.html\" target=\"_blank\">MAXIND<\/a>","<a href=\"/reports02/eq-in/risk/in.GFLLIMITED.html\" target=\"_blank\">GFLLIMITED<\/a>","TAMBOLIIN","<a href=\"/reports02/eq-in/risk/in.BILVYAPAR.html\" target=\"_blank\">BILVYAPAR<\/a>"],[0.6114644987733314,0.2597840388239707,0.03945556145551589,0.02792571104772141,0.04363209408236068,0.007017437320337164,0.002245340003127039,0.00290526823545569,0.001656715954936068,0.002416733378429676,0.0008721633580476424,0.000589858469784014,3.457909698255441e-05],[0.6394324768970928,0.2525779142886978,0.03902052020559716,0.02624228986873466,0.02430502298900084,0.00538682358169811,0.003901771758740322,0.003416498054321172,0.002238965075344253,0.001897190627322384,0.001072235341444672,0.0004802469608494307,2.804435115637156e-05]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>free-float<\/th>\n      <th>full-float<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":13,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatPercentage(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2]},{"name":"SYMBOL_LINK","targets":0},{"name":"FF_PCT","targets":1},{"name":"CAP_PCT","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,13,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+</div>
+<div id="ebit-of-industry-total" class="section level3">
+<h3>EBIT (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1dae58ae00528addff7b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1dae58ae00528addff7b">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJAJFINSV.html\" target=\"_blank\">BAJAJFINSV<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHLDNG.html\" target=\"_blank\">BAJAJHLDNG<\/a>","<a href=\"/reports02/eq-in/risk/in.CHOICEIN.html\" target=\"_blank\">CHOICEIN<\/a>","<a href=\"/reports02/eq-in/risk/in.JMFINANCIL.html\" target=\"_blank\">JMFINANCIL<\/a>","<a href=\"/reports02/eq-in/risk/in.EDELWEISS.html\" target=\"_blank\">EDELWEISS<\/a>","<a href=\"/reports02/eq-in/risk/in.RANEHOLDIN.html\" target=\"_blank\">RANEHOLDIN<\/a>","<a href=\"/reports02/eq-in/risk/in.BFINVEST.html\" target=\"_blank\">BFINVEST<\/a>","<a href=\"/reports02/eq-in/risk/in.AFSL.html\" target=\"_blank\">AFSL<\/a>","<a href=\"/reports02/eq-in/risk/in.MAXIND.html\" target=\"_blank\">MAXIND<\/a>","<a href=\"/reports02/eq-in/risk/in.GFLLIMITED.html\" target=\"_blank\">GFLLIMITED<\/a>","<a href=\"/reports02/eq-in/risk/in.BILVYAPAR.html\" target=\"_blank\">BILVYAPAR<\/a>"],[92.10803514864604,2.146524352699694,0.05167216254690081,3.179860580419458,0.722795579432238,0.003418245019890125,0.07825041518483265,0.173688630735427,-0.4181348676880572,0.002457881261137724,-0.003841855582646474],[92.97816820050159,3.084807985793994,0.2050023112077045,2.897383308104923,0.4633052539676045,0.001832574229749792,0.0689218347568353,0.2016338665914835,-0.2754248170085586,0.002904908602681799,-2.616323527556768e-05],[91.6458727890201,3.758230355339329,0.005285988266174253,2.907272830397012,2.004368632764791,0.002414371325523709,0.009815379511644913,0.00260454767643979,-0.335877715442025,3.898437628075417e-05,null],[92.94468446693358,3.16905644838787,0.005396524580496267,2.731967563973681,1.548675541955637,0.002997673122445711,0.01113752828161935,0.00205862963023377,-0.4160070979029923,3.433806845011496e-05,-1.617031017378189e-06]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n      <th>2026-03-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":11,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3},{"name":"2026-03-31","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,11,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render"],"jsHooks":[]}</script>
+</div>
+<div id="revenue-of-industry-total" class="section level3">
+<h3>Revenue (% of Industry Total)</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-c60bbe8fdb3ef755ff69" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c60bbe8fdb3ef755ff69">{"x":{"filter":"none","vertical":false,"data":[["<a href=\"/reports02/eq-in/risk/in.BAJAJFINSV.html\" target=\"_blank\">BAJAJFINSV<\/a>","<a href=\"/reports02/eq-in/risk/in.BAJAJHLDNG.html\" target=\"_blank\">BAJAJHLDNG<\/a>","<a href=\"/reports02/eq-in/risk/in.CHOICEIN.html\" target=\"_blank\">CHOICEIN<\/a>","<a href=\"/reports02/eq-in/risk/in.JMFINANCIL.html\" target=\"_blank\">JMFINANCIL<\/a>","<a href=\"/reports02/eq-in/risk/in.EDELWEISS.html\" target=\"_blank\">EDELWEISS<\/a>","<a href=\"/reports02/eq-in/risk/in.RANEHOLDIN.html\" target=\"_blank\">RANEHOLDIN<\/a>","<a href=\"/reports02/eq-in/risk/in.BFINVEST.html\" target=\"_blank\">BFINVEST<\/a>","<a href=\"/reports02/eq-in/risk/in.AFSL.html\" target=\"_blank\">AFSL<\/a>","<a href=\"/reports02/eq-in/risk/in.MAXIND.html\" target=\"_blank\">MAXIND<\/a>","<a href=\"/reports02/eq-in/risk/in.GFLLIMITED.html\" target=\"_blank\">GFLLIMITED<\/a>"],[92.55146767656595,0.6034646508912768,0.3154508811397641,1.370088124550932,1.945979141058281,0.03101239999130656,0.02302548280980966,0.8546284687745954,0.07670093592591634,0.0007577292259105602],[91.13585126356654,0.7207759723216223,0.3169429500978625,1.310935180644504,1.974672156708613,0.01610494027061763,0.01721212998953921,2.747031639298617,0.05138896200169208,0.0008348669801103138],[94.41727264592993,0.7307354829121946,0.003370004798578614,1.312291535391868,3.399002519734532,0.01787855175237055,0.002068539138170096,0.05154102728589444,0.0658282328602829,1.14601961770419e-05],[94.56502282136603,0.6696389850555771,0.003500989226893759,1.280670941753245,3.266138198734467,0.01841701292641657,0.002389358647848786,0.0749050187458967,0.1193051524824611,1.152106116699333e-05]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th><\/th>\n      <th>2025-06-30<\/th>\n      <th>2025-09-30<\/th>\n      <th>2025-12-31<\/th>\n      <th>2026-03-31<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":10,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4]},{"name":"SYMBOL","targets":0},{"name":"2025-06-30","targets":1},{"name":"2025-09-30","targets":2},{"name":"2025-12-31","targets":3},{"name":"2026-03-31","targets":4}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render"],"jsHooks":[]}</script>
+<p><br />
+</p>
+</div>
+</div>
+<div id="ai-summaries" class="section level2">
+<h2>AI Summaries</h2>
+<div id="how-have-the-challenges-and-oppurtunities-evolved-over-time"
+class="section level3">
+<h3><strong>How have the challenges and oppurtunities evolved over
+time?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p>The challenges and opportunities across the financial services,
+insurance, and consumer care sectors have evolved significantly over
+time, driven by macroeconomic shifts, regulatory changes, and evolving
+consumer needs.</p>
+<p><strong>Evolution of Challenges Over Time</strong></p>
+<ul>
+<li><strong>Macroeconomic and Market Volatility:</strong> Over the last
+decade, companies have had to navigate volatile events such as the
+COVID-19 pandemic, elections, tariffs, and geopolitical tensions [1, 2].
+In the capital markets and corporate advisory space, deal-making has
+frequently faced disruptions due to market volatility stemming from
+factors like foreign portfolio investor (FPI) selling, pending U.S.
+trade deals, and sudden increases in the prices of gold and silver [3,
+4].</li>
+<li><strong>Regulatory and Tax Impacts:</strong> The introduction of new
+regulations has created one-off financial burdens. For instance, the
+notification of new Labour Codes required companies to account for
+significant one-time charges related to increased past-service gratuity
+liabilities [5-7]. Additionally, changes in Goods and Services Tax (GST)
+led to a loss of input tax credit for life insurance companies, which
+pushed back their value of new business margin improvements by a few
+quarters [8-11]. In the lending sector, regulatory moves, such as the
+implementation of a minimum Loss Given Default (LGD) floor, have
+necessitated accelerated Expected Credit Loss (ECL) provisions [12,
+13].</li>
+<li><strong>Sector-Specific Pressures in Insurance:</strong> The general
+insurance industry has faced intense competition and pricing pressures,
+particularly in crop insurance and motor own-damage (OD) policies
+[14-16]. The motor OD loss ratio has been elevated across the industry
+due to a dual challenge: GST changes caused a drop in the Insured
+Declared Value (IDV) of vehicles, which lowered premium collections,
+while inflation simultaneously drove up the costs of repairs and spare
+parts [15, 17-19]. Furthermore, the insurance market operates
+cyclically; for example, commercial fire insurance prices have recently
+softened due to a lack of major catastrophe events, though this
+typically precedes an eventual rise in loss ratios and subsequent price
+corrections [20, 21].</li>
+<li><strong>Talent Acquisition and Real Estate Cycles:</strong>
+Expanding capital market businesses face an explosion of human resource
+costs and a limited talent pool, making it difficult to recruit
+high-quality talent at the right compensation levels [22-25]. In real
+estate, a multi-year “super cycle” of booming residential sales is
+normalizing, which means developers will need to spend more time and
+marketing budgets to sell properties [26-29]. Lenders are also
+monitoring potential real estate impacts in major IT hubs due to
+anticipated AI-related job losses in the IT services sector [30, 31]. In
+affordable housing finance, temporary challenges in collections over a 6
+to 9 month period previously led to a spike in non-performing assets
+(NPAs) [32, 33].</li>
+<li><strong>Consumer Care Constraints:</strong> In the senior care
+market, existing adult hygiene products have persistently fallen short
+on leakage protection, fit, odour control, and skin safety [34]. Poorly
+designed top sheets that fail to quickly transfer liquid to absorbent
+cores cause pooling, sagging, and discomfort, which exacerbates seniors’
+fears of stepping out and restricts their independence [34].</li>
+</ul>
+<p><strong>Evolution of Opportunities Over Time</strong></p>
+<ul>
+<li><strong>Macro Tailwinds and New Growth Engines:</strong> Despite
+short-term volatility, the broader economic trajectory presents massive
+long-term opportunities. As investors transition from being traditional
+savers to seeking higher yields, capital is rapidly moving from the
+banking system into the capital markets [35, 36]. India is viewed as
+being on the cusp of becoming one of the world’s largest capital
+markets, supported by a stable political environment and a charged-up
+startup and venture capital ecosystem [37, 38]. Furthermore, large-scale
+government thrusts into infrastructure, manufacturing, defense (Make in
+India), and the expansion of Global Capability Centers (GCCs) are
+creating new jobs that are expected to offset potential losses in
+traditional IT services [39-44].</li>
+<li><strong>Pivot to Fee-Based and Wealth Management Models:</strong>
+Financial firms are actively shifting toward asset-light, high-margin
+fee-based businesses to ensure earnings stability [45-49]. Companies are
+scaling their Assets Under Management (AUM) horizontally by expanding
+their distribution footprints and branches, and vertically by
+introducing new asset classes [50-53]. The expansion of wealth
+management businesses has driven significant growth in both recurring
+AUM and transactional revenues [54-58].</li>
+<li><strong>Alternative Investments and Global Reach:</strong> The
+alternative asset space—such as private credit, real estate funds, and
+pre-IPO funds—is highly underpenetrated and presents a major growth
+frontier for mid-market and high-net-worth investors [59-66]. To
+capitalize on this, companies are expanding their global connectivity by
+setting up onshore funds, offshore feeder funds, and operations in GIFT
+City to tap into international capital flows and launch pension fund
+management businesses [67-72].</li>
+<li><strong>Synergies and the “Flywheel” Effect:</strong> As financial
+platforms scale, they benefit from a powerful flywheel effect. Large
+corporate advisory and private markets divisions naturally originate
+deals that can be cross-sold as transactional products to wealth
+management clients without proportionate increases in origination costs
+[73, 74]. Conversely, a growing wealth management client base originates
+private companies that eventually require capital markets support for
+M&amp;A or IPOs [75, 76].</li>
+<li><strong>Innovation in Product Design and Technology:</strong> To
+combat margin pressures, companies are restructuring their offerings. In
+life insurance, pivoting toward retail protection, profitable ULIPs, and
+deferred annuities has yielded record-high value of new business margins
+[11, 77-81]. Technology and AI are being deployed to reduce transaction
+costs and improve advisor productivity [82, 83]. In the consumer sector,
+deep research into seniors’ needs has led to breakthrough innovations
+like the re-engineering of the adult diaper; new proprietary Smart
+Liquid Distribution technology utilizes perforated top sheets and
+uniform distribution architectures to solve long-standing issues of
+pooling and sagging, thereby enhancing the dignity and mobility of the
+elderly [34, 84].</li>
+</ul>
+<p><em><a href="footnote/Holding%20Company.1.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-headwinds-affecting-this-industry"
+class="section level3">
+<h3><strong>What are the headwinds affecting this
+industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>Capital Markets and Investment Banking</strong> The capital
+markets industry is navigating several macroeconomic and geopolitical
+headwinds that create short-term market volatility [1, 2]. Specific
+challenges include FPI (Foreign Portfolio Investor) selling, a pending
+U.S. trade deal, and sudden surges in gold and silver prices [3]. This
+volatility often creates an unfavorable environment for transactions,
+causing deals like IPOs to be delayed or pushed out by a quarter or two
+[1, 3]. Furthermore, the industry is facing significant human resource
+challenges due to an explosion in talent costs and a limited pool of
+high-quality professionals, which puts pressure on compensation and
+business margins [4-6].</p>
+<p><strong>Insurance Sector</strong> The insurance space is facing
+multiple headwinds across both general and life insurance segments: *
+<strong>Motor Insurance:</strong> The industry is experiencing elevated
+Motor Own Damage (OD) loss ratios, driven by intense pricing pressures
+[7, 8]. Recent GST changes have caused a drop in the Insured Declared
+Value (IDV) of cars, which directly leads to lower premium collections
+for the same vehicles [8, 9]. Concurrently, inflation is driving up the
+cost of spare parts and vehicle repairs, thereby increasing the overall
+claim outgo [10]. * <strong>Crop Insurance:</strong> This segment is
+witnessing de-growth primarily due to intense pricing pressures [11]. *
+<strong>Life Insurance:</strong> The industry has observed dips in
+persistency across certain customer cohorts [12]. Additionally, margins
+have been negatively impacted by the loss of input tax credits stemming
+from recent GST changes [13, 14].</p>
+<p><strong>Real Estate and Housing Finance</strong> The real estate
+market is transitioning out of its recent “rosy” super cycle of booming
+residential sales, moving toward a normalized cycle where developers
+will have to rely more heavily on marketing budgets and dedicated
+selling time [15-17]. Additionally, there are emerging concerns that
+AI-related job losses within the IT services sector could negatively
+impact real estate demand in major IT hubs like Bangalore [18]. In the
+affordable housing finance segment, lenders have recently faced spikes
+in Non-Performing Assets (NPAs) due to collection challenges [19,
+20].</p>
+<p><strong>Macroeconomic and Regulatory Pressures</strong> Broader
+regulatory and economic shifts are also acting as headwinds for the
+financial services industry. The government’s notification of new Labor
+Codes has introduced a uniform definition of wages, which has increased
+past-service gratuity liabilities and forced companies to take
+significant one-time financial hits to their profits and underwriting
+results [21-23]. Finally, the dynamic economic environment has prompted
+some major lenders to implement accelerated Expected Credit Loss (ECL)
+provisions to enhance balance sheet resilience, severely impacting
+short-term profitability [21, 24]. Past systemic headwinds affecting
+asset management have also included broader uncertainties like
+elections, tariffs, and the COVID-19 pandemic [25].</p>
+<p><em><a href="footnote/Holding%20Company.2.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-key-things-to-understand-about-this-industry"
+class="section level3">
+<h3><strong>What are the key things to understand about this
+industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>The Indian financial services and capital markets industry is
+currently experiencing a period of significant structural growth and
+transformation.</strong> Based on the provided corporate earnings
+discussions, several key dynamics define the current landscape of this
+sector:</p>
+<p><strong>1. Massive Macroeconomic Tailwinds and Capital Market
+Expansion</strong> India is on the cusp of becoming one of the largest
+capital markets in the world, driven by a highly stable political
+environment, a vibrant startup ecosystem, and substantial government
+spending on infrastructure and defense [1-6]. A fundamental shift is
+occurring as <strong>citizens transition from being traditional savers
+to active investors seeking higher yields</strong>, moving massive
+amounts of financial capital away from the banking system and into the
+capital markets [1, 4, 7]. Historically, as a country’s GDP expands
+robustly, its capital markets tend to grow at a multiple of 1.5x to 2x
+of that GDP growth rate [8, 9]. This multiplier effect is currently
+fueling an exceptionally strong pipeline of Initial Public Offerings
+(IPOs), Mergers &amp; Acquisitions (M&amp;A), and private equity
+investments [8, 10-12].</p>
+<p><strong>2. Aggressive Expansion in Wealth and Asset
+Management</strong> Financial institutions are heavily investing in
+physical branch networks, digital infrastructure, and talent
+acquisition—particularly by expanding their base of Relationship
+Managers (RMs)—to capture a larger share of growing household wealth
+[13-17]. There is also a pronounced focus on <strong>Alternative
+Investment Funds (AIFs)</strong> [11, 18, 19]. The alternative assets
+space, including real estate funds, pre-IPO funds, and private credit,
+is seen as a massive, underserved opportunity in the mid-market segment
+for high-net-worth investors capable of making larger minimum
+investments [11, 20-23].</p>
+<p><strong>3. Strategic Pivot Toward Scalable, Fee-Based Income</strong>
+A major evolution within the industry is the deliberate shift toward
+building recurring, fee-based revenue models (such as fund advisory,
+portfolio management, and distribution) rather than relying solely on
+transaction or interest income [24-28]. <strong>This transition
+significantly improves the quality, predictability, and stability of
+earnings</strong> [28, 29]. As Assets Under Management (AUM) scale up,
+the fixed costs of the asset management infrastructure remain largely
+unchanged; this allows incremental revenue to flow in at much higher
+margins, generating powerful operating leverage for these firms
+[30-35].</p>
+<p><strong>4. Evolving Private Credit and Syndication Models</strong> In
+the private lending and Non-Banking Financial Company (NBFC) space,
+<strong>firms are increasingly prioritizing syndication over purely
+holding loans on their balance sheets</strong> [36-38]. By structuring
+and underwriting large credit deals and selling down the majority of the
+exposure to other institutional investors or credit funds, companies can
+generate high fee income while optimizing their own capital allocation
+and risk-adjusted returns [36, 38-40]. This private market activity
+(including corporate, real estate, and distressed credit) also provides
+a natural hedge against the inherent volatility of public equity markets
+[41-43].</p>
+<p><strong>5. Cyclicality and Structural Nuances in the Insurance
+Sector</strong> For players operating in the insurance domain, the
+industry presents unique operational challenges and metrics: *
+<strong>General Insurance (Property &amp; Casualty):</strong> This
+segment is highly cyclical, characterized by “softening” and “hardening”
+market pricing based on overall loss ratios and the frequency of natural
+catastrophes [44-46]. For example, the industry routinely faces elevated
+Motor Own Damage (OD) loss ratios driven by inflation in repair and
+spare part costs, combined with lower vehicle valuations (Insured
+Declared Values), which reduce the total premium collected per vehicle
+[47-49]. Companies must constantly correct these ratios through pricing
+adjustments, better claim negotiations, and improved underwriting mixes
+[49, 50]. * <strong>Life Insurance:</strong> The focus here has shifted
+heavily toward “sustainable and profitable growth” through product
+restructuring [51, 52]. Companies are optimizing their product mix
+across participating (par) plans, non-par savings, annuities, term life,
+and Unit Linked Insurance Plans (ULIPs) to boost the <strong>Value of
+New Business (VNB) and New Business Margins (NBM)</strong>, which are
+the core metrics used to evaluate the profitability of life insurance
+operations [53-57].</p>
+<p><strong>6. Technological Integration and Regulatory Impacts</strong>
+To scale efficiently, financial services firms are integrating digital
+tools and AI analytics to reduce the cost per transaction and improve
+advisor productivity [58-60]. Furthermore, because the industry is
+heavily regulated, short-term profitability is frequently impacted by
+statutory and regulatory changes, such as adjustments to GST input tax
+credits or the financial impact of new national Labor Codes on employee
+benefit liabilities [61-63].</p>
+<p><em><a href="footnote/Holding%20Company.3.txt">sources</a> </em></p>
+</div>
+<div id="what-are-the-tailwinds-affecting-this-industry"
+class="section level3">
+<h3><strong>What are the tailwinds affecting this
+industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p><strong>The financial services and capital markets industry is
+currently benefiting from several strong structural and macroeconomic
+tailwinds:</strong></p>
+<ul>
+<li><strong>Transformation of Savers into Investors:</strong> There is a
+massive transition of <strong>financial capital moving away from the
+traditional banking system and into the capital markets</strong> as
+individuals seek higher yields [1, 2]. As the country’s financial
+markets deepen and retail participation grows, a fundamental behavioral
+shift is occurring where everyday people are evolving from being mere
+“savers” into active “investors” [3-6].</li>
+<li><strong>Macroeconomic and Political Stability:</strong> The industry
+is supported by an extremely stable economy with very low downside risk,
+coupled with a highly stable political environment [1, 2]. Because of
+these strong foundational elements, India is believed to be on the cusp
+of becoming one of the biggest capital markets in the world [1, 2].</li>
+<li><strong>Vibrant Private Equity and Start-up Ecosystems:</strong> The
+capital markets are being fueled by a <strong>highly charged-up start-up
+ecosystem as well as an incredibly active private equity and venture
+capital investment environment</strong> [1, 2]. On the debt side, the
+amount of capital that credit funds are eager to deploy into the Indian
+credit market is currently very exciting [7, 8].</li>
+<li><strong>High Growth in Alternative Investments:</strong> The
+alternative investment space, particularly Alternative Investment Funds
+(AIFs), has seen substantially higher growth over the last five years
+[9, 10]. Despite this rapid expansion, the alternative asset space
+remains significantly underpenetrated and underserved, particularly in
+the mid-market segment, offering a long runway for growth for asset and
+wealth managers [11, 12].</li>
+<li><strong>Targeted Government Spending and Job Creation:</strong> A
+major governmental thrust on <strong>infrastructure, defense, and
+manufacturing</strong> is expected to drive long-term economic expansion
+and create significant employment [13-16]. Furthermore, there is strong
+momentum in the Global Capability Centers (GCC) sector, as international
+companies increasingly outsource value-added work to India, keeping job
+growth and sector stability intact [14, 16].</li>
+</ul>
+<p><em><a href="footnote/Holding%20Company.4.txt">sources</a> </em></p>
+</div>
+<div id="what-is-the-general-outlook-of-this-industry"
+class="section level3">
+<h3><strong>What is the general outlook of this industry?</strong></h3>
+<p><em>asof: 2026-04-15 </em></p>
+<p>The financial services and capital markets industry in India is
+currently positioned for robust, transformational growth over the coming
+years, characterized by a shift in investor behavior, strong deal
+pipelines, and expanding alternative asset classes, though the insurance
+sector is navigating some cyclical pricing and claims pressures.</p>
+<p><strong>Capital Markets, Wealth Management, and Investment
+Banking</strong> The outlook for the Indian capital markets is
+exceptionally strong, with the country on the cusp of becoming one of
+the biggest capital markets globally [1]. Industry leaders anticipate
+solid growth over a long-term horizon of six to eight years, driven by a
+highly stable economy with low downside risk, a stable political
+environment, and a vibrant start-up and private equity ecosystem
+[1].</p>
+<p>A massive structural shift is underway as individuals transition from
+traditional savers to active investors, moving significant financial
+capital away from the banking system and into capital markets in search
+of higher yields [1, 2]. Historical trends in global markets suggest
+that during periods of solid GDP expansion, capital markets typically
+grow at 1.5 to 2 times the rate of GDP growth [3]. Consequently,
+long-term revenue growth for capital market and advisory businesses is
+projected to be between 13% to 15%, with profitability growth in the
+high teens as transaction sizes scale and higher-margin products are
+introduced [4]. While short-term volatility due to geopolitics or
+foreign portfolio investor (FPI) selling may occur, the fundamental
+breadth and volume of activities across equity capital markets, private
+credit, M&amp;A, and private equity are expected to consistently expand
+[2, 5].</p>
+<p>Furthermore, the alternative investment space, particularly
+Alternative Investment Funds (AIFs), has seen substantial growth over
+the past five years [6]. This segment is still considered highly
+underpenetrated and underserved, particularly in the mid-market space,
+presenting a massive opportunity for asset managers who can offer
+specialized, global, and customized financial products [6, 7].</p>
+<p><strong>Insurance Sector (General and Life)</strong> The general
+insurance industry is currently experiencing intense competition and
+cyclical margin pressures [8]. For instance, Motor Own Damage (OD) loss
+ratios have been elevated across the industry [9]. This is primarily
+attributed to a drop in Insured Declared Values (IDV) caused by GST
+changes—which lowers the premium collected per vehicle—combined with
+inflation driving up the cost of repairs and spare parts [10-12].
+However, the general insurance market is cyclical; as loss ratios rise
+to unsustainable levels, the industry naturally corrects through premium
+increases, better claims negotiation, and improved underwriting mixes
+[13, 14]. Similarly, the fire insurance portfolio has seen softened
+pricing recently due to favorable loss ratios and an absence of major
+natural catastrophe (NATCAT) events, but prices will dynamically adjust
+if loss ratios climb [15, 16].</p>
+<p>In the life insurance sector, the focus has shifted heavily toward
+“sustainable and profitable growth” rather than purely top-line
+expansion [17, 18]. Companies are restructuring their product mixes to
+heavily feature profitable Unit-Linked Insurance Plans (ULIPs), term
+life, riders, and annuities, catering increasingly to mass-affluent
+customers [19-22].</p>
+<p><strong>Real Estate and Private Credit</strong> In the real estate
+lending and private credit space, the industry is transitioning out of a
+“super cycle” of booming residential sales into a more normalized cycle
+[23]. In this normalized environment, marketing and sales will require
+more effort from developers, which is expected to trigger a significant
+pickup in construction finance drawdowns [23, 24]. Lending rates are
+expected to become more attractive, and credit funds are showing high
+enthusiasm for deploying capital into the Indian credit market, driving
+a robust pipeline for syndication and distressed credit transactions
+[24, 25].</p>
+<p><strong>Macroeconomic Growth Engines</strong> Further boosting the
+financial sector’s outlook are massive macroeconomic growth engines
+heavily backed by the government. Extensive government thrust on
+infrastructure spending, domestic manufacturing, and defense (Make in
+India) will create substantial job opportunities and capital
+requirements [26, 27]. Additionally, there is a strategic focus by both
+the government and large corporations to position India strongly in the
+Artificial Intelligence (AI) space [28]. These sectors, alongside the
+booming Global Capability Centers (GCCs) outsourcing value-added work to
+India, are expected to offset localized job losses in traditional IT
+services, ultimately fueling corporate deal-making, wealth generation,
+and retail financial participation [27, 29].</p>
+<p><em><a href="footnote/Holding%20Company.5.txt">sources</a> </em></p>
+</div>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
