@@ -1,0 +1,122 @@
+---
+title: Commodities Snapshot
+subtitle: StockViz
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: rmdlib
+    toc: true
+    includes:
+        in_header: header.html
+        after_body: ../footer.html
+---
+
+```{r dt_chunk, include=FALSE}
+
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+
+```
+
+---
+date: `r createdDate`
+---
+
+```{r, init_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+library('RODBC')
+library('RPostgres')
+
+library('quantmod')
+library('PerformanceAnalytics')
+
+library('reshape2')
+library('lubridate')
+library('tidyverse')
+
+library('ggrepel')
+library('ggthemes')
+library('viridis')
+
+options("scipen"=100)
+options(stringsAsFactors = FALSE)
+
+#source("C:/stockviz/r/config.r")
+source("/mnt/hollandr/config.r")
+source("../common/fan-chart.R")
+
+lcon <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, "StockViz", ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+
+```
+
+```{r, futures_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+doCommFutPlotsCme <- function(iName, yLabel){
+	fanDf <- sqlQuery(lcon, sprintf("select SETTLE, time_stamp from CME_BHAV c1
+					where PRODUCT_DESCRIPTION ='%s'
+					and c1.CONTRACT_YEAR = DATEPART(year, c1.time_stamp)
+					and c1.CONTRACT_MONTH= DATEPART(month, c1.time_stamp)
+                    and time_stamp >= '%s'", iName, "2009-12-25"))
+	
+	pXts <- xts(fanDf[,1], fanDf[,2])
+	names(pXts) <- c('COMM')
+	
+	toPlot <- data.frame(pXts)
+	toPlot$T <- index(pXts)
+	
+	pxPlot <- ggplot(toPlot, aes(x=T, y=COMM)) +
+		theme_economist() +
+		geom_line(size=1) +
+		theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+		scale_color_viridis(discrete = TRUE) +
+		scale_x_date(breaks = "6 months", date_labels="%b-%d-%Y") +
+		guides(variable=F, size=F, color=F) +
+		labs(x='', y=yLabel, title=iName, subtitle=sprintf("%s:%s", toPlot$T[1], last(toPlot$T))) +
+		annotate("text", x=toPlot$T[1], y=min(toPlot$COMM), label = "@StockViz", hjust=0, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
+	
+	fanPlot <- common.CreateFanChart(fanDf, iName, sprintf("%d:%s", min(year(index(pXts))), last(index(pXts))))
+		
+	return(list(pxPlot, fanPlot))
+}
+
+doCommFutPlotsMcx <- function(iName, yLabel){
+	fanDf <- sqlQuery(lcon, sprintf("select px_close, time_stamp from BHAV_COM_MCX
+					where CONTRACT ='%s'
+					and OTYPE='XX'
+					and expiry_series=0
+                    and time_stamp >= '%s'", iName, "2009-12-25"))
+	
+	pXts <- xts(fanDf[,1], fanDf[,2])
+	names(pXts) <- c('COMM')
+	
+	toPlot <- data.frame(pXts)
+	toPlot$T <- index(pXts)
+	
+	pxPlot <- ggplot(toPlot, aes(x=T, y=COMM)) +
+		theme_economist() +
+		geom_line(size=1) +
+		theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+		scale_color_viridis(discrete = TRUE) +
+		scale_x_date(breaks = "6 months", date_labels="%b-%d-%Y") +
+		guides(variable=F, size=F, color=F) +
+		labs(x='', y=yLabel, title=iName, subtitle=sprintf("%s:%s", toPlot$T[1], last(toPlot$T))) +
+		annotate("text", x=toPlot$T[1], y=min(toPlot$COMM), label = "@StockViz", hjust=0, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
+	
+	fanPlot <- common.CreateFanChart(fanDf, iName, sprintf("%d:%s", min(year(index(pXts))), last(index(pXts))))
+		
+	return(list(pxPlot, fanPlot))
+}
+
+```
+
+## MCX Futures (INR)
+
+```{r, print_mcx, echo = FALSE, results='asis', message = FALSE, warning = FALSE, fig.height=6, fig.width=12}
+indicesMcx <- c('CRUDEOIL', 'GOLD', 'COPPER', 'SILVER')
+for(i in indicesMcx){
+	plts <- doCommFutPlotsMcx(i, 'Price (INR)')
+	cat("\n\n### ", i, "\n\n")
+	print(plts[[1]])
+	print(plts[[2]])
+}
