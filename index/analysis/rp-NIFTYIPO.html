@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2026-08-25" />
+
+<title>Index Analysis</title>
+
+<script src="rmdlib/header-attrs-2.30/header-attrs.js"></script>
+<script src="rmdlib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rmdlib/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="rmdlib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="rmdlib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="rmdlib/navigation-1.1/tabsets.js"></script>
+<link href="rmdlib/htmltools-fill-0.5.9/fill.css" rel="stylesheet" />
+<script src="rmdlib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="rmdlib/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="rmdlib/datatables-binding-0.32/datatables.js"></script>
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="rmdlib/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="rmdlib/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="rmdlib/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="rmdlib/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="rmdlib/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="rmdlib/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="description" content="Index analysis. Risk metrics, constituent changes, etc..." />
+<meta property="og:image" content="https://avatars3.githubusercontent.com/u/21966469?s=400&v=4" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StockViz</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-globe"></span>
+     
+    Macro
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-bnd.html">Fixed Income</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cur.html">Currencies</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/macro/rp-cmdy.html">Commodities</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-arrows-v"></span>
+     
+    52w H&amp;L
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/52wk-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-rocket"></span>
+     
+    ATH
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/ath-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-magnet"></span>
+     
+    Drawdowns
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/drawdowns-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-train"></span>
+     
+    Streaks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-IN.html">India</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/streaks-US.html">US</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-hand-pointer-o"></span>
+     
+    Indian Indices
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-risk.html">Performance Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-IN.html">Index Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-MKT-CAP.html">Classification Changes</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-industry.html">Industry Metrics</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-syn.html">Synthetic Indices</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-vol-NIFTY.html">NIFTY Volatility</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/index/rp-valuations.html">Valuations</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports01/eq/results-IN.html">Result Dates</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/eq-in/rp-margin.html">Margin Report</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-shopping-bag"></span>
+     
+    Funds
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports03/mf/rp-IN.html">Indian Mutual Funds</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports03/pms/rp-IN.html">Indian PMS</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-risk.html">US ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-sector.html">US Sector ETFs</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-country.html">Country $ ETFs</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-percent"></span>
+     
+    Fama-French
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-industry.html">Industry</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-factors.html">Factors</a>
+    </li>
+    <li>
+      <a href="https://stockviz.github.io/reports02/etf-us/rp-fama-french-regression.html">Regressions</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://stockviz.biz">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://stockviz.substack.com">
+    <span class="fa fa-envelope-o"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Index Analysis</h1>
+<h3 class="subtitle">NIFTY IPO</h3>
+<h4 class="date">August 25, 2026</h4>
+
+</div>
+
+
+<div id="constituent-changes" class="section level3">
+<h3>Constituent Changes</h3>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-906663cbc8723850e4c3" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-906663cbc8723850e4c3">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-08-24<\/caption>","data":[["MILKYMIST"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a5d45ee2cc01db073458" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a5d45ee2cc01db073458">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-08-21<\/caption>","data":[["DHOOTTRANS","MOLBIO"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2fe0da2260562ceb5d21" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2fe0da2260562ceb5d21">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-08-20<\/caption>","data":[["LEAPIND","TECHNOCRAF"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-baab3e0e5c1efa07e02f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-baab3e0e5c1efa07e02f">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-08-18<\/caption>","data":[["ARDEE"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5ab3315f31eb128e07fc" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5ab3315f31eb128e07fc">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-08-12<\/caption>","data":[["JNPR","MVELECTRO"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-c4aa609a73411c434086" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c4aa609a73411c434086">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-08-11<\/caption>","data":[["MANIPALHOS"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-c605af4bcc94f8b188c7" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c605af4bcc94f8b188c7">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-08-06<\/caption>","data":[["INDOMIM","LCL","XTRANET"],[null,"",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":8,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-367fe4c2e8b3b34ffee6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-367fe4c2e8b3b34ffee6">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-07-30<\/caption>","data":[["CMLL"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2a4dc76834371ffa5f49" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2a4dc76834371ffa5f49">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-07-27<\/caption>","data":[["ALPINETEX","SBIFUNDS"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-461104f8d83a32814584" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-461104f8d83a32814584">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-07-22<\/caption>","data":[["LASERPOWER"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-15119532f01c068a392c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-15119532f01c068a392c">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-07-21<\/caption>","data":[["KUSUMGAR"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-935df9d040c69159a522" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-935df9d040c69159a522">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-07-20<\/caption>","data":[["AEROPLANE"],["AMIRCHAND"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-9a2a4fe95ab5e6b633c9" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9a2a4fe95ab5e6b633c9">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-07-14<\/caption>","data":[["KNACK"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2b0cdcf0d8840bd4d1f6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2b0cdcf0d8840bd4d1f6">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-07-10<\/caption>","data":[["AASTHA"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1ac6ffd7583d822f8184" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1ac6ffd7583d822f8184">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-07-08<\/caption>","data":[["CORDELIA","CSM","RAMBHAJO"],[null,"",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":8,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-c620dcb29b4154cdd3ef" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c620dcb29b4154cdd3ef">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-07-06<\/caption>","data":[["TURTLEMINT"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-b0e262141f4db640507b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b0e262141f4db640507b">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-06-30<\/caption>","data":[[null,"","","","","","","","","",""],["AEGISVOPAK","ARIS","ATHERENERG","BELRISE","ELLEN","GLOBECIVIL","KALPATARU","OSWALPUMPS","PROSTARM","SCODATUBES","THELEELA"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":16,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,16,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-041bfb046817c4252ffc" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-041bfb046817c4252ffc">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-06-18<\/caption>","data":[["HEXAGON"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8798dfb78b05890ff65a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8798dfb78b05890ff65a">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-06-16<\/caption>","data":[["CMRGREEN"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4f7ed25942351e862821" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4f7ed25942351e862821">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-05-14<\/caption>","data":[["KISSHT"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-227eb8b96ec5d50bc9a0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-227eb8b96ec5d50bc9a0">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-04-27<\/caption>","data":[["OMPOWER"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e111dde16567763c94ae" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e111dde16567763c94ae">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-04-09<\/caption>","data":[["AMIRCHAND","POWERICA","SAIPARENT"],[null,"",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":8,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a954cb1fedd59903ee66" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a954cb1fedd59903ee66">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-04-07<\/caption>","data":[["CMPDI"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-b86272f7b7320f8d365b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b86272f7b7320f8d365b">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-04-01<\/caption>","data":[["GSPCROP"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-21324c624c6649f43ee8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-21324c624c6649f43ee8">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-03-30<\/caption>","data":[["INNOVISION","","","","","","","","","",""],["AGARWALEYE","AJAXENGG","DENTA","HEXT","INDOFARM","LAXMIDENTL","QPOWER","QUADFUTURE","SETL","STALLION","UNIMECH"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":16,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,16,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e32300e61ca8d56305f8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e32300e61ca8d56305f8">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-03-25<\/caption>","data":[["RSL"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4b700db11ac36f3f55e4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4b700db11ac36f3f55e4">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-03-17<\/caption>","data":[["SEDEMAC"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-c59fd8d7237d4d80bf32" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c59fd8d7237d4d80bf32">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-03-11<\/caption>","data":[["OMNI"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-9f61242920ed66aa244a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9f61242920ed66aa244a">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-03-10<\/caption>","data":[["PNGSREVA"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-9ee2526dfecc08e010e6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9ee2526dfecc08e010e6">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-03-09<\/caption>","data":[["CLEANMAX"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-9600763d75690e33af31" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9600763d75690e33af31">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-03-05<\/caption>","data":[["GAUDIUMIVF"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e42b595d044a9a2c7663" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e42b595d044a9a2c7663">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-02-20<\/caption>","data":[["AYE","FRACTAL"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-bbdb6be6335ffbc80153" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bbdb6be6335ffbc80153">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-02-02<\/caption>","data":[["SHADOWFAX"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-65e5b8b4bc406abd7b6f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-65e5b8b4bc406abd7b6f">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-01-28<\/caption>","data":[["AMAGI"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-548f0c8b82f913a27ee0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-548f0c8b82f913a27ee0">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-01-23<\/caption>","data":[["BHARATCOAL"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-3e706b9ed2e079d6590e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3e706b9ed2e079d6590e">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2026-01-05<\/caption>","data":[["GKSL"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a2d08fa7d19e2a61e844" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a2d08fa7d19e2a61e844">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-12-31<\/caption>","data":[[null,"","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["ACMESOLAR","AFCONS","ARKADE","BAJAJHFL","BALAJEE","BLACKBUCK","CARRARO","CEWATER","DAMCAPITAL","DBEIL","DIFFNKG","ECOSMOBLTY","EIEL","FIRSTCRY","GALAPREC","GARUDA","GODAVARIB","HYUNDAI","IGIL","IKS","INTERARCH","KRN","KROSS","MAMATA","MANBA","MOBIKWIK","NIVABUPA","NORTHARC","NTPCGREEN","ORIENTTECH","PNGJL","PREMIERENE","SAGILITY","SAILIFE","SANATHAN","SENORES","SSDL","STYLEBAAZA","SURAKSHA","SWIGGY","TOLINS","TRANSRAILL","UNIECOM","VENTIVE","VMM","WAAREEENER","WCIL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":52,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,50,52,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8e8b566114960f49049b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8e8b566114960f49049b">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-12-30<\/caption>","data":[["KSHINTL"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-caf4de84ce6c19460419" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-caf4de84ce6c19460419">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-12-26<\/caption>","data":[["ICICIAMC"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-50ac001d1891a14d4154" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-50ac001d1891a14d4154">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-12-23<\/caption>","data":[["NEPHROPLUS","PARKHOSPS"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-87df53042017f4a991df" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-87df53042017f4a991df">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-12-19<\/caption>","data":[["CORONA","WAKEFIT"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-0139d8ef6000efc27834" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0139d8ef6000efc27834">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-12-16<\/caption>","data":[["AEQUS","MEESHO","VIDYAWIRES"],[null,"",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":8,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-c04bd54407260d6c3c21" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c04bd54407260d6c3c21">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-12-04<\/caption>","data":[["SUDEEPPHRM"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d867ddfb96df8c2cbb62" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d867ddfb96df8c2cbb62">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-12-02<\/caption>","data":[["EXCELSOFT"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-79b4b8183bb174a65c52" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-79b4b8183bb174a65c52">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-11-27<\/caption>","data":[["CAPILLARY"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-fefb42a69490902f4ad7" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-fefb42a69490902f4ad7">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-11-26<\/caption>","data":[["UTLSOLAR"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-39bb44762f1fb8c82797" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-39bb44762f1fb8c82797">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-11-25<\/caption>","data":[["TENNIND"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-55bbb48de7a1bf79aa34" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-55bbb48de7a1bf79aa34">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-11-24<\/caption>","data":[["EMMVEE","PWL"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a5e9b635a55440e7c49e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a5e9b635a55440e7c49e">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-11-20<\/caption>","data":[["PINELABS"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a7f02374525b2ff24d39" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a7f02374525b2ff24d39">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-11-18<\/caption>","data":[["GROWW"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d2265f29446358de992e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d2265f29446358de992e">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-11-14<\/caption>","data":[["LENSKART"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ee27731d9dd92ec35416" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ee27731d9dd92ec35416">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-11-13<\/caption>","data":[["STUDDS"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1c040d8dfc4a2255c388" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1c040d8dfc4a2255c388">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-11-12<\/caption>","data":[["ORKLAINDIA"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d603a0309f855d41e8e1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d603a0309f855d41e8e1">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-30<\/caption>","data":[["MIDWESTLTD"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-bd91520cfc9b685c3340" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bd91520cfc9b685c3340">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-24<\/caption>","data":[["CANHLIFE"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-63ccc24d92927b0921c5" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-63ccc24d92927b0921c5">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-23<\/caption>","data":[["CRAMC","RUBICON"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5ebdf53b3458ff6a9288" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5ebdf53b3458ff6a9288">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-20<\/caption>","data":[["LGEINDIA"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-3bb9f70b74e3252b75c8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3bb9f70b74e3252b75c8">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-17<\/caption>","data":[["TATACAP"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-849e71f9a48fb0afef07" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-849e71f9a48fb0afef07">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-16<\/caption>","data":[["WEWORK"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2e6d36562faaaf50311d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2e6d36562faaaf50311d">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-14<\/caption>","data":[["ADVANCE"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-77c7128886a48429859b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-77c7128886a48429859b">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-13<\/caption>","data":[["FABTECH","GLOTTIS"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-cedc36089d494b8a2dc6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-cedc36089d494b8a2dc6">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-10<\/caption>","data":[["PACEDIGITK"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4a125761ef10a620cb23" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4a125761ef10a620cb23">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-09<\/caption>","data":[["TRUALT"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-646d5074b6403d474c65" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-646d5074b6403d474c65">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-08<\/caption>","data":[["BMWVENTLTD","EPACKPEB","JAINREC"],[null,"",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":8,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-3c983bbb237043c08716" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3c983bbb237043c08716">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-07<\/caption>","data":[["ARSSBL","JARO","SOLARWORLD","STYL"],[null,"","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":9,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-c1e24986a9037b22b6c8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c1e24986a9037b22b6c8">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-06<\/caption>","data":[["ATLANTAELE","GANESHCP"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-68f9ca6127d18ca68643" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-68f9ca6127d18ca68643">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-03<\/caption>","data":[["GKENERGY","SAATVIKGL"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1801b82004085f8316e4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1801b82004085f8316e4">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-10-01<\/caption>","data":[["IVALUE"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-758a89504673232a5b83" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-758a89504673232a5b83">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-09-30<\/caption>","data":[["VMSTMT","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""],["AADHARHFC","ABDL","AFIL","AKUMS","AWFIS","BANSALWIRE","BHARTIHEXA","CAPITALSFB","CEIGALL","DEEDEV","EMCURE","ENTERO","EXICOM","GODIGIT","GOPAL","GPTHEALTH","INDGN","IXIGO","JGCHEM","JNKINDIA","JSFB","JUNIPER","KRONOX","KRYSTAL","MUKKA","OLAELEC","PLATIND","PVSL","RKSWAMY","RPTECH","SANSTAR","STANLEY","TBOTEK","VRAJ","VSTL"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":40,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,40,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-b8b5ebd4485317c9a795" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b8b5ebd4485317c9a795">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-09-29<\/caption>","data":[["EUROPRATIK"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-74fc9ca10947abf4c375" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-74fc9ca10947abf4c375">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-09-23<\/caption>","data":[["SHRINGARMS","URBANCO"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-c474033f7f4b77e9b420" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c474033f7f4b77e9b420">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-09-09<\/caption>","data":[["AHCL","VIKRAN"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a4052c2c8d08017e8996" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a4052c2c8d08017e8996">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-09-03<\/caption>","data":[["MEIL"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2a2aee9682399a45a9c4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2a2aee9682399a45a9c4">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-09-02<\/caption>","data":[["GEMAROMA","PATELRMART","SHREEJISPG","VIKRAMSOLR"],[null,"","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":9,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a34402882b4c8b16f79e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a34402882b4c8b16f79e">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-08-26<\/caption>","data":[["REGAAL"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ab3ae3bf586c632985db" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ab3ae3bf586c632985db">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-08-25<\/caption>","data":[["BLUESTONE"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-86c23a6f714b54b539b1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-86c23a6f714b54b539b1">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-08-21<\/caption>","data":[["ALLTIME","JSWCEMENT"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-be73714633df8682d936" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-be73714633df8682d936">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-08-19<\/caption>","data":[["HILINFRA"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-bb9f487cc86f0edd2e9f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bb9f487cc86f0edd2e9f">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-08-12<\/caption>","data":[["LOTUSDEV","MBEL"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-3528db9b5985ef9e3462" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3528db9b5985ef9e3462">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-08-11<\/caption>","data":[["CPPLUS","LAXMIINDIA"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-0732ece4d34eb613fd87" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0732ece4d34eb613fd87">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-08-07<\/caption>","data":[["SHANTIGOLD"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4dd873e34e18c39ea981" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4dd873e34e18c39ea981">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-08-06<\/caption>","data":[["BRIGHOTEL"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-cbb8137150c5fc6cb19d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-cbb8137150c5fc6cb19d">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-08-04<\/caption>","data":[["EBGNG","INDIQUBE"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e7d5eee0996c98155f47" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e7d5eee0996c98155f47">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-07-25<\/caption>","data":[["ANTHEM"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d8adaf0d9a7937524e57" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d8adaf0d9a7937524e57">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-07-24<\/caption>","data":[["SMARTWORKS"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d9263a1eea719b72783e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d9263a1eea719b72783e">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-07-18<\/caption>","data":[["TRAVELFOOD"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8803fa9bc2e985ef6f6c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8803fa9bc2e985ef6f6c">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-07-15<\/caption>","data":[["CRIZAC"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-12b80353b4626fc144a0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-12b80353b4626fc144a0">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-07-09<\/caption>","data":[["IGCL"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-798af551886cc13bf655" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-798af551886cc13bf655">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-07-08<\/caption>","data":[["HDBFS","SAMBHV"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-221cc7b5c062365684ee" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-221cc7b5c062365684ee">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-07-07<\/caption>","data":[["ARIS","ELLEN","GLOBECIVIL","KALPATARU","OSWALPUMPS","",""],["BLSE","EPACK","INNOVACAP","JYOTICNC","MEDIASSIST","NOVAAGRI","PARKHOTELS"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":12,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,12,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-62524aab1492c2105896" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-62524aab1492c2105896">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-06-10<\/caption>","data":[["SCODATUBES"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-430b20084f9f44ce067e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-430b20084f9f44ce067e">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-06-09<\/caption>","data":[["PROSTARM"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-266fe54bd9e2812f455a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-266fe54bd9e2812f455a">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-06-06<\/caption>","data":[["AEGISVOPAK","THELEELA"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-9721a86e188d9cf94331" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9721a86e188d9cf94331">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-06-03<\/caption>","data":[["BELRISE"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e83c11ebc1eeaf785261" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e83c11ebc1eeaf785261">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-05-12<\/caption>","data":[["ATHERENERG"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5b6e1f794d6b34797b07" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5b6e1f794d6b34797b07">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-03-28<\/caption>","data":[[null,"","","","","","","","","","","","","","","","","",""],["ASKAUTOLTD","AZAD","BLUEJET","CELLO","DOMS","ESAFSFB","FEDFINA","FLAIR","GANDHAR","HAPPYFORGE","HONASA","INDIASHLTR","INOXINDIA","IREDA","MOTISONS","MUFTI","MUTHOOTMF","SURAJEST","TATATECH"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":24,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,24,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ea334c58410ead5ab5de" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ea334c58410ead5ab5de">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-03-03<\/caption>","data":[["QPOWER"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8615ab63fd55626ac505" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8615ab63fd55626ac505">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-02-25<\/caption>","data":[["HEXT"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-392020bfd58239c59104" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-392020bfd58239c59104">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-02-21<\/caption>","data":[["AJAXENGG"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-37ee140cfc7624823c9e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-37ee140cfc7624823c9e">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-02-10<\/caption>","data":[["AGARWALEYE"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-050c47b94ae142a8c5d1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-050c47b94ae142a8c5d1">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-02-03<\/caption>","data":[["DENTA"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-486fcc162112fb0e3cc9" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-486fcc162112fb0e3cc9">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-01-29<\/caption>","data":[["STALLION"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a14d4d3e4c74fa0d976b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a14d4d3e4c74fa0d976b">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-01-24<\/caption>","data":[["LAXMIDENTL"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-0cf168259ef2f4b79f35" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0cf168259ef2f4b79f35">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-01-20<\/caption>","data":[["QUADFUTURE"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1c47b94320452e089dbc" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1c47b94320452e089dbc">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-01-17<\/caption>","data":[["SETL"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-62036424584252e93ccb" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-62036424584252e93ccb">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-01-13<\/caption>","data":[["INDOFARM"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-696bfc976e76761f31a0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-696bfc976e76761f31a0">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-01-06<\/caption>","data":[["CARRARO","SENORES","UNIMECH","VENTIVE"],[null,"","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":9,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-698fb9cef985234869ca" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-698fb9cef985234869ca">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2025-01-02<\/caption>","data":[["CEWATER","DAMCAPITAL","MAMATA","SANATHAN","TRANSRAILL"],[null,"","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":10,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e6850ff9e8ee5d6afcb4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e6850ff9e8ee5d6afcb4">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-12-31<\/caption>","data":[[null,"","","","","","","","","","","","","","","","","","","","",""],["AEROFLEX","CONCORDBIO","EMSLIMITED","IRMENERGY","JLHL","JSWINFRA","KALAMANDIR","MVGJL","PYRAMID","RATNAVEER","RISHABH","RRKABEL","SAMHI","SBFC","SIGNATURE","TVSSCS","UDS","VALIANTLAB","VPRPL","YATHARTH","YATRA","ZAGGLE"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":27,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,27,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f93ab909a428a173f02c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f93ab909a428a173f02c">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-12-27<\/caption>","data":[["IGIL"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-7c9ee34815417bf2be3c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-7c9ee34815417bf2be3c">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-12-26<\/caption>","data":[["IKS","MOBIKWIK","SAILIFE","VMM"],[null,"","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":9,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-cd77520a78840484fc3a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-cd77520a78840484fc3a">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-12-12<\/caption>","data":[["SURAKSHA"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-379478b570e8d6cbb760" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-379478b570e8d6cbb760">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-12-09<\/caption>","data":[["EIEL","NTPCGREEN"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-34ed61f6ca015a9379e4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-34ed61f6ca015a9379e4">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-11-29<\/caption>","data":[["BLACKBUCK"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-3ea9086bc7ec49adaf6a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3ea9086bc7ec49adaf6a">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-11-22<\/caption>","data":[["NIVABUPA"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d2ff64ad7f396d867098" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d2ff64ad7f396d867098">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-11-21<\/caption>","data":[["ACMESOLAR","SWIGGY"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1eae86b6251ce36bce2a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1eae86b6251ce36bce2a">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-11-19<\/caption>","data":[["SAGILITY"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1601ac401ead74cc4ac3" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1601ac401ead74cc4ac3">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-11-08<\/caption>","data":[["AFCONS"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-885a295c7df0d331669d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-885a295c7df0d331669d">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-11-05<\/caption>","data":[["DBEIL","GODAVARIB","WAAREEENER"],[null,"",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":8,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d929e88cc2f17d78de44" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d929e88cc2f17d78de44">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-10-28<\/caption>","data":[["GARUDA","HYUNDAI"],[null,""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":7,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8cc32afa88ccd034ac2d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8cc32afa88ccd034ac2d">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-10-10<\/caption>","data":[["DIFFNKG","KRN","MANBA"],[null,"",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":8,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f7dfbacf2173f04e7167" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f7dfbacf2173f04e7167">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-09-30<\/caption>","data":[["ARKADE","NORTHARC","WCIL","","","","","","","","","","","","","","","","","","","","","","","","",""],["ACI","AFSL","AVALON","BIKAJI","CYIENTDLM","DCXINDIA","DHARMAJ","DIVGIITTS","ELIN","FIVESTAR","FUSION","GSLSU","HMAAGRO","IDEAFORGE","IKIO","INOXGREEN","KAYNES","KFINTECH","LANDMARK","MANKIND","MEDANTA","NETWEB","RADIANTCMS","RUSTOMJEE","SENCO","SULA","UNIPARTS","UTKARSHBNK"]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":33,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,25,33,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a109210f6a22002af0ed" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a109210f6a22002af0ed">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-09-23<\/caption>","data":[["PNGJL"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ebb1d16c9f910e02a6f0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ebb1d16c9f910e02a6f0">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-09-20<\/caption>","data":[["BAJAJHFL","KROSS","TOLINS"],[null,"",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":8,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-cb2a77fbc8b483b4c0a0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-cb2a77fbc8b483b4c0a0">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-09-18<\/caption>","data":[["BALAJEE"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4d232342884939c7c90e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4d232342884939c7c90e">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-09-13<\/caption>","data":[["GALAPREC"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e9ffff395ac5e0624c49" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e9ffff395ac5e0624c49">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-09-12<\/caption>","data":[["STYLEBAAZA"],[null]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":6,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-700a54f0cc40eb5b7534" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-700a54f0cc40eb5b7534">{"x":{"filter":"none","vertical":false,"caption":"<caption>On  2024-09-11<\/caption>","data":[["AKUMS","CEIGALL","ECOSMOBLTY","FIRSTCRY","INTERARCH","OLAELEC","ORIENTTECH","PREMIERENE","SANSTAR","SSDL","UNIECOM"],[null,"","","","","","","","","",""]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Entries<\/th>\n      <th>Exits<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"pageLength":16,"columnDefs":[{"width":"40%","visible":true,"targets":"_all"},{"name":"Entries","targets":0},{"name":"Exits","targets":1}],"order":[],"orderClasses":false,"lengthMenu":[10,16,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+
+&nbsp;
+&nbsp;
+<hr />
+<p style="text-align: center;">Copyright &copy; 2023 SAS Data Analytics Pvt. Ltd. All rights reserved.</p>
+<p style="text-align: center;"><a href="https://github.com/stockviz/reports/issues">&#x1F41E;</a></p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

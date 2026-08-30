@@ -1,0 +1,187 @@
+---
+title: Currency Snapshot
+subtitle: StockViz
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: rmdlib
+    includes:
+        in_header: header.html
+        after_body: ../footer.html
+---
+
+```{r dt_chunk, include=FALSE}
+
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+
+```
+
+---
+date: `r createdDate`
+---
+
+```{r, init_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+library('RODBC')
+library('RPostgres')
+
+library('quantmod')
+library('PerformanceAnalytics')
+
+library('reshape2')
+library('lubridate')
+library('tidyverse')
+
+library('tidyquant')
+library('ggrepel')
+library('ggthemes')
+library('viridis')
+
+options("scipen"=100)
+options(stringsAsFactors = FALSE)
+
+#source("C:/stockviz/r/config.r")
+source("/mnt/hollandr/config.r")
+source("../common/fan-chart.R")
+
+lcon <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, "StockViz", ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+lconUs <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, "StockVizUs", ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+lconUs2 <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, "StockVizUs2", ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+pgCon <- dbConnect(RPostgres::Postgres(), host='sweden', user=ldbuser2, password=ldbpassword2, dbname='StockVizDyn', sslmode='allow')
+
+```
+
+```{r, inr_fan_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+
+fanDf <- dbGetQuery(pgCon, "select px_close c, time_stamp from av_fx_usd_daily_ts where curr_code=$1 and time_stamp >= $2", params=list("INR", "2009-12-25"))
+
+endDt <- last(fanDf$time_stamp)
+fredCutoff <- fanDf$time_stamp[1]
+fanDf2 <- sqlQuery(lconUs, sprintf("select val c, time_stamp from FRED_OBSERVATION where SERIES_ID=-2147478748 and time_stamp >= '%s' and time_stamp < '%s'", "2009-12-25", fredCutoff))
+
+fanDf <- rbind(fanDf, fanDf2)
+
+inrFanPlot <- common.CreateFanChart(fanDf, "USDINR", sprintf("%d:%s", min(year(fanDf$time_stamp)), max(fanDf$time_stamp)))
+
+```
+
+```{r, inr_cumret_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+
+startDt <- as.Date("2015-01-01")
+getCurrencyRets <- function(currencyCodes){
+	rXts <- NULL
+	
+	for(code in currencyCodes){
+		pxSeries <- dbGetQuery(pgCon, "select time_stamp, px_close from av_fx_usd_daily_ts where curr_code=$1 and time_stamp >= $2", params=list(code, startDt))
+		pXts <- xts(pxSeries[,2], pxSeries[,1])
+		retPct <- dailyReturn(pXts)
+		rXts <- merge.xts(rXts, retPct)
+	}
+	rXts <- na.fill(rXts, 0)
+	
+	rXts <- cumprod(rXts + 1)
+	names(rXts) <- currencyCodes
+	return(rXts)
+}
+
+getFredRets <- function(fredCodes) {
+	rXts <- NULL
+	seriesNames <- c()
+	for(fid in fredCodes){
+		seriesInfo <- sqlQuery(lconUs, sprintf("select id, title from FRED_SERIES where SERIES_ID = '%s'", fid))
+		seriesId <- seriesInfo[1,1]
+		seriesTitle <- seriesInfo[1,2]
+		pxSeries <- sqlQuery(lconUs, sprintf("select val c, time_stamp from FRED_OBSERVATION where SERIES_ID=%s and time_stamp >= '%s'", seriesId, startDt))
+		pXts <- xts(pxSeries[,1], pxSeries[,2])
+		retPct <- dailyReturn(pXts)
+		rXts <- merge.xts(rXts, retPct)
+		seriesNames <- c(seriesNames, seriesTitle)
+	}
+	
+	rXts <- na.fill(rXts, 0)
+	
+	rXts <- cumprod(rXts + 1)
+	names(rXts) <- fredCodes
+	return(list(rXts, seriesNames))
+}
+
+currencyCodes <- c('INR', 'EUR', 'JPY', 'AUD', 'GBP')
+dailyCurRets <- getCurrencyRets(currencyCodes)
+
+dcrDf <- data.frame(dailyCurRets)
+dcrDf$T <- index(dailyCurRets)
+
+dcrDf <- melt(dcrDf, id='T')
+
+xbreaks <- round(seq(round(min(dailyCurRets), 1), round(max(dailyCurRets), 1), by = 0.05), 2)
+if(!(1 %in% xbreaks)) xbreaks <- c(xbreaks, 1.0)
+xbreaks <- sort(xbreaks)
+
+currPlot <- ggplot(dcrDf, aes(x = T, y=value, color=variable, size=variable)) +
+		theme_economist() +
+		theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+		scale_color_viridis(discrete = TRUE) +
+		scale_size_manual(values=c(1.25, rep(0.75, length(currencyCodes)-1))) +
+		geom_line() +
+		scale_y_continuous(breaks = xbreaks) +
+		scale_x_date(breaks = "3 months", date_labels="%b-%d-%Y") +
+		labs(x = "", y="", fill="", color="", size="", title="USDINR and Major Currencies", subtitle=sprintf("[%s:%s]", first(index(dailyCurRets)), last(index(dailyCurRets)))) +
+		annotate("text", x=first(index(dailyCurRets)), y=min(dailyCurRets), label = "@StockViz", hjust=0, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
+	
+fredCodes <- c('DTWEXEMEGS', 'DTWEXAFEGS', 'DTWEXBGS')
+dailyFreds <- getFredRets(fredCodes)
+
+dailyFredRets <- dailyFreds[[1]]
+fredNames <- dailyFreds[[2]]
+
+fredFootNote <- paste0("<b>", fredCodes, "</b>: ", fredNames, collapse="; ")
+
+inrFred <- merge(dailyCurRets[, 'INR'], dailyFredRets)
+inrFred <- na.locf(inrFred)
+
+dcrDf <- data.frame(inrFred)
+dcrDf$T <- index(inrFred)
+
+dcrDf <- melt(dcrDf, id='T')
+
+xbreaks <- round(seq(round(min(inrFred), 1), round(max(inrFred), 1), by = 0.05), 2)
+if(!(1 %in% xbreaks)) xbreaks <- c(xbreaks, 1.0)
+xbreaks <- sort(xbreaks)
+
+inrFredPlot <- ggplot(dcrDf, aes(x = T, y=value, color=variable, size=variable)) +
+		theme_economist() +
+		theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+		scale_color_viridis(discrete = TRUE) +
+		scale_size_manual(values=c(1.25, rep(0.75, length(currencyCodes)-1))) +
+		geom_line() +
+		scale_y_continuous(breaks = xbreaks) +
+		scale_x_date(breaks = "3 months", date_labels="%b-%d-%Y") +
+		labs(x = "", y="", fill="", color="", size="", title="USDINR and Broad Dollar Indices", subtitle=sprintf("[%s:%s]", first(index(dailyCurRets)), last(index(dailyCurRets)))) +
+		annotate("text", x=first(index(inrFred)), y=min(inrFred), label = "@StockViz", hjust=0, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
+		
+pxSeries <- dbGetQuery(pgCon, "select * from av_fx_usd_daily_ts where curr_code=$1 and time_stamp >= $2 order by time_stamp", params=list("INR", Sys.Date()-365))
+
+inrPxPlot <- pxSeries %>% ggplot(aes(x=time_stamp)) +
+			theme_economist() +
+			theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+			geom_barchart(aes(open = px_open, high = px_high, low = px_low, close = px_close)) +
+			scale_x_date(breaks = "1 month", date_labels="%Y-%m-%d") +
+			labs(x = "", y="", fill="", color="", size="", title="USDINR Daily", subtitle=sprintf("[%s:%s]", first(pxSeries$time_stamp), last(pxSeries$time_stamp))) +
+			annotate("text", x=last(pxSeries$time_stamp), y=min(pxSeries$px_close), label = "@StockViz", hjust=1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
+		
+```
+
+```{r, plot_print_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE, fig.height=6, fig.width=12}
+cat("\n\n### USDINR\n\n")
+print(inrPxPlot)
+cat("\n\n")
+print(inrFanPlot)
+cat("\n\n### USDINR and Broad Dollar Indices\n\n")
+print(inrFredPlot)
+cat("<small><i>",fredFootNote,"</i></small>\n\n")
+cat("\n\n### USDINR and Major Currencies\n\n")
+print(currPlot)
+```
