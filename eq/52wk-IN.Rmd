@@ -1,0 +1,117 @@
+---
+title: Daily 52-week Highs and Lows Report
+subtitle: StockViz
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: rmdlib	
+    includes:
+        in_header: header.html
+        after_body: ../footer.html
+---
+
+```{r dt_chunk, include=FALSE}
+
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+
+```
+
+---
+date: `r createdDate`
+---
+
+*Looking for pre-canned, scientifically developed, statistically robust strategies? Check out [StockViz](https://stockviz.biz)! *
+
+```{r, calc_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+
+library('RODBC')
+library('RPostgres')
+library('quantmod')
+library('PerformanceAnalytics')
+library('xtable')
+library('knitr')
+library('kableExtra')
+
+options(stringsAsFactors = FALSE)
+options("scipen"=100)
+
+#source("C:/stockviz/r/config.r")
+source("/mnt/hollandr/config.r")
+
+con <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, ldbname, ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+pgCon <- dbConnect(RPostgres::Postgres(), host=ldbserver2, user=ldbuser2, password=ldbpassword2, dbname=ldbname2, sslmode='allow')
+
+asofDt<-dbGetQuery(pgCon, "select max(date_stamp) from eod_adjusted_nse")[[1]]
+startDate <- asofDt - 365
+
+nearBuff <- 0.05
+indices <- c('NIFTY 100', 'NIFTY MIDCAP 150', 'NIFTY SMLCAP 100')
+
+genTables <- function(syms){
+	at52High <- data.frame(SYMBOL = "")
+	near52High <- data.frame(SYMBOL = "")
+	at52Low <- data.frame(SYMBOL = "")
+	near52Low <- data.frame(SYMBOL = "")
+	
+	for(sym in syms){
+		pxDf <- dbGetQuery(pgCon, "select date_stamp, c from eod_adjusted_nse where ticker = $1 and date_stamp >= $2 and date_stamp <= $3", params=list(sym, startDate, asofDt))
+		if(nrow(pxDf) == 0) next
+		
+		pXts <- xts(pxDf$c, pxDf$date_stamp)
+		
+		if(nrow(pXts) == 0) next
+		
+		if(max(pXts) == as.numeric(last(pXts))){
+			at52High <- rbind(at52High, c(toString(sym)))
+		} else if (last(coredata(pXts)) >= (1-nearBuff) * max(coredata(pXts))) {
+			near52High <- rbind(near52High, c(toString(sym)))
+		} else if(min(pXts) == as.numeric(last(pXts))){
+			at52Low <- rbind(at52Low, c(toString(sym)))
+		} else if (last(coredata(pXts)) <= (1+nearBuff) * min(coredata(pXts))) {
+			near52Low <- rbind(near52Low, c(toString(sym)))
+		}
+	}
+	
+	maxLen <- max(nrow(at52High), nrow(near52High), nrow(at52Low), nrow(near52Low))
+	
+	all52 <- data.frame(AT_HIGH = c(at52High$SYMBOL, rep('', maxLen - nrow(at52High))), 
+						NEAR_HIGH = c(near52High$SYMBOL, rep('', maxLen - nrow(near52High))),
+						AT_LOW = c(at52Low$SYMBOL, rep('', maxLen - nrow(at52Low))), 
+						NEAR_LOW = c(near52Low$SYMBOL, rep('', maxLen - nrow(near52Low))))
+	all52 <- all52[-1,]
+	
+	return(all52)
+}
+
+kableTable <- list()
+
+for(i in 1:length(indices)){
+	iName <- indices[i]
+	message(iName)
+	syms <- sqlQuery(con, sprintf("select SYMBOL from INDEX_NSE_3 where INDEX_NAME='%s'", iName))$SYMBOL
+	all52 <- genTables(syms)
+	
+	kableTable[[i]] <- kable(all52, align='llll', row.names = F, col.names = c("At Highs", "Near Highs", "At Lows", "Near Lows"), format.args = list(nsmall=2)) %>%
+		kable_styling(bootstrap_options = c("condensed", "striped")) %>%
+		scroll_box(height = "500px")
+}
+
+```
+
+```{r, date_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE}
+cat(toString(startDate), "through", toString(asofDt), "\n")
+
+```
+
+```{r, index_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE}
+
+for(i in 1:length(indices)){
+	cat("###", indices[i], "\n")
+	cat(kableTable[[i]])
+}
+
+```

@@ -1,0 +1,122 @@
+---
+title: All Time Highs Report
+subtitle: StockViz
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: rmdlib		
+    includes:
+        in_header: header-US.html
+        after_body: ../footer.html
+---
+
+```{r dt_chunk, include=FALSE}
+
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+
+```
+
+---
+date: `r createdDate`
+---
+
+```{r, calc_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+
+library('RODBC')
+library('quantmod')
+library('PerformanceAnalytics')
+library('xtable')
+library('knitr')
+library('kableExtra')
+
+options(stringsAsFactors = FALSE)
+options("scipen"=100)
+
+#source("C:/stockviz/r/config.r")
+source("/mnt/hollandr/config.r")
+
+con <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, "StockVizUS2", ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+
+asofDt<-as.Date(sqlQuery(con, "select max(time_stamp) from BHAV_EQ_TD")[[1]])
+startDate <- asofDt - 365*10
+nearBuff <- 0.05
+indices <- c('XLG', 'XMHQ', 'IJR')
+indexNames <- c('Large-caps', 'Mid-caps', 'Small-caps')
+
+genTables <- function(symbols){
+	at52High <- data.frame(SYMBOL = "")
+	near52High <- data.frame(SYMBOL = "")
+	
+	for(sym in symbols){
+		sym <- gsub('/', '.', sym)
+		pxDf <- sqlQuery(con, sprintf("select time_stamp, c from BHAV_EQ_TD where symbol = '%s' and time_stamp >= '%s' and time_stamp <= '%s'", sym, startDate, asofDt))
+		if (nrow(pxDf) < 365*5) next
+		pXts <- xts(pxDf$c, pxDf$time_stamp)
+		
+		if(max(pXts) == as.numeric(last(pXts))){
+			at52High <- rbind(at52High, c(toString(sym)))
+		} else if (last(coredata(pXts)) >= (1-nearBuff) * max(coredata(pXts))) {
+			near52High <- rbind(near52High, c(toString(sym)))
+		} 
+	}
+	
+	maxLen <- max(nrow(at52High), nrow(near52High))
+	
+	all52 <- data.frame(AT_HIGH = c(at52High$SYMBOL, rep('', maxLen - nrow(at52High))), 
+						NEAR_HIGH = c(near52High$SYMBOL, rep('', maxLen - nrow(near52High))))
+	all52 <- all52[-1,]
+	
+	return(all52)
+}
+
+kableTable <- list()
+
+for(i in 1:length(indices)){
+	iName <- indices[i]
+	message(iName)
+	
+	asof <- sqlQuery(con, sprintf("select max(time_stamp) from ETF_CONSTITUENTS where ETF = '%s'", iName))[[1]]
+	symbols <- sqlQuery(con, sprintf("select top 500 SYMBOL, WEIGHT from ETF_CONSTITUENTS 
+	                                 where ETF = '%s' 
+	                                 and TIME_STAMP = '%s' 
+	                                 and (ASSET_TYPE like '%%stock%%'
+	                                  or ASSET_TYPE like '%%equity%%')
+	                                 order by WEIGHT desc", iName, asof))
+	
+	syms <- symbols[,1]
+	
+	all52 <- genTables(syms)
+	
+	if(nrow(all52) > 0){
+		kableTable[[i]] <- kable(all52, align='ll', row.names = F, col.names = c("At Highs", "Near Highs"), format.args = list(nsmall=2)) %>%
+			kable_styling(bootstrap_options = c("condensed", "striped")) %>%
+			scroll_box(height = "500px")
+	} else {
+		kableTable[[i]] <- NA
+	}
+}
+
+```
+
+```{r, date_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE}
+cat(toString(startDate), "through", toString(asofDt), "\n")
+
+```
+
+```{r, index_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE}
+
+for(i in 1:length(indices)){
+	cat("\n")
+	cat("###", indexNames[i], "\n")
+	if(!is.na(kableTable[[i]])) {
+		cat(kableTable[[i]])
+	} else {
+		cat("None.", "\n")
+	}
+}
+
+```

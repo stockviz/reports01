@@ -1,0 +1,48 @@
+---
+title: Index Surveillance
+subtitle: StockViz
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: analysis/rmdlib
+    includes:
+        in_header: header.html
+        after_body: ../footer.html
+---
+
+```{r dt_chunk, include=FALSE}
+
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+
+```
+
+---
+date: `r createdDate`
+---
+
+```{r, init_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+idPath <- "."
+load(paste0(idPath, "/changeLog.RData"))
+
+library('DT')
+
+options(stringsAsFactors = FALSE)
+options("scipen"=100)
+
+```
+
+```{r, table_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE}
+
+changeToPrint <- changeLog[, c('INDEX_NAME', 'INDEX_CHANGE_DATE')]
+names(changeToPrint) <- c("Index", "LastUpdate")
+
+changeToPrint$LastUpdate <- as.Date(changeToPrint$LastUpdate)
+
+changeToPrint$more <- sprintf('<a href="/reports01/index/analysis/rp-%s.html" target="_blank">>>></a>', changeLog$INAME)
+datatable(changeToPrint[, c('Index', 'LastUpdate', 'more')], rownames = F, escape = c(rep(T, ncol(changeToPrint)-1), F), class = 'cell-border stripe', filter='none', options = list(dom = 't', pageLength = nrow(changeToPrint)))
+
+```
