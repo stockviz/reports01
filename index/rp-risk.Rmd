@@ -1,0 +1,158 @@
+---
+title: Index Metrics
+subtitle: StockViz
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: risk/rmdlib
+    toc: true
+    includes:
+        in_header: header.html
+        after_body: ../footer.html
+---
+
+```{r, init_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+library('RODBC')
+
+library('quantmod')
+library('PerformanceAnalytics')
+
+library('tidyverse')
+library('DT')
+
+#source("C:/stockviz/r/config.r")
+source("/mnt/hollandr/config.r")
+
+options("scipen"=100)
+options(stringsAsFactors = FALSE)
+
+benchName <- "NIFTY TOTAL MARKET TR"
+
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+
+lcon <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, ldbname, ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+	
+```
+
+---
+date: `r createdDate`
+---
+
+```{r, metrics_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+maxDt <- sqlQuery(lcon, "select max(time_stamp) from index_capm")[[1]]
+
+indices <- sqlQuery(lcon, sprintf("select distinct index_name from index_capm where time_stamp = '%s'", maxDt))[,1]
+
+statsDf <- sqlQuery(lcon, sprintf("select INDEX_NAME, ID, VAL from INDEX_CAPM where INDEX_NAME in ('%s')", paste(indices, collapse="','"))) 
+
+rankTibs <- statsDf %>% 
+	pivot_wider(names_from=ID, values_from=VAL) %>% 
+	mutate_at(vars(-INDEX_NAME), rank) %>%
+	mutate(SCORE = rowSums(across(-INDEX_NAME))) %>%
+	arrange(desc(SCORE))
+	
+rankTibs <- rankTibs %>%
+	mutate(more = ifelse(file.exists(sprintf("risk/rp-%s.html", gsub("[^[:alnum:] ]| ", "", INDEX_NAME))), 
+						sprintf('<a href="/reports01/index/risk/rp-%s.html" target="_blank">>>></a>', gsub("[^[:alnum:] ]| ", "", INDEX_NAME)), 
+						""))
+	
+inMetricsDT <- datatable(rankTibs, rownames = F, class = 'cell-border stripe', escape = c(rep(T, ncol(rankTibs)-1), F), filter='none', colnames = c("", names(rankTibs)[-1]), options = list(dom = 't', pageLength = nrow(rankTibs)))
+
+
+iHorizonRets <- data.frame(INDEX_NAME = "", LB=0, RET=0.0)
+iHorizonIR <- data.frame(INDEX_NAME = "", LB=0, IR=0.0)
+
+eodVals <- sqlQuery(lcon, sprintf("select px_close, time_stamp from BHAV_INDEX where INDEX_NAME = '%s' and time_stamp >= '%s'", benchName, maxDt - 1000))
+benchXts <- xts(eodVals[,1], eodVals[,2])
+
+for(iName in indices){
+	eodVals <- sqlQuery(lcon, sprintf("select px_close, time_stamp from BHAV_INDEX where INDEX_NAME = '%s' and time_stamp >= '%s'", iName, maxDt - 1000))
+	if(max(eodVals$time_stamp) < maxDt) next
+	
+	eodXts <- xts(eodVals[,1], eodVals[,2])
+	
+	for(lb in c(5, 10, 20, 50, 100, 200)){
+		iHorizonRets <- rbind(iHorizonRets, c(iName, lb, as.numeric(Return.cumulative(dailyReturn(tail(eodXts, lb))))))
+	}
+	
+	for(lb in c(50, 100, 200, 500)){
+		iHorizonIR <- rbind(iHorizonIR, c(iName, lb, as.numeric(InformationRatio(dailyReturn(tail(eodXts, lb)), dailyReturn(tail(benchXts, lb))))))
+	}
+}
+iHorizonRets <- iHorizonRets[-1,]
+iHorizonRets$RET <- round(as.numeric(iHorizonRets$RET) * 100, 2)
+iHorizonRets$LB <- as.integer(iHorizonRets$LB)
+
+iHorizonIR <- iHorizonIR[-1,]
+iHorizonIR$IR <- as.numeric(iHorizonIR$IR) * 100
+iHorizonIR$LB <- as.integer(iHorizonIR$LB)
+
+iRets <- iHorizonRets %>% pivot_wider(names_from=LB, values_from=RET, names_prefix='D') %>%
+					inner_join(rankTibs, by='INDEX_NAME') %>%
+					select(INDEX_NAME, starts_with('D'), more)
+					
+
+tableColNames <- names(iRets)	
+tableColNames[1] <- ""
+
+etfRetDt <- datatable(iRets, rownames = F, class = 'cell-border stripe', 
+							escape = c(rep(T, ncol(iRets)-1), F), filter='none', 
+							colnames = tableColNames, 
+							options = list(dom = 't', pageLength = nrow(iRets)))
+							
+irRets <- iHorizonIR %>% pivot_wider(names_from=LB, values_from=IR, names_prefix='D') %>%
+					mutate_at(vars(-INDEX_NAME), rank) %>%
+					mutate(SCORE = rowSums(across(-INDEX_NAME))) %>%
+					inner_join(rankTibs, by='INDEX_NAME') %>%
+					select(INDEX_NAME, starts_with('D'), SCORE = SCORE.x, more) %>%
+					arrange(desc(SCORE))
+					
+					
+tableColNames <- names(irRets)	
+tableColNames[1] <- ""
+
+irDt <- datatable(irRets, rownames = F, class = 'cell-border stripe', 
+							escape = c(rep(T, ncol(irRets)-1), F), filter='none', 
+							colnames = tableColNames, 
+							options = list(dom = 't', pageLength = nrow(irRets)))							
+							
+load("smaStats.Rdata")
+rankTibs <- smaStats %>% 
+	mutate_at(vars(-INDEX_NAME), rank) %>%
+	mutate(SCORE = rowSums(across(-INDEX_NAME))) %>%
+	arrange(desc(SCORE))
+	
+rankTibs <- rankTibs %>%
+	mutate(more = ifelse(file.exists(sprintf("risk/rp-%s.html", gsub("[^[:alnum:] ]| ", "", INDEX_NAME))), 
+						sprintf('<a href="/reports01/index/risk/rp-%s.html" target="_blank">>>></a>', gsub("[^[:alnum:] ]| ", "", INDEX_NAME)), 
+						""))	
+	
+tableColNames <- names(rankTibs)	
+tableColNames[1] <- ""
+
+smaDt <- datatable(rankTibs, rownames = F, class = 'cell-border stripe', 
+							escape = c(rep(T, ncol(rankTibs)-1), F), filter='none', 
+							colnames = tableColNames, 
+							options = list(dom = 't', pageLength = nrow(rankTibs)))							
+							
+
+```
+
+```{r, metrics_print_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE}
+cat("\n\n### Risk\n\n")
+htmltools::tagList(print(inMetricsDT))
+
+cat("\n\n### Returns\n\n")
+htmltools::tagList(print(etfRetDt))
+
+cat("\n\n### Information Ratio\n\n")
+htmltools::tagList(print(irDt))
+
+cat("\n\n### Simple Moving Average Stats\n\n")
+htmltools::tagList(print(smaDt))
+
+```
