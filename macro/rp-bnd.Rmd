@@ -1,0 +1,425 @@
+---
+title: Fixed Income Snapshot
+subtitle: StockViz
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: rmdlib
+    includes:
+        in_header: header.html
+        after_body: ../footer.html
+---
+
+```{r dt_chunk, include=FALSE}
+
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+
+```
+
+---
+date: `r createdDate`
+---
+
+```{r, init_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+library('RODBC')
+library('RPostgres')
+
+library('quantmod')
+library('PerformanceAnalytics')
+
+library('reshape2')
+library('lubridate')
+library('tidyverse')
+
+library('tidyquant')
+library('ggrepel')
+library('ggthemes')
+library('viridis')
+
+options("scipen"=100)
+options(stringsAsFactors = FALSE)
+
+#source("C:/stockviz/r/config.r")
+source("/mnt/hollandr/config.r")
+
+lcon <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, "StockViz", ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+lconUs <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, "StockVizUs", ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+lconUs2 <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, "StockVizUs2", ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+```
+```{r, in_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+inDf <- sqlQuery(lcon, "select * from ZERO_COUPON_CURVE where MATURITY <= 10 and (MATURITY <= 2 or CONVERT(integer, 10*MATURITY) % 10 = 0)")
+
+inDft <- inDf %>% group_by(TIME_STAMP) %>% 
+			arrange(MATURITY) %>% 
+			pivot_wider(names_from=MATURITY, values_from=YIELD, names_prefix = "Y_") %>%
+			ungroup() %>%
+			arrange(TIME_STAMP)
+
+#######################################################################################################
+
+toPlot <- inDft %>% select(TIME_STAMP, Y_0, Y_1, Y_2, Y_5, Y_10) %>% slice_tail(n=1000) %>% as.data.frame()
+toPlot <- melt(toPlot, id='TIME_STAMP')
+toPlot$lbl <- NA
+toPlot[toPlot$TIME_STAMP == max(toPlot$TIME_STAMP),]$lbl <- as.character(toPlot[toPlot$TIME_STAMP == max(toPlot$TIME_STAMP),]$variable)
+
+inYieldPlot <- ggplot(toPlot, aes(x=TIME_STAMP, y=value, color=variable)) +
+		theme_economist() +
+		geom_line(size=1) +
+		theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+		scale_color_viridis(discrete = TRUE) +
+		scale_x_date(breaks = "6 months", date_labels="%b-%d-%Y") +
+		geom_label_repel(aes(label = lbl), alpha=0.8) +
+		guides(variable=F, size=F, color=F) +
+		labs(x='', y='yield (%)', title="India Zero Coupon Yields", subtitle=sprintf("%s:%s", toPlot$TIME_STAMP[1], last(toPlot$TIME_STAMP))) +
+		annotate("text", x=toPlot$TIME_STAMP[1], y=min(toPlot$value), label = "@StockViz", hjust=0, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
+		
+#######################################################################################################
+			
+inSampleDates <- c()
+dtTemp <- last(inDft$TIME_STAMP)
+while(dtTemp >= last(inDft$TIME_STAMP)- 365*5){
+	inSampleDates <- c(inSampleDates, dtTemp)
+	dtTemp <- max(inDft[inDft$TIME_STAMP <= dtTemp - 365,]$TIME_STAMP)
+}	
+class(inSampleDates) <- "Date"		
+
+toPlot <- inDf %>% filter(TIME_STAMP %in% inSampleDates) %>% as.data.frame()
+
+toPlot$lbl <- NA
+toPlot[toPlot$MATURITY == max(toPlot$MATURITY),]$lbl <- as.character(toPlot[toPlot$MATURITY == max(toPlot$MATURITY),]$TIME_STAMP)
+
+seriesSize <- seq(1.25, 0.25, length.out=length(inSampleDates))
+seriesColor <- colorRampPalette(c("black", "grey"))(length(inSampleDates))
+seriesFill <- colorRampPalette(c("grey", "lightgrey"))(length(inSampleDates))
+
+
+inFanPlot <- ggplot(toPlot, aes(x=MATURITY, y=YIELD, group=TIME_STAMP)) +
+	theme_economist() +
+	geom_line(aes(size=as.factor(TIME_STAMP), color=as.factor(TIME_STAMP))) +
+	scale_color_manual(breaks=inSampleDates, values=seriesColor) +
+	scale_size_manual(breaks=inSampleDates, values=seriesSize) +
+	scale_fill_manual(breaks=inSampleDates, values=seriesFill) +
+	geom_label_repel(aes(label = lbl), alpha=0.8) +
+	guides(variable=F, size=F, color=F) +
+	labs(x='Maturity (years)', y='yield (%)', title="India Zero Coupon Yield Curve", subtitle=sprintf("%s:%s", last(inSampleDates), first(inSampleDates))) +
+	annotate("text", x=max(toPlot$MATURITY), y=min(toPlot$YIELD), label = "@StockViz", hjust=1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
+		
+
+#######################################################################################################
+
+inCurve <- inDft %>% select(-Y_0.5, -Y_1.5, -Y_4, -Y_6, -Y_8, -Y_9) %>%
+				mutate_at(vars(-TIME_STAMP, -Y_0), `-`, .$Y_0) %>% 
+				select(-Y_0) %>%
+				filter_all(all_vars(!is.na(.))) %>%
+				arrange(TIME_STAMP)
+				
+toPlot <- melt(data.frame(inCurve), id='TIME_STAMP')
+
+pltStart <- inDft$TIME_STAMP[1]
+pltEnd <- last(inDft$TIME_STAMP)
+
+seriesNames <- unique(toPlot$variable)
+seriesSize <- seq(0.75, 0.25, length.out=ncol(inCurve)-1)
+seriesColor <- colorRampPalette(c("black", "lightgrey"))(ncol(inCurve)-1)
+
+lastRow <- t(inCurve[nrow(inCurve),-1])
+lastRow <- data.frame(variable = rownames(lastRow), z= lastRow)
+
+inDensityPlot <- ggplot(toPlot, aes(x=value, color=variable)) +
+	theme_economist() +
+	stat_density(aes(size=variable), geom="line", position="identity") +
+	geom_vline(data= lastRow, aes(xintercept = z, color=variable, size = variable)) +
+	scale_color_manual(breaks=seriesNames, values=seriesColor) +
+	scale_size_manual(breaks=seriesNames, values=seriesSize) +
+	guides(variable=F, size=F, color=guide_legend(override.aes=list(size=3))) +
+	labs(x='far end minus nearest', y='density', variable='', color='', 
+			title='India Zero Coupon Yield Curve Steepness (Density)', 
+			subtitle=sprintf("[%s:%s]", pltStart, pltEnd)) +
+	annotate("text", x=0, y=0, label = "@StockViz", hjust=0.5, vjust=-1, col="white", cex=6, fontface = "bold", alpha = 0.8)
+
+
+```
+```{r, us_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+usDf <- sqlQuery(lcon, "select TIME_STAMP, M1, M3, M6, Y1, Y2, Y3, Y5, Y7, Y10 from UST_YIELD_CURVE order by TIME_STAMP")
+
+toPlot <- usDf %>% select(TIME_STAMP, M1, Y1, Y2, Y5, Y10) %>% slice_tail(n=1000) %>% as.data.frame()
+toPlot <- melt(toPlot, id='TIME_STAMP')
+toPlot$lbl <- NA
+toPlot[toPlot$TIME_STAMP == max(toPlot$TIME_STAMP),]$lbl <- as.character(toPlot[toPlot$TIME_STAMP == max(toPlot$TIME_STAMP),]$variable)
+
+usYieldPlot <- ggplot(toPlot, aes(x=TIME_STAMP, y=value, color=variable)) +
+		theme_economist() +
+		geom_line(size=1) +
+		theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+		scale_color_viridis(discrete = TRUE) +
+		scale_x_date(breaks = "6 months", date_labels="%b-%d-%Y") +
+		geom_label_repel(aes(label = lbl), alpha=0.8) +
+		guides(variable=F, size=F, color=F) +
+		labs(x='', y='yield (%)', title="US Zero Coupon Yields", subtitle=sprintf("%s:%s", toPlot$TIME_STAMP[1], last(toPlot$TIME_STAMP))) +
+		annotate("text", x=toPlot$TIME_STAMP[1], y=min(toPlot$value), label = "@StockViz", hjust=0, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)			
+			
+inSampleDates <- c()
+dtTemp <- last(usDf$TIME_STAMP)
+while(dtTemp >= last(usDf$TIME_STAMP) - 365*5){
+	inSampleDates <- c(inSampleDates, dtTemp)
+	dtTemp <- max(usDf[usDf$TIME_STAMP <= dtTemp - 365,]$TIME_STAMP)
+}	
+class(inSampleDates) <- "Date"		
+
+toPlot <- usDf %>% filter(TIME_STAMP %in% inSampleDates) %>% as.data.frame()
+toPlot <- melt(toPlot, id='TIME_STAMP')
+
+toPlot$lbl <- NA
+toPlot[toPlot$variable == 'Y10',]$lbl <- as.character(toPlot[toPlot$variable == 'Y10',]$TIME_STAMP)
+
+seriesSize <- seq(1.25, 0.25, length.out=length(inSampleDates))
+seriesColor <- colorRampPalette(c("black", "grey"))(length(inSampleDates))
+seriesFill <- colorRampPalette(c("grey", "lightgrey"))(length(inSampleDates))
+
+usFanPlot <- ggplot(toPlot, aes(x=variable, y=value, group=TIME_STAMP)) +
+	theme_economist() +
+	geom_line(aes(size=as.factor(TIME_STAMP), color=as.factor(TIME_STAMP))) +
+	scale_color_manual(breaks=inSampleDates, values=seriesColor) +
+	scale_size_manual(breaks=inSampleDates, values=seriesSize) +
+	scale_fill_manual(breaks=inSampleDates, values=seriesFill) +
+	geom_label_repel(aes(label = lbl), alpha=0.8) +
+	guides(variable=F, size=F, color=F) +
+	labs(x='Maturity', y='yield (%)', title="US Zero Coupon Yield Curve", subtitle=sprintf("%s:%s", last(inSampleDates), first(inSampleDates))) +
+	annotate("text", x=last(toPlot$variable), y=min(toPlot$value), label = "@StockViz", hjust=1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
+		
+#######################################################################################################
+
+usCurve <- usDf %>% select(-M3, -M6) %>%
+				mutate_at(vars(-TIME_STAMP, -M1), `-`, .$M1) %>% 
+				select(-M1) %>%
+				filter_all(all_vars(!is.na(.))) %>%
+				arrange(TIME_STAMP)
+				
+toPlot <- melt(data.frame(usCurve), id='TIME_STAMP')
+
+pltStart <- usDf$TIME_STAMP[1]
+pltEnd <- last(usDf$TIME_STAMP)
+
+seriesNames <- unique(toPlot$variable)
+seriesSize <- seq(0.75, 0.25, length.out=ncol(usCurve)-1)
+seriesColor <- colorRampPalette(c("black", "lightgrey"))(ncol(usCurve)-1)
+
+lastRow <- t(usCurve[nrow(usCurve),-1])
+lastRow <- data.frame(variable = rownames(lastRow), z= lastRow)
+names(lastRow) <- c('variable', 'z')
+
+usDensityPlot <- ggplot(toPlot, aes(x=value, color=variable)) +
+	theme_economist() +
+	stat_density(aes(size=variable), geom="line", position="identity") +
+	geom_vline(data= lastRow, aes(xintercept = z, color=variable, size = variable)) +
+	scale_color_manual(breaks=seriesNames, values=seriesColor) +
+	scale_size_manual(breaks=seriesNames, values=seriesSize) +
+	guides(variable=F, size=F, color=guide_legend(override.aes=list(size=3))) +
+	labs(x='far end minus nearest (%)', y='density', variable='', color='', 
+			title='US Zero Coupon Yield Curve Steepness (Density)', 
+			subtitle=sprintf("[%s:%s]", pltStart, pltEnd)) +
+	annotate("text", x=0, y=0, label = "@StockViz", hjust=0.5, vjust=-1, col="white", cex=6, fontface = "bold", alpha = 0.8)
+
+```
+
+```{r, eu_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+plotEu <- function(inDf, titleInFix){
+
+	inDft <- inDf %>% group_by(TIME_STAMP) %>% 
+			arrange(MATURITY) %>% 
+			pivot_wider(names_from=MATURITY, values_from=YIELD, names_prefix = "Y_") %>%
+			ungroup() %>%
+			arrange(TIME_STAMP)
+
+	#######################################################################################################
+	
+	toPlot <- inDft %>% select(TIME_STAMP, Y_0, Y_1, Y_2, Y_5, Y_10) %>% slice_tail(n=1000) %>% as.data.frame()
+	toPlot <- melt(toPlot, id='TIME_STAMP')
+	toPlot$lbl <- NA
+	toPlot[toPlot$TIME_STAMP == max(toPlot$TIME_STAMP),]$lbl <- as.character(toPlot[toPlot$TIME_STAMP == max(toPlot$TIME_STAMP),]$variable)
+
+	euYieldPlot <- ggplot(toPlot, aes(x=TIME_STAMP, y=value, color=variable)) +
+			theme_economist() +
+			geom_line(size=1) +
+			theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+			scale_color_viridis(discrete = TRUE) +
+			scale_x_date(breaks = "6 months", date_labels="%b-%d-%Y") +
+			geom_label_repel(aes(label = lbl), alpha=0.8) +
+			guides(variable=F, size=F, color=F) +
+			labs(x='', y='yield (%)', title=sprintf("Europe (%s) Zero Coupon Yields", titleInFix), subtitle=sprintf("%s:%s", toPlot$TIME_STAMP[1], last(toPlot$TIME_STAMP))) +
+			annotate("text", x=toPlot$TIME_STAMP[1], y=min(toPlot$value), label = "@StockViz", hjust=0, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
+	
+	#######################################################################################################
+				
+	inSampleDates <- c()
+	dtTemp <- last(inDft$TIME_STAMP)
+	while(dtTemp >= last(inDft$TIME_STAMP)- 365*5){
+		inSampleDates <- c(inSampleDates, dtTemp)
+		dtTemp <- max(inDft[inDft$TIME_STAMP <= dtTemp - 365,]$TIME_STAMP)
+	}	
+	class(inSampleDates) <- "Date"		
+
+	toPlot <- inDf %>% filter(TIME_STAMP %in% inSampleDates) %>% as.data.frame()
+
+	toPlot$lbl <- NA
+	toPlot[toPlot$MATURITY == max(toPlot$MATURITY),]$lbl <- as.character(toPlot[toPlot$MATURITY == max(toPlot$MATURITY),]$TIME_STAMP)
+
+	seriesSize <- seq(1.25, 0.25, length.out=length(inSampleDates))
+	seriesColor <- colorRampPalette(c("black", "grey"))(length(inSampleDates))
+	seriesFill <- colorRampPalette(c("grey", "lightgrey"))(length(inSampleDates))
+
+	euFanPlot <- ggplot(toPlot, aes(x=MATURITY, y=YIELD, group=TIME_STAMP)) +
+		theme_economist() +
+		geom_line(aes(size=as.factor(TIME_STAMP), color=as.factor(TIME_STAMP))) +
+		scale_color_manual(breaks=inSampleDates, values=seriesColor) +
+		scale_size_manual(breaks=inSampleDates, values=seriesSize) +
+		scale_fill_manual(breaks=inSampleDates, values=seriesFill) +
+		geom_label_repel(aes(label = lbl), alpha=0.8) +
+		guides(variable=F, size=F, color=F) +
+		labs(x='Maturity (years)', y='yield (%)', title=sprintf("Europe (%s) Zero Coupon Yield Curve", titleInFix), subtitle=sprintf("%s:%s", last(inSampleDates), first(inSampleDates))) +
+		annotate("text", x=max(toPlot$MATURITY), y=min(toPlot$YIELD), label = "@StockViz", hjust=1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
+			
+	#######################################################################################################
+
+	inCurve <- inDft %>% select(-Y_4, -Y_6, -Y_8, -Y_9) %>%
+					mutate_at(vars(-TIME_STAMP, -Y_0), `-`, .$Y_0) %>% 
+					select(-Y_0) %>%
+					filter_all(all_vars(!is.na(.))) %>%
+					arrange(TIME_STAMP)
+					
+	toPlot <- melt(data.frame(inCurve), id='TIME_STAMP')
+
+	pltStart <- inDft$TIME_STAMP[1]
+	pltEnd <- last(inDft$TIME_STAMP)
+
+	seriesNames <- unique(toPlot$variable)
+	seriesSize <- seq(0.75, 0.25, length.out=ncol(inCurve)-1)
+	seriesColor <- colorRampPalette(c("black", "lightgrey"))(ncol(inCurve)-1)
+
+	lastRow <- t(inCurve[nrow(inCurve),-1])
+	lastRow <- data.frame(variable = rownames(lastRow), z= lastRow)
+
+	euDensityPlot <- ggplot(toPlot, aes(x=value, color=variable)) +
+		theme_economist() +
+		stat_density(aes(size=variable), geom="line", position="identity") +
+		geom_vline(data= lastRow, aes(xintercept = z, color=variable, size = variable)) +
+		scale_color_manual(breaks=seriesNames, values=seriesColor) +
+		scale_size_manual(breaks=seriesNames, values=seriesSize) +
+		guides(variable=F, size=F, color=guide_legend(override.aes=list(size=3))) +
+		labs(x='far end minus nearest', y='density', variable='', color='', 
+				title=sprintf('Europe (%s) Zero Coupon Yield Curve Steepness (Density)', titleInFix), 
+				subtitle=sprintf("[%s:%s]", pltStart, pltEnd)) +
+		annotate("text", x=0, y=0, label = "@StockViz", hjust=0.5, vjust=-1, col="white", cex=6, fontface = "bold", alpha = 0.8)
+
+	return(list(euYieldPlot, euFanPlot, euDensityPlot))
+}
+
+euDf1 <- sqlQuery(lcon, "select TIME_STAMP, TENOR_Y MATURITY, VAL YIELD from EUR_YIELD_CURVE where CURVE_ID='G_N_A'
+							and ((TENOR_Y=0 and TENOR_M=3) 
+								or (TENOR_Y <= 10 and TENOR_M=0))
+							order by TIME_STAMP")	
+								
+euDf2 <- sqlQuery(lcon, "select TIME_STAMP, TENOR_Y MATURITY, VAL YIELD from EUR_YIELD_CURVE where CURVE_ID='G_N_C'
+							and ((TENOR_Y=0 and TENOR_M=3) 
+								or (TENOR_Y <= 10 and TENOR_M=0))
+							order by TIME_STAMP")			
+
+aaaPlots <- plotEu(euDf1, 'AAA Sovereign')
+nonAaaPlots <- plotEu(euDf2, 'Sovereign')
+
+```
+
+```{r, fred_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+usIndices <- c(-2147174882, -2147174880, -2147174878)
+emIndices <- c(-2147174876, -2147174862, -2147174858, -2147174854, -2147174850)
+
+fredData<-function(indices){
+	yieldXts <- NULL
+	fredFootNote <- ""
+	for (i in indices) {
+		indexInfo<-sqlQuery(lconUs, sprintf("select series_id, title from FRED_SERIES where id=%d", i))
+		data <- sqlQuery(lconUs, sprintf("select top 1000 TIME_STAMP, VAL from FRED_OBSERVATION
+					where SERIES_ID=%d
+					order by TIME_STAMP desc", i))
+		dXts <- xts(data$VAL, as.Date(data$TIME_STAMP))
+		names(dXts) <- c(indexInfo[1,1])
+		yieldXts <- merge.xts(yieldXts, dXts)
+		fredFootNote <- paste0(fredFootNote, "<b>", paste0(indexInfo[1,1], "</b>", ": ", indexInfo[1,2]), "; ")
+	}
+	
+	return(list(fredFootNote, yieldXts))
+}
+
+usData <- fredData(usIndices)
+emData <- fredData(emIndices)
+
+toPlot <- data.frame(usData[[2]])
+toPlot$T <- index(usData[[2]])
+
+toPlot <- melt(toPlot, id='T')
+
+toPlot$lbl <- NA
+toPlot[toPlot$T == max(toPlot$T),]$lbl <- as.character(toPlot[toPlot$T == max(toPlot$T),]$variable)
+
+usCorpYieldPlot <- ggplot(toPlot, aes(x=T, y=value, color=variable)) +
+		theme_economist() +
+		geom_line(size=1) +
+		theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+		scale_color_viridis(discrete = TRUE) +
+		scale_x_date(breaks = "6 months", date_labels="%b-%d-%Y") +
+		geom_label_repel(aes(label = lbl), alpha=0.8) +
+		guides(variable=F, size=F, color=F) +
+		labs(x='', y='yield (%)', title="US Corporate Yields", subtitle=sprintf("%s:%s", first(index(usData[[2]])), last(index(usData[[2]])))) +
+		annotate("text", x=first(index(usData[[2]])), y=as.numeric(min(usData[[2]])), label = "@StockViz", hjust=0, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
+		
+toPlot <- data.frame(emData[[2]])
+toPlot$T <- index(emData[[2]])
+
+toPlot <- melt(toPlot, id='T')
+
+toPlot$lbl <- NA
+toPlot[toPlot$T == max(toPlot$T),]$lbl <- as.character(toPlot[toPlot$T == max(toPlot$T),]$variable)
+
+emCorpYieldPlot <- ggplot(toPlot, aes(x=T, y=value, color=variable)) +
+		theme_economist() +
+		geom_line(size=1) +
+		theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+		scale_color_viridis(discrete = TRUE) +
+		scale_x_date(breaks = "6 months", date_labels="%b-%d-%Y") +
+		geom_label_repel(aes(label = lbl), alpha=0.8) +
+		guides(variable=F, size=F, color=F) +
+		labs(x='', y='yield (%)', title="EM Corporate Yields", subtitle=sprintf("%s:%s", first(index(emData[[2]])), last(index(emData[[2]])))) +
+		annotate("text", x=first(index(emData[[2]])), y=as.numeric(min(emData[[2]])), label = "@StockViz", hjust=0, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)		
+
+```
+
+```{r, yc_print_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE, fig.height=6, fig.width=12}
+cat("### India Yield Curves", "\n\n")
+print(inYieldPlot)
+print(inFanPlot)
+print(inDensityPlot)
+cat("\n\n### US Yield Curves", "\n\n")
+cat("#### Treasuries", "\n\n")
+print(usYieldPlot)
+print(usFanPlot)
+print(usDensityPlot)
+cat("\n\n#### US Corporates", "\n\n")
+print(usCorpYieldPlot)
+cat("<small><i>",usData[[1]],"</i></small>\n\n")
+cat("\n\n#### EM Corporates", "\n\n")
+print(emCorpYieldPlot)
+cat("<small><i>",emData[[1]],"</i></small>\n\n")
+cat("\n\n### European Yield Curves", "\n\n")
+cat("#### AAA Rated Countries", "\n\n")
+print(aaaPlots[[1]])
+print(aaaPlots[[2]])
+print(aaaPlots[[3]])
+cat("\n\n#### non-AAA Rated Countries", "\n\n")
+print(nonAaaPlots[[1]])
+print(nonAaaPlots[[2]])
+print(nonAaaPlots[[3]])
+```

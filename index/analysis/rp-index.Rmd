@@ -1,0 +1,86 @@
+---
+params:
+  index_name: 0
+  benchmark: ""
+title: Index Analysis
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: rmdlib
+    includes:
+        in_header: ../header.html
+        after_body: ../../footer.html
+---
+
+```{r, init_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+reportPath <- "/analysis"
+library('RODBC')
+library('quantmod')
+library('PerformanceAnalytics')
+
+library('tidyverse')
+library('lubridate')
+library('ggthemes')
+library('reshape2')
+library('viridis')
+library('DT')
+library('ggrepel')
+
+options(stringsAsFactors = FALSE)
+options("scipen"=100)
+
+indexName <- params$index_name
+
+#source("C:/stockviz/r/config.r")
+source("/mnt/hollandr/config.r")
+
+lcon <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, ldbname, ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+
+```
+
+---
+subtitle: `r indexName`
+date: `r createdDate`
+---
+
+```{r, change_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+
+indexChangeDates <- sqlQuery(lcon, sprintf("select distinct(time_stamp) ts from INDEX_CONST_HISTORY where index_name = '%s' order by ts desc", indexName))[,1]
+
+changeList <- list()
+for(i in 2:length(indexChangeDates)){
+	newSet <- sqlQuery(lcon, sprintf("select symbol from INDEX_CONST_HISTORY where index_name = '%s' and time_stamp = '%s'", indexName, indexChangeDates[i-1]))[,1]
+	oldSet <- sqlQuery(lcon, sprintf("select symbol from INDEX_CONST_HISTORY where index_name = '%s' and time_stamp = '%s'", indexName, indexChangeDates[i]))[,1]
+	
+	entries <- setdiff(newSet, oldSet)
+	exits <- setdiff(oldSet, newSet)
+	
+	if(length(entries) == 0 && length(exits) == 0) next
+	
+	changeDf <- data.frame(Entries = rep("", max(length(entries), length(exits))), Exits = rep("", max(length(entries), length(exits))))
+	for(ei in 1:length(entries)){
+		changeDf$Entries[ei] <- entries[ei]
+	}
+	for(ei in 1:length(exits)){
+		changeDf$Exits[ei] <- exits[ei]
+	}
+	
+	changeList[[toString(indexChangeDates[i-1])]] <- datatable(changeDf, 
+																caption = paste("On ", indexChangeDates[i-1]), 
+																rownames = F, 
+																class = 'cell-border stripe', 
+																filter='none', 
+																options = list(dom = 't', autoWidth = T, pageLength = nrow(changeDf)+5, columnDefs = list(list(width = '40%', visible=T, targets = '_all'))))
+}
+
+```
+
+```{r, print_changes_table_chunk, echo = FALSE, results='asis', message = FALSE}
+cat("\n\n### Constituent Changes\n\n")
+htmltools::tagList(lapply(changeList, print))
+```
