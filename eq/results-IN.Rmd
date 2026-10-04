@@ -1,0 +1,86 @@
+---
+title: Result Announcement Dates
+subtitle: StockViz
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: rmdlib		
+    includes:
+        in_header: header.html
+        after_body: ../footer.html
+---
+
+```{r dt_chunk, include=FALSE}
+
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+
+```
+
+---
+date: `r createdDate`
+---
+
+```{r, calc_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+
+library('RODBC')
+library('lubridate')
+library('DT')
+
+options(stringsAsFactors = FALSE)
+options("scipen"=100)
+
+#source("C:/stockviz/r/config.r")
+source("/mnt/hollandr/config.r")
+
+con <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, ldbname, ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+
+bhavDate <- sqlQuery(con, "select max(time_stamp) from bhav_index")[[1]]
+foSyms <- sqlQuery(con, sprintf("select distinct SYMBOL from bhav_eq_fut where time_stamp = '%s'", bhavDate))[,1]
+
+trIndices <- sqlQuery(con, sprintf("select index_name from bhav_index where time_stamp = '%s' and index_name like '%%tr'", bhavDate))[,1]
+trIndices <- gsub(" TR", "", trIndices)
+
+indexConstituents <- data.frame(INDEX_NAME = "", SYMBOL = "")
+for(tri in trIndices){
+	inDate <- sqlQuery(con, sprintf("select max(time_stamp) from INDEX_NSE_3 where index_name='%s'", tri))[[1]]
+	if(is.na(inDate)){
+		next
+	}
+	inConst <- sqlQuery(con, sprintf("select INDEX_NAME, SYMBOL from INDEX_NSE_3 where index_name='%s' and time_stamp='%s'", tri, inDate))
+	indexConstituents <- rbind(indexConstituents, inConst)
+}
+
+resultsDf <- sqlQuery(con, "select crd.BM_DATE, crd.SYMBOL, FF_MKT_CAP_CR, INDUSTRY from CORP_RESULTS_DATE crd
+							inner join EQUITY_MISC_INFO emi on emi.SYMBOL = crd.SYMBOL
+							full outer join EQUITY_TICKER_BSE etb on etb.SC_ID = crd.SYMBOL
+							WHERE BM_DATE >= convert(date, GETDATE())
+							and TITLE like '%result%'
+							and crd.SYMBOL=emi.SYMBOL
+							and emi.TIME_STAMP = (select max(time_stamp) from EQUITY_MISC_INFO where time_stamp < convert(date, GETDATE()))
+							ORDER BY BM_DATE, FF_MKT_CAP_CR desc")
+
+resultsDf2p <- data.frame(DATE = "", SYMBOL = "", FnO = "", INDUSTRY = "", INDICES = "")
+for(i in 1:nrow(resultsDf)){
+	sym <- resultsDf$SYMBOL[i]
+	if (sym %in% resultsDf2p$SYMBOL) next
+	
+	dateStr <- paste0(toString(resultsDf$BM_DATE[i]), "\n", "<small>", toString(wday(resultsDf$BM_DATE[i], label=T, abbr=F)), "</small>")
+	dateStr <- ifelse(dateStr %in% resultsDf2p$DATE, "", dateStr)
+	
+	indices <- paste0("<small><small>", paste(indexConstituents[indexConstituents$SYMBOL == sym,]$INDEX_NAME, collapse=" / "), "</small></small>")
+	isfo <- ifelse(sym %in% foSyms, "Y", "")
+	resultsDf2p <- rbind(resultsDf2p, c(dateStr, sym, isfo, resultsDf$INDUSTRY[i], indices))
+}							
+resultsDf2p <- resultsDf2p[-1,]
+
+```
+
+```{r, table_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE}
+
+datatable(resultsDf2p, rownames = F, class = 'cell-border stripe', filter='none', escape = c(F, rep(T, ncol(resultsDf2p)-2), F), options = list(dom = 't', pageLength = nrow(resultsDf2p), ordering=F)) 
+
+```
