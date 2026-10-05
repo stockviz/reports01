@@ -68,7 +68,7 @@ for(i in 1:length(indexListNse)){
 		labs(x='', y=sprintf("log(%s)", ratioName), color='', title=sprintf("%s %s (%s)", indexName, ratioName, exch)) +
 		annotate("text", x=nrow(data), y=max(dataSlice[, c(3, 4)]), label = "@StockViz", hjust=1, vjust=1, col="white", cex=6, fontface = "bold", alpha = 0.8)
 		
-	ggsave(sprintf("%s/%s-Constituents.%s.png", reportPath, indexName, ratioName), width=16, height=8, units="in")
+	ggsave(sprintf("%s/%s-Constituents.%s.png", reportPath, indexName, ratioName), width=16, height=8, units="in", dpi=160)
 }
 
 ###################################################################
@@ -118,7 +118,7 @@ plotRatio<-function(indexGrpName, indices, ratioName, exch){
 		labs(x='', y=ratioName, color='', title=sprintf("%s %s (%s)", indexGrpName, ratioName, exch), subtitle=sprintf("[%s:%s]", firstDate, lastDate)) +
 		annotate("text", x=lastDate, y=min(allXts, na.rm=T), label = "@StockViz", hjust=1.1, vjust=-1.1, col="white", cex=6, fontface = "bold", alpha = 0.8)
 			
-	ggsave(sprintf("%s/val-ratio.%s.%s.%s.png", reportPath, indexGrpName, ratioName, exch), width=16, height=8, units="in")
+	ggsave(sprintf("%s/val-ratio.%s.%s.%s.png", reportPath, indexGrpName, ratioName, exch), width=16, height=8, units="in", dpi=160)
 }	
 
 indexNames<-names(indexListNse)

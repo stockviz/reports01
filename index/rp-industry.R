@@ -123,7 +123,7 @@ createPlots <- function(){
     				     subtitle=sprintf("Annual Returns [%s:%s]", first(index(retDaily)), last(index(retDaily))),
     				     caption = '@StockViz')
     				
-    			ggsave(sprintf("%s/%s.annret.%s.png", plotPath, fName, wtName), width=12, height=6)
+    			ggsave(sprintf("%s/%s.annret.%s.png", plotPath, fName, wtName), width=12, height=6, dpi=160)
   			}, error = function(e){})
   			
   			rollStDt <- first(index(iXts))
@@ -159,14 +159,14 @@ createPlots <- function(){
       				     subtitle=sprintf("[%s:%s]", rollStDt, last(index(iXts2))),
       				     caption='@StockViz')
       				
-      			ggsave(sprintf("%s/%s.roll.%s.png", plotPath, fName, wtName), width=12, height=6)
+      			ggsave(sprintf("%s/%s.roll.%s.png", plotPath, fName, wtName), width=12, height=6, dpi=160)
     			}
     			
     			if(nrow(rAnnRets) > 5){
       			iDf <- data.frame(iXts[,j])
       			iDf$time_stamp <- index(iXts)
       			fanPlot <- common.CreateFanChart(iDf, paste0(iName, '(', wtName, ')'), sprintf("%d:%s", min(year(index(iXts))), max(index(iXts))))
-      			ggsave(sprintf("%s/%s.fan.%s.png", plotPath, fName, wtName), fanPlot, width=12, height=6)
+      			ggsave(sprintf("%s/%s.fan.%s.png", plotPath, fName, wtName), fanPlot, width=12, height=6, dpi=160)
     			}
   			}
 			}

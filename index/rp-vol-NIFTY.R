@@ -57,7 +57,7 @@ ggplot(toPlot, aes(x=T)) +
 	labs(x = "", y="", fill="", color="", title="INDIA VIX", subtitle=sprintf("50-day rolling [%s:%s]", plotStart, plotEnd)) +
 	annotate("text", x=plotEnd, y=0, label = "@StockViz", hjust=1.1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
 	
-ggsave(sprintf("%s/vix-india.ts.png", reportPath), width=12, height=6, units="in")
+ggsave(sprintf("%s/vix-india.ts.png", reportPath), width=12, height=6, units="in", dpi=160)
 
 ################ density plot
 
@@ -79,7 +79,7 @@ ggplot(toPlot, aes(x=VIX)) +
 	labs(x = "", y="", fill="", color="", title="INDIA VIX", subtitle=sprintf("density [%s:%s]", plotStart, plotEnd)) +
 	annotate("text", x=max(vixPlt$VIX, na.rm=T), y=0, label = "@StockViz", hjust=1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
 	
-ggsave(sprintf("%s/vix-india.density.png", reportPath), width=12, height=6, units="in")
+ggsave(sprintf("%s/vix-india.density.png", reportPath), width=12, height=6, units="in", dpi=160)
 
 ################ nifty IV plot
 
@@ -109,7 +109,7 @@ ggplot(toPlot, aes(x=EXPIRY, y=IV, color=OPTION_TYPE)) +
 	labs(x = "", y="", fill="", color="", title="NIFTY Strangle IV", subtitle=sprintf("%.0fCE/%.0fPE [%s]", strike1, strike2, plotEnd)) +
 	annotate("text", x=0.5, y=min(toPlot$IV, na.rm=T), label = "@StockViz", hjust='left', vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
 	
-ggsave(sprintf("%s/vix-india.IV.png", reportPath), width=12, height=6, units="in")
+ggsave(sprintf("%s/vix-india.IV.png", reportPath), width=12, height=6, units="in", dpi=160)
 
 ################ nifty OI weighted strike-spot ratio plot
 
@@ -157,7 +157,7 @@ ggplot(nearExpStat, aes(x=asof)) +
 	labs(x = "", y="", fill="", color="", title="NIFTY OI Weighted Strike-Spot Ratio", subtitle=sprintf("nearest expiry [%s:%s]", plotStart, plotEnd)) +
 	annotate("text", x=plotEnd, y=min(nearExpStat$oiwks), label = "@StockViz", hjust=1.1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
 	
-ggsave(sprintf("%s/NIFTY.oiwks.png", reportPath), width=12, height=6, units="in")	
+ggsave(sprintf("%s/NIFTY.oiwks.png", reportPath), width=12, height=6, units="in", dpi=160)	
 	
 ########### bank-nifty IV plot
 	
@@ -185,7 +185,7 @@ ggplot(toPlot, aes(x=EXPIRY, y=IV, color=OPTION_TYPE)) +
 	labs(x = "", y="", fill="", color="", title="BANK-NIFTY Strangle IV", subtitle=sprintf("%.0fCE/%.0fPE [%s]", strike1, strike2, plotEnd)) +
 	annotate("text", x=0.5, y=min(toPlot$IV, na.rm=T), label = "@StockViz", hjust='left', vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
 	
-ggsave(sprintf("%s/bank-nifty.IV.png", reportPath), width=12, height=6, units="in")
+ggsave(sprintf("%s/bank-nifty.IV.png", reportPath), width=12, height=6, units="in", dpi=160)
 
 ################ bank-nifty OI weighted strike-spot ratio plot
 
@@ -233,7 +233,7 @@ ggplot(nearExpStat, aes(x=asof)) +
 	labs(x = "", y="", fill="", color="", title="BANK-NIFTY OI Weighted Strike-Spot Ratio", subtitle=sprintf("nearest expiry [%s:%s]", plotStart, plotEnd)) +
 	annotate("text", x=plotEnd, y=min(nearExpStat$oiwks), label = "@StockViz", hjust=1.1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
 	
-ggsave(sprintf("%s/BANK-NIFTY.oiwks.png", reportPath), width=12, height=6, units="in")	
+ggsave(sprintf("%s/BANK-NIFTY.oiwks.png", reportPath), width=12, height=6, units="in", dpi=160)	
 
 ############## subsequent distribution
 
@@ -264,7 +264,7 @@ ggplot(nextVixDf, aes(x=D, y=VAL, fill=D)) +
 	labs(color='', fill='', y='VIX', x='Days', title='Historical next n-day VIX', subtitle=sprintf("%d matches [%s:%s]", length(prevDates), plotStart, plotEnd)) +
 	annotate("text", x=10, y=plotStartVix+1, label = "@StockViz", hjust='right', vjust='bottom', col="white", cex=6, fontface = "bold", alpha = 0.5)
 	
-ggsave(sprintf("%s/vix-india.next.png", reportPath), width=12, height=6, units="in")	
+ggsave(sprintf("%s/vix-india.next.png", reportPath), width=12, height=6, units="in", dpi=160)	
 
 doIndexVolatility <- function(indexBhavName, indexDisplayName){
 	################### nifty realized volatility
@@ -298,7 +298,7 @@ doIndexVolatility <- function(indexBhavName, indexDisplayName){
 			labs(x = "", y="", fill="", color="", title=sprintf("%s Realized Volatility (%s)", indexDisplayName, freq), subtitle=sprintf("%d-day rolling [%s:%s]", lb, plotStart, plotEnd)) +
 			annotate("text", x=plotEnd, y=0, label = "@StockViz", hjust=1.1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
 			
-		ggsave(sprintf("%s/realized-%s.ts.%s.png", reportPath, indexDisplayName, freq), width=12, height=6, units="in")
+		ggsave(sprintf("%s/realized-%s.ts.%s.png", reportPath, indexDisplayName, freq), width=12, height=6, units="in", dpi=160)
 
 		rvolMin <- as.numeric(max(volXts))
 
@@ -310,7 +310,7 @@ doIndexVolatility <- function(indexBhavName, indexDisplayName){
 			labs(x = "", y="", fill="", color="", title=sprintf("%s Realized Volatility Density (%s)", indexDisplayName, freq), subtitle=sprintf("%d-day rolling [%s:%s]", lb, plotStart, plotEnd)) +
 			annotate("text", x=rvolMin, y=0, label = "@StockViz", hjust=1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
 			
-		ggsave(sprintf("%s/realized-%s.density.%s.png", reportPath, indexDisplayName, freq), width=12, height=6, units="in")
+		ggsave(sprintf("%s/realized-%s.density.%s.png", reportPath, indexDisplayName, freq), width=12, height=6, units="in", dpi=160)
 	}
 
 	spotPxs <- sqlQuery(lcon, sprintf("select time_stamp, px_high, px_low, px_open, px_close from bhav_index where index_name='%s' and time_stamp >= '2010-01-01'", indexBhavName))
@@ -358,7 +358,7 @@ doIndexVolatility <- function(indexBhavName, indexDisplayName){
 	}
 
 	plot_grid(plotlist = plts, ncol=1)
-	ggsave(sprintf("%s/%s.returns-periods.png", reportPath, indexDisplayName), width=12, height=6*ncol(retXts), units="in")
+	ggsave(sprintf("%s/%s.returns-periods.png", reportPath, indexDisplayName), width=12, height=6*ncol(retXts), units="in", dpi=160)
 
 	retXts <- merge(iXts$Open/iXts$Close_1 -1, iXts$Close/iXts$Open-1, dailyReturn(iXts$Close))
 	names(retXts) <- c('OVERNIGHT', 'DAY', 'BH')
@@ -381,7 +381,7 @@ doIndexVolatility <- function(indexBhavName, indexDisplayName){
 		labs(x = "Year", y="Returns (%)", fill="", color="", size="", title=sprintf("%s Period Returns", indexDisplayName), subtitle=sprintf("Monthly Returns [%s:%s]", first(index(mRetXts)), last(index(mRetXts)))) +
 		annotate("text", x=1, y=minRet, label = "@StockViz", hjust='left', vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.5)
 		
-	ggsave(sprintf("%s/%s.period.monret.png", reportPath, indexDisplayName), width=12, height=6)
+	ggsave(sprintf("%s/%s.period.monret.png", reportPath, indexDisplayName), width=12, height=6, dpi=160)
 
 	Common.PlotCumReturns(retXts[strftime(first(index(mRetXts)), "%Y-%m-01/"),], sprintf("%s Period Returns", indexDisplayName), "", sprintf("%s/%s.period.cumret.png", reportPath, indexDisplayName))
 }
@@ -435,7 +435,7 @@ doConstituentVolatility <- function(indexBhavName, indexDisplayName){
 		labs(color='', fill='', y='volatility', x='', title=sprintf('%s Constituent Historical %d-day Volatility', indexDisplayName, volLb), subtitle=sprintf("%d-day rolling [%s:%s]", pxLb, plotStart, plotEnd)) +
 		annotate("text", x=1, y=min(toPlot$value), label = "@StockViz", hjust='left', vjust='bottom', col="white", cex=6, fontface = "bold", alpha = 0.5)
 		
-	ggsave(sprintf("%s/%s.constituent.volatility.png", reportPath, indexDisplayName), width=12, height=6)
+	ggsave(sprintf("%s/%s.constituent.volatility.png", reportPath, indexDisplayName), width=12, height=6, dpi=160)
 }
 
 doConstituentVolatility("NIFTY 50", "NIFTY")

@@ -42,7 +42,7 @@ for(lb in c(50, 100, 200, 500, 1000)){
 								subtitle=sprintf("Median Bottom and Top Decile Return Ratio; %s:%s", min(toPlot$time_stamp), max(toPlot$time_stamp))) +
 		annotate("text", x=toPlot$time_stamp[1], y=min(toPlot$value, na.rm=T), label = "@StockViz", hjust=0, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
 		
-	ggsave(sprintf("%s/dispersion.%d.png", plotPath, lb), width=12, height=6)
+	ggsave(sprintf("%s/dispersion.%d.png", plotPath, lb), width=12, height=6, dpi=160)
 }
 
 ###### mean reversion indices
@@ -68,7 +68,7 @@ for(lb in c(50, 100, 200, 500)){
 		labs(x='', y='growth of Rs. 1', fill="", color="", title="Mean Reversion of NIFTY 50 Components", subtitle=sprintf("%s:%s", min(toPlot$time_stamp), max(toPlot$time_stamp))) +
 		annotate("text", x=toPlot$time_stamp[1], y=min(toPlot$value, na.rm=T), label = "@StockViz", hjust=0, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
 		
-	ggsave(sprintf("%s/mean-rev.%d.png", plotPath, lb), width=12, height=6)
+	ggsave(sprintf("%s/mean-rev.%d.png", plotPath, lb), width=12, height=6, dpi=160)
 }
 
 print("rendering master page...")

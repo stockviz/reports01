@@ -131,7 +131,7 @@ createPlots <- function(){
 				labs(x = "Year", y="Returns (%)", fill="", color="", size="", title=sprintf("%s", iName), subtitle=sprintf("Annual Returns [%s:%s]", first(index(retDaily)), last(index(retDaily)))) +
 				annotate("text", x=maxYear, y=minRet, label = "@StockViz", hjust=1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
 				
-			ggsave(sprintf("%s/%s.annret.png", plotPath, fName), width=12, height=6)
+			ggsave(sprintf("%s/%s.annret.png", plotPath, fName), width=12, height=6, dpi=160)
 			
 			
 			iDf2 <- sqlQuery(lcon, sprintf("select px_close, time_stamp from bhav_index where index_name='%s'", iName))
@@ -164,10 +164,10 @@ createPlots <- function(){
 				labs(x = "Year", y="Returns (%)", fill="", color="", size="", title=sprintf("%s Rolling Annualized Returns", iName), subtitle=sprintf("[%s:%s]", rollStDt, last(index(iXts2)))) +
 				annotate("text", x=maxYear, y=minRet, label = "@StockViz", hjust=1, vjust=0, col="white", cex=6, fontface = "bold", alpha = 0.8)
 				
-			ggsave(sprintf("%s/%s.roll.png", plotPath, fName), width=12, height=6)
+			ggsave(sprintf("%s/%s.roll.png", plotPath, fName), width=12, height=6, dpi=160)
 			
 			fanPlot <- common.CreateFanChart(iDf1, iName, sprintf("%d:%s", min(year(iDf1$time_stamp)), max(iDf1$time_stamp)))
-			ggsave(sprintf("%s/%s.fan.png", plotPath, fName), fanPlot, width=12, height=6)
+			ggsave(sprintf("%s/%s.fan.png", plotPath, fName), fanPlot, width=12, height=6, dpi=160)
 			
 			
 			metricMap <- read.csv(paste0(idPath, "/metric_map.csv"))
@@ -213,7 +213,7 @@ createPlots <- function(){
 					legend.background = element_blank()
 				)
 			
-			ggsave(sprintf("%s/%s.radar.png", plotPath, fName), rplot, width=5.7*2, height=5*2)
+			ggsave(sprintf("%s/%s.radar.png", plotPath, fName), rplot, width=5.7*2, height=5*2, dpi=160)
 			
 			plottedIndices <- c(plottedIndices, iName)
 			
