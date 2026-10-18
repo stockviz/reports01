@@ -1,0 +1,174 @@
+---
+title: Industry Metrics
+subtitle: StockViz
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: risk/rmdlib
+    toc: true
+    includes:
+        in_header: header.html
+        after_body: ../footer.html
+---
+
+```{r, init_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+library('RODBC')
+
+library('quantmod')
+library('PerformanceAnalytics')
+
+library('tidyverse')
+library('DT')
+
+#source("C:/stockviz/r/config.r")
+source("/mnt/hollandr/config.r")
+
+options("scipen"=100)
+options(stringsAsFactors = FALSE)
+
+benchName <- "NIFTY TOTAL MARKET TR"
+
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+
+lcon <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, ldbname, ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+	
+```
+
+---
+date: `r createdDate`
+---
+
+```{r, metrics_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+maxDt <- sqlQuery(lcon, "select max(time_stamp) from px_history")[[1]]
+
+industryDf <- sqlQuery(lcon, "select industry, count(*) cnt from bhav_industry group by industry")
+industryDf <- industryDf |> filter(cnt >= 500)
+
+iHorizonRets <- data.frame(INDEX_NAME = "", WT = "", LB=0, RET=0.0)
+iHorizonIR <- data.frame(INDEX_NAME = "", WT = "", LB=0, IR=0.0)
+
+eodVals <- sqlQuery(lcon, sprintf("select px_close, time_stamp from BHAV_INDEX where INDEX_NAME = '%s' and time_stamp >= '%s'", benchName, maxDt - 1000))
+benchXts <- xts(eodVals[,1], eodVals[,2])
+
+for(i in 1:nrow(industryDf)){
+  iName <- industryDf$industry[i]
+  
+  retDailyDf <- sqlQuery(lcon, sprintf("select TIME_STAMP, RET_EQ_WT, RET_CAP_WT from bhav_industry where industry = '%s'", iName))
+  
+  if(nrow(retDailyDf) == 0 || max(retDailyDf$TIME_STAMP) < maxDt) next
+  
+	retDaily <- xts(retDailyDf[,-1], retDailyDf[,1])
+  names(retDaily) <- c('EQUAL_WT', 'CAP_WT')
+  
+	iVals <- merge(cumprod(1 + retDaily[,1]), cumprod(1 + retDaily[,2]))
+  names(iVals) <- c('EQUAL_WT', 'CAP_WT')
+  
+  for(con in names(iVals)){
+  	for(lb in c(5, 10, 20, 50, 100, 200)){
+  		iHorizonRets <- rbind(iHorizonRets, c(iName, con, lb, as.numeric(Return.cumulative(tail(retDaily[, con], lb)))))
+  	}
+  	
+  	for(lb in c(50, 100, 200, 500)){
+  		iHorizonIR <- rbind(iHorizonIR, c(iName, con, lb, as.numeric(InformationRatio(tail(retDaily[, con], lb), dailyReturn(tail(benchXts, lb))))))
+  	}
+  }
+}
+
+iHorizonRets <- iHorizonRets[-1,]
+iHorizonRets$RET <- round(as.numeric(iHorizonRets$RET) * 100, 2)
+iHorizonRets$LB <- as.integer(iHorizonRets$LB)
+
+iHorizonIR <- iHorizonIR[-1,]
+iHorizonIR$IR <- as.numeric(iHorizonIR$IR) * 100
+iHorizonIR$LB <- as.integer(iHorizonIR$LB)
+
+statsList <- list()
+statsList[['EQUAL_WT']] <- list()
+statsList[['CAP_WT']] <- list()
+
+for(con in c('EQUAL_WT', 'CAP_WT')){
+  iRets <- iHorizonRets %>% filter(WT == con) %>% 
+            pivot_wider(names_from=LB, values_from=RET, names_prefix='D') %>%
+  					select(INDEX_NAME, starts_with('D')) %>%
+            mutate(more = ifelse(file.exists(sprintf("industry/rp-%s.html", gsub("[^[:alnum:] ]| ", "", INDEX_NAME))), 
+  						sprintf('<a href="/reports01/index/industry/rp-%s.html" target="_blank">>>></a>', gsub("[^[:alnum:] ]| ", "", INDEX_NAME)), 
+  						""))
+  					
+  tableColNames <- names(iRets)	
+  tableColNames[1] <- ""
+  
+  statsList[[con]][['etfRetDt']] <- datatable(iRets, rownames = F, class = 'cell-border stripe', 
+  							escape = c(rep(T, ncol(iRets)-1), F), filter='none', 
+  							colnames = tableColNames, 
+  							options = list(dom = 't', pageLength = nrow(iRets))) %>%
+                formatRound(names(iRets)[sapply(iRets, is.numeric)], 2)	
+  							
+  irRets <- iHorizonIR %>% filter(WT == con) %>% 
+            pivot_wider(names_from=LB, values_from=IR, names_prefix='D') %>%
+  					mutate_at(vars(-INDEX_NAME), rank) %>%
+  					mutate(SCORE = rowSums(across(-INDEX_NAME)), 
+  					       more = ifelse(file.exists(sprintf("industry/rp-%s.html", gsub("[^[:alnum:] ]| ", "", INDEX_NAME))), 
+        						sprintf('<a href="/reports01/index/industry/rp-%s.html" target="_blank">>>></a>', gsub("[^[:alnum:] ]| ", "", INDEX_NAME)), 
+        						"")) %>%
+  					select(INDEX_NAME, starts_with('D'), SCORE, more) %>%
+  					arrange(desc(SCORE))
+  					
+  					
+  tableColNames <- names(irRets)	
+  tableColNames[1] <- ""
+  
+  statsList[[con]][['irDt']] <- datatable(irRets, rownames = F, class = 'cell-border stripe', 
+  							escape = c(rep(T, ncol(irRets)-1), F), filter='none', 
+  							colnames = tableColNames, 
+  							options = list(dom = 't', pageLength = nrow(irRets))) 					
+  							
+  load("smaStats-industry.Rdata")
+  rankTibs <- smaStats %>% 
+    filter(WT == con) %>% 
+  	mutate_at(vars(-INDEX_NAME), rank) %>%
+  	mutate(SCORE = rowSums(across(-INDEX_NAME))) %>%
+  	arrange(desc(SCORE))
+  	
+  rankTibs <- rankTibs %>%
+  	mutate(more = ifelse(file.exists(sprintf("industry/rp-%s.html", gsub("[^[:alnum:] ]| ", "", INDEX_NAME))), 
+  						sprintf('<a href="/reports01/index/industry/rp-%s.html" target="_blank">>>></a>', gsub("[^[:alnum:] ]| ", "", INDEX_NAME)), 
+  						""))	
+  	
+  tableColNames <- names(rankTibs)	
+  tableColNames[1] <- ""
+  
+  statsList[[con]][['smaDt']] <- datatable(rankTibs, rownames = F, class = 'cell-border stripe', 
+  							escape = c(rep(T, ncol(rankTibs)-1), F), filter='none', 
+  							colnames = tableColNames, 
+  							options = list(dom = 't', pageLength = nrow(rankTibs))) 
+							
+}
+```
+
+```{r, metrics_print_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE}
+cat("\n\n### Returns\n\n")
+cat("\n\n#### Equal Weight\n\n")
+htmltools::tagList(print(statsList[['EQUAL_WT']][['etfRetDt']]))
+
+cat("\n\n#### Cap Weight\n\n")
+htmltools::tagList(print(statsList[['CAP_WT']][['etfRetDt']]))
+
+cat("\n\n### Information Ratio\n\n")
+cat("\n\n#### Equal Weight\n\n")
+htmltools::tagList(print(statsList[['EQUAL_WT']][['irDt']]))
+
+cat("\n\n#### Cap Weight\n\n")
+htmltools::tagList(print(statsList[['CAP_WT']][['irDt']]))
+
+cat("\n\n### Simple Moving Average Stats\n\n")
+cat("\n\n#### Equal Weight\n\n")
+htmltools::tagList(print(statsList[['EQUAL_WT']][['smaDt']]))
+
+cat("\n\n#### Cap Weight\n\n")
+htmltools::tagList(print(statsList[['CAP_WT']][['smaDt']]))
+
+```
