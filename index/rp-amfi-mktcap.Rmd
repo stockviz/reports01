@@ -1,0 +1,93 @@
+---
+title: Mkt. Cap. Classification Analysis
+subtitle: Constituent Changes
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: rmdlib
+    toc: true	
+    includes:
+        in_header: header.html
+        after_body: ../footer.html
+---
+
+```{r, init_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+reportPath <- "/analysis"
+library('RODBC')
+
+library('DT')
+library('htmltools')
+
+options(stringsAsFactors = FALSE)
+options("scipen"=100)
+
+#source("C:/stockviz/r/config.r")
+source("/mnt/hollandr/config.r")
+
+```
+
+---
+date: `r createdDate`
+---
+
+```{r, change_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+
+lcon <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, ldbname, ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+
+indexNames <- sqlQuery(lcon, "select distinct(MKT_CAP_CLASS) ts from MF_MKT_CAP_CLASS order by MKT_CAP_CLASS")[,1]
+indexChangeDates <- sqlQuery(lcon, "select distinct(AS_OF) ts from MF_MKT_CAP_CLASS order by ts desc")[,1]
+
+changeList <- list()
+for(i in 2:length(indexChangeDates)){
+	changeList2 <- list()
+	for(j in 1:length(indexNames)){
+		indexName <- indexNames[j]
+		newSet <- sqlQuery(lcon, sprintf("select symbol from MF_MKT_CAP_CLASS where MKT_CAP_CLASS = '%s' and AS_OF = '%s'", indexName, indexChangeDates[i-1]))[,1]
+		oldSet <- sqlQuery(lcon, sprintf("select symbol from MF_MKT_CAP_CLASS where MKT_CAP_CLASS = '%s' and AS_OF = '%s'", indexName, indexChangeDates[i]))[,1]
+		
+		entries <- setdiff(newSet, oldSet)
+		exits <- setdiff(oldSet, newSet)
+		
+		if(length(entries) == 0 && length(exits) == 0) next
+		
+		changeDf <- data.frame(Entries = rep("", max(length(entries), length(exits))), Exits = rep("", max(length(entries), length(exits))))
+		for(ei in 1:length(entries)){
+			changeDf$Entries[ei] <- entries[ei]
+		}
+		for(ei in 1:length(exits)){
+			changeDf$Exits[ei] <- exits[ei]
+		}
+		
+		changeList2[[indexName]] <- datatable(changeDf, 
+											caption = tags$caption(indexName, style="font-weight: bold; color:black"), 
+											rownames = F, 
+											class = 'cell-border stripe', 
+											filter='none', 
+											options = list(dom = 't', autoWidth = T, pageLength = nrow(changeDf)+5, columnDefs = list(list(width = '40%', visible=T, targets = '_all'))))
+																	
+		
+	}
+	changeList[[toString(indexChangeDates[i-1])]] <- changeList2
+}
+
+```
+
+```{r include = FALSE}
+# Why, oh why do I need this chunk?
+datatable(NULL)
+```
+
+```{r, print_changes_table_chunk, echo = FALSE, results='asis', message = FALSE}
+for(kn in names(changeList)){
+	cat(sprintf("\n\n### %s\n\n", kn))
+	print(tagList(lapply(changeList[[kn]], print)))
+}
+#tagList(lapply(changeList, function(X) lapply(X, print)))
+
+
+```
