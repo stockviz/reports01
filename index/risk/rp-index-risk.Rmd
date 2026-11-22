@@ -1,0 +1,120 @@
+---
+params:
+  index_name: ""
+  fName: ""
+subtitle: Index Metrics
+editor_options:
+  chunk_output_type: console
+output: 
+  html_document:
+    theme: flatly
+    highlight: tango
+    self_contained: false
+    lib_dir: rmdlib
+    includes:
+        in_header: ../header.html
+        after_body: ../../footer.html
+---
+
+```{r, init_chunk, echo = FALSE, message = FALSE, warning = FALSE}
+createdDate <- gsub(" 0", " ",format(Sys.Date(), "%B %d, %Y"))
+idPath <- "../../"
+
+#source("C:/stockviz/r/config.r")
+source("/mnt/hollandr/config.r")
+
+library('RODBC')
+library('DT')
+library('tidyverse')
+
+options(stringsAsFactors = FALSE)
+options("scipen"=100)
+
+iName <- params$index_name
+fName <- params$fName
+
+lcon <- odbcDriverConnect(sprintf("Driver={ODBC Driver 17 for SQL Server};Server=%s;Database=%s;Uid=%s;Pwd=%s;", ldbserver, ldbname, ldbuser, ldbpassword), case = "nochange", believeNRows = TRUE)
+
+fanPlotName <- paste0("plots/", fName, ".fan.png")
+cumPlotName <- paste0("plots/", fName, ".cumret.png")
+smaCumPlotName <- paste0("plots/", fName, ".sma.cumret.png")
+annPlotName <- paste0("plots/", fName, ".annret.png")
+radarPlotName <- paste0("plots/", fName, ".radar.png")
+rollPlotName  <- paste0("plots/", fName, ".roll.png")
+
+```
+
+---
+title: `r iName`
+date: `r createdDate`
+---
+
+### Annual Returns
+
+![](`r fanPlotName`)
+
+![](`r annPlotName`)
+
+
+### Cumulative Returns and Drawdowns
+
+![](`r cumPlotName`)
+
+\
+
+#### SMA Scenarios
+
+![](`r smaCumPlotName`)
+
+\
+
+#### Current Distance from SMA
+
+```{r, dist_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE, fig.height=12, fig.width=12}
+
+load("../smaDist.Rdata")
+
+indexDist <- smaDist[smaDist$INDEX_NAME == iName, -1]
+indexDistDT <- datatable(indexDist, rownames = F, class = 'cell-border stripe', filter='none', options = list(dom = 't', pageLength = 30, ordering=F))
+htmltools::tagList(print(indexDistDT))
+
+```
+
+\
+
+### Rolling Returns
+
+![](`r rollPlotName`)
+
+\
+\
+
+### Performance Metrics
+
+```{r, metrics_radar_chunk, echo = FALSE, results='asis', message = FALSE, warning = FALSE, fig.height=12, fig.width=12}
+
+metricMap <- read.csv(paste0(idPath, "/metric_map.csv"))
+
+asofDt <- sqlQuery(lcon, "select max(time_stamp) from index_capm")[[1]]
+indices <- sqlQuery(lcon, sprintf("select distinct index_name from index_capm where time_stamp = '%s'", asofDt))[,1]
+
+statsDf <- sqlQuery(lcon, sprintf("select INDEX_NAME, ID, VAL from INDEX_CAPM where INDEX_NAME in ('%s')", paste(indices, collapse="','"))) 
+
+rankTibs <- statsDf %>% 
+	pivot_wider(names_from=ID, values_from=VAL) %>% 
+	mutate_at(vars(-INDEX_NAME), rank) 
+
+metricDf <- statsDf %>% filter(INDEX_NAME == iName) %>%
+	inner_join(rankTibs %>% filter(INDEX_NAME == iName) %>% pivot_longer(!INDEX_NAME, names_to='ID', values_to='VAL') %>% select(ID, VAL), by='ID') %>%
+	inner_join(metricMap, by='ID') %>%
+	mutate(METRIC = paste0(DESC, ' (', ID, ')'), VAL = round(VAL.x, 5)) %>%
+	rename(SCORE = VAL.y) %>%
+	select(METRIC, VAL, SCORE) %>%
+	as.data.frame()
+
+mfMetricsDT <- datatable(metricDf, rownames = F, class = 'cell-border stripe', filter='none', colnames = c("", names(metricDf)[-1]), options = list(dom = 't', pageLength = 30, ordering=F))
+htmltools::tagList(print(mfMetricsDT))
+
+```
+
+![](`r radarPlotName`)
